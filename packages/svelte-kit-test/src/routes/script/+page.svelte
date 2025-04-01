@@ -2,13 +2,13 @@
 	import { onMount } from 'svelte';
 
 	onMount(() => {
-		new Arenarium();
+		arenarium.mountMap('map');
 	});
 </script>
 
 <svelte:head>
-	<script src="/build.min.js"></script>
+	<script src="/build.umd.js"></script>
 	<link rel="stylesheet" href="/style.css" />
 </svelte:head>
 
-<div id="app"></div>
+<div id="map"></div>

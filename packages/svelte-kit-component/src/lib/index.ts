@@ -1,10 +1,10 @@
 import { mount } from 'svelte';
 
-import Map from '$lib/Map.svelte';
+import Map from './Map.svelte';
 
 export { Map };
 
-export function init(elementId: string) {
+export function mountMap(elementId: string) {
 	const target = document.getElementById(elementId);
 	if (!target) throw new Error(`Element with id ${elementId} not found`);
 
