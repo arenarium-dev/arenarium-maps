@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	import { init } from '$lib/index.js';
+	import { mountMap } from '$lib/index.js';
 
 	onMount(() => {
-		init('map');
+		mountMap('map');
 	});
 </script>
 

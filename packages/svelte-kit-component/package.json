@@ -3,9 +3,8 @@
 	"version": "1.0.0",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build && npm run prepack",
-		"build:browser": "vite build --config vite.browser.config.ts",
-		"build:types": "dts-bundle-generator --export-referenced-types --umd-module-name=arenarium -o ./dist/browser/index.d.ts ./src/lib/index.ts",
+		"build": "vite build",
+		"build:types": "dts-bundle-generator --export-referenced-types --umd-module-name=arenarium -o ./dist/index.d.ts ./src/lib/index.ts",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"prepack": "svelte-kit sync && svelte-package && publint",
