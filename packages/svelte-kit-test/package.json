@@ -13,14 +13,14 @@
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^4.0.0",
-		"@sveltejs/kit": "^2.16.0",
-		"@sveltejs/vite-plugin-svelte": "^5.0.0",
-		"svelte": "^5.0.0",
-		"svelte-check": "^4.0.0",
-		"typescript": "^5.0.0",
-		"vite": "^6.0.0"
+		"@sveltejs/kit": "^2.20.2",
+		"@sveltejs/vite-plugin-svelte": "^5.0.3",
+		"svelte": "^5.25.6",
+		"svelte-check": "^4.1.5",
+		"typescript": "^5.8.2",
+		"vite": "^6.2.4"
 	},
 	"dependencies": {
-		"@arenarium/maps": "^1.0.0"
+		"@arenarium/maps": "^1.0.3"
 	}
 }

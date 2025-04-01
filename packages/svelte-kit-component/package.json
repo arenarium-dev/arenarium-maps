@@ -1,6 +1,6 @@
 {
 	"name": "@arenarium/maps",
-	"version": "1.0.2",
+	"version": "1.0.4",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -13,9 +13,7 @@
 		"lint": "prettier --check . && eslint ."
 	},
 	"files": [
-		"dist",
-		"!dist/**/*.test.*",
-		"!dist/**/*.spec.*"
+		"dist/*"
 	],
 	"sideEffects": [
 		"**/*.css"
