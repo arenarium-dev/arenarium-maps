@@ -3,8 +3,9 @@
 	"version": "1.0.5",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build",
+		"build:vite": "vite build",
 		"build:types": "dts-bundle-generator --export-referenced-types --umd-module-name=arenarium -o ./dist/index.d.ts ./src/lib/index.ts",
+		"build": "pnpm run build:vite && pnpm run build:types",
 		"preview": "vite preview",
 		"publish": "pnpm publish --access public",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
