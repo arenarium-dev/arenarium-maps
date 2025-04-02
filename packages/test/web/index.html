@@ -4,13 +4,29 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<script src="https://unpkg.com/@arenarium/maps@1.0.5/dist/index.js"></script>
-		<link href="https://unpkg.com/@arenarium/maps@1.0.5/dist/style.css" rel="stylesheet"/>
+		<script src="https://unpkg.com/@arenarium/maps@latest/dist/index.js"></script>
+		<link href="https://unpkg.com/@arenarium/maps@latest/dist/style.css" rel="stylesheet"/>
 	</head>
 	<body>
 		<div id="map"></div>
 		<script>
-            const map = arenarium.mountMap('map');
+            const map = arenarium.mountMap({
+				container: 'map',
+				position: {
+					center: { lat: 51.505, lng: -0.09 },
+					zoom: 13
+				},
+				theme: 'light'
+			});
         </script>
+		<style>
+			#map {
+				position: fixed;
+				top: 0px;
+				left: 0px;
+				width: 100%;
+				height: 100%;
+			}
+		</style>	
 	</body>
 </html>

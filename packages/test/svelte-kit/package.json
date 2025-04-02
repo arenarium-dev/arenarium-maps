@@ -22,6 +22,6 @@
 		"vite": "^6.2.4"
 	},
 	"dependencies": {
-		"@arenarium/maps": "^1.0.6"
+		"@arenarium/maps": "^1.0.7"
 	}
 }
