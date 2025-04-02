@@ -152,10 +152,10 @@
 <div class="container {options.theme}">
 	<div class="map" bind:this={mapContainer}></div>
 	<div class="zooms">
-		<button class="button shadow-small" onmousedown={onZoomIn}>
+		<button class="button" onmousedown={onZoomIn}>
 			<Icon name={'add'} />
 		</button>
-		<button class="button shadow-small" onmousedown={onZoomOut}>
+		<button class="button" onmousedown={onZoomOut}>
 			<Icon name={'remove'} />
 		</button>
 	</div>
@@ -293,24 +293,6 @@
 		touch-action: manipulation;
 	}
 
-	.shadow-small {
-		box-shadow:
-			0 0 4px 2px rgb(from var(--shadow) r g b / 0.2),
-			0 3px 6px rgb(from var(--shadow) r g b / 0.3);
-	}
-
-	.shadow-medium {
-		box-shadow:
-			0 10px 20px 3px rgb(from var(--shadow) r g b / 0.2),
-			0 6px 10px rgb(from var(--shadow) r g b / 0.3);
-	}
-
-	.shadow-large {
-		box-shadow:
-			0 19px 38px 6px rgb(from var(--shadow) r g b / 0.2),
-			0 10px 16px rgb(from var(--shadow) r g b / 0.3);
-	}
-
 	.container {
 		position: absolute;
 		width: 100%;
@@ -348,6 +330,9 @@
 				outline: none;
 				border: none;
 				cursor: pointer;
+				box-shadow:
+					0 0 4px 2px rgb(from var(--shadow) r g b / 0.2),
+					0 3px 6px rgb(from var(--shadow) r g b / 0.3);
 
 				&:hover {
 					background-color: var(--surface-container);

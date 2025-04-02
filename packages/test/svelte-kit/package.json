@@ -4,6 +4,7 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
+		"update": "pnpm update",
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
@@ -13,7 +14,7 @@
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^4.0.0",
-		"@sveltejs/kit": "^2.20.2",
+		"@sveltejs/kit": "^2.20.3",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"svelte": "^5.25.6",
 		"svelte-check": "^4.1.5",
@@ -21,6 +22,6 @@
 		"vite": "^6.2.4"
 	},
 	"dependencies": {
-		"@arenarium/maps": "^1.0.5"
+		"@arenarium/maps": "^1.0.6"
 	}
 }

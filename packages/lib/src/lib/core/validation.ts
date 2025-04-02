@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const mapOptionsSchema = z.object({
-	container: z.string().or(z.instanceof(HTMLElement)),
+	container: z.string(),
 	position: z.object({
 		center: z.object({
 			lat: z.number(),
