@@ -349,7 +349,7 @@
 					z-index: 10000;
 
 					.maplibregl-ctrl-attrib {
-						color: var(--on-surface);
+						color: var(--secondary);
 						background-color: var(--surface);
 						opacity: 0.75;
 						font-size: 10px;
@@ -358,7 +358,7 @@
 
 						.maplibregl-ctrl-attrib-inner {
 							a {
-								color: var(--primary);
+								color: var(--on-surface);
 							}
 						}
 					}
