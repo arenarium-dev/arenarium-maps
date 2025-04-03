@@ -3,6 +3,7 @@
 	"singleQuote": true,
 	"trailingComma": "none",
 	"printWidth": 128,
+	"tabWidth": 4,
 	"plugins": ["prettier-plugin-svelte"],
 	"overrides": [
 		{
@@ -10,6 +11,12 @@
 			"options": {
 				"parser": "svelte"
 			}
-		}
+		},
+		{
+            "files": "*.md",
+            "options": {
+                "tabWidth": 2
+            }
+        }
 	]
 }

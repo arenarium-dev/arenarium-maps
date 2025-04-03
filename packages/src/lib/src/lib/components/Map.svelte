@@ -148,11 +148,10 @@
 	}
 
 	//#endregion
-	
+
 	//#region Markers
 
-	export function addMarkers(markers: App.Map.Marker[]) {
-	}
+	export function addMarkers(markers: App.Map.Marker[]) {}
 
 	//#endregion
 </script>
