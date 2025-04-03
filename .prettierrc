@@ -3,7 +3,6 @@
 	"singleQuote": true,
 	"trailingComma": "none",
 	"printWidth": 128,
-	"tabWidth": 4,
 	"plugins": ["prettier-plugin-svelte"],
 	"overrides": [
 		{
@@ -15,6 +14,7 @@
 		{
             "files": "*.md",
             "options": {
+				"useTabs": false,
                 "tabWidth": 2
             }
         }

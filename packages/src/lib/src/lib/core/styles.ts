@@ -86,11 +86,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'landcover',
 			minzoom: 10,
-			filter: [
-				'all',
-				['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]],
-				['==', ['get', 'class'], 'wood']
-			],
+			filter: ['all', ['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]], ['==', ['get', 'class'], 'wood']],
 			paint: {
 				'fill-color': 'rgba(128, 128, 128, 1)',
 				'fill-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0, 12, 1]
@@ -214,11 +210,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			type: 'fill',
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
-			filter: [
-				'all',
-				['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]],
-				['==', ['get', 'class'], 'pier']
-			],
+			filter: ['all', ['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]], ['==', ['get', 'class'], 'pier']],
 			paint: { 'fill-antialias': true, 'fill-color': 'rgba(50, 50, 50, 1)' }
 		},
 		{
@@ -400,11 +392,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 16,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['all', ['==', ['get', 'class'], 'rail'], ['has', 'service']]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['all', ['==', ['get', 'class'], 'rail'], ['has', 'service']]],
 			layout: { 'line-join': 'round' },
 			paint: { 'line-color': 'rgba(102, 102, 102, 1)', 'line-width': 3 }
 		},
@@ -1028,11 +1016,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'landcover',
 			minzoom: 10,
-			filter: [
-				'all',
-				['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]],
-				['==', ['get', 'class'], 'wood']
-			],
+			filter: ['all', ['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]], ['==', ['get', 'class'], 'wood']],
 			paint: {
 				'fill-color': 'rgba(228, 228, 228, 1)',
 				'fill-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0, 12, 1]
@@ -1156,11 +1140,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			type: 'fill',
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
-			filter: [
-				'all',
-				['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]],
-				['==', ['get', 'class'], 'pier']
-			],
+			filter: ['all', ['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]], ['==', ['get', 'class'], 'pier']],
 			paint: { 'fill-antialias': true, 'fill-color': 'rgba(150, 150, 150, 1)' }
 		},
 		{
@@ -1342,11 +1322,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 16,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['all', ['==', ['get', 'class'], 'rail'], ['has', 'service']]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['all', ['==', ['get', 'class'], 'rail'], ['has', 'service']]],
 			layout: { 'line-join': 'round' },
 			paint: { 'line-color': 'rgba(202, 202, 202, 1)', 'line-width': 3 }
 		},
