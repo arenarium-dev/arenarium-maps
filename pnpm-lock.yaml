@@ -32,6 +32,9 @@ importers:
 
   packages/lib:
     dependencies:
+      '@workspace/shared':
+        specifier: workspace:*
+        version: link:../shared
       maplibre-gl:
         specifier: ^5.3.0
         version: 5.3.0
@@ -105,6 +108,8 @@ importers:
       vite-plugin-dts:
         specifier: ^4.5.3
         version: 4.5.3(@types/node@22.13.16)(rollup@4.38.0)(typescript@5.8.2)(vite@6.2.4(@types/node@22.13.16)(less@4.2.2))
+
+  packages/shared: {}
 
   packages/test/svelte-kit:
     dependencies:

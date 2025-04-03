@@ -7,6 +7,14 @@ declare global {
 		// interface PageData {}
 		// interface PageState {}
 		// interface Platform {}
+
+		interface Marker {
+			id: string;
+			lat: number;
+			lng: number;
+			zet: number;
+			angs: [number, number][];
+		}
 	}
 }
 

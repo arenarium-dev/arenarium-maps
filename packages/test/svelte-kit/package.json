@@ -1,5 +1,5 @@
 {
-	"name": "@arenarium/maps-test-svelte-kit",
+	"name": "@workspace/test-svelte-kit",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
