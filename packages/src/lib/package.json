@@ -1,6 +1,6 @@
 {
 	"name": "@arenarium/maps",
-	"version": "1.0.13",
+	"version": "1.0.15",
 	"keywords": [
 		"arenarium",
 		"map",
@@ -12,7 +12,7 @@
 		"build:types": "dts-bundle-generator --export-referenced-types --umd-module-name=arenarium -o ./dist/index.d.ts ./src/lib/index.ts",
 		"build": "pnpm run build:vite && pnpm run build:types",
 		"preview": "vite preview",
-		"publish": "npm version patch && git add * && git commit -m 'Publish' && npm publish --access public",
+		"patch-commit-publish": "npm version patch && git add * && git commit -m 'Publish' && npm publish --access public",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
