@@ -1,58 +1,61 @@
-# Svelte library
+# Arenarium Maps
 
-Everything you need to build a Svelte library, powered by [`sv`](https://npmjs.com/package/sv).
-
-Read more about creating a library [in the docs](https://svelte.dev/docs/kit/packaging).
-
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
+## Installation
 
 ```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
+npm install @arenarium/maps
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```script
+<script src="https://unpkg.com/@arenarium/maps@latest/dist/index.js"></script>
+<link href="https://unpkg.com/@arenarium/maps@latest/dist/style.css" rel="stylesheet"/>
 ```
 
-Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
+## Usage
 
-## Building
-
-To build your library:
-
-```bash
-npm run package
+```web
+<html lang="en">
+	<head>
+		<script src="https://unpkg.com/@arenarium/maps@latest/dist/index.js"></script>
+		<link href="https://unpkg.com/@arenarium/maps@latest/dist/style.css" rel="stylesheet"/>
+	</head>
+	<body>
+		<div id="map"></div>
+		<script>
+            const map = arenarium.mountMap({
+				container: 'map',
+				position: {
+					center: { lat: 51.505, lng: -0.09 },
+					zoom: 13
+				},
+				theme: 'light'
+			});
+        </script>
+	</body>
+</html>
 ```
 
-To create a production version of your showcase app:
+```svelte
+<script lang="ts">
+	import { onMount } from 'svelte';
 
-```bash
-npm run build
+	import { mountMap } from '$lib/index.js';
+
+	onMount(() => {
+		mountMap({
+			container: 'map',
+			position: {
+				center: { lat: 51.505, lng: -0.09 },
+				zoom: 13
+			},
+			theme: 'light'
+		});
+	});
+</script>
+
+<div id="map"></div>
 ```
 
-You can preview the production build with `npm run preview`.
+## License
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
-
-## Publishing
-
-Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
-
-To publish your library to [npm](https://www.npmjs.com):
-
-```bash
-npm publish
-```
+[MIT](LICENSE)

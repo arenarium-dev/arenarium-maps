@@ -16,6 +16,8 @@
 
 	let map: maplibregl.Map;
 	let mapContainer: HTMLElement;
+
+	let mapWidth = $state<number>(0);
 	let mapLoaded = $state<boolean>(false);
 
 	onMount(() => {
@@ -32,7 +34,7 @@
 			style: getMapStyle(options.theme),
 			center: { lat: position.center.lat, lng: position.center.lng },
 			zoom: position.zoom,
-			minZoom: getMapMinZoom(window.innerWidth),
+			minZoom: getMapMinZoom(),
 			maxZoom: MAP_MAX_ZOOM,
 			container: mapContainer,
 			pitchWithRotate: false,
@@ -72,7 +74,7 @@
 	function onMapClick(e: maplibregl.MapMouseEvent) {}
 
 	function onWindowResize() {
-		setMapMinZoom(getMapMinZoom(window.innerWidth));
+		setMapMinZoom(getMapMinZoom());
 	}
 
 	function getMapPosition() {
@@ -89,7 +91,7 @@
 		};
 	}
 
-	function getMapMinZoom(mapWidth: number) {
+	function getMapMinZoom() {
 		// Zoom =+ 1 doubles the width of the map
 		// Min zoom has to have the whole map in window
 		const mapWidthAtZoom0 = MAP_BASE_SIZE;
@@ -117,9 +119,11 @@
 
 	//#region Themes
 
+	let theme = $state<'light' | 'dark'>(options.theme);
+
 	$effect(() => {
 		if (mapLoaded) {
-			map.setStyle(getMapStyle(options.theme));
+			map.setStyle(getMapStyle(theme), { diff: true });
 		}
 	});
 
@@ -132,9 +136,13 @@
 		}
 	}
 
-	export function setMapStyle(theme: 'light' | 'dark') {
-		options.theme = theme;
-		map.setStyle(getMapStyle(theme));
+	export function getMapTheme() {
+		return $state.snapshot(theme);
+	}
+
+	export function setMapTheme(value: 'light' | 'dark') {
+		theme = value;
+		map.setStyle(getMapTheme());
 	}
 
 	//#endregion
@@ -149,7 +157,7 @@
 
 <svelte:window onresize={onWindowResize} />
 
-<div class="container {options.theme}">
+<div class="container {theme}">
 	<div class="map" bind:this={mapContainer}></div>
 	<div class="zooms">
 		<button class="button" onmousedown={onZoomIn}>
@@ -161,7 +169,7 @@
 	</div>
 </div>
 
-<style>
+<style lang="less">
 	.light {
 		--primary: rgb(93 95 95);
 		--surface-tint: rgb(93 95 95);
@@ -272,32 +280,14 @@
 		--hover: color-mix(in srgb, var(--surface-container-low) 50%, transparent 50%);
 	}
 
-	:root {
-		/* Derived */
-		--on-surface-dim: color(from var(--on-surface) srgb r g b / 0.85);
-		--on-surface-dimmest: color(from var(--on-surface) srgb r g b / 0.7);
-		--outline-variant-dim: color-mix(in srgb, var(--outline-variant) 50%, transparent 50%);
-
-		font-family:
-			'Roboto',
-			-apple-system,
-			BlinkMacSystemFont,
-			'Segoe UI',
-			'Helvetica Neue',
-			Arial,
-			sans-serif,
-			'Apple Color Emoji',
-			'Segoe UI Emoji',
-			'Segoe UI Symbol';
-		box-sizing: border-box;
-		touch-action: manipulation;
-	}
-
 	.container {
 		position: absolute;
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
+		font-family: 'Roboto';
+		box-sizing: border-box;
+		touch-action: manipulation;
 
 		.map {
 			position: absolute;
