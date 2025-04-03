@@ -8,12 +8,13 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 
-		interface Marker {
-			id: string;
-			lat: number;
-			lng: number;
-			zet: number;
-			angs: [number, number][];
+		namespace Map {
+			interface Marker {
+				id: string;
+				rank: number;
+				lat: number;
+				lng: number;
+			}
 		}
 	}
 }

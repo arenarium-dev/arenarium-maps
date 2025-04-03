@@ -119,10 +119,6 @@
 
 	//#endregion
 
-	//#region Zoom
-
-	//#endregion
-
 	//#region Themes
 
 	let theme = $state<'light' | 'dark'>(options.theme);
@@ -149,6 +145,13 @@
 	export function setTheme(value: 'light' | 'dark') {
 		theme = value;
 		map.setStyle(getTheme());
+	}
+
+	//#endregion
+	
+	//#region Markers
+
+	export function addMarkers(markers: App.Map.Marker[]) {
 	}
 
 	//#endregion
