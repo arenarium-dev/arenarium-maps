@@ -1,9 +1,0 @@
-{
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "arenarium-maps-api",
-  "compatibility_date": "2024-04-01",
-  "main": "./src/index.ts",
-  "assets": {
-    "directory": "./public"
-  }
-}
