@@ -27,7 +27,7 @@
 </html>
 ```
 
-#### Module
+#### Svelte
 
 ```bash
 npm install @arenarium/maps

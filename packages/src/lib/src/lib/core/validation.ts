@@ -16,4 +16,17 @@ export const mapOptionsSchema = z.object({
 	// }),
 });
 
+export const mapMarkerSchema = z.object({
+	id: z.string(),
+	rank: z.number(),
+	lat: z.number(),
+	lng: z.number(),
+	width: z.number(),
+	height: z.number()
+});
+
+export const mapMarkersSchema = z.array(mapMarkerSchema);
+
 export type MapOptions = z.infer<typeof mapOptionsSchema>;
+
+export type MapMarker = z.infer<typeof mapMarkerSchema>;

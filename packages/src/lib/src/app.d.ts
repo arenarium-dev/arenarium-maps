@@ -7,13 +7,16 @@ declare global {
 		// interface PageData {}
 		// interface PageState {}
 		// interface Platform {}
-
 		namespace Map {
-			interface Marker {
-				id: string;
-				rank: number;
+			interface Position {
 				lat: number;
 				lng: number;
+				zoom: number;
+			}
+
+			interface Bounds {
+				sw: { lat: number; lng: number };
+				ne: { lat: number; lng: number };
 			}
 		}
 	}
