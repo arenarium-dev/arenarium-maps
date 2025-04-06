@@ -7,11 +7,9 @@ export default defineConfig({
 		lib: {
 			entry: 'src/lib/index.ts',
 			name: 'arenarium',
-			fileName: (format, entryName) => `${entryName}.${format}.js`,
+			formats: ['es', 'umd'],
+			fileName: 'index',
 			cssFileName: 'style'
-		},
-		outDir: 'dist',
-		emptyOutDir: true,
-		minify: 'esbuild'
+		}
 	}
 });
