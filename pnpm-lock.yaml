@@ -92,8 +92,8 @@ importers:
   packages/test/svelte-kit:
     dependencies:
       '@arenarium/maps':
-        specifier: ^1.0.34
-        version: 1.0.34(svelte@5.25.7)
+        specifier: ^1.0.36
+        version: 1.0.36(svelte@5.25.7)
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^4.0.0
@@ -126,12 +126,14 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@arenarium/maps@1.0.34':
-    resolution: {integrity: sha512-/e39OMR7ECNzi2paFksOWQRvQdyDdiZQsZ0lFArhM6WgXkv2MHxjFf6Fii/PsF28PM5ugW5TBGgIWnLylVh8Qw==}
+  '@arenarium/maps@1.0.36':
+    resolution: {integrity: sha512-8K9FznSEJj7cC2Vnx4ZJpGnWbtZkQOKFPy49nfUkuO3o+3l83z4uVNJsIa2/itdMq2PqBE0VhVhL9OZx0gZasA==}
     peerDependencies:
       svelte: ^5.0.0
     bundledDependencies:
       - '@workspace/shared'
+      - maplibre-gl
+      - zod
 
   '@babel/helper-string-parser@7.25.9':
     resolution: {integrity: sha512-4A/SCr/2KLd5jrtOMFzaKjVtAei3+2r/NChoBNoZ3EyP/+GlhoaEGoWOZUmFmoITP7zOJyHIMm+DYRd8o3PvHA==}
@@ -1791,11 +1793,9 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
 
-  '@arenarium/maps@1.0.34(svelte@5.25.7)':
+  '@arenarium/maps@1.0.36(svelte@5.25.7)':
     dependencies:
-      maplibre-gl: 5.3.0
       svelte: 5.25.7
-      zod: 3.24.2
 
   '@babel/helper-string-parser@7.25.9': {}
 

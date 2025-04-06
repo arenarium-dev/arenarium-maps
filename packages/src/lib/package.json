@@ -61,11 +61,6 @@
 		"maplibre-gl": "^5.3.0",
 		"zod": "^3.24.2"
 	},
-	"bundleDependencies": [
-		"@workspace/shared",
-		"maplibre-gl",
-		"zod"
-	],
 	"scripts": {
 		"dev": "vite dev",
 		"build:vite": "vite build -c vite.build.config.ts",
