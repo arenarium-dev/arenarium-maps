@@ -21,8 +21,6 @@
 			}
 		});
 
-		console.log('ee', map);
-
 		// map.setPopupsContentCallback(async (ids) => {
 		// 	return new Promise((resolve) => {
 		// 		resolve(ids.map((id) => `<div style="width:200px; height: 150px; background-color:red">${id}</div>`));
