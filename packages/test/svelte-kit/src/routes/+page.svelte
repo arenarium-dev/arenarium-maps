@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	import { mountMap } from '@arenarium/maps';
+	import { mountMap, type MapPopup } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
 
 	onMount(() => {
@@ -21,35 +21,33 @@
 			}
 		});
 
-		console.log(map);
+		map.setPopupsContentCallback(async (ids) => {
+			return new Promise((resolve) => {
+				resolve(ids.map((id) => `<div style="width:200px; height: 150px; color:violet">${id}</div>`));
+			});
+		});
 
-		// map.setPopupsContentCallback(async (ids) => {
-		// 	return new Promise((resolve) => {
-		// 		resolve(ids.map((id) => `<div style="width:200px; height: 150px; background-color:red">${id}</div>`));
-		// 	});
-		// });
+		const popups = new Array<MapPopup>();
+		const center = { lat: 51.505, lng: -0.09 };
+		const radius = 20;
+		const count = 300;
 
-		// const popups = new Array<MapPopup>();
-		// const center = { lat: 51.505, lng: -0.09 };
-		// const radius = 20;
-		// const count = 300;
+		for (let i = 0; i < count; i++) {
+			const distance = radius / (count - i);
+			const lat = center.lat + distance * (-1 + Math.random() * 2);
+			const lng = center.lng + distance * (-1 + Math.random() * 2);
 
-		// for (let i = 0; i < count; i++) {
-		// 	const distance = radius / (count - i);
-		// 	const lat = center.lat + distance * (-1 + Math.random() * 2);
-		// 	const lng = center.lng + distance * (-1 + Math.random() * 2);
+			popups.push({
+				id: i.toString(),
+				lat: lat,
+				lng: lng,
+				height: 100,
+				width: 150,
+				index: i
+			});
+		}
 
-		// 	popups.push({
-		// 		id: i.toString(),
-		// 		lat: lat,
-		// 		lng: lng,
-		// 		height: 100,
-		// 		width: 150,
-		// 		index: i
-		// 	});
-		// }
-
-		// map.setPopups(popups);
+		map.setPopups(popups);
 	});
 </script>
 

@@ -10,9 +10,6 @@ importers:
 
   packages/src/lib:
     dependencies:
-      '@workspace/shared':
-        specifier: workspace:*
-        version: link:../shared
       maplibre-gl:
         specifier: ^5.3.0
         version: 5.3.0
@@ -41,6 +38,9 @@ importers:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
         version: 5.0.3(svelte@5.25.7)(vite@6.2.5(@types/node@22.13.16)(less@4.3.0))
+      '@workspace/shared':
+        specifier: workspace:*
+        version: link:../shared
       dts-bundle-generator:
         specifier: ^9.5.1
         version: 9.5.1
@@ -92,8 +92,8 @@ importers:
   packages/test/svelte-kit:
     dependencies:
       '@arenarium/maps':
-        specifier: ^1.0.36
-        version: 1.0.36(svelte@5.25.7)
+        specifier: ^1.0.38
+        version: 1.0.38(svelte@5.25.7)
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^4.0.0
@@ -126,14 +126,10 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@arenarium/maps@1.0.36':
-    resolution: {integrity: sha512-8K9FznSEJj7cC2Vnx4ZJpGnWbtZkQOKFPy49nfUkuO3o+3l83z4uVNJsIa2/itdMq2PqBE0VhVhL9OZx0gZasA==}
+  '@arenarium/maps@1.0.38':
+    resolution: {integrity: sha512-+E8ZND/f1Bx+TQbNGtm8JyVowk48X4hPN7Abqx9qj/i5sRd7jr7Opaqc+YQzivBn1s7apxrv3eGRPXgQ0AgdTQ==}
     peerDependencies:
       svelte: ^5.0.0
-    bundledDependencies:
-      - '@workspace/shared'
-      - maplibre-gl
-      - zod
 
   '@babel/helper-string-parser@7.25.9':
     resolution: {integrity: sha512-4A/SCr/2KLd5jrtOMFzaKjVtAei3+2r/NChoBNoZ3EyP/+GlhoaEGoWOZUmFmoITP7zOJyHIMm+DYRd8o3PvHA==}
@@ -1793,9 +1789,11 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
 
-  '@arenarium/maps@1.0.36(svelte@5.25.7)':
+  '@arenarium/maps@1.0.38(svelte@5.25.7)':
     dependencies:
+      maplibre-gl: 5.3.0
       svelte: 5.25.7
+      zod: 3.24.2
 
   '@babel/helper-string-parser@7.25.9': {}
 
