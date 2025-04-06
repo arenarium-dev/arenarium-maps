@@ -7,8 +7,8 @@ export default defineConfig({
 		lib: {
 			entry: 'src/lib/index.ts',
 			name: 'arenarium',
-			formats: ['es', 'umd'],
-			fileName: 'index',
+			formats: ['umd'],
+			fileName: () => 'index.js',
 			cssFileName: 'style'
 		}
 	}
