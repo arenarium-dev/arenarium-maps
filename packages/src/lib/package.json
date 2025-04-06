@@ -1,6 +1,6 @@
 {
 	"name": "@arenarium/maps",
-	"version": "1.0.24",
+	"version": "1.0.25",
 	"keywords": [
 		"arenarium",
 		"maps",
@@ -13,10 +13,10 @@
 	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
-			"import": "./dist/index.js",
-			"require": "./dist/index.umd.cjs",
 			"svelte": "./dist/index.js",
-			"types": "./dist/index.d.ts"
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.umd.cjs"
 		},
 		"./dist/style.css": {
 			"import": "./dist/style.css",
