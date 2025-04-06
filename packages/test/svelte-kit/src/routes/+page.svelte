@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	import { mountMap } from '@arenarium/maps';
+	import { mountMap, type MapPopup } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
 
 	onMount(() => {
