@@ -2,10 +2,11 @@ import { mount, unmount } from 'svelte';
 
 import Map from './components/Map.svelte';
 import type { MapOptions } from './map/input.js';
+import type { MapComponent } from './map/types.js';
 
 export { Map };
 
-export function mountMap(options: MapOptions) {
+export function mountMap(options: MapOptions): MapComponent {
 	const target = document.getElementById(options.container);
 	if (!target) throw new Error(`Container not found: ${options.container}`);
 

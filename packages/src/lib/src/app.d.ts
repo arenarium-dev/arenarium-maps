@@ -18,6 +18,11 @@ declare global {
 				sw: { lat: number; lng: number };
 				ne: { lat: number; lng: number };
 			}
+
+			namespace Component {
+				type SetPopupsContentCallbackFunction = (callback: (ids: string[]) => Promise<string[]>) => void;
+				type SetPopupsFunction = (popups: Types.Popup[]) => void;
+			}
 		}
 	}
 }

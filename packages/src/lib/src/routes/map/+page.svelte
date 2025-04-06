@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	import Map from '$lib/components/Map.svelte';
 	import Icon from './components/Icon.svelte';
 
 	import { mountMap } from '$lib/index.js';
 	import type { MapPopup } from '$lib/map/input.js';
 
-	let map: ReturnType<typeof Map>;
+	let map: ReturnType<typeof mountMap>;
 
 	onMount(() => {
 		map = mountMap({

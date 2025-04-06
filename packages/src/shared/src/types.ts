@@ -1,6 +1,4 @@
 export namespace Types {
-    export type PopupContentCallback = (ids: string[]) => Promise<string[]>;
-
     export interface Popup {
         id: string;
         index: number;

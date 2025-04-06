@@ -8,6 +8,7 @@
 	import { MarkerData, BoundsPair } from '../map/data/markers.svelte.js';
 	import { darkStyleSpecification, lightStyleSpecification } from '../map/styles.js';
 	import { mapOptionsSchema, type MapOptions, mapPopupsSchema, type MapTheme } from '../map/input.js';
+	import { type MapComponent } from '../map/types.js';
 
 	import {
 		MAP_BASE_SIZE,
@@ -163,7 +164,7 @@
 
 	//#region Data
 
-	let mapPopupContentCallback: Types.PopupContentCallback | undefined = undefined;
+	let mapPopupContentCallback: MapComponent.PopupContentCallback | undefined = undefined;
 
 	let mapBlockIntervalId: number;
 	let mapMarkerIntervalId: number;
@@ -329,7 +330,7 @@
 		}
 	}
 
-	export async function setPopupsContentCallback(callback: Types.PopupContentCallback) {
+	export async function setPopupsContentCallback(callback: MapComponent.PopupContentCallback) {
 		mapPopupContentCallback = callback;
 	}
 
@@ -438,6 +439,7 @@
 		:global {
 			.maplibregl-map {
 				font-family: 'Noto Sans';
+				font-weight: 500;
 				z-index: 0;
 
 				.maplibregl-ctrl-bottom-right {
