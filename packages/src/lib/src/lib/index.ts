@@ -7,7 +7,7 @@ import type { MapOptions, MapTheme, MapPopup } from './map/input.js';
 export { Map };
 export { type MapComponent, type MapTheme, type MapPopup, type MapOptions };
 
-export function mountMap(options: MapOptions) {
+export function mountMap(options: MapOptions): MapComponent {
 	const target = document.getElementById(options.container);
 	if (!target) throw new Error(`Container not found: ${options.container}`);
 

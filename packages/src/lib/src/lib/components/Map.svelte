@@ -413,7 +413,7 @@
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
-		font-family: 'Noto Sans', inherit;
+		font-family: 'Noto Sans';
 		box-sizing: border-box;
 		touch-action: manipulation;
 
@@ -438,7 +438,7 @@
 
 		:global {
 			.maplibregl-map {
-				font-family: 'Noto Sans';
+				font: inherit;
 				font-weight: 500;
 				z-index: 0;
 
