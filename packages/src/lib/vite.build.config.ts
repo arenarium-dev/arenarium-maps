@@ -5,10 +5,9 @@ export default defineConfig({
 	plugins: [svelte()],
 	build: {
 		lib: {
-			fileName: () => `index.js`,
 			entry: 'src/lib/index.ts',
 			name: 'arenarium',
-			formats: ['umd'],
+			fileName: (format, entryName) => `${entryName}.${format}.js`,
 			cssFileName: 'style'
 		},
 		outDir: 'dist',
