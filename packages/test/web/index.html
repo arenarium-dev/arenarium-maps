@@ -4,7 +4,7 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<script src="https://unpkg.com/@arenarium/maps@latest/dist/index.js"></script>
+		<script src="https://unpkg.com/@arenarium/maps@latest/dist/index.umd.cjs"></script>
 		<link href="https://unpkg.com/@arenarium/maps@latest/dist/style.css" rel="stylesheet"/>
 	</head>
 	<body>
@@ -16,8 +16,43 @@
 					center: { lat: 51.505, lng: -0.09 },
 					zoom: 13
 				},
-				theme: 'light'
+				theme: {
+					name: 'dark',
+					colors: {
+						background: 'black',
+						primary: 'yellow',
+						text: 'white'
+					}
+				}
 			});
+
+			map.setPopupsContentCallback(async (ids) => {
+				return new Promise((resolve) => {
+					resolve(ids.map((id) => `<div style="width:150px; height: 100px; background-color:yellow">${id}</div>`));
+				});
+			});
+
+			const popups = new Array();
+			const center = { lat: 51.505, lng: -0.09 };
+			const radius = 20;
+			const count = 300;
+
+			for (let i = 0; i < count; i++) {
+				const distance = radius / (count - i);
+				const lat = center.lat + distance * (-1 + Math.random() * 2);
+				const lng = center.lng + distance * (-1 + Math.random() * 2);
+
+				popups.push({
+					id: i.toString(),
+					lat: lat,
+					lng: lng,
+					height: 100,
+					width: 150,
+					index: i
+				});
+			}
+
+			map.setPopups(popups);
         </script>
 		<style>
 			#map {
