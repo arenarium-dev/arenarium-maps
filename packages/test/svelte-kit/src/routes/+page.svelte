@@ -11,7 +11,14 @@
 				center: { lat: 51.505, lng: -0.09 },
 				zoom: 13
 			},
-			theme: 'dark'
+			theme: {
+				name: 'dark',
+				colors: {
+					primary: 'violet',
+					background: 'black',
+					text: 'white'
+				}
+			}
 		});
 	});
 </script>

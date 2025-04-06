@@ -372,6 +372,15 @@
 	//#endregion
 </script>
 
+<svelte:head>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" />
+	<link
+		rel="stylesheet"
+		href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+	/>
+</svelte:head>
+
 <svelte:window onresize={onWindowResize} />
 
 <div
@@ -403,7 +412,7 @@
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
-		font-family: 'Roboto';
+		font-family: 'Noto Sans', inherit;
 		box-sizing: border-box;
 		touch-action: manipulation;
 
@@ -428,7 +437,7 @@
 
 		:global {
 			.maplibregl-map {
-				font: inherit;
+				font-family: 'Noto Sans';
 				z-index: 0;
 
 				.maplibregl-ctrl-bottom-right {
