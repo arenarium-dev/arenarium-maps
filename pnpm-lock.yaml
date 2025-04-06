@@ -92,8 +92,8 @@ importers:
   packages/test/svelte-kit:
     dependencies:
       '@arenarium/maps':
-        specifier: ^1.0.30
-        version: 1.0.30(svelte@5.25.7)
+        specifier: 1.0.29
+        version: 1.0.29(svelte@5.25.7)
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^4.0.0
@@ -126,8 +126,8 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@arenarium/maps@1.0.30':
-    resolution: {integrity: sha512-QDv2jKnyakDMor8S8TdmUPtTi0SGHufEoGQ6+US52WI66PobxlGpkEOCrcP911weUjq2yJ25pxDf1q6vBz8l8A==}
+  '@arenarium/maps@1.0.29':
+    resolution: {integrity: sha512-tzBEeJLKCX+12lXSMORsJbPcONgVvgI124ryB3UAWvE+nvEZll9l5jOLLcimsP6nzEzP/dlxXt7rLo+zEt2v/w==}
     peerDependencies:
       svelte: ^5.0.0
     bundledDependencies:
@@ -1956,7 +1956,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
 
-  '@arenarium/maps@1.0.30(svelte@5.25.7)':
+  '@arenarium/maps@1.0.29(svelte@5.25.7)':
     dependencies:
       maplibre-gl: 5.3.0
       svelte: 5.25.7
