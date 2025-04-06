@@ -373,14 +373,14 @@
 	//#endregion
 </script>
 
-<svelte:head>
+<!-- <svelte:head>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" />
 	<link
 		rel="stylesheet"
 		href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
 	/>
-</svelte:head>
+</svelte:head> -->
 
 <svelte:window onresize={onWindowResize} />
 
@@ -413,7 +413,7 @@
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
-		font-family: 'Noto Sans';
+		font-family: 'system ui';
 		box-sizing: border-box;
 		touch-action: manipulation;
 
