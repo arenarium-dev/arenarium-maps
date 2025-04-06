@@ -1,7 +1,9 @@
 export namespace Types {
-    export interface Input {
+    export type PopupContentCallback = (ids: string[]) => Promise<string[]>;
+
+    export interface Popup {
         id: string;
-        rank: number;
+        index: number;
         lat: number;
         lng: number;
         width: number;

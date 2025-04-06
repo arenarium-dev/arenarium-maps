@@ -2,9 +2,10 @@
 	import { onMount } from 'svelte';
 
 	import Map from '$lib/components/Map.svelte';
-	import Icon from '$lib/components/utils/Icon.svelte';
+	import Icon from './components/Icon.svelte';
 
 	import { mountMap } from '$lib/index.js';
+	import type { MapPopup } from '$lib/map/input.js';
 
 	let map: ReturnType<typeof Map>;
 
@@ -15,12 +16,66 @@
 				center: { lat: 51.505, lng: -0.09 },
 				zoom: 13
 			},
-			theme: 'dark'
+			theme: {
+				name: 'dark',
+				colors: {
+					background: 'black',
+					primary: 'yellow',
+					text: 'white'
+				}
+			}
 		});
+
+		map.setPopupsContentCallback(async (ids) => {
+			return new Promise((resolve) => {
+				resolve(ids.map((id) => `<div style="width:100px; height: 100px; background-color:red">${id}</div>`));
+			});
+		});
+
+		const popups = new Array<MapPopup>();
+		const center = { lat: 51.505, lng: -0.09 };
+		const radius = 20;
+		const count = 500;
+
+		for (let i = 0; i < count; i++) {
+			const distance = radius / (count - i);
+			const lat = center.lat + distance * (-1 + Math.random() * 2);
+			const lng = center.lng + distance * (-1 + Math.random() * 2);
+
+			popups.push({
+				id: i.toString(),
+				lat: lat,
+				lng: lng,
+				height: 100,
+				width: 100,
+				index: i
+			});
+		}
+
+		map.setPopups(popups);
 	});
 
 	function changeTheme() {
-		map.setTheme(map.getTheme() === 'dark' ? 'light' : 'dark');
+		const theme = map.getTheme();
+		if (theme.name === 'dark') {
+			map.setTheme({
+				name: 'light',
+				colors: {
+					background: 'white',
+					primary: 'blue',
+					text: 'black'
+				}
+			});
+		} else {
+			map.setTheme({
+				name: 'dark',
+				colors: {
+					background: 'black',
+					primary: 'green',
+					text: 'white'
+				}
+			});
+		}
 	}
 
 	function onZoomIn() {

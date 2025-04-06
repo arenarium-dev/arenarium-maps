@@ -133,7 +133,7 @@
 		bind:clientHeight={markerHeight}
 	>
 		<div class="bubble">
-			<div class="body">
+			<div class="body" style:padding={MARKER_PADDING + 'px'}>
 				{@render children()}
 			</div>
 		</div>
@@ -141,10 +141,8 @@
 </div>
 
 <style lang="less">
-	@base: var(--primary-container);
-	@background: var(--surface);
-
-	@border: var(--surface);
+	@background: var(--background);
+	@border: var(--background);
 	@border-width: 0px;
 
 	.anchor {

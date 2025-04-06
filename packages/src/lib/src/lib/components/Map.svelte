@@ -4,8 +4,10 @@
 	import MapMarker from './marker/Marker.svelte';
 	import MapMarkerCircle from './marker/Circle.svelte';
 
-	import { darkStyleSpecification, lightStyleSpecification } from '../core/styles.js';
-	import { mapOptionsSchema, type MapOptions, mapMarkersSchema } from '../core/validation.js';
+	import { BlockData, getBlocks } from '../map/data/blocks.svelte.js';
+	import { MarkerData, BoundsPair } from '../map/data/markers.svelte.js';
+	import { darkStyleSpecification, lightStyleSpecification } from '../map/styles.js';
+	import { mapOptionsSchema, type MapOptions, mapPopupsSchema, type MapTheme } from '../map/input.js';
 
 	import {
 		MAP_BASE_SIZE,
@@ -40,7 +42,7 @@
 		const position = options.position;
 
 		map = new maplibregl.Map({
-			style: getStyle(options.theme),
+			style: getStyle(options.theme.name),
 			center: { lat: position.center.lat, lng: position.center.lng },
 			zoom: position.zoom,
 			minZoom: getMapMinZoom(),
@@ -131,11 +133,11 @@
 
 	//#region Themes
 
-	let theme = $state<'light' | 'dark'>(options.theme);
+	let theme = $state<MapTheme>(options.theme);
 
 	$effect(() => {
 		if (mapLoaded) {
-			map.setStyle(getStyle(theme), { diff: true });
+			map.setStyle(getStyle(theme.name));
 		}
 	});
 
@@ -152,144 +154,162 @@
 		return $state.snapshot(theme);
 	}
 
-	export function setTheme(value: 'light' | 'dark') {
+	export function setTheme(value: MapTheme) {
 		theme = value;
-		map.setStyle(getTheme());
+		map.setStyle(getStyle(theme.name), { diff: true });
 	}
 
 	//#endregion
 
-	//#region Markers
+	//#region Data
 
-	interface MapMarkerData {
-		marker: Types.Marker;
-		libreMarker: maplibregl.Marker;
-		content: string | undefined;
-		element: HTMLElement | undefined;
-		component: ReturnType<typeof MapMarker> | null;
-		componentRendered: boolean;
-		circle: ReturnType<typeof MapMarkerCircle> | null;
-		circleRendered: boolean;
-	}
+	let mapPopupContentCallback: Types.PopupContentCallback | undefined = undefined;
 
+	let mapBlockIntervalId: number;
 	let mapMarkerIntervalId: number;
-	let mapMarkerData = $state(new Array<MapMarkerData>());
+
+	let mapBlockData = $state(new Array<BlockData>());
+	let mapMarkerData = $state(new Array<MarkerData>());
 
 	onMount(() => {
-		mapMarkerIntervalId = window.setInterval(processMarkers, 25);
-		return () => clearInterval(mapMarkerIntervalId);
+		const blocksLoop = async () => {
+			await processBlocks();
+			mapBlockIntervalId = window.setTimeout(blocksLoop, 50);
+		};
+
+		const markersLoop = () => {
+			processMarkers();
+			mapMarkerIntervalId = window.setTimeout(markersLoop, 25);
+		};
+
+		blocksLoop();
+		markersLoop();
+
+		return () => {
+			clearInterval(mapBlockIntervalId);
+			clearInterval(mapMarkerIntervalId);
+		};
 	});
 
-	function processMarkers() {
-		if (!mapLoaded || mapMarkerData.length == 0) return;
+	async function processBlocks() {
+		// Check if callback is set
+		if (!mapPopupContentCallback) return;
+		// Check if map is loaded or block data is empty
+		if (!mapLoaded || mapBlockData.length == 0) return;
 
-		const mapZoom = map.getZoom();
-		if (!mapZoom) return;
+		// Get map bounds
+		const bounds = getBounds();
+		const zoom = getZoom();
+		if (!bounds) return;
 
-		processMarkersMap(mapZoom);
-		processMarkersComponents(mapZoom);
-		processMarkersState(mapZoom);
+		// Get non loaded blocks
+		const nonLoadedBlockData = mapBlockData.filter((data) => !data.loaded);
+		if (nonLoadedBlockData.length == 0) return;
+
+		const nonLoadedVisibleBlockData = nonLoadedBlockData.filter((data) => {
+			const block = data.block;
+			if (zoom + MAP_DISPLAYED_ZOOM_DEPTH < block.zs) return false;
+			if (block.ne.lng < bounds.sw.lng || bounds.ne.lng < block.sw.lng) return false;
+			if (block.ne.lat < bounds.sw.lat || bounds.ne.lat < block.sw.lat) return false;
+			return true;
+		});
+		if (nonLoadedVisibleBlockData.length == 0) return;
+
+		try {
+			// Get marker content with callback
+			const markerIds = nonLoadedVisibleBlockData.flatMap((d) => d.block.markers).map((m) => m.id);
+			const markersPopupContent = await mapPopupContentCallback(markerIds);
+
+			// Set marker content to marker data
+			const markerDataMap = new Map<string, MarkerData>();
+			for (let i = 0; i < mapMarkerData.length; i++) {
+				const data = mapMarkerData[i];
+				markerDataMap.set(data.marker.id, data);
+			}
+
+			for (let i = 0; i < markerIds.length; i++) {
+				const id = markerIds[i];
+				const content = markersPopupContent[i];
+
+				const markerData = markerDataMap.get(id);
+				if (!markerData) throw new Error('Failed to find marker data.');
+				markerData.content = content;
+			}
+
+			// Set block loaded to true
+			nonLoadedVisibleBlockData.forEach((b) => (b.loaded = true));
+		} catch (e) {
+			console.error(e);
+
+			// If error, set block loaded to false
+			nonLoadedVisibleBlockData.forEach((b) => (b.loaded = false));
+		}
 	}
 
-	function processMarkersMap(mapZoom: number) {
-		type BoundsPair = [maplibregl.LngLatBounds, maplibregl.LngLatBounds];
+	function processMarkers() {
+		// Check if map is loaded or marker data is empty
+		if (!mapLoaded || mapMarkerData.length == 0) return;
 
-		const getBounds = (swLng: number, swLat: number, neLng: number, neLat: number) => {
-			return new maplibregl.LngLatBounds([swLng, swLat], [neLng, neLat]);
-		};
+		// Get map zoom
+		const zoom = map.getZoom();
+		if (!zoom) return;
 
-		const getBoundsPairs = (swX: number, swY: number, neX: number, neY: number): BoundsPair => {
-			const sw = map.unproject([swX, swY]);
-			const ne = map.unproject([neX, neY]);
+		// Get markers on map
+		const markerDataOnMap = new Array<MarkerData>();
 
-			if (sw.lng < -180) {
-				const boundsLeft = getBounds(-180, sw.lat, ne.lng, ne.lat);
-				const boundsRight = getBounds(sw.wrap().lng, sw.lat, 180, ne.lat);
-				return [boundsLeft, boundsRight];
-			}
-
-			if (ne.lng > 180) {
-				const boundsLeft = getBounds(sw.lng, sw.lat, 180, ne.lat);
-				const boundsRight = getBounds(-180, sw.lat, ne.wrap().lng, ne.lat);
-				return [boundsLeft, boundsRight];
-			}
-
-			const boundsAll = getBounds(sw.lng, sw.lat, ne.lng, ne.lat);
-			const boundsNone = getBounds(0, 0, 0, 0);
-			return [boundsAll, boundsNone];
-		};
-
-		const doesBoundsPairContain = ([bounds1, bounds2]: BoundsPair, lat: number, lng: number) => {
-			return bounds1.contains([lng, lat]) || bounds2.contains([lng, lat]);
-		};
-
-		const setMap = (marker: maplibregl.Marker, map: maplibregl.Map | null) => {
-			if (marker._map != map) {
-				if (map == null) marker.remove();
-				else marker.addTo(map);
-			}
-		};
-
-		// Get bounds pairs
 		const offset = MAP_BASE_SIZE;
-		const offsetBounds = getBoundsPairs(-offset, window.innerHeight + offset, window.innerWidth + offset, -offset);
-		const windowBounds = getBoundsPairs(0, window.innerHeight, window.innerWidth, 0);
+		const offsetBounds = new BoundsPair(map, -offset, window.innerHeight + offset, window.innerWidth + offset, -offset);
+		const windowBounds = new BoundsPair(map, 0, window.innerHeight, window.innerWidth, 0);
 
-		// Process markers
 		for (let i = 0; i < mapMarkerData.length; i++) {
 			const data = mapMarkerData[i];
 			const marker = data.marker;
 			const libreMarker = data.libreMarker;
+			if (!libreMarker) continue;
 
 			// Expanded markers (offset bounds)
-			if (marker.zet <= mapZoom) {
-				if (doesBoundsPairContain(offsetBounds, marker.lat, marker.lng)) {
-					setMap(libreMarker, map);
+			if (marker.zet <= zoom) {
+				if (offsetBounds.contains(marker.lat, marker.lng)) {
+					if (libreMarker._map != map) libreMarker.addTo(map);
+					markerDataOnMap.push(data);
 					continue;
 				}
 			}
 
 			// Visible markers (window bounds)
-			if (marker.zet <= mapZoom + MAP_VISIBLE_ZOOM_DEPTH) {
-				if (doesBoundsPairContain(windowBounds, marker.lat, marker.lng)) {
-					setMap(libreMarker, map);
+			if (marker.zet <= zoom + MAP_VISIBLE_ZOOM_DEPTH) {
+				if (windowBounds.contains(marker.lat, marker.lng)) {
+					if (libreMarker._map != map) libreMarker.addTo(map);
+					markerDataOnMap.push(data);
 					continue;
 				}
 			}
 
 			// Clear map for rest of markers
-			setMap(libreMarker, null);
+			if (libreMarker._map != null) libreMarker.remove();
 		}
-	}
 
-	function processMarkersComponents(mapZoom: number) {
-		for (let i = 0; i < mapMarkerData.length; i++) {
-			const data = mapMarkerData[i];
-			const libreMarker = data.libreMarker;
-			if (!libreMarker._map) continue;
-
-			if (!data.circleRendered) {
-				data.circleRendered = true;
-			}
-
-			if (!data.componentRendered && data.marker.zet <= mapZoom + MAP_DISPLAYED_ZOOM_DEPTH) {
-				data.componentRendered = true;
-			}
-		}
-	}
-
-	function processMarkersState(mapZoom: number) {
-		for (let i = 0; i < mapMarkerData.length; i++) {
-			const data = mapMarkerData[i];
-			const libreMarker = data.libreMarker;
-			if (!libreMarker._map) continue;
-
+		// Process markers on map
+		for (let i = 0; i < markerDataOnMap.length; i++) {
+			const data = markerDataOnMap[i];
 			const marker = data.marker;
 			const component = data.component;
 			const circle = data.circle;
 
+			// Set circle rendered to true if not set
+			if (!data.circleRendered) {
+				data.circleRendered = true;
+			}
+
+			// Set component rendered to true if not set and marker is in displayed depth
+			if (!data.componentRendered && data.marker.zet <= zoom + MAP_DISPLAYED_ZOOM_DEPTH) {
+				data.componentRendered = true;
+			}
+
+			// console.log(component, circle);
+
 			// Set marker display status
-			if (marker.zet <= mapZoom + MAP_DISPLAYED_ZOOM_DEPTH) {
+			if (marker.zet <= zoom + MAP_DISPLAYED_ZOOM_DEPTH) {
 				component?.setDisplayed(true);
 			} else {
 				component?.setDisplayed(false);
@@ -297,23 +317,28 @@
 
 			// Set marker collapse status angle
 			// or set circle distance
-			if (marker.zet <= mapZoom && component != null) {
+			if (marker.zet <= zoom && component != null) {
 				circle?.setCollapsed(true);
 
 				component?.setCollapsed(false);
-				component?.setAngle(marker.angs.findLast((a) => a[0] <= mapZoom)?.[1]!);
+				component?.setAngle(marker.angs.findLast((a) => a[0] <= zoom)?.[1]!);
 			} else {
 				component?.setCollapsed(true);
 
 				circle?.setCollapsed(false);
-				circle?.setDistance((marker.zet - mapZoom) / MAP_VISIBLE_ZOOM_DEPTH);
+				circle?.setDistance((marker.zet - zoom) / MAP_VISIBLE_ZOOM_DEPTH);
 			}
 		}
 	}
 
-	export async function addMarkers(markers: MapMarker[], markerContentCallback: (ids: string[]) => Promise<string[]>) {
-		const markerSchemaResult = await mapMarkersSchema.safeParseAsync(markers);
-		if (!markerSchemaResult.success) throw new Error('Invalid markers');
+	export async function setPopupsContentCallback(callback: Types.PopupContentCallback) {
+		mapPopupContentCallback = callback;
+	}
+
+	export async function setPopups(popups: Types.Popup[]) {
+		// Validate popups
+		const popupsSchemaResult = await mapPopupsSchema.safeParseAsync(popups);
+		if (!popupsSchemaResult.success) throw new Error('Invalid markers input');
 
 		// Clear data
 		for (let i = 0; i < mapMarkerData.length; i++) {
@@ -322,48 +347,42 @@
 		}
 		mapMarkerData.length = 0;
 
-		const markersNew = markers.toSorted((p1, p2) => p1.zet - p2.zet).slice(0, MAP_MARKERS_MAX_COUNT);
+		// Get data
+		const blocks = await getBlocks(popups);
+		const blockMarkers = blocks.flatMap((b) => b.markers).toSorted((p1, p2) => p1.zet - p2.zet);
 
-		for (let i = 0; i < MAP_MARKERS_MAX_COUNT; i++) {
-			if (i < markersNew.length) {
-				const marker = markersNew[i];
-				mapMarkers[i] = marker;
-				mapLibreMarkers[i]?.remove();
-			}
+		// Set data
+		const blockData = blocks.map((b) => new BlockData(b));
+		const markerData = blockMarkers.map((m) => new MarkerData(m));
 
-			mapMarkerContent[i] = undefined;
-			mapMarkerComponentsRendered[i] = false;
-			mapCircleComponentsRendered[i] = false;
-		}
+		mapBlockData = blockData;
+		mapMarkerData = markerData;
 
+		// Add libre markers
 		await tick();
 
-		for (let i = 0; i < markersNew.length; i++) {
-			const marker = markersNew[i];
+		for (let i = 0; i < mapMarkerData.length; i++) {
+			const data = mapMarkerData[i];
+			const marker = data.marker;
+			const element = data.element;
+			if (!element) throw new Error('Failed to render marker element.');
 
-			const mapLibreMarker = new maplibregl.Marker({ element: mapMarkerElements[i] });
+			const mapLibreMarker = new maplibregl.Marker({ element });
 			mapLibreMarker.setLngLat([marker.lng, marker.lat]);
 
-			mapLibreMarkers[i] = mapLibreMarker;
+			data.libreMarker = mapLibreMarker;
 		}
-
-		mapMarkerCount = markersNew.length;
 	}
 
-	async function getVisibleBlocks(blocks: Types.Block[], bounds: App.Map.Bounds, zoom: number) {
-	return blocks.filter((block) => {
-		if (zoom + MAP_DISPLAYED_ZOOM_DEPTH < block.zs) return false;
-		if (block.ne.lng < bounds.sw.lng || bounds.ne.lng < block.sw.lng) return false;
-		if (block.ne.lat < bounds.sw.lat || bounds.ne.lat < block.sw.lat) return false;
-		return true;
-	});
-}
 	//#endregion
 </script>
 
 <svelte:window onresize={onWindowResize} />
 
-<div class="container {theme}">
+<div
+	class="container"
+	style="--primary: {theme.colors.primary}; --background: {theme.colors.background}; --text: {theme.colors.text};"
+>
 	<div class="map" bind:this={mapContainer}></div>
 	<div class="markers">
 		{#each mapMarkerData as data, i}
@@ -382,18 +401,6 @@
 </div>
 
 <style lang="less">
-	.light {
-		--surface: rgb(252 248 248);
-		--on-surface: rgb(28 27 27);
-		--on-surface-variant: rgb(68 71 72);
-	}
-
-	.dark {
-		--surface: rgb(20 19 19);
-		--on-surface: rgb(229 226 225);
-		--on-surface-variant: rgb(196 199 200);
-	}
-
 	.container {
 		position: absolute;
 		width: 100%;
@@ -407,7 +414,7 @@
 			position: absolute;
 			width: 100%;
 			height: 100%;
-			background-color: var(--surface-container);
+			background-color: var(--background);
 			font-family: inherit;
 			line-height: inherit;
 		}
@@ -421,8 +428,8 @@
 					z-index: 10000;
 
 					.maplibregl-ctrl-attrib {
-						color: var(--on-surface-variant);
-						background-color: var(--surface);
+						background-color: var(--background);
+						color: var(--text);
 						opacity: 0.75;
 						font-size: 10px;
 						padding: 2px 5px;
@@ -430,7 +437,8 @@
 
 						.maplibregl-ctrl-attrib-inner {
 							a {
-								color: var(--on-surface);
+								color: var(--text);
+								text-decoration: underline;
 							}
 						}
 					}

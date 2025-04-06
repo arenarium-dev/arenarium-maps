@@ -19,7 +19,7 @@
 <div class="circle" class:collapsed class:pulsing style:transform style:filter></div>
 
 <style lang="less">
-	@base: var(--color);
+	@base: var(--primary);
 	@circle-size: 12px;
 
 	.circle {

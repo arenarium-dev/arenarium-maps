@@ -1,7 +1,7 @@
 import { mount, unmount } from 'svelte';
 
 import Map from './components/Map.svelte';
-import type { MapOptions } from './core/validation.js';
+import type { MapOptions } from './map/input.js';
 
 export { Map };
 
