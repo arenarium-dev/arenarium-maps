@@ -306,8 +306,6 @@
 				data.componentRendered = true;
 			}
 
-			// console.log(component, circle);
-
 			// Set marker display status
 			if (marker.zet <= zoom + MAP_DISPLAYED_ZOOM_DEPTH) {
 				component?.setDisplayed(true);
@@ -352,11 +350,8 @@
 		const blockMarkers = blocks.flatMap((b) => b.markers).toSorted((p1, p2) => p1.zet - p2.zet);
 
 		// Set data
-		const blockData = blocks.map((b) => new BlockData(b));
-		const markerData = blockMarkers.map((m) => new MarkerData(m));
-
-		mapBlockData = blockData;
-		mapMarkerData = markerData;
+		mapBlockData = blocks.map((b) => new BlockData(b));
+		mapMarkerData = blockMarkers.map((m) => new MarkerData(m));
 
 		// Add libre markers
 		await tick();
@@ -392,7 +387,9 @@
 				{/if}
 				{#if data.componentRendered && data.content}
 					<MapMarker bind:this={data.component}>
-						{@html data.content}
+						<div class="popup" style="width: {data.marker.width}px; height: {data.marker.height}px;">
+							{@html data.content}
+						</div>
 					</MapMarker>
 				{/if}
 			</div>
@@ -417,6 +414,16 @@
 			background-color: var(--background);
 			font-family: inherit;
 			line-height: inherit;
+		}
+
+		.markers {
+			position: absolute;
+			overflow: hidden;
+			display: none;
+		}
+
+		.popup {
+			overflow: hidden;
 		}
 
 		:global {

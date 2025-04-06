@@ -25,34 +25,6 @@
 				}
 			}
 		});
-
-		map.setPopupsContentCallback(async (ids) => {
-			return new Promise((resolve) => {
-				resolve(ids.map((id) => `<div style="width:100px; height: 100px; background-color:red">${id}</div>`));
-			});
-		});
-
-		const popups = new Array<MapPopup>();
-		const center = { lat: 51.505, lng: -0.09 };
-		const radius = 20;
-		const count = 500;
-
-		for (let i = 0; i < count; i++) {
-			const distance = radius / (count - i);
-			const lat = center.lat + distance * (-1 + Math.random() * 2);
-			const lng = center.lng + distance * (-1 + Math.random() * 2);
-
-			popups.push({
-				id: i.toString(),
-				lat: lat,
-				lng: lng,
-				height: 100,
-				width: 100,
-				index: i
-			});
-		}
-
-		map.setPopups(popups);
 	});
 
 	function changeTheme() {
@@ -78,6 +50,36 @@
 		}
 	}
 
+	async function changeData() {
+		map.setPopupsContentCallback(async (ids) => {
+			return new Promise((resolve) => {
+				resolve(ids.map((id) => `<div style="width:200px; height: 150px; background-color:red">${id}</div>`));
+			});
+		});
+
+		const popups = new Array<MapPopup>();
+		const center = { lat: 51.505, lng: -0.09 };
+		const radius = 20;
+		const count = 300;
+
+		for (let i = 0; i < count; i++) {
+			const distance = radius / (count - i);
+			const lat = center.lat + distance * (-1 + Math.random() * 2);
+			const lng = center.lng + distance * (-1 + Math.random() * 2);
+
+			popups.push({
+				id: i.toString(),
+				lat: lat,
+				lng: lng,
+				height: 100,
+				width: 150,
+				index: i
+			});
+		}
+
+		map.setPopups(popups);
+	}
+
 	function onZoomIn() {
 		map.zoomIn();
 	}
@@ -97,6 +99,7 @@
 <div id="map"></div>
 
 <button class="theme" onclick={changeTheme}>Change theme</button>
+<button class="data" onclick={changeData}>Change data</button>
 
 <div class="zooms">
 	<button class="button" onmousedown={onZoomIn}>
@@ -116,10 +119,7 @@
 		height: 100%;
 	}
 
-	.theme {
-		position: fixed;
-		bottom: 20px;
-		left: 20px;
+	button {
 		padding: 8px 16px;
 		border-radius: 8px;
 		background-color: white;
@@ -127,6 +127,18 @@
 		font-size: 14px;
 		font-weight: 500;
 		cursor: pointer;
+	}
+
+	.theme {
+		position: fixed;
+		bottom: 20px;
+		left: 20px;
+	}
+
+	.data {
+		position: fixed;
+		bottom: 20px;
+		left: 160px;
 	}
 
 	.zooms {

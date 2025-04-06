@@ -1,7 +1,7 @@
-import type { Types } from '@workspace/shared/src/types.js';
 import type { MapPopup } from '../input.js';
 
 import { getBlocks as getBlocksApi } from '@workspace/shared/src/marker/blocks/blocks.js';
+import type { Types } from '@workspace/shared/src/types.js';
 
 export class BlockData {
 	block: Types.Block;

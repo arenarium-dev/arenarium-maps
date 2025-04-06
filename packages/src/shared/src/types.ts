@@ -14,6 +14,8 @@ export namespace Types {
         id: string;
         lat: number;
         lng: number;
+        width: number;
+        height: number;
         zet: number;
         angs: [number, number][];
     }

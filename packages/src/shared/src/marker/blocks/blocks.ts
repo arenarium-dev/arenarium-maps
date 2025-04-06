@@ -1,7 +1,7 @@
 import { getThresholds } from './thresholds.js';
-import { MAP_MIN_ZOOM, MAP_MAX_ZOOM, MARKER_PADDING } from '../../constants.js';
 import { getPoint } from '../projection.js';
 import { type Types } from '../../types.js';
+import { MAP_MIN_ZOOM, MAP_MAX_ZOOM, MARKER_PADDING } from '../../constants.js';
 
 const MARKERS_PER_BLOCK_TARGET = 64;
 
@@ -39,6 +39,8 @@ export function getBlocks(popups: Types.Popup[]): Types.Block[] {
 		id: m.id,
 		lat: m.lat,
 		lng: m.lng,
+		width: m.width,
+		height: m.height,
 		zet: NaN,
 		angs: []
 	}) as Types.Marker)
