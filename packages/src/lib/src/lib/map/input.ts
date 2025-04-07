@@ -18,11 +18,21 @@ export const mapOptionsSchema = z.object({
 		}),
 		zoom: z.number()
 	}),
-	theme: mapThemeSchema
-	// events: z.object({
-	//     onLoading: z.function().returns(z.void()).nullable(),
-	//     onLoaded: z.function().returns(z.void()).nullable(),
-	// }),
+	theme: mapThemeSchema,
+	events: z
+		.object({
+			onLoading: z.function().returns(z.void()).optional(),
+			onLoaded: z.function().returns(z.void()).optional(),
+			onMapIdle: z.function().returns(z.void()).optional(),
+			onMapMove: z
+				.function()
+				.args(z.object({ lat: z.number(), lng: z.number(), zoom: z.number() }))
+				.returns(z.void())
+				.optional(),
+			onMapClick: z.function().returns(z.void()).optional(),
+			onPopupClick: z.function().args(z.string()).returns(z.void()).optional()
+		})
+		.optional()
 });
 
 export const mapPopupSchema = z.object({

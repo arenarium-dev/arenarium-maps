@@ -79,11 +79,25 @@
 		mapLoaded = true;
 	}
 
-	function onMapMove() {}
+	function onMapMove() {
+		if (options.events?.onMapMove) {
+			const center = map.getCenter();
+			const zoom = map.getZoom();
+			options.events.onMapMove({ lat: center.lat, lng: center.lng, zoom: zoom });
+		}
+	}
 
-	function onMapIdle() {}
+	function onMapIdle() {
+		if (options.events?.onMapIdle) {
+			options.events.onMapIdle();
+		}
+	}
 
-	function onMapClick(e: maplibregl.MapMouseEvent) {}
+	function onMapClick(e: maplibregl.MapMouseEvent) {
+		if (options.events?.onMapClick) {
+			options.events.onMapClick();
+		}
+	}
 
 	function onWindowResize() {
 		setMapMinZoom(getMapMinZoom());
@@ -108,6 +122,18 @@
 		return { lat: center.lat, lng: center.lng };
 	}
 
+	export function setCenter(lat: number, lng: number) {
+		map?.setCenter({ lat, lng });
+	}
+
+	export function getZoom() {
+		return map?.getZoom() ?? options.position.zoom;
+	}
+
+	export function setZoom(zoom: number) {
+		map?.setZoom(zoom);
+	}
+
 	export function getBounds() {
 		const bounds = map?.getBounds();
 		if (!bounds) return;
@@ -116,10 +142,6 @@
 			sw: { lat: bounds.getSouthWest().lat, lng: bounds.getSouthWest().lng },
 			ne: { lat: bounds.getNorthEast().lat, lng: bounds.getNorthEast().lng }
 		};
-	}
-
-	export function getZoom() {
-		return map?.getZoom() ?? options.position.zoom;
 	}
 
 	export function zoomIn() {
@@ -330,6 +352,12 @@
 		}
 	}
 
+	function onPopupClick(id: string) {
+		if (options.events?.onPopupClick) {
+			options.events.onPopupClick(id);
+		}
+	}
+
 	export async function setPopupsContentCallback(callback: MapComponent.PopupContentCallback) {
 		mapPopupContentCallback = callback;
 	}
@@ -376,14 +404,13 @@
 <svelte:head>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" />
-	<link
-		rel="stylesheet"
-		href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
-	/>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@1,100..900&display=swap" />
 </svelte:head>
 
 <svelte:window onresize={onWindowResize} />
 
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	class="container"
 	style="--primary: {theme.colors.primary}; --background: {theme.colors.background}; --text: {theme.colors.text};"
@@ -391,7 +418,12 @@
 	<div class="map" bind:this={mapContainer}></div>
 	<div class="markers">
 		{#each mapMarkerData as data, i}
-			<div class="marker" style="z-index: {mapMarkerData.length - i};" bind:this={data.element}>
+			<div
+				class="marker"
+				style="z-index: {mapMarkerData.length - i};"
+				onclick={() => onPopupClick(data.marker.id)}
+				bind:this={data.element}
+			>
 				{#if data.circleRendered}
 					<MapMarkerCircle bind:this={data.circle} />
 				{/if}

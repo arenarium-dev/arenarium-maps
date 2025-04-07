@@ -20,11 +20,13 @@ export namespace MapComponent {
 }
 
 export interface MapComponent {
+	getCenter: () => { lat: number; lng: number };
+	setCenter: (lat: number, lng: number) => void;
+	getZoom: () => number;
+	setZoom: (zoom: number) => void;
+	getBounds: () => MapComponent.Bounds;
 	zoomIn: () => void;
 	zoomOut: () => void;
-	getCenter: () => { lat: number; lng: number };
-	getBounds: () => MapComponent.Bounds;
-	getZoom: () => number;
 	getTheme: () => MapTheme;
 	setTheme: (theme: MapTheme) => void;
 	setPopupsContentCallback: (callback: MapComponent.PopupContentCallback) => void;

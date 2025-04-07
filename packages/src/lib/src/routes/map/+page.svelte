@@ -22,6 +22,11 @@
 					primary: 'yellow',
 					text: 'white'
 				}
+			},
+			events: {
+				onPopupClick: (id) => {
+					alert(`Popup ${id} clicked`);
+				}
 			}
 		});
 	});
