@@ -21,8 +21,6 @@ export const mapOptionsSchema = z.object({
 	theme: mapThemeSchema,
 	events: z
 		.object({
-			onLoading: z.function().returns(z.void()).optional(),
-			onLoaded: z.function().returns(z.void()).optional(),
 			onMapIdle: z.function().returns(z.void()).optional(),
 			onMapMove: z
 				.function()
@@ -30,7 +28,9 @@ export const mapOptionsSchema = z.object({
 				.returns(z.void())
 				.optional(),
 			onMapClick: z.function().returns(z.void()).optional(),
-			onPopupClick: z.function().args(z.string()).returns(z.void()).optional()
+			onPopupClick: z.function().args(z.string()).returns(z.void()).optional(),
+			onLoadingStart: z.function().returns(z.void()).optional(),
+			onLoadingEnd: z.function().returns(z.void()).optional()
 		})
 		.optional()
 });

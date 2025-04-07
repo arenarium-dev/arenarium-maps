@@ -88,15 +88,11 @@
 	}
 
 	function onMapIdle() {
-		if (options.events?.onMapIdle) {
-			options.events.onMapIdle();
-		}
+		options.events?.onMapIdle?.call(null);
 	}
 
 	function onMapClick(e: maplibregl.MapMouseEvent) {
-		if (options.events?.onMapClick) {
-			options.events.onMapClick();
-		}
+		options.events?.onMapClick?.call(null);
 	}
 
 	function onWindowResize() {
@@ -353,9 +349,7 @@
 	}
 
 	function onPopupClick(id: string) {
-		if (options.events?.onPopupClick) {
-			options.events.onPopupClick(id);
-		}
+		options.events?.onPopupClick?.call(null, id);
 	}
 
 	export async function setPopupsContentCallback(callback: MapComponent.PopupContentCallback) {
@@ -363,38 +357,44 @@
 	}
 
 	export async function setPopups(popups: Types.Popup[]) {
-		// Validate popups
-		const popupsSchemaResult = await mapPopupsSchema.safeParseAsync(popups);
-		if (!popupsSchemaResult.success) throw new Error('Invalid markers input');
+		try {
+			options.events?.onLoadingStart?.call(null);
 
-		// Clear data
-		for (let i = 0; i < mapMarkerData.length; i++) {
-			const data = mapMarkerData[i];
-			data.libreMarker?.remove();
-		}
-		mapMarkerData.length = 0;
+			// Validate popups
+			const popupsSchemaResult = await mapPopupsSchema.safeParseAsync(popups);
+			if (!popupsSchemaResult.success) throw new Error('Invalid markers input');
 
-		// Get data
-		const blocks = await getBlocks(popups);
-		const blockMarkers = blocks.flatMap((b) => b.markers).toSorted((p1, p2) => p1.zet - p2.zet);
+			// Clear data
+			for (let i = 0; i < mapMarkerData.length; i++) {
+				const data = mapMarkerData[i];
+				data.libreMarker?.remove();
+			}
+			mapMarkerData.length = 0;
 
-		// Set data
-		mapBlockData = blocks.map((b) => new BlockData(b));
-		mapMarkerData = blockMarkers.map((m) => new MarkerData(m));
+			// Get data
+			const blocks = await getBlocks(popups);
+			const blockMarkers = blocks.flatMap((b) => b.markers).toSorted((p1, p2) => p1.zet - p2.zet);
 
-		// Add libre markers
-		await tick();
+			// Set data
+			mapBlockData = blocks.map((b) => new BlockData(b));
+			mapMarkerData = blockMarkers.map((m) => new MarkerData(m));
 
-		for (let i = 0; i < mapMarkerData.length; i++) {
-			const data = mapMarkerData[i];
-			const marker = data.marker;
-			const element = data.element;
-			if (!element) throw new Error('Failed to render marker element.');
+			// Add libre markers
+			await tick();
 
-			const mapLibreMarker = new maplibregl.Marker({ element });
-			mapLibreMarker.setLngLat([marker.lng, marker.lat]);
+			for (let i = 0; i < mapMarkerData.length; i++) {
+				const data = mapMarkerData[i];
+				const marker = data.marker;
+				const element = data.element;
+				if (!element) throw new Error('Failed to render marker element.');
 
-			data.libreMarker = mapLibreMarker;
+				const mapLibreMarker = new maplibregl.Marker({ element });
+				mapLibreMarker.setLngLat([marker.lng, marker.lat]);
+
+				data.libreMarker = mapLibreMarker;
+			}
+		} finally {
+			options.events?.onLoadingEnd?.call(null);
 		}
 	}
 

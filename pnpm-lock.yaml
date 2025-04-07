@@ -9,13 +9,6 @@ importers:
   .: {}
 
   packages/src/lib:
-    dependencies:
-      maplibre-gl:
-        specifier: ^5.3.0
-        version: 5.3.0
-      zod:
-        specifier: ^3.24.2
-        version: 3.24.2
     devDependencies:
       '@eslint/compat':
         specifier: ^1.2.8
@@ -59,6 +52,9 @@ importers:
       less:
         specifier: ^4.3.0
         version: 4.3.0
+      maplibre-gl:
+        specifier: ^5.3.0
+        version: 5.3.0
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
@@ -86,14 +82,17 @@ importers:
       vite-plugin-dts:
         specifier: ^4.5.3
         version: 4.5.3(@types/node@22.13.16)(rollup@4.39.0)(typescript@5.8.3)(vite@6.2.5(@types/node@22.13.16)(less@4.3.0))
+      zod:
+        specifier: ^3.24.2
+        version: 3.24.2
 
   packages/src/shared: {}
 
   packages/test/svelte-kit:
     dependencies:
       '@arenarium/maps':
-        specifier: ^1.0.38
-        version: 1.0.38(svelte@5.25.7)
+        specifier: ^1.0.39
+        version: 1.0.39(svelte@5.25.7)
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^4.0.0
@@ -126,8 +125,8 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@arenarium/maps@1.0.38':
-    resolution: {integrity: sha512-+E8ZND/f1Bx+TQbNGtm8JyVowk48X4hPN7Abqx9qj/i5sRd7jr7Opaqc+YQzivBn1s7apxrv3eGRPXgQ0AgdTQ==}
+  '@arenarium/maps@1.0.39':
+    resolution: {integrity: sha512-8EKs/5sGsAkuCB+r4Q+piQh6o9lSMqsS4yfykgOMy56cVvxkjDOI/3LJLFmjs5kBCJqN60OIayl7gqMLqbf21w==}
     peerDependencies:
       svelte: ^5.0.0
 
@@ -1789,11 +1788,9 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
 
-  '@arenarium/maps@1.0.38(svelte@5.25.7)':
+  '@arenarium/maps@1.0.39(svelte@5.25.7)':
     dependencies:
-      maplibre-gl: 5.3.0
       svelte: 5.25.7
-      zod: 3.24.2
 
   '@babel/helper-string-parser@7.25.9': {}
 
