@@ -72,7 +72,7 @@
 		const popups = new Array<MapPopup>();
 		const center = { lat: 51.505, lng: -0.09 };
 		const radius = 20;
-		const count = 300;
+		const count = 500;
 
 		for (let i = 0; i < count; i++) {
 			const distance = radius / (count - i);

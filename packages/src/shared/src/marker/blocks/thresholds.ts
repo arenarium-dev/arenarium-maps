@@ -1,6 +1,7 @@
 import { getBounds, getBoundsZoomWhenTouching, areBoundsOverlaping, type Bounds } from './bounds.js';
 
 import { MAP_MAX_ZOOM, MAP_MIN_ZOOM, MARKER_DEFAULT_ANGLE } from '../../constants.js';
+import { Timer } from '../../utils.js';
 
 interface Point {
 	x: number;
@@ -486,12 +487,14 @@ namespace Threshold {
  * If only one node expanded left, break
  */
 function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
-	let thresholds = new Array<Threshold.Event>();
+	const thresholds = new Array<Threshold.Event>();
+
+	const timer = new Timer();
 
 	// Initialze nodes
-	const nodes = Nodes.createNodes(markers);
-	const connections = Nodes.createConnections(nodes);
-	const layers = Nodes.createLayers(connections);
+	const nodes = timer.time(() => Nodes.createNodes(markers), 'create nodes');
+	const connections = timer.time(() => Nodes.createConnections(nodes), 'create connections');
+	const layers = timer.time(() => Nodes.createLayers(connections), 'create layers');
 
 	// Initialize zoom
 	const maxZoom = layers.at(-1)?.zoom ?? MAP_MAX_ZOOM;
@@ -506,24 +509,27 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 		const scale = Math.pow(2, zoom);
 
 		// Get connections of expaneded nodes from a layer
-		const expandedConnections = Nodes.getExpandedConnections(layers, zoom);
+		const expandedConnections = timer.time(() => Nodes.getExpandedConnections(layers, zoom), 'get expanded connections');
 		// Get the graphs of expanded markers influencing each other
-		const expandedNodeGraphs = Nodes.getNodeGraphs(expandedConnections);
+		const expandedNodeGraphs = timer.time(() => Nodes.getNodeGraphs(expandedConnections), 'get node graphs');
 
 		for (let i = 0; i < expandedNodeGraphs.length; i++) {
 			// Get the array of expanded nodes from graph
-			let nodeArray = Array.from(expandedNodeGraphs[i]).toSorted((p1, p2) => p1.marker.rank - p2.marker.rank);
+			let nodeArray = timer.time(
+				() => Array.from(expandedNodeGraphs[i]).toSorted((p1, p2) => p1.marker.rank - p2.marker.rank),
+				'get node array'
+			);
 
 			// Update nodes particles for the given zoom level
-			Nodes.updateNodeParticles(nodeArray, scale);
+			timer.time(() => Nodes.updateNodeParticles(nodeArray, scale), 'update node particles');
 
 			while (nodeArray.length > 1) {
 				// Update nodes angles
-				Nodes.updateNodeAngles(nodeArray);
+				timer.time(() => Nodes.updateNodeAngles(nodeArray), 'update node angles');
 
 				// Get the index of the overlaping node
 				// If there is an no overlaping node break
-				let overlapingNodeIndex = Nodes.getOverlapingNodeIndex(nodeArray, scale);
+				let overlapingNodeIndex = timer.time(() => Nodes.getOverlapingNodeIndex(nodeArray, scale), 'get overlaping node index');
 				if (overlapingNodeIndex == -1) break;
 
 				// Else, collapse it
@@ -538,6 +544,8 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 		// Create threshold event
 		thresholds.push(Threshold.createEvent(expandedNodes, zoom));
 	}
+
+	timer.print('[THRESHOLDS]');
 
 	//  Return the thresholds in reverse order (from min zoom to max zoom)
 	return thresholds.reverse();
