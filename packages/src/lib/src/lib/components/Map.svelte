@@ -418,18 +418,17 @@
 	<div class="map" bind:this={mapContainer}></div>
 	<div class="markers">
 		{#each mapMarkerData as data, i}
-			<div
-				class="marker"
-				style="z-index: {mapMarkerData.length - i};"
-				onclick={() => onPopupClick(data.marker.id)}
-				bind:this={data.element}
-			>
+			<div class="marker" style="z-index: {mapMarkerData.length - i};" bind:this={data.element}>
 				{#if data.circleRendered}
 					<MapMarkerCircle bind:this={data.circle} />
 				{/if}
 				{#if data.componentRendered && data.content}
 					<MapMarker bind:this={data.component}>
-						<div class="popup" style="width: {data.marker.width}px; height: {data.marker.height}px;">
+						<div
+							class="popup"
+							style="width: {data.marker.width}px; height: {data.marker.height}px;"
+							onclick={() => onPopupClick(data.marker.id)}
+						>
 							{@html data.content}
 						</div>
 					</MapMarker>

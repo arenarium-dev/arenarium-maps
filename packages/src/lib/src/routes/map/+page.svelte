@@ -8,6 +8,8 @@
 
 	let map: ReturnType<typeof mountMap>;
 
+	let loading = $state<boolean>(false);
+
 	onMount(() => {
 		map = mountMap({
 			container: 'map',
@@ -26,6 +28,12 @@
 			events: {
 				onPopupClick: (id) => {
 					alert(`Popup ${id} clicked`);
+				},
+				onLoadingStart: () => {
+					loading = true;
+				},
+				onLoadingEnd: () => {
+					loading = false;
 				}
 			}
 		});
@@ -47,7 +55,7 @@
 				name: 'dark',
 				colors: {
 					background: 'black',
-					primary: 'green',
+					primary: 'violet',
 					text: 'white'
 				}
 			});
@@ -57,7 +65,7 @@
 	async function changeData() {
 		map.setPopupsContentCallback(async (ids) => {
 			return new Promise((resolve) => {
-				resolve(ids.map((id) => `<div style="width:200px; height: 150px; background-color:red">${id}</div>`));
+				resolve(ids.map((id) => `<div style="width:200px; height: 150px; color:red">${id}</div>`));
 			});
 		});
 
@@ -113,6 +121,10 @@
 		<Icon name={'remove'} />
 	</button>
 </div>
+
+{#if loading}
+	<div class="loading">Loading...</div>
+{/if}
 
 <style lang="less">
 	#map {
@@ -171,5 +183,18 @@
 				0 0 4px 2px rgb(from var(--shadow) r g b / 0.2),
 				0 3px 6px rgb(from var(--shadow) r g b / 0.3);
 		}
+	}
+
+	.loading {
+		position: fixed;
+		top: 0px;
+		left: 0px;
+		background-color: rgba(0, 0, 0, 0.5);
+		color: white;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 24px;
+		font-weight: 500;
 	}
 </style>
