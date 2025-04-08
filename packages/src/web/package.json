@@ -41,9 +41,9 @@
 		"wrangler": "^4.8.0"
 	},
 	"dependencies": {
-		"@libsql/client": "^0.14.0",
+		"@better-fetch/fetch": "^1.1.17",
+		"better-auth": "^1.2.4",
 		"drizzle-orm": "^0.40.0",
-		"highlight.js": "^11.11.1",
-		"marked": "^15.0.8"
+		"highlight.js": "^11.11.1"
 	}
 }

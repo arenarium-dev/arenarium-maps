@@ -18,12 +18,16 @@
 
 <style>
 	:global {
+		pre {
+			margin: 0px;
+		}
+
 		pre code.hljs {
 			display: block;
 			overflow-x: auto;
 			padding: 8px 16px;
 		}
-        
+
 		code.hljs {
 			padding: 4px 8px;
 		}
