@@ -42,6 +42,8 @@
 	},
 	"dependencies": {
 		"@libsql/client": "^0.14.0",
-		"drizzle-orm": "^0.40.0"
+		"drizzle-orm": "^0.40.0",
+		"highlight.js": "^11.11.1",
+		"marked": "^15.0.8"
 	}
 }
