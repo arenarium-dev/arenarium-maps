@@ -66,14 +66,12 @@ namespace Particles {
 	}
 
 	export interface Particle {
-		/**
-		 * The center of the particle.
-		 * */
+		/** The center of the particle. */
 		center: Point;
-		/**
-		 * Points are possible positions of the particle.
-		 */
+		/** Points are possible positions of the particle. */
 		points: Array<Point>;
+		/** The index of the particle position in the points array. */
+		index: number;
 	}
 
 	/**
@@ -96,8 +94,6 @@ namespace Particles {
 	 * from which the marker angle can be calculated.
 	 */
 	export function updatePointIndexes(particles: Particle[]) {
-		const indexes = new Array<number>(particles.length);
-
 		// Initialze simulation
 		// Particle indexes based on the center of the particles
 
@@ -105,26 +101,28 @@ namespace Particles {
 
 		for (let i = 0; i < particles.length; i++) {
 			const particleI = particles[i];
-			const centerI = particleI.center;
+			if (isNaN(particleI.index)) {
+				const centerI = particleI.center;
 
-			const dx = centerI.x - center.x;
-			const dy = centerI.y - center.y;
+				const dx = centerI.x - center.x;
+				const dy = centerI.y - center.y;
 
-			indexes[i] = Angles.getAngleIndex(dx, dy);
+				particleI.index = Angles.getAngleIndex(dx, dy);
+			}
 		}
 
 		// Run simulation
 		// Wait until all particles are stable or the simulation is stuck
 
 		let stable = false;
-		let set = new Set<string>();
+		let iterations = 0;
 
 		while (!stable) {
 			stable = true;
 
 			for (let i = 0; i < particles.length; i++) {
 				const particle = particles[i];
-				const index = indexes[i];
+				const index = particle.index;
 
 				const prevPoint = particle.points[getIndex(index, -1)];
 				const currPoint = particle.points[index];
@@ -138,7 +136,7 @@ namespace Particles {
 					if (i === j) continue;
 
 					const particleF = particles[j];
-					const indexF = indexes[i];
+					const indexF = particleF.index;
 					const pointF = particleF.points[indexF];
 
 					const prevDx = prevPoint.x - pointF.x;
@@ -161,18 +159,15 @@ namespace Particles {
 				if (nextPointForce < currPointForce && nextPointForce < prevPointForce) direction = +1;
 
 				// Move particle point index in the direction of the minimal force
-				indexes[i] = getIndex(index, direction);
+				particle.index = getIndex(index, direction);
 
 				// If at least one particle moved, the simulation is not stable
 				if (direction !== 0) stable = false;
 			}
 
-			const setId = indexes.join('-');
-			if (set.has(setId)) break;
-			set.add(setId);
+			iterations++;
+			if (iterations > Angles.COUNT) break;
 		}
-
-		return indexes;
 	}
 
 	function getCenter(particles: Particle[]): Point {
@@ -240,7 +235,8 @@ namespace Nodes {
 				angle: Particles.Angles.DEFAULT,
 				particle: {
 					center: { x: marker.x, y: marker.y },
-					points: Particles.getPoints(marker, 1)
+					points: Particles.getPoints(marker, 1),
+					index: NaN
 				}
 			};
 		}
@@ -356,15 +352,6 @@ namespace Nodes {
 		return graphs;
 	}
 
-	export function getAngles(nodes: Array<Node>): Array<number> {
-		if (nodes.length == 1) return [Particles.Angles.DEFAULT];
-
-		const indexes = Particles.updatePointIndexes(nodes.map((m) => m.particle));
-		const angles = indexes.map((i) => Particles.Angles.DEGREES[i]);
-
-		return angles;
-	}
-
 	export function getOverlapingNodeIndex(nodes: Array<Node>, scale: number) {
 		const overlaps = new Array<Array<Node>>();
 		const bounds = new Array<Bounds>(nodes.length);
@@ -422,11 +409,11 @@ namespace Nodes {
 			return;
 		}
 
-		const indexes = Particles.updatePointIndexes(nodes.map((m) => m.particle));
+		Particles.updatePointIndexes(nodes.map((m) => m.particle));
 
 		for (let i = 0; i < nodes.length; i++) {
 			const node = nodes[i];
-			node.angle = Particles.Angles.DEGREES[indexes[i]];
+			node.angle = Particles.Angles.DEGREES[node.particle.index];
 		}
 	}
 }
