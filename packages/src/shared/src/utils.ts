@@ -17,6 +17,7 @@ export class Timer {
 	}
 
 	print(prefix: string) {
+		console.log(`${prefix}`);
 		for (let [name, time] of this.times) {
 			console.log(`${prefix} ${name}: ${time}`);
 		}

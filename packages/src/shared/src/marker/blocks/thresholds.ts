@@ -248,7 +248,7 @@ namespace Nodes {
 		return nodes;
 	}
 
-	export function createConnections(nodes: Node[]): Array<Connection> {
+	export function createConnections(nodes: Array<Node>): Array<Connection> {
 		const connections = new Array<Connection>();
 
 		// Create marker connection bounds of influence,
@@ -285,40 +285,27 @@ namespace Nodes {
 			}
 		}
 
+		// Sort connections by zoom when touching
+		connections.sort((a, b) => a.zwt - b.zwt);
+
 		return connections;
 	}
 
-	export function createLayers(connections: Connection[]): Array<Layer> {
-		const layers = new Array<Layer>();
+	export function getZoomConnections(connections: Array<Connection>, zoom: number): Array<Connection> {
+		let index = 0;
 
-		// Create layers
-		for (let zoom = Zoom.MIN; zoom <= Zoom.MAX; zoom = Zoom.addSteps(zoom, 1)) {
-			layers.push({
-				zoom: zoom,
-				connections: []
-			});
-		}
-
-		// Add connections to layers
-		for (let i = 0; i < connections.length; i++) {
-			const connection = connections[i];
-			const zwt = connection.zwt;
-
-			for (let j = 0; j < layers.length; j++) {
-				const layer = layers[j];
-				if (zwt <= layer.zoom) break;
-
-				layer.connections.push(connection);
+		// Find the index where the connections are influencing each other at the current zoom
+		if (index < connections.length) {
+			// Find the first connection with zoom when touching
+			let zwt = connections[index].zwt;
+			while (zoom > zwt) {
+				index++;
+				if (index >= connections.length) break;
+				zwt = connections[index].zwt;
 			}
 		}
 
-		return layers;
-	}
-
-	export function getExpandedConnections(layers: Layer[], zoom: number): Array<Connection> {
-		const layer = layers.find((l) => l.zoom == zoom);
-		if (!layer) throw new Error('Layer not found');
-		return layer.connections.filter((c) => c.node1.expanded && c.node2.expanded);
+		return connections.slice(index);
 	}
 
 	export function getNodeGraphs(connections: Array<Connection>): Array<Set<Node>> {
@@ -492,12 +479,12 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 	const timer = new Timer();
 
 	// Initialze nodes
-	const nodes = timer.time(() => Nodes.createNodes(markers), 'create nodes');
-	const connections = timer.time(() => Nodes.createConnections(nodes), 'create connections');
-	const layers = timer.time(() => Nodes.createLayers(connections), 'create layers');
+	let nodes = timer.time(() => Nodes.createNodes(markers), 'create nodes');
+	let connections = timer.time(() => Nodes.createConnections(nodes), 'create connections');
 
 	// Initialize zoom
-	const maxZoom = layers.at(-1)?.zoom ?? MAP_MAX_ZOOM;
+	const maxZwt = connections.at(-1)?.zwt ?? MAP_MAX_ZOOM;
+	const maxZoom = Zoom.addSteps(maxZwt - (maxZwt % Zoom.STEP), 0);
 	const minZoom = MAP_MIN_ZOOM;
 
 	// Initially add the last threshold event
@@ -508,18 +495,20 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 		// Calculate scale
 		const scale = Math.pow(2, zoom);
 
-		// Get connections of expaneded nodes from a layer
-		const expandedConnections = timer.time(() => Nodes.getExpandedConnections(layers, zoom), 'get expanded connections');
+		// Get zoom connections
+		const zoomConnections = timer.time(() => Nodes.getZoomConnections(connections, zoom), 'get zoom connections');
 		// Get the graphs of expanded markers influencing each other
-		const expandedNodeGraphs = timer.time(() => Nodes.getNodeGraphs(expandedConnections), 'get node graphs');
+		const zoomNodeGraphs = timer.time(() => Nodes.getNodeGraphs(zoomConnections), 'get node graphs');
 
-		for (let i = 0; i < expandedNodeGraphs.length; i++) {
+		// Flag to indicate if at least one node was collapsed
+		let nodeCollapsed = false;
+
+		for (let i = 0; i < zoomNodeGraphs.length; i++) {
+			const graph = zoomNodeGraphs[i];
+			if (graph.size == 1) continue;
+
 			// Get the array of expanded nodes from graph
-			let nodeArray = timer.time(
-				() => Array.from(expandedNodeGraphs[i]).toSorted((p1, p2) => p1.marker.rank - p2.marker.rank),
-				'get node array'
-			);
-
+			let nodeArray = timer.time(() => Array.from(graph).toSorted((p1, p2) => p1.marker.rank - p2.marker.rank), 'array nodes');
 			// Update nodes particles for the given zoom level
 			timer.time(() => Nodes.updateNodeParticles(nodeArray, scale), 'update node particles');
 
@@ -536,7 +525,14 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 				// and remove it from the array and try again
 				nodeArray[overlapingNodeIndex].expanded = false;
 				nodeArray.splice(overlapingNodeIndex, 1);
+				nodeCollapsed = true;
 			}
+		}
+
+		// If at least one node was collapsed, filter expanded connections
+		if (nodeCollapsed) {
+			// Filter expanded connections
+			connections = timer.time(() => connections.filter((c) => c.node1.expanded && c.node2.expanded), 'filter connections');
 		}
 
 		// Get the expanded nodes
@@ -545,7 +541,7 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 		thresholds.push(Threshold.createEvent(expandedNodes, zoom));
 	}
 
-	timer.print('[THRESHOLDS]');
+	timer.print(`[THRESHOLDS ${markers.length}]`);
 
 	//  Return the thresholds in reverse order (from min zoom to max zoom)
 	return thresholds.reverse();

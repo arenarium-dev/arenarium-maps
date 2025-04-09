@@ -14,6 +14,8 @@ export class BlockData {
 }
 
 export async function getBlocks(markers: MapPopup[]): Promise<Types.Block[]> {
+	const now = performance.now();
 	const blocks = await getBlocksApi(markers);
+	console.log(`[BLOCKS ${markers.length}] ${performance.now() - now}ms`);
 	return blocks;
 }

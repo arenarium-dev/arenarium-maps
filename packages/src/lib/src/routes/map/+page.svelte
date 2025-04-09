@@ -72,12 +72,19 @@
 		const popups = new Array<MapPopup>();
 		const center = { lat: 51.505, lng: -0.09 };
 		const radius = 20;
-		const count = 500;
+		const count = 1000;
+
+		let randomPrev = 1;
+		const random = () => {
+			const val = (randomPrev * 16807) % 2147483647;
+			randomPrev = val;
+			return val / 2147483647;
+		};
 
 		for (let i = 0; i < count; i++) {
 			const distance = radius / (count - i);
-			const lat = center.lat + distance * (-1 + Math.random() * 2);
-			const lng = center.lng + distance * (-1 + Math.random() * 2);
+			const lat = center.lat + distance * (-1 + random() * 2);
+			const lng = center.lng + distance * (-1 + random() * 2);
 
 			popups.push({
 				id: i.toString(),
