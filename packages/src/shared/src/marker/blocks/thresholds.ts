@@ -84,6 +84,23 @@ namespace Particles {
 		return Angles.RADIANS.map((r) => ({ x: marker.x + radius * Math.cos(r), y: marker.y + radius * Math.sin(r) }));
 	}
 
+	export function initialzePointIndexes(particles: Particle[]) {
+		// Initialze simulation
+		// Particle indexes based on the center of the particles
+
+		const center = getCenter(particles);
+
+		for (let i = 0; i < particles.length; i++) {
+			const particleI = particles[i];
+			const centerI = particleI.center;
+
+			const dx = centerI.x - center.x;
+			const dy = centerI.y - center.y;
+
+			particleI.index = Angles.getAngleIndex(dx, dy);
+		}
+	}
+
 	/**
 	 * Simulate the positions of particles that are influencing each other.
 	 * The particle  coordinates can only be from a given set of points.
@@ -94,80 +111,56 @@ namespace Particles {
 	 * from which the marker angle can be calculated.
 	 */
 	export function updatePointIndexes(particles: Particle[]) {
-		// Initialze simulation
-		// Particle indexes based on the center of the particles
+		// Run simulation step
 
-		const center = getCenter(particles);
+		let stable = true;
 
 		for (let i = 0; i < particles.length; i++) {
-			const particleI = particles[i];
-			if (isNaN(particleI.index)) {
-				const centerI = particleI.center;
+			const particle = particles[i];
+			const index = particle.index;
 
-				const dx = centerI.x - center.x;
-				const dy = centerI.y - center.y;
+			const prevPoint = particle.points[getIndex(index, -1)];
+			const currPoint = particle.points[index];
+			const nextPoint = particle.points[getIndex(index, +1)];
 
-				particleI.index = Angles.getAngleIndex(dx, dy);
-			}
-		}
+			let prevPointForce: number = 0;
+			let currPointForce: number = 0;
+			let nextPointForce: number = 0;
 
-		// Run simulation
-		// Wait until all particles are stable or the simulation is stuck
+			for (let j = 0; j < particles.length; j++) {
+				if (i === j) continue;
 
-		let stable = false;
-		let iterations = 0;
+				const particleF = particles[j];
+				const indexF = particleF.index;
+				const pointF = particleF.points[indexF];
 
-		while (!stable) {
-			stable = true;
+				const prevDx = prevPoint.x - pointF.x;
+				const prevDy = prevPoint.y - pointF.y;
+				prevPointForce += 1 / (prevDx * prevDx + prevDy * prevDy);
 
-			for (let i = 0; i < particles.length; i++) {
-				const particle = particles[i];
-				const index = particle.index;
+				const currDx = currPoint.x - pointF.x;
+				const currDy = currPoint.y - pointF.y;
+				currPointForce += 1 / (currDx * currDx + currDy * currDy);
 
-				const prevPoint = particle.points[getIndex(index, -1)];
-				const currPoint = particle.points[index];
-				const nextPoint = particle.points[getIndex(index, +1)];
-
-				let prevPointForce: number = 0;
-				let currPointForce: number = 0;
-				let nextPointForce: number = 0;
-
-				for (let j = 0; j < particles.length; j++) {
-					if (i === j) continue;
-
-					const particleF = particles[j];
-					const indexF = particleF.index;
-					const pointF = particleF.points[indexF];
-
-					const prevDx = prevPoint.x - pointF.x;
-					const prevDy = prevPoint.y - pointF.y;
-					prevPointForce += 1 / (prevDx * prevDx + prevDy * prevDy);
-
-					const currDx = currPoint.x - pointF.x;
-					const currDy = currPoint.y - pointF.y;
-					currPointForce += 1 / (currDx * currDx + currDy * currDy);
-
-					const nextDx = nextPoint.x - pointF.x;
-					const nextDy = nextPoint.y - pointF.y;
-					nextPointForce += 1 / (nextDx * nextDx + nextDy * nextDy);
-				}
-
-				let direction = 0;
-				// If minimal force is on the left, direction is left
-				if (prevPointForce < currPointForce && prevPointForce < nextPointForce) direction = -1;
-				// If minimal force is on the right, direction is right
-				if (nextPointForce < currPointForce && nextPointForce < prevPointForce) direction = +1;
-
-				// Move particle point index in the direction of the minimal force
-				particle.index = getIndex(index, direction);
-
-				// If at least one particle moved, the simulation is not stable
-				if (direction !== 0) stable = false;
+				const nextDx = nextPoint.x - pointF.x;
+				const nextDy = nextPoint.y - pointF.y;
+				nextPointForce += 1 / (nextDx * nextDx + nextDy * nextDy);
 			}
 
-			iterations++;
-			if (iterations > Angles.COUNT) break;
+			let direction = 0;
+			// If minimal force is on the left, direction is left
+			if (prevPointForce < currPointForce && prevPointForce < nextPointForce) direction = -1;
+			// If minimal force is on the right, direction is right
+			if (nextPointForce < currPointForce && nextPointForce < prevPointForce) direction = +1;
+
+			// Move particle point index in the direction of the minimal force
+			particle.index = getIndex(index, direction);
+
+			// If at least one particle moved, the simulation is not stable
+			if (direction !== 0) stable = false;
 		}
+
+		return stable;
 	}
 
 	function getCenter(particles: Particle[]): Point {
@@ -352,68 +345,100 @@ namespace Nodes {
 		return graphs;
 	}
 
-	export function getOverlapingNodeIndex(nodes: Array<Node>, scale: number) {
-		const overlaps = new Array<Array<Node>>();
-		const bounds = new Array<Bounds>(nodes.length);
+	export namespace Bounds {
+		export function areOverlaping(nodes: Array<Node>, scale: number) {
+			const bounds = new Array<Bounds>(nodes.length);
 
-		for (let i = 0; i < nodes.length; i++) {
-			const node1 = nodes[i];
-			const bounds1 = getBounds(node1.marker, node1.angle, scale);
+			for (let i = 0; i < nodes.length; i++) {
+				const node1 = nodes[i];
+				const bounds1 = getBounds(node1.marker, node1.angle, scale);
 
-			bounds[i] = bounds1;
+				bounds[i] = bounds1;
 
-			for (let j = 0; j < i; j++) {
-				const bounds2 = bounds[j];
+				for (let j = 0; j < i; j++) {
+					const bounds2 = bounds[j];
 
-				if (areBoundsOverlaping(bounds2, bounds1)) {
-					const node2 = nodes[j];
-
-					if (overlaps[i] == undefined) overlaps[i] = [node2];
-					else overlaps[i].push(node2);
-
-					if (overlaps[j] == undefined) overlaps[j] = [node1];
-					else overlaps[j].push(node1);
+					if (areBoundsOverlaping(bounds2, bounds1)) {
+						return true;
+					}
 				}
 			}
+
+			return false;
 		}
 
-		let worstNodeIndex = -1;
-		let worstScore = 0;
+		export function getOverlapingIndex(nodes: Array<Node>, scale: number) {
+			const overlaps = new Array<Array<Node>>(nodes.length);
+			const bounds = new Array<Bounds>(nodes.length);
 
-		for (let j = 0; j < overlaps.length; j++) {
-			const node = nodes[j];
-			const nodesOverlaping = overlaps[j];
-			if (nodesOverlaping == undefined) continue;
+			for (let i = 0; i < nodes.length; i++) {
+				const node1 = nodes[i];
+				const bounds1 = getBounds(node1.marker, node1.angle, scale);
 
-			const score = nodesOverlaping.reduce((s, n) => s + (n.marker.rank - node.marker.rank), 0);
+				bounds[i] = bounds1;
 
-			if (worstNodeIndex == undefined || score > worstScore) {
-				worstNodeIndex = j;
-				worstScore = score;
+				for (let j = 0; j < i; j++) {
+					const bounds2 = bounds[j];
+
+					if (areBoundsOverlaping(bounds2, bounds1)) {
+						const node2 = nodes[j];
+
+						if (overlaps[i] == undefined) overlaps[i] = [node2];
+						else overlaps[i].push(node2);
+
+						if (overlaps[j] == undefined) overlaps[j] = [node1];
+						else overlaps[j].push(node1);
+					}
+				}
+			}
+
+			let worstNodeIndex = -1;
+			let worstScore = 0;
+
+			for (let j = 0; j < overlaps.length; j++) {
+				const node = nodes[j];
+				const nodesOverlaping = overlaps[j];
+				if (nodesOverlaping == undefined) continue;
+
+				const score = nodesOverlaping.reduce((s, n) => s + (n.marker.rank - node.marker.rank), 0);
+
+				if (worstNodeIndex == undefined || score > worstScore) {
+					worstNodeIndex = j;
+					worstScore = score;
+				}
+			}
+
+			return worstNodeIndex;
+		}
+	}
+
+	export namespace Simulation {
+		export function init(nodes: Array<Node>, scale: number) {
+			// Initialize particle indexes for the nodes that have not been initialized
+			Particles.initialzePointIndexes(nodes.map((m) => m.particle).filter((p) => isNaN(p.index)));
+
+			for (let i = 0; i < nodes.length; i++) {
+				const node = nodes[i];
+				// Update nodes particles for the given zoom level
+				node.particle.points = Particles.getPoints(node.marker, scale);
+				node.angle = Particles.Angles.DEGREES[node.particle.index];
 			}
 		}
 
-		return worstNodeIndex;
-	}
+		export function update(nodes: Array<Node>) {
+			if (nodes.length == 1) {
+				nodes[0].angle = Particles.Angles.DEFAULT;
+				return true;
+			}
 
-	export function updateNodeParticles(nodes: Array<Node>, scale: number) {
-		for (let i = 0; i < nodes.length; i++) {
-			const node = nodes[i];
-			node.particle.points = Particles.getPoints(node.marker, scale);
-		}
-	}
+			const stable = Particles.updatePointIndexes(nodes.map((m) => m.particle));
 
-	export function updateNodeAngles(nodes: Array<Node>) {
-		if (nodes.length == 1) {
-			nodes[0].angle = Particles.Angles.DEFAULT;
-			return;
-		}
+			for (let i = 0; i < nodes.length; i++) {
+				const node = nodes[i];
+				node.angle = Particles.Angles.DEGREES[node.particle.index];
+			}
 
-		Particles.updatePointIndexes(nodes.map((m) => m.particle));
-
-		for (let i = 0; i < nodes.length; i++) {
-			const node = nodes[i];
-			node.angle = Particles.Angles.DEGREES[node.particle.index];
+			return stable;
 		}
 	}
 }
@@ -491,21 +516,34 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 		let nodeCollapsed = false;
 
 		for (let i = 0; i < zoomNodeGraphs.length; i++) {
-			const graph = zoomNodeGraphs[i];
+			let graph = zoomNodeGraphs[i];
 			if (graph.size == 1) continue;
 
 			// Get the array of expanded nodes from graph
-			let nodeArray = timer.time(() => Array.from(graph).toSorted((p1, p2) => p1.marker.rank - p2.marker.rank), 'array nodes');
-			// Update nodes particles for the given zoom level
-			timer.time(() => Nodes.updateNodeParticles(nodeArray, scale), 'update node particles');
+			let nodeArray = timer.time(() => Array.from(graph), 'array nodes');
+			let nodesOverlaping = timer.time(() => Nodes.Bounds.areOverlaping(nodeArray, scale), 'are overlaping nodes');
+			if (nodesOverlaping == false) continue;
 
+			// Initialize the simulation for a given zoom level
+			timer.time(() => Nodes.Simulation.init(nodeArray, scale), 'init node angles');
+
+			// Remove some overlaping nodes from the array
+			// until there is no overlaping nodes
 			while (nodeArray.length > 1) {
-				// Update nodes angles
-				timer.time(() => Nodes.updateNodeAngles(nodeArray), 'update node angles');
+				// Run the simulation until no nodes are overlaping
+				// or the simulation is stable
+				let nodeSimulationStable = false;
+				while (!nodeSimulationStable) {
+					let areOverlapingNodes = timer.time(() => Nodes.Bounds.areOverlaping(nodeArray, scale), 'are overlaping nodes');
+					if (areOverlapingNodes == false) break;
+
+					// Update nodes angles
+					nodeSimulationStable = timer.time(() => Nodes.Simulation.update(nodeArray), 'update node angles');
+				}
 
 				// Get the index of the overlaping node
 				// If there is an no overlaping node break
-				let overlapingNodeIndex = timer.time(() => Nodes.getOverlapingNodeIndex(nodeArray, scale), 'get overlaping node index');
+				let overlapingNodeIndex = timer.time(() => Nodes.Bounds.getOverlapingIndex(nodeArray, scale), 'overlaping index');
 				if (overlapingNodeIndex == -1) break;
 
 				// Else, collapse it
