@@ -9,13 +9,14 @@
 	let map: ReturnType<typeof mountMap>;
 
 	let loading = $state<boolean>(false);
+	let zoom = $state<number>(0);
 
 	onMount(() => {
 		map = mountMap({
 			container: 'map',
 			position: {
-				center: { lat: 51.505, lng: -0.09 },
-				zoom: 13
+				center: { lat: 0, lng: 0 },
+				zoom: 0
 			},
 			theme: {
 				name: 'dark',
@@ -34,6 +35,9 @@
 				},
 				onLoadingEnd: () => {
 					loading = false;
+				},
+				onMapMove: (e) => {
+					zoom = e.zoom;
 				}
 			}
 		});
@@ -99,12 +103,14 @@
 		map.setPopups(popups);
 	}
 
+	const zoomDelta = 0.05;
+
 	function onZoomIn() {
-		map.zoomIn();
+		map.setZoom(map.getZoom() + zoomDelta);
 	}
 
 	function onZoomOut() {
-		map.zoomOut();
+		map.setZoom(map.getZoom() - zoomDelta);
 	}
 </script>
 
@@ -121,6 +127,7 @@
 <button class="data" onclick={changeData}>Change data</button>
 
 <div class="zooms">
+	<div>{zoom.toFixed(2)}</div>
 	<button class="button" onmousedown={onZoomIn}>
 		<Icon name={'add'} />
 	</button>

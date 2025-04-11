@@ -87,7 +87,6 @@ namespace Particles {
 	export function initialzePointIndexes(particles: Particle[]) {
 		// Initialze simulation
 		// Particle indexes based on the center of the particles
-
 		const center = getCenter(particles);
 
 		for (let i = 0; i < particles.length; i++) {
@@ -112,7 +111,6 @@ namespace Particles {
 	 */
 	export function updatePointIndexes(particles: Particle[]) {
 		// Run simulation step
-
 		let stable = true;
 
 		for (let i = 0; i < particles.length; i++) {
@@ -229,7 +227,7 @@ namespace Nodes {
 				particle: {
 					center: { x: marker.x, y: marker.y },
 					points: Particles.getPoints(marker, 1),
-					index: NaN
+					index: Particles.Angles.DEGREES.indexOf(Particles.Angles.DEFAULT)
 				}
 			};
 		}
@@ -414,14 +412,10 @@ namespace Nodes {
 
 	export namespace Simulation {
 		export function init(nodes: Array<Node>, scale: number) {
-			// Initialize particle indexes for the nodes that have not been initialized
-			Particles.initialzePointIndexes(nodes.map((m) => m.particle).filter((p) => isNaN(p.index)));
-
+			// Update nodes particles for the given zoom level
 			for (let i = 0; i < nodes.length; i++) {
 				const node = nodes[i];
-				// Update nodes particles for the given zoom level
 				node.particle.points = Particles.getPoints(node.marker, scale);
-				node.angle = Particles.Angles.DEGREES[node.particle.index];
 			}
 		}
 
@@ -502,6 +496,8 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 	// Initially add the last threshold event
 	thresholds.push(Threshold.createEvent(nodes, Zoom.addSteps(maxZoom, 1)));
 
+	const counts = [];
+
 	// Go from last to first zoom
 	for (let zoom = maxZoom; zoom >= minZoom; zoom = Zoom.addSteps(zoom, -1)) {
 		// Calculate scale
@@ -516,29 +512,28 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 		let nodeCollapsed = false;
 
 		for (let i = 0; i < zoomNodeGraphs.length; i++) {
-			let graph = zoomNodeGraphs[i];
-			if (graph.size == 1) continue;
-
 			// Get the array of expanded nodes from graph
-			let nodeArray = timer.time(() => Array.from(graph), 'array nodes');
-			let nodesOverlaping = timer.time(() => Nodes.Bounds.areOverlaping(nodeArray, scale), 'are overlaping nodes');
-			if (nodesOverlaping == false) continue;
+			let nodeGraph = zoomNodeGraphs[i];
+			let nodeArray = Array.from(nodeGraph);
+			if (nodeArray.length == 1) continue;
 
-			// Initialize the simulation for a given zoom level
-			timer.time(() => Nodes.Simulation.init(nodeArray, scale), 'init node angles');
+			if (counts[nodeArray.length] == undefined) counts[nodeArray.length] = 1;
+			else counts[nodeArray.length]++;
 
 			// Remove some overlaping nodes from the array
 			// until there is no overlaping nodes
 			while (nodeArray.length > 1) {
-				// Run the simulation until no nodes are overlaping
-				// or the simulation is stable
-				let nodeSimulationStable = false;
-				while (!nodeSimulationStable) {
+				// Initialize the simulation for a given zoom level
+				timer.time(() => Nodes.Simulation.init(nodeArray, scale), 'init node angles');
+
+				while (true) {
+					// Run the simulation until no nodes are overlaping
 					let areOverlapingNodes = timer.time(() => Nodes.Bounds.areOverlaping(nodeArray, scale), 'are overlaping nodes');
 					if (areOverlapingNodes == false) break;
 
-					// Update nodes angles
-					nodeSimulationStable = timer.time(() => Nodes.Simulation.update(nodeArray), 'update node angles');
+					// Or the simulation is stable
+					let nodeSimulationStable = timer.time(() => Nodes.Simulation.update(nodeArray), 'update node angles');
+					if (nodeSimulationStable) break;
 				}
 
 				// Get the index of the overlaping node
@@ -565,6 +560,8 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 		// Create threshold event
 		thresholds.push(Threshold.createEvent(expandedNodes, zoom));
 	}
+
+	console.log(counts);
 
 	timer.print(`[THRESHOLDS ${markers.length}]`);
 
