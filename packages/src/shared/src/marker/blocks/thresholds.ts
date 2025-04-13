@@ -65,39 +65,47 @@ namespace Particles {
 		}
 	}
 
-	export interface Particle {
+	export class Particle {
 		/** The center of the particle. */
 		center: Point;
-		/** Points are possible positions of the particle. */
-		points: Array<Point>;
+		/** The radius of the circle of possible positions of the particle. */
+		radius: number;
 		/** The index of the particle position in the points array. */
 		index: number;
+
+		constructor(center: Point, radius: number, index: number) {
+			this.center = center;
+			this.radius = radius;
+			this.index = index;
+		}
+	}
+
+	export class Point {
+		x: number;
+		y: number;
+
+		constructor(particle: Particle, index: number) {
+			const center = particle.center;
+			const radius = particle.radius;
+			const angle = Angles.RADIANS[index];
+			this.x = center.x + radius * Math.cos(angle);
+			this.y = center.y + radius * Math.sin(angle);
+		}
 	}
 
 	/**
 	 * Get the points of the marker.
 	 * The points are equally spaced around the center of the marker.
 	 */
-	export function getPoints(marker: Marker, scale: number): Array<Point> {
+	export function getRadius(marker: Marker, scale: number): number {
 		const proprtion = 2;
 		const radius = Math.min(marker.width, marker.height) / proprtion / scale;
-		return Angles.RADIANS.map((r) => ({ x: marker.x + radius * Math.cos(r), y: marker.y + radius * Math.sin(r) }));
+		return radius;
 	}
 
-	export function initialzePointIndexes(particles: Particle[]) {
-		// Initialze simulation
-		// Particle indexes based on the center of the particles
-		const center = getCenter(particles);
-
-		for (let i = 0; i < particles.length; i++) {
-			const particleI = particles[i];
-			const centerI = particleI.center;
-
-			const dx = centerI.x - center.x;
-			const dy = centerI.y - center.y;
-
-			particleI.index = Angles.getAngleIndex(dx, dy);
-		}
+	export function getIndex(index: number, direction: number): number {
+		if (direction == 0) return index;
+		return (((index + direction) % Angles.COUNT) + Angles.COUNT) % Angles.COUNT;
 	}
 
 	/**
@@ -117,9 +125,9 @@ namespace Particles {
 			const [particle, particleForces] = data[i];
 			const index = particle.index;
 
-			const prevPoint = particle.points[getIndex(index, -1)];
-			const currPoint = particle.points[index];
-			const nextPoint = particle.points[getIndex(index, +1)];
+			const prevPoint = new Point(particle, getIndex(index, -1));
+			const currPoint = new Point(particle, index);
+			const nextPoint = new Point(particle, getIndex(index, +1));
 
 			let prevPointForce: number = 0;
 			let currPointForce: number = 0;
@@ -128,7 +136,7 @@ namespace Particles {
 			for (let j = 0; j < particleForces.length; j++) {
 				const particleF = particleForces[j];
 				const indexF = particleF.index;
-				const pointF = particleF.points[indexF];
+				const pointF = new Point(particleF, indexF);
 
 				const prevDx = prevPoint.x - pointF.x;
 				const prevDy = prevPoint.y - pointF.y;
@@ -157,30 +165,6 @@ namespace Particles {
 		}
 
 		return stable;
-	}
-
-	function getCenter(particles: Particle[]): Point {
-		if (particles?.length === 0) {
-			return { x: 0, y: 0 };
-		}
-
-		let centerX = 0;
-		let centerY = 0;
-
-		for (const particle of particles) {
-			centerX += particle.center.x;
-			centerY += particle.center.y;
-		}
-
-		centerX /= particles.length;
-		centerY /= particles.length;
-
-		return { x: centerX, y: centerY };
-	}
-
-	function getIndex(index: number, direction: number): number {
-		if (direction == 0) return index;
-		return (((index + direction) % Angles.COUNT) + Angles.COUNT) % Angles.COUNT;
 	}
 }
 
@@ -221,7 +205,7 @@ namespace Nodes {
 				angle: Particles.Angles.DEFAULT,
 				particle: {
 					center: { x: marker.x, y: marker.y },
-					points: Particles.getPoints(marker, 1),
+					radius: Particles.getRadius(marker, 1),
 					index: Particles.Angles.DEGREES.indexOf(Particles.Angles.DEFAULT)
 				},
 				neighbours: new Array<Node>()
@@ -408,7 +392,7 @@ namespace Nodes {
 			// Update nodes particles for the given zoom level
 			for (let i = 0; i < nodes.length; i++) {
 				const node = nodes[i];
-				node.particle.points = Particles.getPoints(node.marker, scale);
+				node.particle.radius = Particles.getRadius(node.marker, scale);
 			}
 		}
 
@@ -515,20 +499,24 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 			// Get the array of expanded nodes from graph
 			let nodeArray = nodeGraphs[i];
 
+			// Check if there are overlaping nodes
+			let areOverlapingNodes = timer.time(() => Nodes.Bounds.areOverlaping(nodeArray, scale), 'overlaping nodes');
+			if (areOverlapingNodes == false) continue;
+
 			// Remove some overlaping nodes from the array
 			// until there is no overlaping nodes
 			while (nodeArray.length > 1) {
 				// Initialize the simulation for a given zoom level
-				timer.time(() => Nodes.Simulation.init(nodeArray, scale), 'init node angles');
+				timer.time(() => Nodes.Simulation.init(nodeArray, scale), 'simulation init');
 
 				while (true) {
-					// Run the simulation until no nodes are overlaping
+					// Run the loop until the simulation is stable
+					let nodeSimulationStable = timer.time(() => Nodes.Simulation.update(nodeArray), 'simulation update');
+					if (nodeSimulationStable) break;
+
+					// Or there are overlaping nodes
 					let areOverlapingNodes = timer.time(() => Nodes.Bounds.areOverlaping(nodeArray, scale), 'overlaping nodes');
 					if (areOverlapingNodes == false) break;
-
-					// Or the simulation is stable
-					let nodeSimulationStable = timer.time(() => Nodes.Simulation.update(nodeArray), 'update node angles');
-					if (nodeSimulationStable) break;
 				}
 
 				// Get the index of the overlaping node
