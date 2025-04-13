@@ -192,6 +192,8 @@ namespace Nodes {
 		expanded: boolean;
 		/** The angle of the marker node. */
 		angle: number;
+		/** The bounds of the marker node. */
+		bounds: Bounds;
 		/** A marker node has a particle whose position is used to calculate the angle */
 		particle: Particles.Particle;
 		/** The neighbours of the marker node. */
@@ -217,6 +219,7 @@ namespace Nodes {
 				marker: marker,
 				expanded: true,
 				angle: Particles.Angles.DEFAULT,
+				bounds: getBounds(marker, Particles.Angles.DEFAULT, 1),
 				particle: {
 					center: { x: marker.x, y: marker.y },
 					radius: Particles.getRadius(marker, 1),
@@ -277,24 +280,35 @@ namespace Nodes {
 		return connections;
 	}
 
-	export function getNeighbours(
-		nodes: Array<Node>,
-		connections: Array<Array<Connection>>,
-		index: number,
-		zoom: number
-	): Array<Node> {
-		const nodeNeighbours = new Array<Node>();
-		const nodeConnections = connections[index];
+	export function getNeighbourhood(nodes: Array<Node>, connections: Array<Array<Connection>>, zoom: number): Array<Node> {
+		const nodesWithNeighbours = new Array<Nodes.Node>();
 
-		for (let i = 0; i < nodeConnections.length; i++) {
-			const connection = nodeConnections[i];
-			if (connection.enabled == false) continue;
-			if (connection.zwt <= zoom) continue;
+		// Update node neighbours
+		for (let i = 0; i < nodes.length; i++) {
+			let node = nodes[i];
+			// If the node is not expanded, skip
+			if (node.expanded == false) continue;
 
-			nodeNeighbours.push(nodes[i]);
+			// Get node neighbours
+			let nodeNeighbours = new Array<Node>();
+			let nodeConnections = connections[i];
+
+			for (let i = 0; i < nodeConnections.length; i++) {
+				const connection = nodeConnections[i];
+				if (connection.enabled == false) continue;
+				if (connection.zwt <= zoom) continue;
+
+				nodeNeighbours.push(nodes[i]);
+			}
+
+			// If there are no neighbours, skip
+			if (nodeNeighbours.length == 0) continue;
+
+			node.neighbours = nodeNeighbours;
+			nodesWithNeighbours.push(node);
 		}
 
-		return nodeNeighbours;
+		return nodesWithNeighbours;
 	}
 
 	export function getNeighbourGraphs(nodes: Array<Node>): Array<Array<Node>> {
@@ -326,6 +340,13 @@ namespace Nodes {
 		return graphs;
 	}
 
+	export function updateNodeBounds(nodes: Array<Node>, scale: number) {
+		for (let i = 0; i < nodes.length; i++) {
+			const node = nodes[i];
+			node.bounds = getBounds(node.marker, node.angle, scale);
+		}
+	}
+
 	export function setNodeCollapsed(node: Node, connections: Array<Connection>) {
 		node.expanded = false;
 
@@ -338,12 +359,12 @@ namespace Nodes {
 		export function areOverlaping(nodes: Array<Node>, scale: number): boolean {
 			for (let i = 0; i < nodes.length; i++) {
 				const node1 = nodes[i];
-				const bounds1 = getBounds(node1.marker, node1.angle, scale);
+				const bounds1 = node1.bounds;
 				const neighbours1 = nodes[i].neighbours;
 
 				for (let j = 0; j < neighbours1.length; j++) {
 					const node2 = neighbours1[j];
-					const bounds2 = getBounds(node2.marker, node2.angle, scale);
+					const bounds2 = node2.bounds;
 
 					if (areBoundsOverlaping(bounds2, bounds1)) {
 						return true;
@@ -355,36 +376,28 @@ namespace Nodes {
 		}
 
 		export function getOverlapingIndex(nodes: Array<Node>, scale: number): number {
-			const bounds = new Array<Bounds>(nodes.length);
-			const scores = new Array<number>(nodes.length);
-
 			let worstNodeIndex = -1;
 			let worstScore = 0;
 
 			for (let i = 0; i < nodes.length; i++) {
 				const node1 = nodes[i];
-				const bounds1 = getBounds(node1.marker, node1.angle, scale);
+				const bounds1 = node1.bounds;
+				const neighbours1 = nodes[i].neighbours;
 
-				bounds[i] = bounds1;
-				scores[i] = 0;
+				let score = 0;
 
-				for (let j = 0; j < i; j++) {
-					const bounds2 = bounds[j];
+				for (let j = 0; j < neighbours1.length; j++) {
+					const node2 = neighbours1[j];
+					const bounds2 = node2.bounds;
 
 					if (areBoundsOverlaping(bounds2, bounds1)) {
-						const node2 = nodes[j];
-
-						scores[i] += node2.marker.rank - node1.marker.rank;
-						scores[j] += node1.marker.rank - node2.marker.rank;
+						score += node2.marker.rank - node1.marker.rank;
 					}
 				}
-			}
 
-			for (let j = 0; j < scores.length; j++) {
-				const score = scores[j];
 				if (score > worstScore) {
 					worstScore = score;
-					worstNodeIndex = j;
+					worstNodeIndex = i;
 				}
 			}
 
@@ -393,20 +406,14 @@ namespace Nodes {
 	}
 
 	export namespace Simulation {
-		export function init(nodes: Array<Node>, scale: number) {
-			// Update nodes particles for the given zoom level
+		export function updateParticles(nodes: Array<Node>, scale: number) {
 			for (let i = 0; i < nodes.length; i++) {
 				const node = nodes[i];
 				node.particle.radius = Particles.getRadius(node.marker, scale);
 			}
 		}
 
-		export function update(nodes: Array<Node>) {
-			if (nodes.length == 1) {
-				nodes[0].angle = Particles.Angles.DEFAULT;
-				return true;
-			}
-
+		export function updateAngles(nodes: Array<Node>) {
 			const stable = Particles.updatePointIndexes(nodes.map((n) => [n.particle, n.neighbours.map((n) => n.particle)]));
 
 			for (let i = 0; i < nodes.length; i++) {
@@ -428,6 +435,27 @@ namespace Zoom {
 
 	export function addSteps(zoom: number, count: number) {
 		return Math.round((zoom + count * STEP) * SCALE) / SCALE;
+	}
+
+	export function getMaxZoom(connectionsGrid: Array<Array<Nodes.Connection>>): number {
+		let zoom = Zoom.MIN;
+
+		for (let i = 0; i < connectionsGrid.length; i++) {
+			const connectionArray = connectionsGrid[i];
+
+			for (let j = 0; j < connectionArray.length; j++) {
+				const connection = connectionArray[j];
+				if (connection.zwt > zoom) {
+					zoom = connection.zwt;
+				}
+
+				if (zoom > Zoom.MAX) {
+					return Zoom.MAX;
+				}
+			}
+		}
+
+		return addSteps(zoom - (zoom % Zoom.STEP), 0);
 	}
 }
 
@@ -471,8 +499,7 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 	const connections = timer.time(() => Nodes.createConnections(nodes), 'create connections');
 
 	// Initialize zoom
-	const maxZwt = connections.flatMap((c) => c.map((c) => c.zwt)).reduce((a, b) => Math.max(a, b), 0);
-	const maxZoom = Math.min(Zoom.addSteps(maxZwt - (maxZwt % Zoom.STEP), 0), Zoom.MAX);
+	const maxZoom = timer.time(() => Zoom.getMaxZoom(connections), 'get max zoom');
 	const minZoom = Zoom.MIN;
 
 	// Initially add the last threshold event
@@ -484,43 +511,37 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 		const scale = Math.pow(2, zoom);
 
 		// Get nodes with neighbours
-		const nodesWithNeighbours = new Array<Nodes.Node>();
-
-		// Update node neighbours
-		for (let i = 0; i < nodes.length; i++) {
-			let node = nodes[i];
-			if (node.expanded == false) continue;
-
-			node.neighbours = timer.time(() => Nodes.getNeighbours(nodes, connections, i, zoom), 'get node neighbours');
-			if (node.neighbours.length == 0) continue;
-
-			nodesWithNeighbours.push(node);
-		}
-
+		const nodeNeighbourhood = timer.time(() => Nodes.getNeighbourhood(nodes, connections, zoom), 'get node neighbourhood');
 		// Get node graphs
-		const nodeGraphs = timer.time(() => Nodes.getNeighbourGraphs(nodesWithNeighbours), 'get node graphs');
+		const nodeGraphs = timer.time(() => Nodes.getNeighbourGraphs(nodeNeighbourhood), 'get node graphs');
 
-		for (let i = 0; i < nodeGraphs.length; i++) {			
+		for (let i = 0; i < nodeGraphs.length; i++) {
 			let nodeGraph = nodeGraphs[i];
 
+			// Update node bounds
+			timer.time(() => Nodes.updateNodeBounds(nodeGraph, scale), 'set node bounds');
+
 			// Check if there are overlaping nodes in graph
-			let areOverlapingNodes = timer.time(() => Nodes.Bounds.areOverlaping(nodeGraph, scale), 'overlaping nodes');
-			if (areOverlapingNodes == false) continue;
+			let nodeGraphOverlaping = timer.time(() => Nodes.Bounds.areOverlaping(nodeGraph, scale), 'overlaping nodes');
+			if (nodeGraphOverlaping == false) continue;
 
 			// Remove some overlaping nodes from the array
 			// until there is no overlaping nodes
 			while (nodeGraph.length > 1) {
 				// Initialize the simulation for a given zoom level
-				timer.time(() => Nodes.Simulation.init(nodeGraph, scale), 'simulation init');
+				timer.time(() => Nodes.Simulation.updateParticles(nodeGraph, scale), 'simulation init');
 
 				while (true) {
 					// Run the loop until the simulation is stable
-					let nodeSimulationStable = timer.time(() => Nodes.Simulation.update(nodeGraph), 'simulation update');
+					let nodeSimulationStable = timer.time(() => Nodes.Simulation.updateAngles(nodeGraph), 'simulation update');
 					if (nodeSimulationStable) break;
 
+					// Update node bounds
+					timer.time(() => Nodes.updateNodeBounds(nodeGraph, scale), 'set node bounds');
+
 					// Or there are overlaping nodes
-					let areOverlapingNodes = timer.time(() => Nodes.Bounds.areOverlaping(nodeGraph, scale), 'overlaping nodes');
-					if (areOverlapingNodes == false) break;
+					let nodeSimulationOverlaping = timer.time(() => Nodes.Bounds.areOverlaping(nodeGraph, scale), 'overlaping nodes');
+					if (nodeSimulationOverlaping == false) break;
 				}
 
 				// Get the index of the overlaping node
@@ -530,7 +551,7 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 
 				// Else, collapse it
 				const collapsedNode = nodeGraph[overlapingNodeIndex];
-				Nodes.setNodeCollapsed(collapsedNode, connections[collapsedNode.index]);
+				timer.time(() => Nodes.setNodeCollapsed(collapsedNode, connections[collapsedNode.index]), 'set node collapsed');
 
 				// and remove it from the array and try again
 				nodeGraph[overlapingNodeIndex].expanded = false;
