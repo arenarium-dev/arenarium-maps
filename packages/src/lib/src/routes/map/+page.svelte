@@ -15,8 +15,8 @@
 		map = mountMap({
 			container: 'map',
 			position: {
-				center: { lat: 0, lng: 0 },
-				zoom: 0
+				center: { lat: 51.505, lng: -0.09 },
+				zoom: 5
 			},
 			theme: {
 				name: 'dark',

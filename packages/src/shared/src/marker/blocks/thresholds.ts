@@ -336,16 +336,14 @@ namespace Nodes {
 
 	export namespace Bounds {
 		export function areOverlaping(nodes: Array<Node>, scale: number): boolean {
-			const bounds = new Array<Bounds>(nodes.length);
-
 			for (let i = 0; i < nodes.length; i++) {
 				const node1 = nodes[i];
 				const bounds1 = getBounds(node1.marker, node1.angle, scale);
+				const neighbours1 = nodes[i].neighbours;
 
-				bounds[i] = bounds1;
-
-				for (let j = 0; j < i; j++) {
-					const bounds2 = bounds[j];
+				for (let j = 0; j < neighbours1.length; j++) {
+					const node2 = neighbours1[j];
+					const bounds2 = getBounds(node2.marker, node2.angle, scale);
 
 					if (areBoundsOverlaping(bounds2, bounds1)) {
 						return true;
@@ -502,42 +500,41 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 		// Get node graphs
 		const nodeGraphs = timer.time(() => Nodes.getNeighbourGraphs(nodesWithNeighbours), 'get node graphs');
 
-		for (let i = 0; i < nodeGraphs.length; i++) {
-			// Get the array of expanded nodes from graph
-			let nodeArray = nodeGraphs[i];
+		for (let i = 0; i < nodeGraphs.length; i++) {			
+			let nodeGraph = nodeGraphs[i];
 
-			// Check if there are overlaping nodes
-			let areOverlapingNodes = timer.time(() => Nodes.Bounds.areOverlaping(nodeArray, scale), 'overlaping nodes');
+			// Check if there are overlaping nodes in graph
+			let areOverlapingNodes = timer.time(() => Nodes.Bounds.areOverlaping(nodeGraph, scale), 'overlaping nodes');
 			if (areOverlapingNodes == false) continue;
 
 			// Remove some overlaping nodes from the array
 			// until there is no overlaping nodes
-			while (nodeArray.length > 1) {
+			while (nodeGraph.length > 1) {
 				// Initialize the simulation for a given zoom level
-				timer.time(() => Nodes.Simulation.init(nodeArray, scale), 'simulation init');
+				timer.time(() => Nodes.Simulation.init(nodeGraph, scale), 'simulation init');
 
 				while (true) {
 					// Run the loop until the simulation is stable
-					let nodeSimulationStable = timer.time(() => Nodes.Simulation.update(nodeArray), 'simulation update');
+					let nodeSimulationStable = timer.time(() => Nodes.Simulation.update(nodeGraph), 'simulation update');
 					if (nodeSimulationStable) break;
 
 					// Or there are overlaping nodes
-					let areOverlapingNodes = timer.time(() => Nodes.Bounds.areOverlaping(nodeArray, scale), 'overlaping nodes');
+					let areOverlapingNodes = timer.time(() => Nodes.Bounds.areOverlaping(nodeGraph, scale), 'overlaping nodes');
 					if (areOverlapingNodes == false) break;
 				}
 
 				// Get the index of the overlaping node
 				// If there is an no overlaping node break
-				let overlapingNodeIndex = timer.time(() => Nodes.Bounds.getOverlapingIndex(nodeArray, scale), 'overlaping index');
+				let overlapingNodeIndex = timer.time(() => Nodes.Bounds.getOverlapingIndex(nodeGraph, scale), 'overlaping index');
 				if (overlapingNodeIndex == -1) break;
 
 				// Else, collapse it
-				const collapsedNode = nodeArray[overlapingNodeIndex];
+				const collapsedNode = nodeGraph[overlapingNodeIndex];
 				Nodes.setNodeCollapsed(collapsedNode, connections[collapsedNode.index]);
 
 				// and remove it from the array and try again
-				nodeArray[overlapingNodeIndex].expanded = false;
-				nodeArray.splice(overlapingNodeIndex, 1);
+				nodeGraph[overlapingNodeIndex].expanded = false;
+				nodeGraph.splice(overlapingNodeIndex, 1);
 			}
 		}
 
