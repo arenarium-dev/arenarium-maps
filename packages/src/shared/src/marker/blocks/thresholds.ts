@@ -23,6 +23,8 @@ namespace Particles {
 		export const DEFAULT = MARKER_DEFAULT_ANGLE;
 		export const DEGREES = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
 		export const RADIANS = DEGREES.map((d) => (d * Math.PI) / 180);
+		export const RADIANS_COS = RADIANS.map((r) => Math.cos(r));
+		export const RADIANS_SIN = RADIANS.map((r) => Math.sin(r));
 
 		function getQuadrantIndex(forceX: number, forceY: number) {
 			const ratio = Math.abs(forceY / forceX);
@@ -124,30 +126,42 @@ namespace Particles {
 		for (let i = 0; i < data.length; i++) {
 			const [particle, particleForces] = data[i];
 			const index = particle.index;
+			const center = particle.center;
+			const radius = particle.radius;
 
-			const prevPoint = new Point(particle, getIndex(index, -1));
-			const currPoint = new Point(particle, index);
-			const nextPoint = new Point(particle, getIndex(index, +1));
+			const prevIndex = getIndex(index, -1);
+			const nextIndex = getIndex(index, +1);
+
+			const prevPointX = center.x + radius * Angles.RADIANS_COS[prevIndex];
+			const prevPointY = center.y + radius * Angles.RADIANS_SIN[prevIndex];
+			const currPointX = center.x + radius * Angles.RADIANS_COS[index];
+			const currPointY = center.y + radius * Angles.RADIANS_SIN[index];
+			const nextPointX = center.x + radius * Angles.RADIANS_COS[nextIndex];
+			const nextPointY = center.y + radius * Angles.RADIANS_SIN[nextIndex];
 
 			let prevPointForce: number = 0;
 			let currPointForce: number = 0;
 			let nextPointForce: number = 0;
 
 			for (let j = 0; j < particleForces.length; j++) {
-				const particleF = particleForces[j];
-				const indexF = particleF.index;
-				const pointF = new Point(particleF, indexF);
+				const fParticle = particleForces[j];
+				const fIndex = fParticle.index;
+				const fCenter = fParticle.center;
+				const fRadius = fParticle.radius;
 
-				const prevDx = prevPoint.x - pointF.x;
-				const prevDy = prevPoint.y - pointF.y;
+				const fPointX = fCenter.x + fRadius * Angles.RADIANS_COS[fIndex];
+				const fPointY = fCenter.y + fRadius * Angles.RADIANS_SIN[fIndex];
+
+				const prevDx = prevPointX - fPointX;
+				const prevDy = prevPointY - fPointY;
 				prevPointForce += 1 / (prevDx * prevDx + prevDy * prevDy);
 
-				const currDx = currPoint.x - pointF.x;
-				const currDy = currPoint.y - pointF.y;
+				const currDx = currPointX - fPointX;
+				const currDy = currPointY - fPointY;
 				currPointForce += 1 / (currDx * currDx + currDy * currDy);
 
-				const nextDx = nextPoint.x - pointF.x;
-				const nextDy = nextPoint.y - pointF.y;
+				const nextDx = nextPointX - fPointX;
+				const nextDy = nextPointY - fPointY;
 				nextPointForce += 1 / (nextDx * nextDx + nextDy * nextDy);
 			}
 
