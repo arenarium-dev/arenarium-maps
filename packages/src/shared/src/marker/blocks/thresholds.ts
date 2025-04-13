@@ -109,12 +109,12 @@ namespace Particles {
 	 * In case of marker simulation the points represent the posible centers of the marker
 	 * from which the marker angle can be calculated.
 	 */
-	export function updatePointIndexes(particles: Particle[]) {
+	export function updatePointIndexes(data: [Particle, Particle[]][]) {
 		// Run simulation step
 		let stable = true;
 
-		for (let i = 0; i < particles.length; i++) {
-			const particle = particles[i];
+		for (let i = 0; i < data.length; i++) {
+			const [particle, particleForces] = data[i];
 			const index = particle.index;
 
 			const prevPoint = particle.points[getIndex(index, -1)];
@@ -125,10 +125,8 @@ namespace Particles {
 			let currPointForce: number = 0;
 			let nextPointForce: number = 0;
 
-			for (let j = 0; j < particles.length; j++) {
-				if (i === j) continue;
-
-				const particleF = particles[j];
+			for (let j = 0; j < particleForces.length; j++) {
+				const particleF = particleForces[j];
 				const indexF = particleF.index;
 				const pointF = particleF.points[indexF];
 
@@ -188,6 +186,8 @@ namespace Particles {
 
 namespace Nodes {
 	export interface Node {
+		/** The index of the node in the nodes array. */
+		index: number;
 		/** The marker that this node represents. */
 		marker: Marker;
 		/** State of the marker expanded or not. */
@@ -196,22 +196,16 @@ namespace Nodes {
 		angle: number;
 		/** A marker node has a particle whose position is used to calculate the angle */
 		particle: Particles.Particle;
+		/** The neighbours of the marker node. */
+		neighbours: Array<Node>;
 	}
 
 	export interface Connection {
 		/** The zoom when bounds of influence are touching,
 		 *  used to filter out connections that are not influencing the marker nodes. */
 		zwt: number;
-		/** The marker nodes that are influencing each other. */
-		node1: Node;
-		node2: Node;
-	}
-
-	export interface Layer {
-		/** The zoom level of the layer */
-		zoom: number;
-		/** The connections of the layer */
-		connections: Array<Connection>;
+		/** The enabled state of the connection. True if both nodes are expanded. */
+		enabled: boolean;
 	}
 
 	export function createNodes(markers: Array<Marker>): Array<Node> {
@@ -221,6 +215,7 @@ namespace Nodes {
 		for (let i = 0; i < markers.length; i++) {
 			const marker = markers[i];
 			nodes[i] = {
+				index: i,
 				marker: marker,
 				expanded: true,
 				angle: Particles.Angles.DEFAULT,
@@ -228,15 +223,20 @@ namespace Nodes {
 					center: { x: marker.x, y: marker.y },
 					points: Particles.getPoints(marker, 1),
 					index: Particles.Angles.DEGREES.indexOf(Particles.Angles.DEFAULT)
-				}
+				},
+				neighbours: new Array<Node>()
 			};
 		}
 
 		return nodes;
 	}
 
-	export function createConnections(nodes: Array<Node>): Array<Connection> {
-		const connections = new Array<Connection>();
+	export function createConnections(nodes: Array<Node>): Array<Array<Connection>> {
+		// Create array of connections for each node
+		const connections = new Array<Array<Connection>>(nodes.length);
+		for (let i = 0; i < nodes.length; i++) {
+			connections[i] = new Array<Connection>(nodes.length);
+		}
 
 		// Create marker connection bounds of influence,
 		// bounds are the maximum rectangle where the marker can be positioned
@@ -260,91 +260,84 @@ namespace Nodes {
 		// the zoom when touching is the maximum zoom level at
 		// which the markers influencing each others position (angle, expanded, etc.)
 		for (let i1 = 0; i1 < nodes.length; i1++) {
-			const node1 = nodes[i1];
 			const bounds1 = bounds[i1];
 
 			for (let i2 = i1 + 1; i2 < nodes.length; i2++) {
-				const node2 = nodes[i2];
 				const bounds2 = bounds[i2];
 
 				const zwt = getBoundsZoomWhenTouching(bounds1, bounds2);
-				connections.push({ zwt, node1, node2 });
-			}
-		}
+				const connection = { zwt: zwt, enabled: true };
 
-		// Sort connections by zoom when touching
-		connections.sort((a, b) => a.zwt - b.zwt);
+				connections[i1][i2] = connection;
+				connections[i2][i1] = connection;
+			}
+
+			// Disable self connection
+			connections[i1][i1] = { zwt: 0, enabled: false };
+		}
 
 		return connections;
 	}
 
-	export function getZoomConnections(connections: Array<Connection>, zoom: number): Array<Connection> {
-		let index = 0;
+	export function getNeighbours(
+		nodes: Array<Node>,
+		connections: Array<Array<Connection>>,
+		index: number,
+		zoom: number
+	): Array<Node> {
+		const nodeNeighbours = new Array<Node>();
+		const nodeConnections = connections[index];
 
-		// Find the index where the connections are influencing each other at the current zoom
-		if (index < connections.length) {
-			// Find the first connection with zoom when touching
-			let zwt = connections[index].zwt;
-			while (zoom > zwt) {
-				index++;
-				if (index >= connections.length) break;
-				zwt = connections[index].zwt;
-			}
+		for (let i = 0; i < nodeConnections.length; i++) {
+			const connection = nodeConnections[i];
+			if (connection.enabled == false) continue;
+			if (connection.zwt <= zoom) continue;
+
+			nodeNeighbours.push(nodes[i]);
 		}
 
-		return connections.slice(index);
+		return nodeNeighbours;
 	}
 
-	export function getNodeGraphs(connections: Array<Connection>): Array<Set<Node>> {
-		const graphs = new Array<Set<Node>>();
+	export function getNeighbourGraphs(nodes: Array<Node>): Array<Array<Node>> {
+		const visited = new Set<Node>();
+		const graphs: Node[][] = [];
 
-		for (let i = 0; i < connections.length; i++) {
-			const connection = connections[i];
-			const node1 = connection.node1;
-			const node2 = connection.node2;
+		for (const node of nodes) {
+			if (visited.has(node)) continue;
+			visited.add(node);
 
-			// Try to find the graphs of the nodes
-			let graph1: Set<Node> | undefined = undefined;
-			let graph2: Set<Node> | undefined = undefined;
+			const graph: Node[] = [];
+			const stack: Node[] = [node];
 
-			for (let i = 0; i < graphs.length; i++) {
-				const graph = graphs[i];
-				if (graph.has(node1)) graph1 = graph;
-				if (graph.has(node2)) graph2 = graph;
-			}
+			while (stack.length > 0) {
+				const stackNode = stack.pop()!;
+				graph.push(stackNode);
 
-			// Both nodes are in separate graphs
-			if (graph1 != undefined && graph2 != undefined) {
-				if (graph1 != graph2) {
-					graph2.forEach((n) => graph1.add(n));
-					graphs.splice(graphs.indexOf(graph2), 1);
+				for (const neighbour of stackNode.neighbours) {
+					if (visited.has(neighbour)) continue;
+
+					visited.add(neighbour);
+					stack.push(neighbour);
 				}
-				continue;
 			}
 
-			// One node is in a graph, the other is not
-			if (graph1 != undefined && graph2 == undefined) {
-				if (node2.expanded) graph1.add(node2);
-				continue;
-			}
-
-			if (graph1 == undefined && graph2 != undefined) {
-				if (node1.expanded) graph2.add(node1);
-				continue;
-			}
-
-			// Neither node is in a graph
-			const graph = new Set<Node>();
-			if (node1.expanded) graph.add(node1);
-			if (node2.expanded) graph.add(node2);
 			graphs.push(graph);
 		}
 
 		return graphs;
 	}
 
+	export function setNodeCollapsed(node: Node, connections: Array<Connection>) {
+		node.expanded = false;
+
+		for (let j = 0; j < connections.length; j++) {
+			connections[j].enabled = false;
+		}
+	}
+
 	export namespace Bounds {
-		export function areOverlaping(nodes: Array<Node>, scale: number) {
+		export function areOverlaping(nodes: Array<Node>, scale: number): boolean {
 			const bounds = new Array<Bounds>(nodes.length);
 
 			for (let i = 0; i < nodes.length; i++) {
@@ -425,7 +418,7 @@ namespace Nodes {
 				return true;
 			}
 
-			const stable = Particles.updatePointIndexes(nodes.map((m) => m.particle));
+			const stable = Particles.updatePointIndexes(nodes.map((n) => [n.particle, n.neighbours.map((n) => n.particle)]));
 
 			for (let i = 0; i < nodes.length; i++) {
 				const node = nodes[i];
@@ -461,7 +454,7 @@ namespace Threshold {
 
 	export function createEvent(nodes: Nodes.Node[], zoom: number): Event {
 		return {
-			zoom: zoom,
+			zoom: Number(zoom.toFixed(1)),
 			ids: nodes.map((n) => n.marker.id),
 			angles: nodes.map((n) => ({ id: n.marker.id, value: n.angle }))
 		};
@@ -485,40 +478,42 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 	const timer = new Timer();
 
 	// Initialze nodes
-	let nodes = timer.time(() => Nodes.createNodes(markers), 'create nodes');
-	let connections = timer.time(() => Nodes.createConnections(nodes), 'create connections');
+	const nodes = timer.time(() => Nodes.createNodes(markers), 'create nodes');
+	const connections = timer.time(() => Nodes.createConnections(nodes), 'create connections');
 
 	// Initialize zoom
-	const maxZwt = connections.at(-1)?.zwt ?? MAP_MAX_ZOOM;
-	const maxZoom = Zoom.addSteps(maxZwt - (maxZwt % Zoom.STEP), 0);
-	const minZoom = MAP_MIN_ZOOM;
+	const maxZwt = connections.flatMap((c) => c.map((c) => c.zwt)).reduce((a, b) => Math.max(a, b), 0);
+	const maxZoom = Math.min(Zoom.addSteps(maxZwt - (maxZwt % Zoom.STEP), 0), Zoom.MAX);
+	const minZoom = Zoom.MIN;
 
 	// Initially add the last threshold event
 	thresholds.push(Threshold.createEvent(nodes, Zoom.addSteps(maxZoom, 1)));
 
-	const counts = [];
-
 	// Go from last to first zoom
-	for (let zoom = maxZoom; zoom >= minZoom; zoom = Zoom.addSteps(zoom, -1)) {
+	for (let zoom = maxZoom; zoom >= minZoom; zoom -= Zoom.STEP) {
 		// Calculate scale
 		const scale = Math.pow(2, zoom);
 
-		// Get zoom connections
-		const zoomConnections = timer.time(() => Nodes.getZoomConnections(connections, zoom), 'get zoom connections');
-		// Get the graphs of expanded markers influencing each other
-		const zoomNodeGraphs = timer.time(() => Nodes.getNodeGraphs(zoomConnections), 'get node graphs');
+		// Get nodes with neighbours
+		const nodesWithNeighbours = new Array<Nodes.Node>();
 
-		// Flag to indicate if at least one node was collapsed
-		let nodeCollapsed = false;
+		// Update node neighbours
+		for (let i = 0; i < nodes.length; i++) {
+			let node = nodes[i];
+			if (node.expanded == false) continue;
 
-		for (let i = 0; i < zoomNodeGraphs.length; i++) {
+			node.neighbours = timer.time(() => Nodes.getNeighbours(nodes, connections, i, zoom), 'get node neighbours');
+			if (node.neighbours.length == 0) continue;
+
+			nodesWithNeighbours.push(node);
+		}
+
+		// Get node graphs
+		const nodeGraphs = timer.time(() => Nodes.getNeighbourGraphs(nodesWithNeighbours), 'get node graphs');
+
+		for (let i = 0; i < nodeGraphs.length; i++) {
 			// Get the array of expanded nodes from graph
-			let nodeGraph = zoomNodeGraphs[i];
-			let nodeArray = Array.from(nodeGraph);
-			if (nodeArray.length == 1) continue;
-
-			if (counts[nodeArray.length] == undefined) counts[nodeArray.length] = 1;
-			else counts[nodeArray.length]++;
+			let nodeArray = nodeGraphs[i];
 
 			// Remove some overlaping nodes from the array
 			// until there is no overlaping nodes
@@ -528,7 +523,7 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 
 				while (true) {
 					// Run the simulation until no nodes are overlaping
-					let areOverlapingNodes = timer.time(() => Nodes.Bounds.areOverlaping(nodeArray, scale), 'are overlaping nodes');
+					let areOverlapingNodes = timer.time(() => Nodes.Bounds.areOverlaping(nodeArray, scale), 'overlaping nodes');
 					if (areOverlapingNodes == false) break;
 
 					// Or the simulation is stable
@@ -542,17 +537,13 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 				if (overlapingNodeIndex == -1) break;
 
 				// Else, collapse it
+				const collapsedNode = nodeArray[overlapingNodeIndex];
+				Nodes.setNodeCollapsed(collapsedNode, connections[collapsedNode.index]);
+
 				// and remove it from the array and try again
 				nodeArray[overlapingNodeIndex].expanded = false;
 				nodeArray.splice(overlapingNodeIndex, 1);
-				nodeCollapsed = true;
 			}
-		}
-
-		// If at least one node was collapsed, filter expanded connections
-		if (nodeCollapsed) {
-			// Filter expanded connections
-			connections = timer.time(() => connections.filter((c) => c.node1.expanded && c.node2.expanded), 'filter connections');
 		}
 
 		// Get the expanded nodes
@@ -560,8 +551,6 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 		// Create threshold event
 		thresholds.push(Threshold.createEvent(expandedNodes, zoom));
 	}
-
-	console.log(counts);
 
 	timer.print(`[THRESHOLDS ${markers.length}]`);
 

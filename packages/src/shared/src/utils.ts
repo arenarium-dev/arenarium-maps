@@ -18,7 +18,8 @@ export class Timer {
 
 	print(prefix: string) {
 		console.log(`${prefix}`);
-		for (let [name, time] of this.times) {
+		const data = Array.from(this.times.entries()).toSorted((a, b) => a[1] - b[1]);
+		for (let [name, time] of data) {
 			console.log(`${prefix} ${name}: ${time}`);
 		}
 		console.log(`${prefix} total: ${Array.from(this.times.values()).reduce((a, b) => a + b, 0)}`);
