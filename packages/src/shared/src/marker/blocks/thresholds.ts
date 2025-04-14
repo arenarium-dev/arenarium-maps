@@ -194,13 +194,7 @@ namespace Nodes {
 		neighbours: Array<Node>;
 	}
 
-	export interface Connection {
-		/** The zoom when bounds of influence are touching,
-		 *  used to filter out connections that are not influencing the marker nodes. */
-		zwt: number;
-		/** The enabled state of the connection. True if both nodes are expanded. */
-		enabled: boolean;
-	}
+	export type NodeNeighbourDeltas = Array<Map<string, Array<Node>>>;
 
 	export function createNodes(markers: Array<Marker>): Array<Node> {
 		let nodes = new Array<Node>(markers.length);
@@ -226,11 +220,13 @@ namespace Nodes {
 		return nodes;
 	}
 
-	export function createConnections(nodes: Array<Node>): Array<Array<Connection>> {
-		// Create array of connections for each node
-		const connections = new Array<Array<Connection>>(nodes.length);
+	export function createNeighbourDeltas(nodes: Array<Node>): NodeNeighbourDeltas {
+		// Create array of neighbours deltas for each node
+		// at each zoom level
+		const nodesNeighbourDeltas = new Array<Map<string, Array<Node>>>();
+
 		for (let i = 0; i < nodes.length; i++) {
-			connections[i] = new Array<Connection>(nodes.length);
+			nodesNeighbourDeltas[i] = new Map<string, Array<Node>>();
 		}
 
 		// Create marker connection bounds of influence,
@@ -255,23 +251,30 @@ namespace Nodes {
 		// the zoom when touching is the maximum zoom level at
 		// which the markers influencing each others position (angle, expanded, etc.)
 		for (let i1 = 0; i1 < nodes.length; i1++) {
+			const node1 = nodes[i1];
 			const bounds1 = bounds[i1];
+			const neighboursDeltas1 = nodesNeighbourDeltas[i1];
 
 			for (let i2 = i1 + 1; i2 < nodes.length; i2++) {
+				const node2 = nodes[i2];
 				const bounds2 = bounds[i2];
+				const neighboursDeltas2 = nodesNeighbourDeltas[i2];
 
 				const zwt = getBoundsZoomWhenTouching(bounds1, bounds2);
-				const connection = { zwt: zwt, enabled: true };
+				const zoom = Math.min(Math.ceil(zwt * Zoom.SCALE) / Zoom.SCALE, Zoom.MAX).toFixed(1);
 
-				connections[i1][i2] = connection;
-				connections[i2][i1] = connection;
+				const zoomNeighbourDelta1 = neighboursDeltas1.get(zoom);
+				const zoomNeighbourDelta2 = neighboursDeltas2.get(zoom);
+
+				if (zoomNeighbourDelta1) zoomNeighbourDelta1.push(node2);
+				else neighboursDeltas1.set(zoom, [node2]);
+
+				if (zoomNeighbourDelta2) zoomNeighbourDelta2.push(node1);
+				else neighboursDeltas2.set(zoom, [node1]);
 			}
-
-			// Disable self connection
-			connections[i1][i1] = { zwt: 0, enabled: false };
 		}
 
-		return connections;
+		return nodesNeighbourDeltas;
 	}
 
 	export function getNeighbourGraphs(nodes: Array<Node>): Array<Array<Node>> {
@@ -307,7 +310,7 @@ namespace Nodes {
 		return graphs;
 	}
 
-	export function updateNeighbours(nodes: Array<Node>, connections: Array<Array<Connection>>, zoom: number) {
+	export function updateNeighbours(nodes: Array<Node>, nodesNeighbourDeltas: NodeNeighbourDeltas, zoomKey: string) {
 		for (let i = 0; i < nodes.length; i++) {
 			let node = nodes[i];
 
@@ -317,23 +320,21 @@ namespace Nodes {
 				continue;
 			}
 
-			// Else, calculate neighbours based on connections and zoom
-			let nodeNeighbours = new Array<Node>();
-			let nodeConnections = connections[i];
+			// Else, add neighbours based on delta at zoom level
+			const nodeNeighbourDeltas = nodesNeighbourDeltas[i];
+			const zoomNeighbourDelta = nodeNeighbourDeltas.get(zoomKey);
+			if (zoomNeighbourDelta == undefined) continue;
 
-			for (let j = 0; j < nodeConnections.length; j++) {
-				const connection = nodeConnections[j];
-				if (connection.enabled == false) continue;
-				if (connection.zwt <= zoom) continue;
+			for (let j = 0; j < zoomNeighbourDelta.length; j++) {
+				const neighbour = zoomNeighbourDelta[j];
+				if (neighbour.expanded == false) continue;
 
-				nodeNeighbours.push(nodes[j]);
+				node.neighbours.push(neighbour);
 			}
-
-			node.neighbours = nodeNeighbours;
 		}
 	}
 
-	export function updateCollapsed(node: Node, connections: Array<Connection>) {
+	export function updateCollapsed(node: Node) {
 		// Set node expanded to false
 		node.expanded = false;
 
@@ -343,11 +344,6 @@ namespace Nodes {
 			const neighbour = nodeNeighbours[i];
 			const neighbourNodeIndex = neighbour.neighbours.indexOf(node);
 			neighbour.neighbours.splice(neighbourNodeIndex, 1);
-		}
-
-		// Disable all connections to the node
-		for (let i = 0; i < connections.length; i++) {
-			connections[i].enabled = false;
 		}
 	}
 
@@ -444,25 +440,20 @@ namespace Zoom {
 		return Math.round((zoom + count * STEP) * SCALE) / SCALE;
 	}
 
-	export function getMaxZoom(connectionsGrid: Array<Array<Nodes.Connection>>): number {
-		let zoom = Zoom.MIN;
+	export function getMaxZoom(nodesNeighbourDeltas: Nodes.NodeNeighbourDeltas): number {
+		let zoom = MIN;
 
-		for (let i = 0; i < connectionsGrid.length; i++) {
-			const connectionArray = connectionsGrid[i];
+		for (let i = 0; i < nodesNeighbourDeltas.length; i++) {
+			const nodeNeighbourDeltas = nodesNeighbourDeltas[i];
+			const nodeNeighbourDeltasZoomKeys = nodeNeighbourDeltas.keys();
 
-			for (let j = 0; j < connectionArray.length; j++) {
-				const connection = connectionArray[j];
-				if (connection.zwt > zoom) {
-					zoom = connection.zwt;
-				}
-
-				if (zoom > Zoom.MAX) {
-					return Zoom.MAX;
-				}
+			for (const zoomKey of nodeNeighbourDeltasZoomKeys) {
+				const zoomValue = Number(zoomKey);
+				if (zoomValue > zoom) zoom = zoomValue;
 			}
 		}
 
-		return addSteps(zoom - (zoom % Zoom.STEP), 0);
+		return zoom;
 	}
 }
 
@@ -499,10 +490,10 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 
 	// Initialze nodes
 	const nodes = Nodes.createNodes(markers);
-	const connections = Nodes.createConnections(nodes);
+	const nodeNeighbourDeltas = Nodes.createNeighbourDeltas(nodes);
 
 	// Initialize zoom
-	const maxZoom = Zoom.getMaxZoom(connections);
+	const maxZoom = Zoom.getMaxZoom(nodeNeighbourDeltas);
 	const minZoom = Zoom.MIN;
 
 	// Initially add the last threshold event
@@ -514,7 +505,7 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 		const scale = Math.pow(2, zoom);
 
 		// Update expanded nodes neighbours
-		Nodes.updateNeighbours(nodes, connections, zoom);
+		Nodes.updateNeighbours(nodes, nodeNeighbourDeltas, zoom.toFixed(1));
 		// Get expanded node graphs
 		const graphs = Nodes.getNeighbourGraphs(nodes);
 
@@ -552,8 +543,7 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 				if (collapsedNodeIndex == -1) break;
 
 				// Else, collapse it
-				const collapsedNode = graph[collapsedNodeIndex];
-				Nodes.updateCollapsed(collapsedNode, connections[collapsedNode.index]);
+				Nodes.updateCollapsed(graph[collapsedNodeIndex]);
 
 				// And remove it from the array
 				// and try again if there is more than one node
