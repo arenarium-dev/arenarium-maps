@@ -1,12 +1,6 @@
 import { getBounds, getBoundsZoomWhenTouching, areBoundsOverlaping, type Bounds } from './bounds.js';
 
 import { MAP_MAX_ZOOM, MAP_MIN_ZOOM, MARKER_DEFAULT_ANGLE } from '../../constants.js';
-import { Timer } from '../../utils.js';
-
-interface Point {
-	x: number;
-	y: number;
-}
 
 interface Marker {
 	id: string;
@@ -317,24 +311,25 @@ namespace Nodes {
 		for (let i = 0; i < nodes.length; i++) {
 			let node = nodes[i];
 
+			// If the node is not expanded, clear neighbours
 			if (node.expanded == false) {
-				// If the node is not expanded, clear neighbours
 				node.neighbours.length = 0;
-			} else {
-				// Else, calculate neighbours based on connections and zoom
-				let nodeNeighbours = new Array<Node>();
-				let nodeConnections = connections[i];
-
-				for (let i = 0; i < nodeConnections.length; i++) {
-					const connection = nodeConnections[i];
-					if (connection.enabled == false) continue;
-					if (connection.zwt <= zoom) continue;
-
-					nodeNeighbours.push(nodes[i]);
-				}
-
-				node.neighbours = nodeNeighbours;
+				continue;
 			}
+
+			// Else, calculate neighbours based on connections and zoom
+			let nodeNeighbours = new Array<Node>();
+			let nodeConnections = connections[i];
+
+			for (let i = 0; i < nodeConnections.length; i++) {
+				const connection = nodeConnections[i];
+				if (connection.enabled == false) continue;
+				if (connection.zwt <= zoom) continue;
+
+				nodeNeighbours.push(nodes[i]);
+			}
+
+			node.neighbours = nodeNeighbours;
 		}
 	}
 
@@ -472,21 +467,19 @@ namespace Zoom {
 }
 
 namespace Threshold {
-	export interface Event {
+	export class Event {
 		/** The zoom threshold */
 		zoom: number;
 		/** The expanded markers */
 		ids: Array<string>;
 		/** The angles of all the markers after the zoom expand threshold */
 		angles: Array<{ id: string; value: number }>;
-	}
 
-	export function createEvent(nodes: Nodes.Node[], zoom: number): Event {
-		return {
-			zoom: Number(zoom.toFixed(1)),
-			ids: nodes.map((n) => n.marker.id),
-			angles: nodes.map((n) => ({ id: n.marker.id, value: n.angle }))
-		};
+		constructor(nodes: Nodes.Node[], zoom: number) {
+			this.zoom = Number(zoom.toFixed(1));
+			this.ids = nodes.map((n) => n.marker.id);
+			this.angles = nodes.map((n) => ({ id: n.marker.id, value: n.angle }));
+		}
 	}
 }
 
@@ -513,7 +506,7 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 	const minZoom = Zoom.MIN;
 
 	// Initially add the last threshold event
-	thresholds.push(Threshold.createEvent(nodes, Zoom.addSteps(maxZoom, 1)));
+	thresholds.push(new Threshold.Event(nodes, Zoom.addSteps(maxZoom, 1)));
 
 	// Go from last to first zoom
 	for (let zoom = maxZoom; zoom >= minZoom; zoom -= Zoom.STEP) {
@@ -568,7 +561,7 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 		// Get the expanded nodes
 		const expandedNodes = nodes.filter((n) => n.expanded);
 		// Create threshold event
-		thresholds.push(Threshold.createEvent(expandedNodes, zoom));
+		thresholds.push(new Threshold.Event(expandedNodes, zoom));
 	}
 
 	//  Return the thresholds in reverse order (from min zoom to max zoom)
