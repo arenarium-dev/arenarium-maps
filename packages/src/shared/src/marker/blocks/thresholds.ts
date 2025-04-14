@@ -416,7 +416,7 @@ namespace Nodes {
 	export namespace Simulation {
 		let stable = false;
 
-		export function getLastUpdateStable() {
+		export function getStable() {
 			return stable;
 		}
 
@@ -504,14 +504,12 @@ namespace Threshold {
 function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 	const thresholds = new Array<Threshold.Event>();
 
-	const timer = new Timer();
-
 	// Initialze nodes
-	const nodes = timer.time(() => Nodes.createNodes(markers), 'create nodes');
-	const connections = timer.time(() => Nodes.createConnections(nodes), 'create connections');
+	const nodes = Nodes.createNodes(markers);
+	const connections = Nodes.createConnections(nodes);
 
 	// Initialize zoom
-	const maxZoom = timer.time(() => Zoom.getMaxZoom(connections), 'get max zoom');
+	const maxZoom = Zoom.getMaxZoom(connections);
 	const minZoom = Zoom.MIN;
 
 	// Initially add the last threshold event
@@ -523,48 +521,44 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 		const scale = Math.pow(2, zoom);
 
 		// Update expanded nodes neighbours
-		timer.time(() => Nodes.updateNeighbours(nodes, connections, zoom), 'update neighbours');
+		Nodes.updateNeighbours(nodes, connections, zoom);
 		// Get expanded node graphs
-		const graphs = timer.time(() => Nodes.getNeighbourGraphs(nodes), 'get graphs');
+		const graphs = Nodes.getNeighbourGraphs(nodes);
 
 		for (let i = 0; i < graphs.length; i++) {
 			const graph = graphs[i];
 
 			// Update node bounds
-			timer.time(() => Nodes.Bounds.updateBounds(graph, scale), 'update bounds');
+			Nodes.Bounds.updateBounds(graph, scale);
 			// Check if there are overlaping nodes in graph
-			const graphOverlaping = timer.time(() => Nodes.Bounds.getOverlaping(graph, scale), 'get overlaping');
-			if (graphOverlaping == false) continue;
+			if (Nodes.Bounds.getOverlaping(graph, scale) == false) continue;
+
+			// Initialize the simulation for a given zoom level
+			Nodes.Simulation.updateParticles(graph, scale);
 
 			// Remove some overlaping nodes from the array
 			// until there is no overlaping nodes
 			while (graph.length > 1) {
-				// Initialize the simulation for a given zoom level
-				timer.time(() => Nodes.Simulation.updateParticles(graph, scale), 'update particles');
-
 				while (true) {
 					// Update node angles in the simulation
-					timer.time(() => Nodes.Simulation.updateAngles(graph), 'update angles');
+					Nodes.Simulation.updateAngles(graph);
 					// Update node bounds
-					timer.time(() => Nodes.Bounds.updateBounds(graph, scale), 'update bounds');
+					Nodes.Bounds.updateBounds(graph, scale);
 
 					// Check if the last update was stable
-					const simulationStable = Nodes.Simulation.getLastUpdateStable();
-					if (simulationStable) break;
-
+					if (Nodes.Simulation.getStable()) break;
 					// Or there are overlaping nodes
-					const simulationOverlaping = timer.time(() => Nodes.Bounds.getOverlaping(graph, scale), 'get overlaping');
-					if (simulationOverlaping == false) break;
+					if (Nodes.Bounds.getOverlaping(graph, scale) == false) break;
 				}
 
 				// Get the index of the overlaping node
 				// If there is an no overlaping node break
-				const collapsedNodeIndex = timer.time(() => Nodes.Bounds.getOverlapingIndex(graph, scale), 'get overlaping index');
+				const collapsedNodeIndex = Nodes.Bounds.getOverlapingIndex(graph, scale);
 				if (collapsedNodeIndex == -1) break;
 
 				// Else, collapse it
 				const collapsedNode = graph[collapsedNodeIndex];
-				timer.time(() => Nodes.updateCollapsed(collapsedNode, connections[collapsedNode.index]), 'update collapsed');
+				Nodes.updateCollapsed(collapsedNode, connections[collapsedNode.index]);
 
 				// And remove it from the array and try again
 				graph.splice(collapsedNodeIndex, 1);
@@ -576,8 +570,6 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 		// Create threshold event
 		thresholds.push(Threshold.createEvent(expandedNodes, zoom));
 	}
-
-	timer.print(`[THRESHOLDS ${markers.length}]`);
 
 	//  Return the thresholds in reverse order (from min zoom to max zoom)
 	return thresholds.reverse();
