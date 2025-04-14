@@ -16,7 +16,7 @@
 			container: 'map',
 			position: {
 				center: { lat: 51.505, lng: -0.09 },
-				zoom: 5
+				zoom: 11.59
 			},
 			theme: {
 				name: 'dark',
@@ -74,8 +74,13 @@
 		});
 
 		const popups = new Array<MapPopup>();
-		const center = { lat: 51.505, lng: -0.09 };
-		const radius = 20;
+		const centers = [
+			{ lat: 51.505, lng: -0.09 },
+			{ lat: 45, lng: 22 },
+			{ lat: 52.52, lng: 13.409 },
+			{ lat: 48.8566, lng: 2.3522 }
+		];
+		const radius = 10;
 		const count = 1000;
 
 		let randomPrev = 1;
@@ -86,7 +91,9 @@
 		};
 
 		for (let i = 0; i < count; i++) {
+			const center = centers[i % centers.length];
 			const distance = radius / (count - i);
+
 			const lat = center.lat + distance * (-1 + random() * 2);
 			const lng = center.lng + distance * (-1 + random() * 2);
 
