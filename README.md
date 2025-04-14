@@ -1,3 +1,4 @@
 TODO:
 
-On most zoom levels no nodes colapse, wasted calculations, optimize
+Create layers for node neighbours, 
+at each new zoom level layer, add new neighbours

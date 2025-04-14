@@ -531,14 +531,16 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 
 			// Remove some overlaping nodes from the array
 			// until there is no overlaping nodes
-			while (graph.length > 1) {
+			while (true) {
+				// Run the simulation loop
+				// to update the angles of the nodes
 				while (true) {
 					// Update node angles in the simulation
 					Nodes.Simulation.updateAngles(graph);
 					// Update node bounds
 					Nodes.Bounds.updateBounds(graph, scale);
 
-					// Check if the last update was stable
+					// Check if the last simulation update was stable
 					if (Nodes.Simulation.getStable()) break;
 					// Or there are overlaping nodes
 					if (Nodes.Bounds.getOverlaping(graph, scale) == false) break;
@@ -553,14 +555,15 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 				const collapsedNode = graph[collapsedNodeIndex];
 				Nodes.updateCollapsed(collapsedNode, connections[collapsedNode.index]);
 
-				// And remove it from the array and try again
+				// And remove it from the array
+				// and try again if there is more than one node
 				graph.splice(collapsedNodeIndex, 1);
+				if (graph.length == 1) break;
 			}
 		}
 
-		// Get the expanded nodes
+		// Create threshold event with the expanded nodes
 		const expandedNodes = nodes.filter((n) => n.expanded);
-		// Create threshold event
 		thresholds.push(new Threshold.Event(expandedNodes, zoom));
 	}
 
