@@ -321,12 +321,12 @@ namespace Nodes {
 			let nodeNeighbours = new Array<Node>();
 			let nodeConnections = connections[i];
 
-			for (let i = 0; i < nodeConnections.length; i++) {
-				const connection = nodeConnections[i];
+			for (let j = 0; j < nodeConnections.length; j++) {
+				const connection = nodeConnections[j];
 				if (connection.enabled == false) continue;
 				if (connection.zwt <= zoom) continue;
 
-				nodeNeighbours.push(nodes[i]);
+				nodeNeighbours.push(nodes[j]);
 			}
 
 			node.neighbours = nodeNeighbours;
