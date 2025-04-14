@@ -339,15 +339,25 @@ namespace Nodes {
 	}
 
 	export function updateCollapsed(node: Node, connections: Array<Connection>) {
+		// Set node expanded to false
 		node.expanded = false;
 
-		for (let j = 0; j < connections.length; j++) {
-			connections[j].enabled = false;
+		// Remove node from neighbours
+		const nodeNeighbours = node.neighbours;
+		for (let i = 0; i < nodeNeighbours.length; i++) {
+			const neighbour = nodeNeighbours[i];
+			const neighbourNodeIndex = neighbour.neighbours.indexOf(node);
+			neighbour.neighbours.splice(neighbourNodeIndex, 1);
+		}
+
+		// Disable all connections to the node
+		for (let i = 0; i < connections.length; i++) {
+			connections[i].enabled = false;
 		}
 	}
 
 	export namespace Bounds {
-		export function update(nodes: Array<Node>, scale: number) {
+		export function updateBounds(nodes: Array<Node>, scale: number) {
 			for (let i = 0; i < nodes.length; i++) {
 				const node = nodes[i];
 				node.bounds = getBounds(node.marker, node.angle, scale);
@@ -512,17 +522,16 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 		// Calculate scale
 		const scale = Math.pow(2, zoom);
 
-		// Update node neighbours
+		// Update expanded nodes neighbours
 		timer.time(() => Nodes.updateNeighbours(nodes, connections, zoom), 'update neighbours');
-
-		// Get node graphs
+		// Get expanded node graphs
 		const graphs = timer.time(() => Nodes.getNeighbourGraphs(nodes), 'get graphs');
 
 		for (let i = 0; i < graphs.length; i++) {
 			const graph = graphs[i];
 
 			// Update node bounds
-			timer.time(() => Nodes.Bounds.update(graph, scale), 'update bounds');
+			timer.time(() => Nodes.Bounds.updateBounds(graph, scale), 'update bounds');
 			// Check if there are overlaping nodes in graph
 			const graphOverlaping = timer.time(() => Nodes.Bounds.getOverlaping(graph, scale), 'get overlaping');
 			if (graphOverlaping == false) continue;
@@ -537,7 +546,7 @@ function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 					// Update node angles in the simulation
 					timer.time(() => Nodes.Simulation.updateAngles(graph), 'update angles');
 					// Update node bounds
-					timer.time(() => Nodes.Bounds.update(graph, scale), 'update bounds');
+					timer.time(() => Nodes.Bounds.updateBounds(graph, scale), 'update bounds');
 
 					// Check if the last update was stable
 					const simulationStable = Nodes.Simulation.getLastUpdateStable();
