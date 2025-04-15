@@ -1,6 +1,5 @@
 TODO:
 
-Create layers for node neighbours, 
-at each new zoom level layer, add new neighbours
-
+Add shadows for markers
+Add a worker api
 Add a test for thresholds output
