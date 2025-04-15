@@ -89,6 +89,7 @@
 	let markerWidth = $state<number>(0);
 	let markerHeight = $state<number>(0);
 
+	let anchor: HTMLElement;
 	let marker: HTMLElement;
 	let pin: HTMLElement;
 
@@ -115,6 +116,10 @@
 		const pinAngleDeg = params.pinAngleDeg;
 		const pinSkewDeg = params.pinSkewDeg;
 		pin.style.transform = `rotate(${pinAngleDeg}deg) skew(${pinSkewDeg}deg, ${pinSkewDeg}deg)`;
+
+		const shadowX = -1 - 2 * (markerOffsetX / markerWidth);
+		const shadowY = -1 - 2 * (markerOffsetY / markerHeight);
+		anchor.style.filter = ` drop-shadow(0px 0px 4px rgba(0,0,0,0.5)) drop-shadow(${shadowX}px ${shadowY}px 2px rgba(0,0,0,0.5))`;
 	}
 
 	export const getWidth = () => markerWidth;
@@ -123,7 +128,7 @@
 	//#endregion
 </script>
 
-<div class="anchor" class:collapsed class:hidden>
+<div class="anchor" class:collapsed class:hidden bind:this={anchor}>
 	<div class="pin" bind:this={pin}></div>
 	<div
 		class="marker"
@@ -150,6 +155,7 @@
 		position: absolute;
 		width: 0px;
 		height: 0px;
+		// filter: drop-shadow(-1px 0px 3px blue) drop-shadow(-1px 0px 1px red);
 
 		.marker {
 			position: absolute;
@@ -167,6 +173,7 @@
 				background-color: @background;
 				overflow: hidden;
 				cursor: pointer;
+				// box-shadow: 0px 0px 4px black;
 
 				.body {
 					transition: opacity 125ms ease-in;

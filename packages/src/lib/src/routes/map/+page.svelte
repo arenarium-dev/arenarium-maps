@@ -19,11 +19,11 @@
 				zoom: 11.59
 			},
 			theme: {
-				name: 'dark',
+				name: 'light',
 				colors: {
-					background: 'black',
-					primary: 'yellow',
-					text: 'white'
+					background: 'white',
+					primary: 'violet',
+					text: 'black'
 				}
 			},
 			events: {
@@ -58,7 +58,7 @@
 			map.setTheme({
 				name: 'dark',
 				colors: {
-					background: 'black',
+					background: '#404040',
 					primary: 'violet',
 					text: 'white'
 				}
@@ -81,7 +81,7 @@
 			{ lat: 48.8566, lng: 2.3522 }
 		];
 		const radius = 10;
-		const count = 2000;
+		const count = 1000;
 
 		let randomPrev = 1;
 		const random = () => {
