@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const mapThemeSchema = z.object({
 	name: z.literal('dark').or(z.literal('light')),
+	url: z.string().optional(),
 	colors: z.object({
 		primary: z.string().max(64),
 		background: z.string().max(64),

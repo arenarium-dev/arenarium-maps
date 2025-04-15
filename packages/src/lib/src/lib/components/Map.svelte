@@ -43,7 +43,7 @@
 		const position = options.position;
 
 		map = new maplibregl.Map({
-			style: getStyle(options.theme.name),
+			style: getStyle(options.theme),
 			center: { lat: position.center.lat, lng: position.center.lng },
 			zoom: position.zoom,
 			minZoom: getMapMinZoom(),
@@ -156,12 +156,14 @@
 
 	$effect(() => {
 		if (mapLoaded) {
-			map.setStyle(getStyle(theme.name));
+			map.setStyle(getStyle(theme), { diff: true });
 		}
 	});
 
-	function getStyle(theme: 'light' | 'dark') {
-		switch (theme) {
+	function getStyle(theme: MapTheme) {
+		if (theme.url) return theme.url;
+
+		switch (theme.name) {
 			case 'light':
 				return lightStyleSpecification;
 			case 'dark':
@@ -175,7 +177,7 @@
 
 	export function setTheme(value: MapTheme) {
 		theme = value;
-		map.setStyle(getStyle(theme.name), { diff: true });
+		map.setStyle(getStyle(theme), { diff: true });
 	}
 
 	//#endregion

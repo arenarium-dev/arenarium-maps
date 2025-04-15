@@ -20,6 +20,7 @@
 			},
 			theme: {
 				name: 'light',
+				url: 'https://tiles.openfreemap.org/styles/liberty',
 				colors: {
 					background: 'white',
 					primary: 'violet',
@@ -58,7 +59,7 @@
 			map.setTheme({
 				name: 'dark',
 				colors: {
-					background: '#404040',
+					background: 'lightgray',
 					primary: 'violet',
 					text: 'white'
 				}
@@ -81,7 +82,7 @@
 			{ lat: 48.8566, lng: 2.3522 }
 		];
 		const radius = 10;
-		const count = 1000;
+		const count = 4192;
 
 		let randomPrev = 1;
 		const random = () => {
