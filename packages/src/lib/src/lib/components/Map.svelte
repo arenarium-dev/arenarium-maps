@@ -445,10 +445,10 @@
 		position: absolute;
 		width: 100%;
 		height: 100%;
-		overflow: hidden;
 		font-family: 'Noto Sans';
 		box-sizing: border-box;
 		touch-action: manipulation;
+		overflow: hidden;
 
 		.map {
 			position: absolute;
@@ -471,25 +471,25 @@
 
 		:global {
 			.maplibregl-map {
-				font: inherit;
-				font-weight: 500;
 				z-index: 0;
 
 				.maplibregl-ctrl-bottom-right {
 					z-index: 10000;
 
 					.maplibregl-ctrl-attrib {
-						background-color: var(--background);
+						background-color: color-mix(in srgb, var(--background) 50%, transparent 50%);
 						color: var(--text);
-						opacity: 0.75;
 						font-size: 10px;
+						font-family: 'Noto Sans';
+						font-weight: 500;
 						padding: 2px 5px;
 						border-top-left-radius: 5px;
+						box-shadow: -1px -1px 2px rgba(0, 0, 0, 0.2);
 
 						.maplibregl-ctrl-attrib-inner {
 							a {
 								color: var(--text);
-								text-decoration: underline;
+								font-weight: 600;
 							}
 						}
 					}

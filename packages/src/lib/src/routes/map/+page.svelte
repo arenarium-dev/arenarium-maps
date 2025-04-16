@@ -61,7 +61,7 @@
 				colors: {
 					background: 'lightgray',
 					primary: 'violet',
-					text: 'white'
+					text: 'black'
 				}
 			});
 		}
@@ -70,7 +70,7 @@
 	async function changeData() {
 		map.setPopupsContentCallback(async (ids) => {
 			return new Promise((resolve) => {
-				resolve(ids.map((id) => `<div style="width:200px; height: 150px; color:red">${id}</div>`));
+				resolve(ids.map((id) => `<div style="width:200px; height: 150px; color:red; padding: 8px;">${id}</div>`));
 			});
 		});
 

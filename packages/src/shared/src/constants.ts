@@ -1,4 +1,3 @@
-export const MAP_MARKERS_MAX_COUNT = 1024;
 export const MAP_BASE_SIZE = 512;
 export const MAP_MIN_ZOOM = 0;
 export const MAP_MAX_ZOOM = 18;

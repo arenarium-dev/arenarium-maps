@@ -4,31 +4,31 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<script src="https://unpkg.com/@arenarium/maps@latest/dist/index.umd.cjs"></script>
-		<link href="https://unpkg.com/@arenarium/maps@latest/dist/style.css" rel="stylesheet"/>
+		<script src="https://unpkg.com/@arenarium/maps@latest/dist/index.js"></script>
+		<link href="https://unpkg.com/@arenarium/maps@latest/dist/style.css" rel="stylesheet" />
 	</head>
 	<body>
 		<div id="map"></div>
 		<script>
-            const map = arenarium.mountMap({
+			const map = arenarium.mountMap({
 				container: 'map',
 				position: {
 					center: { lat: 51.505, lng: -0.09 },
 					zoom: 13
 				},
 				style: {
-					name: 'dark',
+					name: 'light',
 					colors: {
-						background: 'black',
+						background: 'white',
 						primary: 'yellow',
-						text: 'white'
+						text: 'black'
 					}
 				}
 			});
 
 			map.setPopupsContentCallback(async (ids) => {
 				return new Promise((resolve) => {
-					resolve(ids.map((id) => `<div style="width:150px; height: 100px; background-color:yellow">${id}</div>`));
+					resolve(ids.map((id) => `<div style="width:150px; height: 100px;">${id}</div>`));
 				});
 			});
 
@@ -53,7 +53,7 @@
 			}
 
 			map.setPopups(popups);
-        </script>
+		</script>
 		<style>
 			#map {
 				position: fixed;
@@ -62,6 +62,6 @@
 				width: 100%;
 				height: 100%;
 			}
-		</style>	
+		</style>
 	</body>
 </html>

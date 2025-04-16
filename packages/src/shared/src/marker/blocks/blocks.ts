@@ -23,7 +23,7 @@ function getBlocksZoomStep(markersLength: number, zoomStep: number): number {
 
 export function getBlocks(popups: Types.Popup[]): Types.Block[] {
 	// Calculate the thresholds
-	const thresholdProjections = popups.map(m => getPoint(m.lat, m.lng));
+	const thresholdProjections = popups.map((m) => getPoint(m.lat, m.lng));
 	const thresholdMarkers = popups.map((m, i) => ({
 		id: m.id,
 		x: thresholdProjections[i].x,
@@ -35,15 +35,18 @@ export function getBlocks(popups: Types.Popup[]): Types.Block[] {
 	const thresholds = getThresholds(thresholdMarkers);
 
 	// Validate and load expansion results
-	const markers = popups.map(m => ({
-		id: m.id,
-		lat: m.lat,
-		lng: m.lng,
-		width: m.width,
-		height: m.height,
-		zet: NaN,
-		angs: []
-	}) as Types.Marker)
+	const markers = popups.map(
+		(m) =>
+			({
+				id: m.id,
+				lat: m.lat,
+				lng: m.lng,
+				width: m.width,
+				height: m.height,
+				zet: NaN,
+				angs: []
+			}) as Types.Marker
+	);
 	const markerMap = new Map(markers.map((p) => [p.id, p]));
 
 	for (const threshold of thresholds) {
