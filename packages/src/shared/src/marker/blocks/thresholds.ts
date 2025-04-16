@@ -492,6 +492,8 @@ namespace Threshold {
 function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
 	const thresholds = new Array<Threshold.Event>();
 
+	console.log('EEEE');
+
 	// Initialze nodes
 	const nodes = Nodes.createNodes(markers);
 	const nodeNeighbourDeltas = Nodes.createNeighbourDeltas(nodes);

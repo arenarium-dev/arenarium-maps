@@ -1,7 +1,4 @@
-import { getBlocks as getBlocksCore } from '@workspace/shared/src/marker/blocks/blocks.js';
 import type { Types } from '@workspace/shared/src/types.js';
-
-import { PUBLIC_API_URL } from '$env/static/public';
 
 export class BlockData {
 	block: Types.Block;
@@ -17,16 +14,18 @@ export async function getBlocks(popups: Types.Popup[]): Promise<Types.Block[]> {
 	const now = performance.now();
 
 	try {
-		switch (import.meta.env.MODE) {
-			case 'browser': {
-				return getBlocksCore(popups);
+		if (import.meta.env.DEV) {
+			switch (import.meta.env.MODE) {
+				case 'browser': {
+					const blocks = await import('@workspace/shared/src/marker/blocks/blocks.js');
+					return blocks.getBlocks(popups);
+				}
+				default: {
+					return getBlocksApi(popups);
+				}
 			}
-			case 'development': {
-				return getBlocksApi(popups);
-			}
-			default: {
-				return getBlocksApi(popups);
-			}
+		} else {
+			return getBlocksApi(popups);
 		}
 	} finally {
 		console.log(`[BLOCKS ${popups.length}] ${performance.now() - now}ms`);
@@ -34,7 +33,8 @@ export async function getBlocks(popups: Types.Popup[]): Promise<Types.Block[]> {
 }
 
 async function getBlocksApi(popups: Types.Popup[]): Promise<Types.Block[]> {
-	const response = await fetch(`${PUBLIC_API_URL}/v1/blocks`, {
+	const url = import.meta.env.VITE_API_URL;
+	const response = await fetch(`${url}/v1/blocks`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
