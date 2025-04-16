@@ -8,6 +8,19 @@ importers:
 
   .: {}
 
+  packages/src/api:
+    dependencies:
+      hono:
+        specifier: ^4.7.7
+        version: 4.7.7
+    devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20250214.0
+        version: 4.20250407.0
+      wrangler:
+        specifier: ^4.4.0
+        version: 4.8.0(@cloudflare/workers-types@4.20250407.0)
+
   packages/src/lib:
     devDependencies:
       '@eslint/compat':
@@ -2193,6 +2206,10 @@ packages:
   highlight.js@11.11.1:
     resolution: {integrity: sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w==}
     engines: {node: '>=12.0.0'}
+
+  hono@4.7.7:
+    resolution: {integrity: sha512-2PCpQRbN87Crty8/L/7akZN3UyZIAopSoRxCwRbJgUuV1+MHNFHzYFxZTg4v/03cXUm+jce/qa2VSBZpKBm3Qw==}
+    engines: {node: '>=16.9.0'}
 
   iconv-lite@0.6.3:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
@@ -4840,6 +4857,8 @@ snapshots:
   he@1.2.0: {}
 
   highlight.js@11.11.1: {}
+
+  hono@4.7.7: {}
 
   iconv-lite@0.6.3:
     dependencies:
