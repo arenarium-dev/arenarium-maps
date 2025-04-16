@@ -490,9 +490,9 @@ namespace Threshold {
  * If only one node expanded left, break
  */
 function getThresholds(markers: Array<Marker>): Array<Threshold.Event> {
-	const thresholds = new Array<Threshold.Event>();
+	console.log('COMPUTING THRESHOLDS');
 
-	console.log('EEEE');
+	const thresholds = new Array<Threshold.Event>();
 
 	// Initialze nodes
 	const nodes = Nodes.createNodes(markers);

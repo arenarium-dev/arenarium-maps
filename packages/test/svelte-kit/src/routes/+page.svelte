@@ -4,8 +4,10 @@
 	import { mountMap, type MapPopup } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
 
+	let map: ReturnType<typeof mountMap>;
+
 	onMount(() => {
-		let map = mountMap({
+		map = mountMap({
 			container: 'map',
 			position: {
 				center: { lat: 51.505, lng: -0.09 },
@@ -16,11 +18,13 @@
 				colors: {
 					primary: 'violet',
 					background: 'white',
-					text: 'white'
+					text: 'black'
 				}
 			}
 		});
+	});
 
+	function refresh() {
 		map.setPopupsContentCallback(async (ids) => {
 			return new Promise((resolve) => {
 				resolve(ids.map((id) => `<div style="width:200px; height: 150px; color:violet">${id}</div>`));
@@ -30,7 +34,7 @@
 		const popups = new Array<MapPopup>();
 		const center = { lat: 51.505, lng: -0.09 };
 		const radius = 20;
-		const count = 300;
+		const count = 1000;
 
 		for (let i = 0; i < count; i++) {
 			const distance = radius / (count - i);
@@ -48,10 +52,14 @@
 		}
 
 		map.setPopups(popups);
-	});
+	}
 </script>
 
 <div id="map"></div>
+
+<div class="bottom-left">
+	<button class="button" onclick={refresh}> Refresh </button>
+</div>
 
 <style>
 	#map {
@@ -61,5 +69,11 @@
 		width: 100%;
 		height: 100%;
 		background-color: gray;
+	}
+
+	.bottom-left {
+		position: fixed;
+		bottom: 20px;
+		left: 20px;
 	}
 </style>

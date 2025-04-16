@@ -20,9 +20,9 @@
 		"svelte": "^5.27.0",
 		"svelte-check": "^4.1.6",
 		"typescript": "^5.8.3",
-		"vite": "^6.2.6"
+		"vite": "^6.3.0"
 	},
 	"dependencies": {
-		"@arenarium/maps": "^1.0.40"
+		"@arenarium/maps": "^1.0.41"
 	}
 }
