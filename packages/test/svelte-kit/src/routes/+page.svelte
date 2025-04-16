@@ -15,7 +15,7 @@
 				name: 'light',
 				colors: {
 					primary: 'violet',
-					background: 'black',
+					background: 'white',
 					text: 'white'
 				}
 			}

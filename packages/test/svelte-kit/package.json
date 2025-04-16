@@ -14,15 +14,15 @@
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^4.0.0",
-		"@sveltejs/kit": "^2.20.4",
+		"@sveltejs/kit": "^2.20.7",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"less": "^4.3.0",
-		"svelte": "^5.25.7",
-		"svelte-check": "^4.1.5",
+		"svelte": "^5.27.0",
+		"svelte-check": "^4.1.6",
 		"typescript": "^5.8.3",
-		"vite": "^6.2.5"
+		"vite": "^6.2.6"
 	},
 	"dependencies": {
-		"@arenarium/maps": "^1.0.39"
+		"@arenarium/maps": "^1.0.40"
 	}
 }
