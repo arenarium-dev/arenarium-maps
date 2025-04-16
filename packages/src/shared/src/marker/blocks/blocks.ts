@@ -28,8 +28,8 @@ export function getBlocks(popups: Types.Popup[]): Types.Block[] {
 		id: m.id,
 		x: thresholdProjections[i].x,
 		y: thresholdProjections[i].y,
-		width: m.width + 4 * MARKER_PADDING,
-		height: m.height + 4 * MARKER_PADDING,
+		width: m.width + 2 * MARKER_PADDING,
+		height: m.height + 2 * MARKER_PADDING,
 		rank: popups.length - m.index
 	}));
 	const thresholds = getThresholds(thresholdMarkers);

@@ -137,10 +137,8 @@
 		bind:clientWidth={markerWidth}
 		bind:clientHeight={markerHeight}
 	>
-		<div class="bubble">
-			<div class="body" style:padding={MARKER_PADDING + 'px'}>
-				{@render children()}
-			</div>
+		<div class="popup">
+			{@render children()}
 		</div>
 	</div>
 </div>
@@ -155,14 +153,13 @@
 		position: absolute;
 		width: 0px;
 		height: 0px;
-		// filter: drop-shadow(-1px 0px 3px blue) drop-shadow(-1px 0px 1px red);
 
 		.marker {
 			position: absolute;
 			left: 0px;
 			top: 0px;
 
-			.bubble {
+			.popup {
 				display: flex;
 				flex-direction: column;
 				align-items: center;
@@ -173,11 +170,6 @@
 				background-color: @background;
 				overflow: hidden;
 				cursor: pointer;
-				// box-shadow: 0px 0px 4px black;
-
-				.body {
-					transition: opacity 125ms ease-in;
-				}
 			}
 		}
 

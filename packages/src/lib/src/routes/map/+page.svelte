@@ -82,7 +82,7 @@
 			{ lat: 48.8566, lng: 2.3522 }
 		];
 		const radius = 10;
-		const count = 4192;
+		const count = 1024;
 
 		let randomPrev = 1;
 		const random = () => {
