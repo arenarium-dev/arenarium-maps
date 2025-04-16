@@ -18,7 +18,7 @@
 				center: { lat: 51.505, lng: -0.09 },
 				zoom: 11.59
 			},
-			theme: {
+			style: {
 				name: 'light',
 				url: 'https://tiles.openfreemap.org/styles/liberty',
 				colors: {
@@ -44,10 +44,10 @@
 		});
 	});
 
-	function changeTheme() {
-		const theme = map.getTheme();
-		if (theme.name === 'dark') {
-			map.setTheme({
+	function changeStyle() {
+		const style = map.getStyle();
+		if (style.name === 'dark') {
+			map.setStyle({
 				name: 'light',
 				colors: {
 					background: 'white',
@@ -56,7 +56,7 @@
 				}
 			});
 		} else {
-			map.setTheme({
+			map.setStyle({
 				name: 'dark',
 				colors: {
 					background: 'lightgray',
@@ -131,7 +131,7 @@
 
 <div id="map"></div>
 
-<button class="theme" onclick={changeTheme}>Change theme</button>
+<button class="style" onclick={changeStyle}>Change style</button>
 <button class="data" onclick={changeData}>Change data</button>
 
 <div class="zooms">
@@ -167,7 +167,7 @@
 		cursor: pointer;
 	}
 
-	.theme {
+	.style {
 		position: fixed;
 		bottom: 20px;
 		left: 20px;

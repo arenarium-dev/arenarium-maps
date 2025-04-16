@@ -11,7 +11,7 @@
 				center: { lat: 51.505, lng: -0.09 },
 				zoom: 13
 			},
-			theme: {
+			style: {
 				name: 'light',
 				colors: {
 					primary: 'violet',

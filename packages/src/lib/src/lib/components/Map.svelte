@@ -7,7 +7,7 @@
 	import { BlockData, getBlocks } from '../map/data/blocks.svelte.js';
 	import { MarkerData, BoundsPair } from '../map/data/markers.svelte.js';
 	import { darkStyleSpecification, lightStyleSpecification } from '../map/styles.js';
-	import { mapOptionsSchema, type MapOptions, mapPopupsSchema, type MapTheme } from '../map/input.js';
+	import { mapOptionsSchema, type MapOptions, mapPopupsSchema, type MapStyle } from '../map/input.js';
 	import { type MapComponent } from '../map/types.js';
 
 	import {
@@ -43,7 +43,7 @@
 		const position = options.position;
 
 		map = new maplibregl.Map({
-			style: getStyle(options.theme),
+			style: getMapLibreStyle(options.style),
 			center: { lat: position.center.lat, lng: position.center.lng },
 			zoom: position.zoom,
 			minZoom: getMapMinZoom(),
@@ -150,20 +150,20 @@
 
 	//#endregion
 
-	//#region Themes
+	//#region Styles
 
-	let theme = $state<MapTheme>(options.theme);
+	let style = $state<MapStyle>(options.style);
 
 	$effect(() => {
 		if (mapLoaded) {
-			map.setStyle(getStyle(theme), { diff: true });
+			map.setStyle(getMapLibreStyle(style), { diff: true });
 		}
 	});
 
-	function getStyle(theme: MapTheme) {
-		if (theme.url) return theme.url;
+	function getMapLibreStyle(style: MapStyle) {
+		if (style.url) return style.url;
 
-		switch (theme.name) {
+		switch (style.name) {
 			case 'light':
 				return lightStyleSpecification;
 			case 'dark':
@@ -171,13 +171,13 @@
 		}
 	}
 
-	export function getTheme() {
-		return $state.snapshot(theme);
+	export function getStyle() {
+		return $state.snapshot(style);
 	}
 
-	export function setTheme(value: MapTheme) {
-		theme = value;
-		map.setStyle(getStyle(theme), { diff: true });
+	export function setStyle(value: MapStyle) {
+		style = value;
+		map.setStyle(getMapLibreStyle(style), { diff: true });
 	}
 
 	//#endregion
@@ -415,7 +415,7 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	class="container"
-	style="--primary: {theme.colors.primary}; --background: {theme.colors.background}; --text: {theme.colors.text};"
+	style="--primary: {style.colors.primary}; --background: {style.colors.background}; --text: {style.colors.text};"
 >
 	<div class="map" bind:this={mapContainer}></div>
 	<div class="markers">

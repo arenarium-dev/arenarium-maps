@@ -19,8 +19,15 @@
                     center: { lat: 51.505, lng: -0.09 },
                     zoom: 13
                 },
-                // The initial theme of the map
-                theme: 'light'
+                // The initial style of the map
+                style: {
+                    name: 'light',
+                    colors: {
+                        primary: '#007bff',
+                        background: '#fff',
+                        text: '#000'
+                    }
+                }
             });
         </script>
     </body>
@@ -45,7 +52,14 @@ npm install @arenarium/maps
                 center: { lat: 51.505, lng: -0.09 },
                 zoom: 13
             },
-            theme: 'light'
+            style: {
+                name: 'light',
+                colors: {
+                    primary: '#007bff',
+                    background: '#fff',
+                    text: '#000'
+                }
+            }
         });
     });
 </script>

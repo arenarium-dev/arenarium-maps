@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const mapThemeSchema = z.object({
+export const mapStyleSchema = z.object({
 	name: z.literal('dark').or(z.literal('light')),
 	url: z.string().optional(),
 	colors: z.object({
@@ -19,7 +19,7 @@ export const mapOptionsSchema = z.object({
 		}),
 		zoom: z.number()
 	}),
-	theme: mapThemeSchema,
+	style: mapStyleSchema,
 	events: z
 		.object({
 			onMapIdle: z.function().returns(z.void()).optional(),
@@ -48,5 +48,5 @@ export const mapPopupSchema = z.object({
 export const mapPopupsSchema = z.array(mapPopupSchema);
 
 export type MapOptions = z.infer<typeof mapOptionsSchema>;
-export type MapTheme = z.infer<typeof mapThemeSchema>;
+export type MapStyle = z.infer<typeof mapStyleSchema>;
 export type MapPopup = z.infer<typeof mapPopupSchema>;

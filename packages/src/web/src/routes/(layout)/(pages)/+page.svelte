@@ -14,7 +14,14 @@ const map = mountMap({
         center: { lat: 51.505, lng: -0.09 },
         zoom: 13
     },
-    theme: 'light'
+	style: {
+		name: 'light',
+		colors: {
+			primary: '#007bff',
+			background: '#ffffff',
+			text: '#000000'
+		}
+	}
 });`;
 </script>
 

@@ -2,10 +2,10 @@ import { mount, unmount } from 'svelte';
 
 import Map from './components/Map.svelte';
 import type { MapComponent } from './map/types.js';
-import type { MapOptions, MapTheme, MapPopup } from './map/input.js';
+import type { MapOptions, MapStyle, MapPopup } from './map/input.js';
 
 export { Map };
-export { type MapComponent, type MapTheme, type MapPopup, type MapOptions };
+export { type MapComponent, type MapStyle, type MapPopup, type MapOptions };
 
 export function mountMap(options: MapOptions) {
 	const target = document.getElementById(options.container);

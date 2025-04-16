@@ -1,4 +1,4 @@
-import type { MapTheme } from './input.js';
+import type { MapStyle } from './input.js';
 
 import type { Types } from '@workspace/shared/src/types.js';
 
@@ -27,8 +27,8 @@ export interface MapComponent {
 	getBounds: () => MapComponent.Bounds;
 	zoomIn: () => void;
 	zoomOut: () => void;
-	getTheme: () => MapTheme;
-	setTheme: (theme: MapTheme) => void;
+	getStyle: () => MapStyle;
+	setStyle: (style: MapStyle) => void;
 	setPopupsContentCallback: (callback: MapComponent.PopupContentCallback) => void;
 	setPopups: (popups: Types.Popup[]) => void;
 }
