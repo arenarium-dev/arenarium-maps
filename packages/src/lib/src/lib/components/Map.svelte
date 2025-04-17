@@ -406,7 +406,7 @@
 <svelte:head>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" />
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@1,100..900&display=swap" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@1,100..900&display=swap" />
 </svelte:head>
 
 <svelte:window onresize={onWindowResize} />
@@ -445,7 +445,7 @@
 		position: absolute;
 		width: 100%;
 		height: 100%;
-		font-family: 'Noto Sans';
+		font-family: 'Roboto';
 		box-sizing: border-box;
 		touch-action: manipulation;
 		overflow: hidden;
@@ -480,8 +480,7 @@
 						background-color: color-mix(in srgb, var(--background) 50%, transparent 50%);
 						color: var(--text);
 						font-size: 10px;
-						font-family: 'Noto Sans';
-						font-weight: 500;
+						font-family: 'Roboto';
 						padding: 2px 5px;
 						border-top-left-radius: 5px;
 						box-shadow: -1px -1px 2px rgba(0, 0, 0, 0.2);
@@ -489,7 +488,7 @@
 						.maplibregl-ctrl-attrib-inner {
 							a {
 								color: var(--text);
-								font-weight: 600;
+								font-weight: 500;
 							}
 						}
 					}
