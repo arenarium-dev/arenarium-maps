@@ -18,10 +18,51 @@ app.get('/', (c) => {
 });
 
 app.post('/:version/blocks', async (c) => {
+	// Get the data from the request body
 	const popups = await c.req.json<Types.Popup[]>();
+
+	// Convert the data to blocks
 	const blocks = getBlocks(popups);
 
-	return c.json(blocks);
+	// Create a TransformStream for encoding
+	// We use TextEncoderStream to convert strings to Uint8Array automatically.
+	const stream = new TransformStream();
+	const writer = stream.writable.getWriter();
+	const encoder = new TextEncoder(); // Used to encode strings to Uint8Array
+
+	// Function to simulate asynchronous data processing and writing chunks
+	const writeStream = async () => {
+		try {
+			for (const block of blocks) {
+				// Convert each object to a JSON string followed by a newline
+				const jsonLine = JSON.stringify(block) + '\n';
+				// Encode the string to Uint8Array and write to the stream
+				await writer.write(encoder.encode(jsonLine));
+			}
+			// Close the writer when all data is sent
+			await writer.close();
+		} catch (e) {
+			// Abort the writer if an error occurs
+			console.error('Error writing stream:', e);
+			await writer.abort(e);
+		}
+	};
+
+	// Start writing data without waiting for it to finish
+	// This allows the response to be sent immediately while data is generated/streamed.
+	writeStream();
+
+	// Return the Response with the readable stream
+	return new Response(stream.readable, {
+		headers: {
+			// Set content type to indicate newline-delimited JSON
+			'Content-Type': 'application/x-ndjson',
+			// Indicate streaming - though often implicitly handled by ReadableStream body
+			'Transfer-Encoding': 'chunked',
+			// Optional: Disable caching if data is dynamic
+			'Cache-Control': 'no-cache'
+		}
+	});
 });
 
 app.onError((err, c) => {
