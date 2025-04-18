@@ -1,6 +1,6 @@
 import { getBounds, getBoundsZoomWhenTouching, areBoundsOverlaping, type Bounds } from './bounds.js';
 
-import { MAP_MAX_ZOOM, MAP_MIN_ZOOM, MARKER_DEFAULT_ANGLE } from '../../constants.js';
+import { MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE, MARKER_DEFAULT_ANGLE } from '../../constants.js';
 
 interface Marker {
 	id: string;
@@ -432,7 +432,7 @@ namespace Nodes {
 		export const MIN = MAP_MIN_ZOOM;
 		export const MAX = MAP_MAX_ZOOM;
 
-		export const SCALE = 10;
+		export const SCALE = MAP_ZOOM_SCALE;
 		export const STEP = 1 / SCALE;
 
 		export function addSteps(zoom: number, count: number) {

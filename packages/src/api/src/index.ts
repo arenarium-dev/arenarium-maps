@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 
-import { getBlocks } from '@workspace/shared/src/marker/blocks/blocks.js';
+import { getMarkers } from '@workspace/shared/src/marker/compute/markers.js';
 import type { Types } from '@workspace/shared/src/types.js';
 
 const app = new Hono();
@@ -17,12 +17,10 @@ app.get('/', (c) => {
 	return c.text('Hello Hono!');
 });
 
-app.post('/:version/blocks', async (c) => {
+app.post('/:version/markers', async (c) => {
 	// Get the data from the request body
 	const popups = await c.req.json<Types.Popup[]>();
-
-	// Convert the data to blocks
-	const blocks = getBlocks(popups);
+	if (!popups || popups.length == 0) return c.json([]);
 
 	// Create a TransformStream for encoding
 	// We use TextEncoderStream to convert strings to Uint8Array automatically.
@@ -33,12 +31,19 @@ app.post('/:version/blocks', async (c) => {
 	// Function to simulate asynchronous data processing and writing chunks
 	const writeStream = async () => {
 		try {
-			for (const block of blocks) {
+			// Convert the data to blocks
+			const markers = getMarkers(popups);
+			const markersChunkSize = 128;
+
+			for (let i = 0; i < markers.length; i += markersChunkSize) {
+				// Get the current chunk
+				const markersChunk = markers.slice(i, i + markersChunkSize);
 				// Convert each object to a JSON string followed by a newline
-				const jsonLine = JSON.stringify(block) + '\n';
+				const jsonLine = JSON.stringify(markersChunk) + '\n';
 				// Encode the string to Uint8Array and write to the stream
 				await writer.write(encoder.encode(jsonLine));
 			}
+
 			// Close the writer when all data is sent
 			await writer.close();
 		} catch (e) {

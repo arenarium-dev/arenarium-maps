@@ -1,33 +1,5 @@
 import maplibregl from 'maplibre-gl';
 
-import MapMarker from '../../components/marker/Marker.svelte';
-import MapMarkerCircle from '../../components/marker/Circle.svelte';
-
-import type { Types } from '@workspace/shared/src/types.js';
-
-export class MarkerData {
-	marker: Types.Marker;
-	libreMarker: maplibregl.Marker | undefined;
-
-	element = $state<HTMLElement>();
-	content = $state<string>();
-	component = $state<ReturnType<typeof MapMarker>>();
-	componentRendered = $state<boolean>(false);
-	circle = $state<ReturnType<typeof MapMarkerCircle>>();
-	circleRendered = $state<boolean>(false);
-
-	constructor(marker: Types.Marker) {
-		this.marker = marker;
-		this.libreMarker = undefined;
-		this.content = undefined;
-		this.element = undefined;
-		this.component = undefined;
-		this.componentRendered = false;
-		this.circle = undefined;
-		this.circleRendered = false;
-	}
-}
-
 export class BoundsPair {
 	private bounds1: maplibregl.LngLatBounds;
 	private bounds2: maplibregl.LngLatBounds;

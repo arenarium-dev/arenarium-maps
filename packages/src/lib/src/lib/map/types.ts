@@ -14,7 +14,7 @@ export namespace MapComponent {
 		ne: { lat: number; lng: number };
 	}
 
-	export type PopupContentCallback = (ids: string[]) => Promise<string[]>;
+	export type PopupContentCallback = (ids: string) => Promise<string>;
 	export type SetPopupsContentCallbackFunction = (callback: PopupContentCallback) => void;
 	export type SetPopupsFunction = (popups: Types.Popup[]) => void;
 }
@@ -30,5 +30,5 @@ export interface MapComponent {
 	getStyle: () => MapStyle;
 	setStyle: (style: MapStyle) => void;
 	setPopupsContentCallback: (callback: MapComponent.PopupContentCallback) => void;
-	setPopups: (popups: Types.Popup[]) => void;
+	setPopups: (popups: Types.Popup[]) => Promise<void>;
 }

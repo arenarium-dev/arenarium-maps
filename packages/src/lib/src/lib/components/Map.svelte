@@ -4,8 +4,8 @@
 	import MapMarker from './marker/Marker.svelte';
 	import MapMarkerCircle from './marker/Circle.svelte';
 
-	import { BlockData, getBlocks } from '../map/data/blocks.svelte.js';
-	import { MarkerData, BoundsPair } from '../map/data/markers.svelte.js';
+	import { getMarkers, getMarkerZIndex } from '../map/data/markers.js';
+	import { BoundsPair } from '../map/data/bounds.js';
 	import { darkStyleSpecification, lightStyleSpecification } from '../map/styles.js';
 	import { mapOptionsSchema, type MapOptions, mapPopupsSchema, type MapStyle } from '../map/input.js';
 	import { type MapComponent } from '../map/types.js';
@@ -184,92 +184,62 @@
 
 	//#region Data
 
-	let mapPopupContentCallback: MapComponent.PopupContentCallback | undefined = undefined;
+	class MarkerData {
+		marker: Types.Marker;
+		libreMarker: maplibregl.Marker | undefined;
+		element = $state<HTMLElement>();
+
+		content = $state<string>();
+		contentLoading = $state<boolean>(false);
+
+		component = $state<ReturnType<typeof MapMarker>>();
+		componentRendered = $state<boolean>(false);
+
+		circle = $state<ReturnType<typeof MapMarkerCircle>>();
+		circleRendered = $state<boolean>(false);
+
+		constructor(marker: Types.Marker) {
+			this.marker = marker;
+			this.libreMarker = undefined;
+			this.element = undefined;
+
+			this.content = undefined;
+			this.contentLoading = false;
+
+			this.component = undefined;
+			this.componentRendered = false;
+
+			this.circle = undefined;
+			this.circleRendered = false;
+		}
+	}
 
 	let mapBlockIntervalId: number;
 	let mapMarkerIntervalId: number;
 
-	let mapBlockData = $state(new Array<BlockData>());
-	let mapMarkerData = $state(new Array<MarkerData>());
+	let mapMarkerArray = $state(new Array<MarkerData>());
+	let mapMarkerMap = $state(new Map<string, MarkerData>());
+
+	let mapPopupContentCallback: MapComponent.PopupContentCallback | undefined = undefined;
 
 	onMount(() => {
-		const blocksLoop = async () => {
-			await processBlocks();
-			mapBlockIntervalId = window.setTimeout(blocksLoop, 50);
-		};
-
 		const markersLoop = () => {
 			processMarkers();
 			mapMarkerIntervalId = window.setTimeout(markersLoop, 25);
 		};
 
-		blocksLoop();
 		markersLoop();
 
 		return () => {
-			clearInterval(mapBlockIntervalId);
 			clearInterval(mapMarkerIntervalId);
 		};
 	});
 
-	async function processBlocks() {
-		// Check if callback is set
-		if (!mapPopupContentCallback) return;
-		// Check if map is loaded or block data is empty
-		if (!mapLoaded || mapBlockData.length == 0) return;
-
-		// Get map bounds
-		const bounds = getBounds();
-		const zoom = getZoom();
-		if (!bounds) return;
-
-		// Get non loaded blocks
-		const nonLoadedBlockData = mapBlockData.filter((data) => !data.loaded);
-		if (nonLoadedBlockData.length == 0) return;
-
-		const nonLoadedVisibleBlockData = nonLoadedBlockData.filter((data) => {
-			const block = data.block;
-			if (zoom + MAP_DISPLAYED_ZOOM_DEPTH < block.zs) return false;
-			if (block.ne.lng < bounds.sw.lng || bounds.ne.lng < block.sw.lng) return false;
-			if (block.ne.lat < bounds.sw.lat || bounds.ne.lat < block.sw.lat) return false;
-			return true;
-		});
-		if (nonLoadedVisibleBlockData.length == 0) return;
-
-		try {
-			// Get marker content with callback
-			const markerIds = nonLoadedVisibleBlockData.flatMap((d) => d.block.markers).map((m) => m.id);
-			const markersPopupContent = await mapPopupContentCallback(markerIds);
-
-			// Set marker content to marker data
-			const markerDataMap = new Map<string, MarkerData>();
-			for (let i = 0; i < mapMarkerData.length; i++) {
-				const data = mapMarkerData[i];
-				markerDataMap.set(data.marker.id, data);
-			}
-
-			for (let i = 0; i < markerIds.length; i++) {
-				const id = markerIds[i];
-				const content = markersPopupContent[i];
-
-				const markerData = markerDataMap.get(id);
-				if (!markerData) throw new Error('Failed to find marker data.');
-				markerData.content = content;
-			}
-
-			// Set block loaded to true
-			nonLoadedVisibleBlockData.forEach((b) => (b.loaded = true));
-		} catch (e) {
-			console.error(e);
-
-			// If error, set block loaded to false
-			nonLoadedVisibleBlockData.forEach((b) => (b.loaded = false));
-		}
-	}
-
 	function processMarkers() {
 		// Check if map is loaded or marker data is empty
-		if (!mapLoaded || mapMarkerData.length == 0) return;
+		if (mapLoaded == false) return;
+		if (mapMarkerArray.length == 0) return;
+		if (mapPopupContentCallback == undefined) return;
 
 		// Get map zoom
 		const zoom = map.getZoom();
@@ -282,8 +252,8 @@
 		const offsetBounds = new BoundsPair(map, -offset, window.innerHeight + offset, window.innerWidth + offset, -offset);
 		const windowBounds = new BoundsPair(map, 0, window.innerHeight, window.innerWidth, 0);
 
-		for (let i = 0; i < mapMarkerData.length; i++) {
-			const data = mapMarkerData[i];
+		for (let i = 0; i < mapMarkerArray.length; i++) {
+			const data = mapMarkerArray[i];
 			const marker = data.marker;
 			const libreMarker = data.libreMarker;
 			if (!libreMarker) continue;
@@ -316,6 +286,15 @@
 			const marker = data.marker;
 			const component = data.component;
 			const circle = data.circle;
+
+			// Load marker content if not loaded
+			if (data.content == undefined && data.contentLoading == false) {
+				data.contentLoading = true;
+				mapPopupContentCallback(marker.id).then((content) => {
+					data.content = content;
+					data.contentLoading = false;
+				});
+			}
 
 			// Set circle rendered to true if not set
 			if (!data.circleRendered) {
@@ -367,33 +346,46 @@
 			if (!popupsSchemaResult.success) throw new Error('Invalid markers input');
 
 			// Clear data
-			for (let i = 0; i < mapMarkerData.length; i++) {
-				const data = mapMarkerData[i];
+			for (let i = 0; i < mapMarkerArray.length; i++) {
+				const data = mapMarkerArray[i];
 				data.libreMarker?.remove();
 			}
-			mapMarkerData.length = 0;
+			mapMarkerArray.length = 0;
+			mapMarkerMap.clear();
 
-			// Get data
-			const blocks = await getBlocks(popups);
-			const blockMarkers = blocks.flatMap((b) => b.markers).toSorted((p1, p2) => p1.zet - p2.zet);
+			// Get data async
+			for await (const markers of getMarkers(popups)) {
+				for (const marker of markers) {
+					// Check if marker already exists
+					let data = mapMarkerMap.get(marker.id);
+					if (data) {
+						data.marker = marker;
+						continue;
+					}
 
-			// Set data
-			mapBlockData = blocks.map((b) => new BlockData(b));
-			mapMarkerData = blockMarkers.map((m) => new MarkerData(m));
+					// Create marker data
+					data = new MarkerData(marker);
+					mapMarkerMap.set(marker.id, data);
+					mapMarkerArray.push(data);
+				}
 
-			// Add libre markers
-			await tick();
+				// Render element
+				await tick();
 
-			for (let i = 0; i < mapMarkerData.length; i++) {
-				const data = mapMarkerData[i];
-				const marker = data.marker;
-				const element = data.element;
-				if (!element) throw new Error('Failed to render marker element.');
+				for (const marker of markers) {
+					// Get marker data and element
+					let data = mapMarkerMap.get(marker.id);
+					if (!data) throw new Error('Failed to get marker data.');
 
-				const mapLibreMarker = new maplibregl.Marker({ element });
-				mapLibreMarker.setLngLat([marker.lng, marker.lat]);
+					const element = data.element;
+					if (!element) throw new Error('Failed to render marker element.');
 
-				data.libreMarker = mapLibreMarker;
+					// Create libre marker
+					const mapLibreMarker = new maplibregl.Marker({ element });
+					mapLibreMarker.setLngLat([marker.lng, marker.lat]);
+
+					data.libreMarker = mapLibreMarker;
+				}
 			}
 		} finally {
 			options.events?.onLoadingEnd?.call(null);
@@ -419,8 +411,8 @@
 >
 	<div class="map" bind:this={mapContainer}></div>
 	<div class="markers">
-		{#each mapMarkerData as data, i}
-			<div class="marker" style="z-index: {mapMarkerData.length - i};" bind:this={data.element}>
+		{#each mapMarkerArray as data, i}
+			<div class="marker" style="z-index: {getMarkerZIndex(data.marker.zet)};" bind:this={data.element}>
 				{#if data.circleRendered}
 					<MapMarkerCircle bind:this={data.circle} />
 				{/if}

@@ -68,9 +68,9 @@
 	}
 
 	async function changeData() {
-		map.setPopupsContentCallback(async (ids) => {
+		map.setPopupsContentCallback(async (id) => {
 			return new Promise((resolve) => {
-				resolve(ids.map((id) => `<div style="width:200px; height: 150px; color:red; padding: 8px;">${id}</div>`));
+				resolve(`<div style="width:200px; height: 150px; color:red; padding: 8px;">${id}</div>`);
 			});
 		});
 
@@ -92,23 +92,26 @@
 		};
 
 		for (let i = 0; i < count; i++) {
-			const center = centers[i % centers.length];
-			const distance = radius / (count - i);
+			const index = Math.floor(random() * count);
+			const center = centers[index % centers.length];
+			const distance = radius / (count - index);
 
 			const lat = center.lat + distance * (-1 + random() * 2);
 			const lng = center.lng + distance * (-1 + random() * 2);
 
 			popups.push({
+				index: i,
 				id: i.toString(),
 				lat: lat,
 				lng: lng,
 				height: 100,
-				width: 150,
-				index: i
+				width: 150
 			});
 		}
 
-		map.setPopups(popups);
+		const now = performance.now();
+		await map.setPopups(popups);
+		console.log(`[SET ${popups.length}] ${performance.now() - now}ms`);
 	}
 
 	const zoomDelta = 0.05;
