@@ -1,20 +1,16 @@
-import { MAP_MAX_ZOOM, MAP_ZOOM_SCALE } from '@workspace/shared/src/constants.js';
 import type { Types } from '@workspace/shared/src/types.js';
-
-export function getMarkerZIndex(zet: number) {
-	return Math.round((MAP_MAX_ZOOM - zet) * MAP_ZOOM_SCALE);
-}
 
 export async function* getMarkers(popups: Types.Popup[]): AsyncGenerator<Types.Marker[]> {
 	if (import.meta.env.DEV) {
 		switch (import.meta.env.MODE) {
 			case 'browser': {
 				const markersImport = await import('@workspace/shared/src/marker/compute/markers.js');
-				const markers = markersImport.getMarkers(popups);
-				yield markers;
+				yield* markersImport.getMarkers(popups);
+				break;
 			}
 			default: {
 				yield* getMarkersApi(popups);
+				break;
 			}
 		}
 	} else {

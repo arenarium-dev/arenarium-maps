@@ -16,7 +16,7 @@
 			container: 'map',
 			position: {
 				center: { lat: 51.505, lng: -0.09 },
-				zoom: 11.59
+				zoom: 4
 			},
 			style: {
 				name: 'light',
@@ -82,7 +82,7 @@
 			{ lat: 48.8566, lng: 2.3522 }
 		];
 		const radius = 10;
-		const count = 1024;
+		const count = 1000;
 
 		let randomPrev = 1;
 		const random = () => {

@@ -1,5 +1,3 @@
-import { getRectangleOffsets } from '../rectangle.js';
-
 export interface Rectangle {
 	x: number;
 	y: number;
@@ -38,21 +36,4 @@ export function getBoundsZoomWhenTouching(bounds1: Bounds, bounds2: Bounds): num
 	let minRatio = Math.min(xRatio, yRatio);
 	let zoom = Math.log2(minRatio);
 	return zoom;
-}
-
-export function getBounds(rectangle: Rectangle, angle: number, scale: number): Bounds {
-	let { offsetX, offsetY } = getRectangleOffsets(rectangle.width, rectangle.height, angle);
-	let left = -offsetX;
-	let right = rectangle.width - left;
-	let top = -offsetY;
-	let bottom = rectangle.height - top;
-
-	return {
-		x: rectangle.x,
-		y: rectangle.y,
-		left: left / scale,
-		right: right / scale,
-		top: top / scale,
-		bottom: bottom / scale
-	};
 }

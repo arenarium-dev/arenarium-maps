@@ -4,7 +4,7 @@
 	import MapMarker from './marker/Marker.svelte';
 	import MapMarkerCircle from './marker/Circle.svelte';
 
-	import { getMarkers, getMarkerZIndex } from '../map/data/markers.js';
+	import { getMarkers } from '../map/data/markers.js';
 	import { BoundsPair } from '../map/data/bounds.js';
 	import { darkStyleSpecification, lightStyleSpecification } from '../map/styles.js';
 	import { mapOptionsSchema, type MapOptions, mapPopupsSchema, type MapStyle } from '../map/input.js';
@@ -15,12 +15,14 @@
 		MAP_DISPLAYED_ZOOM_DEPTH,
 		MAP_MAX_ZOOM,
 		MAP_MIN_ZOOM,
-		MAP_VISIBLE_ZOOM_DEPTH
+		MAP_VISIBLE_ZOOM_DEPTH,
+		MAP_ZOOM_SCALE
 	} from '@workspace/shared/src/constants.js';
 	import { type Types } from '@workspace/shared/src/types.js';
 
 	import maplibregl from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';
+	import { z } from 'zod';
 
 	let { options }: { options: MapOptions } = $props();
 
@@ -188,6 +190,7 @@
 		marker: Types.Marker;
 		libreMarker: maplibregl.Marker | undefined;
 		element = $state<HTMLElement>();
+		zIndex = $state<number>();
 
 		content = $state<string>();
 		contentLoading = $state<boolean>(false);
@@ -202,6 +205,7 @@
 			this.marker = marker;
 			this.libreMarker = undefined;
 			this.element = undefined;
+			this.zIndex = this.getZIndex();
 
 			this.content = undefined;
 			this.contentLoading = false;
@@ -212,9 +216,30 @@
 			this.circle = undefined;
 			this.circleRendered = false;
 		}
+
+		getAngle(zoom: number) {
+			let angles = this.marker.angs;
+			let angle = angles[0];
+			let index = 0;
+
+			while (angle[0] < zoom) {
+				index++;
+				if (index == angles.length) break;
+				angle = angles[index];
+			}
+
+			return angle[1];
+		}
+
+		getDistance(zoom: number) {
+			return (this.marker.zet - zoom) / MAP_VISIBLE_ZOOM_DEPTH;
+		}
+
+		getZIndex() {
+			return Math.round((MAP_MAX_ZOOM - this.marker.zet) * MAP_ZOOM_SCALE);
+		}
 	}
 
-	let mapBlockIntervalId: number;
 	let mapMarkerIntervalId: number;
 
 	let mapMarkerArray = $state(new Array<MarkerData>());
@@ -319,12 +344,12 @@
 				circle?.setCollapsed(true);
 
 				component?.setCollapsed(false);
-				component?.setAngle(marker.angs.findLast((a) => a[0] <= zoom)?.[1]!);
+				component?.setAngle(data.getAngle(zoom));
 			} else {
 				component?.setCollapsed(true);
 
 				circle?.setCollapsed(false);
-				circle?.setDistance((marker.zet - zoom) / MAP_VISIBLE_ZOOM_DEPTH);
+				circle?.setDistance(data.getDistance(zoom));
 			}
 		}
 	}
@@ -355,11 +380,14 @@
 
 			// Get data async
 			for await (const markers of getMarkers(popups)) {
+				const mapMarkersNewArray = new Array<MarkerData>();
+
 				for (const marker of markers) {
 					// Check if marker already exists
 					let data = mapMarkerMap.get(marker.id);
 					if (data) {
 						data.marker = marker;
+						data.zIndex = data.getZIndex();
 						continue;
 					}
 
@@ -367,16 +395,14 @@
 					data = new MarkerData(marker);
 					mapMarkerMap.set(marker.id, data);
 					mapMarkerArray.push(data);
+					mapMarkersNewArray.push(data);
 				}
 
 				// Render element
 				await tick();
 
-				for (const marker of markers) {
-					// Get marker data and element
-					let data = mapMarkerMap.get(marker.id);
-					if (!data) throw new Error('Failed to get marker data.');
-
+				for (const data of mapMarkersNewArray) {
+					const marker = data.marker;
 					const element = data.element;
 					if (!element) throw new Error('Failed to render marker element.');
 
@@ -411,8 +437,8 @@
 >
 	<div class="map" bind:this={mapContainer}></div>
 	<div class="markers">
-		{#each mapMarkerArray as data, i}
-			<div class="marker" style="z-index: {getMarkerZIndex(data.marker.zet)};" bind:this={data.element}>
+		{#each mapMarkerArray as data (data.marker.id)}
+			<div class="marker" style="z-index: {data.zIndex};" bind:this={data.element}>
 				{#if data.circleRendered}
 					<MapMarkerCircle bind:this={data.circle} />
 				{/if}
