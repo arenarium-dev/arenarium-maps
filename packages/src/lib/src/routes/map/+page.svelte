@@ -67,13 +67,7 @@
 		}
 	}
 
-	async function changeData() {
-		map.setPopupsContentCallback(async (id) => {
-			return new Promise((resolve) => {
-				resolve(`<div style="width:200px; height: 150px; color:red; padding: 8px;">${id}</div>`);
-			});
-		});
-
+	async function addData() {
 		const popups = new Array<MapPopup>();
 		const centers = [
 			{ lat: 51.505, lng: -0.09 },
@@ -83,6 +77,8 @@
 		];
 		const radius = 10;
 		const count = 1000;
+		const limit = 100;
+		const bounds = map.getBounds();
 
 		let randomPrev = 1;
 		const random = () => {
@@ -91,13 +87,16 @@
 			return val / 2147483647;
 		};
 
+		let cnt = 0;
 		for (let i = 0; i < count; i++) {
 			const index = Math.floor(random() * count);
-			const center = centers[index % centers.length];
 			const distance = radius / (count - index);
+			const center = centers[index % centers.length];
 
 			const lat = center.lat + distance * (-1 + random() * 2);
 			const lng = center.lng + distance * (-1 + random() * 2);
+			if (lat < bounds.sw.lat || bounds.ne.lat < lat || lng < bounds.sw.lng || bounds.ne.lng < lng) continue;
+			if (cnt++ > limit) break;
 
 			popups.push({
 				index: i,
@@ -110,8 +109,16 @@
 		}
 
 		const now = performance.now();
-		await map.setPopups(popups);
+		await map.insertPopups(popups, async (id) => {
+			return new Promise((resolve) => {
+				resolve(`<div style="width:200px; height: 150px; color:red; padding: 8px;">${id}</div>`);
+			});
+		});
 		console.log(`[SET ${popups.length}] ${performance.now() - now}ms`);
+	}
+
+	async function clearData() {
+		map.removePopups();
 	}
 
 	const zoomDelta = 0.05;
@@ -134,8 +141,11 @@
 
 <div id="map"></div>
 
-<button class="style" onclick={changeStyle}>Change style</button>
-<button class="data" onclick={changeData}>Change data</button>
+<div class="buttons">
+	<button class="style" onclick={changeStyle}>Change style</button>
+	<button class="data" onclick={addData}>Add data</button>
+	<button class="data" onclick={clearData}>Clear data</button>
+</div>
 
 <div class="zooms">
 	<div>{zoom.toFixed(2)}</div>
@@ -160,6 +170,14 @@
 		height: 100%;
 	}
 
+	.buttons {
+		position: fixed;
+		bottom: 20px;
+		left: 20px;
+		display: flex;
+		gap: 8px;
+	}
+
 	button {
 		padding: 8px 16px;
 		border-radius: 8px;
@@ -168,18 +186,6 @@
 		font-size: 14px;
 		font-weight: 500;
 		cursor: pointer;
-	}
-
-	.style {
-		position: fixed;
-		bottom: 20px;
-		left: 20px;
-	}
-
-	.data {
-		position: fixed;
-		bottom: 20px;
-		left: 160px;
 	}
 
 	.zooms {

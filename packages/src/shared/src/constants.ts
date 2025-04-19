@@ -8,6 +8,4 @@ export const MAP_DISPLAYED_ZOOM_DEPTH = 0.5;
 export const MARKER_DEFAULT_ANGLE = 270;
 export const MARKER_PADDING = 8;
 
-export const MARKER_YIELD_CHUNK_SIZE = 128;
-
 export const FEEDBACK_EMAIL = 'arenarium.dev@gmail.com';

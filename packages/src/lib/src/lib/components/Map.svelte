@@ -190,7 +190,6 @@
 		marker: Types.Marker;
 		libreMarker: maplibregl.Marker | undefined;
 		element = $state<HTMLElement>();
-		zIndex = $state<number>();
 
 		content = $state<string>();
 		contentLoading = $state<boolean>(false);
@@ -205,7 +204,6 @@
 			this.marker = marker;
 			this.libreMarker = undefined;
 			this.element = undefined;
-			this.zIndex = this.getZIndex();
 
 			this.content = undefined;
 			this.contentLoading = false;
@@ -235,8 +233,12 @@
 			return (this.marker.zet - zoom) / MAP_VISIBLE_ZOOM_DEPTH;
 		}
 
-		getZIndex() {
-			return Math.round((MAP_MAX_ZOOM - this.marker.zet) * MAP_ZOOM_SCALE);
+		updateZIndex() {
+			const element = this.libreMarker?.getElement();
+			if (!element) throw new Error('Failed to update zIndex');
+
+			const zIndex = Math.round((MAP_MAX_ZOOM - this.marker.zet) * MAP_ZOOM_SCALE);
+			element.style.zIndex = zIndex.toString();
 		}
 	}
 
@@ -358,64 +360,80 @@
 		options.events?.onPopupClick?.call(null, id);
 	}
 
-	export async function setPopupsContentCallback(callback: MapComponent.PopupContentCallback) {
-		mapPopupContentCallback = callback;
-	}
-
-	export async function setPopups(popups: Types.Popup[]) {
+	export async function insertPopups(popups: Types.Popup[], callback: MapComponent.PopupContentCallback) {
 		try {
 			options.events?.onLoadingStart?.call(null);
+
+			// Set callback
+			mapPopupContentCallback = callback;
 
 			// Validate popups
 			const popupsSchemaResult = await mapPopupsSchema.safeParseAsync(popups);
 			if (!popupsSchemaResult.success) throw new Error('Invalid markers input');
 
-			// Clear data
-			for (let i = 0; i < mapMarkerArray.length; i++) {
-				const data = mapMarkerArray[i];
-				data.libreMarker?.remove();
+			// Get markers
+			const newMarkers = await getMarkers(popups);
+			const newMarkerMap = new Map(newMarkers.map((m) => [m.id, new MarkerData(m)]));
+			const newDataList = new Array<MarkerData>();
+
+			// Remove old data
+			const oldDataList = Array.from(mapMarkerArray);
+			for (const oldData of oldDataList) {
+				if (newMarkerMap.has(oldData.marker.id) == false) {
+					oldData.libreMarker?.remove();
+
+					mapMarkerMap.delete(oldData.marker.id);
+					mapMarkerArray.splice(mapMarkerArray.indexOf(oldData), 1);
+				}
 			}
-			mapMarkerArray.length = 0;
-			mapMarkerMap.clear();
 
-			// Get data async
-			for await (const markers of getMarkers(popups)) {
-				const mapMarkersNewArray = new Array<MarkerData>();
+			// Crate or update new data
+			for (const newMarker of newMarkers) {
+				// Check if marker already exists
+				const oldData = mapMarkerMap.get(newMarker.id);
 
-				for (const marker of markers) {
-					// Check if marker already exists
-					let data = mapMarkerMap.get(marker.id);
-					if (data) {
-						data.marker = marker;
-						data.zIndex = data.getZIndex();
-						continue;
-					}
-
+				if (oldData) {
+					// Update marker data
+					oldData.marker = newMarker;
+					oldData.updateZIndex();
+				} else {
 					// Create marker data
-					data = new MarkerData(marker);
-					mapMarkerMap.set(marker.id, data);
-					mapMarkerArray.push(data);
-					mapMarkersNewArray.push(data);
+					const newData = new MarkerData(newMarker);
+					mapMarkerMap.set(newMarker.id, newData);
+					mapMarkerArray.push(newData);
+					newDataList.push(newData);
 				}
+			}
 
-				// Render element
-				await tick();
+			// Wait for new markers content to be rendered
+			await tick();
 
-				for (const data of mapMarkersNewArray) {
-					const marker = data.marker;
-					const element = data.element;
-					if (!element) throw new Error('Failed to render marker element.');
+			// Add new libre markers
+			for (const newData of newDataList) {
+				const marker = newData.marker;
+				const element = newData.element;
+				if (!element) throw new Error('Failed to render marker element.');
 
-					// Create libre marker
-					const mapLibreMarker = new maplibregl.Marker({ element });
-					mapLibreMarker.setLngLat([marker.lng, marker.lat]);
+				// Create new libre marker
+				const mapLibreMarker = new maplibregl.Marker({ element });
+				mapLibreMarker.setLngLat([marker.lng, marker.lat]);
 
-					data.libreMarker = mapLibreMarker;
-				}
+				newData.libreMarker = mapLibreMarker;
+				newData.updateZIndex();
 			}
 		} finally {
 			options.events?.onLoadingEnd?.call(null);
 		}
+	}
+
+	export function removePopups() {
+		// Remove data
+		for (let i = 0; i < mapMarkerArray.length; i++) {
+			const data = mapMarkerArray[i];
+			data.libreMarker?.remove();
+		}
+		mapMarkerArray.length = 0;
+		mapMarkerMap.clear();
 	}
 
 	//#endregion
@@ -438,7 +456,7 @@
 	<div class="map" bind:this={mapContainer}></div>
 	<div class="markers">
 		{#each mapMarkerArray as data (data.marker.id)}
-			<div class="marker" style="z-index: {data.zIndex};" bind:this={data.element}>
+			<div class="marker" bind:this={data.element}>
 				{#if data.circleRendered}
 					<MapMarkerCircle bind:this={data.circle} />
 				{/if}

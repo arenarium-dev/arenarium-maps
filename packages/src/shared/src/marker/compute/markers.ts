@@ -1,9 +1,9 @@
+import { getRectangleOffsets } from '../rectangle.js';
 import { Particles } from './particles.js';
 import { getBoundsZoomWhenTouching, areBoundsOverlaping, type Bounds } from './bounds.js';
-import { MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE, MARKER_PADDING, MARKER_YIELD_CHUNK_SIZE } from '../../constants.js';
-import { Types } from '../../types.js';
 import { getPoint } from '../projection.js';
-import { getRectangleOffsets } from '../rectangle.js';
+import { Types } from '../../types.js';
+import { MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE, MARKER_PADDING } from '../../constants.js';
 
 namespace Marker {
 	export function create(popup: Types.Popup): Types.Marker {
@@ -460,22 +460,4 @@ function getMarkers(popups: Array<Types.Popup>): Types.Marker[] {
 	return markers;
 }
 
-/**
- * Return asyncronously the markers for the given popups chunks.
- * The chunks increase in size until it is equal to the number of popups.
- */
-async function* getMarkersAsync(popups: Array<Types.Popup>): AsyncGenerator<Types.Marker[]> {
-	let chunkSize = MARKER_YIELD_CHUNK_SIZE;
-
-	for (let popupsChunkStart = 0; popupsChunkStart < popups.length; popupsChunkStart += chunkSize) {
-		const popupsChunkEnd = Math.min(popupsChunkStart + chunkSize, popups.length);
-		const popupsChunk = popups.slice(0, popupsChunkEnd);
-
-		yield new Promise<Types.Marker[]>(async (resolve) => {
-			await new Promise((r) => setTimeout(r, 1000));
-			resolve(getMarkers(popupsChunk));
-		});
-	}
-}
-
-export { getMarkersAsync as getMarkers };
+export { getMarkers };

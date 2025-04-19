@@ -29,6 +29,6 @@ export interface MapComponent {
 	zoomOut: () => void;
 	getStyle: () => MapStyle;
 	setStyle: (style: MapStyle) => void;
-	setPopupsContentCallback: (callback: MapComponent.PopupContentCallback) => void;
-	setPopups: (popups: Types.Popup[]) => Promise<void>;
+	insertPopups: (popups: Types.Popup[], callback: MapComponent.PopupContentCallback) => Promise<void>;
+	removePopups: () => void;
 }
