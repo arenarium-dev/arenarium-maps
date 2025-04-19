@@ -24,22 +24,16 @@
 		});
 	});
 
-	function refresh() {
-		map.setPopupsContentCallback(async (ids) => {
-			return new Promise((resolve) => {
-				resolve(ids.map((id) => `<div style="width:200px; height: 150px; color:violet">${id}</div>`));
-			});
-		});
-
+	function insert() {
+		const center = map.getCenter();
 		const popups = new Array<MapPopup>();
-		const center = { lat: 51.505, lng: -0.09 };
 		const radius = 20;
-		const count = 1000;
+		const count = 300;
 
 		for (let i = 0; i < count; i++) {
 			const distance = radius / (count - i);
-			const lat = center.lat + distance * (-1 + Math.random() * 2);
-			const lng = center.lng + distance * (-1 + Math.random() * 2);
+			const lat = center.lat + distance * (-1 + random() * 2);
+			const lng = center.lng + distance * (-1 + random() * 2);
 
 			popups.push({
 				id: i.toString(),
@@ -51,14 +45,30 @@
 			});
 		}
 
-		map.setPopups(popups);
+		map.insertPopups(popups, async (id) => {
+			return new Promise((resolve) => {
+				resolve(`<div style="width:200px; height: 150px; color:violet">${id}</div>`);
+			});
+		});
+	}
+
+	function remove() {
+		map.removePopups();
+	}
+
+	let randomPrev = 1;
+	function random() {
+		const val = (randomPrev * 16807) % 2147483647;
+		randomPrev = val;
+		return val / 2147483647;
 	}
 </script>
 
 <div id="map"></div>
 
 <div class="bottom-left">
-	<button class="button" onclick={refresh}> Refresh </button>
+	<button class="button" onclick={insert}> Insert </button>
+	<button class="button" onclick={remove}> Remove </button>
 </div>
 
 <style>
