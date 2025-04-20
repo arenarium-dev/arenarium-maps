@@ -42,6 +42,8 @@
 				}
 			}
 		});
+
+		map.updatePopupsContentCallback(getPopupContent);
 	});
 
 	function changeStyle() {
@@ -72,20 +74,12 @@
 		const popups = await getPopups(bounds);
 
 		const now = performance.now();
-		await map.insertPopups(popups, getPopupContent);
+		await map.updatePopups(popups);
 		console.log(`[SET ${popups.length}] ${performance.now() - now}ms`);
 	}
 
 	async function clearData() {
 		map.removePopups();
-	}
-
-	async function enqueueData() {
-		map.enqueuePopups({
-			interval: 1000,
-			popupCallback: getPopups,
-			contentCallback: getPopupContent
-		});
 	}
 
 	async function getPopups(bounds: MapBounds): Promise<MapPopup[]> {
@@ -161,7 +155,6 @@
 	<button class="style" onclick={changeStyle}>Change style</button>
 	<button class="data" onclick={addData}>Add data</button>
 	<button class="data" onclick={clearData}>Clear data</button>
-	<button class="data" onclick={enqueueData}>Enqueue data</button>
 </div>
 
 <div class="zooms">

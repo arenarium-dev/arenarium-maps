@@ -1,4 +1,4 @@
-import type { MapStyle, MapPopupContentCallback, MapPopupQueueParams, MapBounds, MapCoordinate } from './input.js';
+import type { MapStyle, MapPopupContentCallback, MapBounds, MapCoordinate } from './input.js';
 
 import type { Types } from '@workspace/shared/src/types.js';
 
@@ -14,7 +14,7 @@ export interface MapComponent {
 	getStyle: () => MapStyle;
 	setStyle: (style: MapStyle) => void;
 
-	enqueuePopups: (params: MapPopupQueueParams) => void;
-	insertPopups: (popups: Types.Popup[], contentCallback: MapPopupContentCallback) => Promise<void>;
+	updatePopupsContentCallback: (callback: MapPopupContentCallback) => void;
+	updatePopups: (popups: Types.Popup[]) => Promise<void>;
 	removePopups: () => void;
 }

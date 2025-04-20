@@ -9,13 +9,11 @@
 	import { darkStyleSpecification, lightStyleSpecification } from '../map/styles.js';
 	import {
 		mapOptionsSchema,
-		type MapOptions,
 		mapPopupsSchema,
-		type MapStyle,
-		type MapPopupQueueParams,
-		mapPopupQueueParamsSchema,
-		type MapPopupContentCallback,
 		mapPopupContentCallbackSchema,
+		type MapOptions,
+		type MapStyle,
+		type MapPopupContentCallback,
 		type MapPopupCallback,
 		type MapCoordinate
 	} from '../map/input.js';
@@ -263,7 +261,7 @@
 	let mapMarkerArray = $state(new Array<MarkerData>());
 	let mapMarkerMap = $state(new Map<string, MarkerData>());
 
-	let mapPopupsCallback: MapPopupCallback | undefined = undefined;
+	let mapPopups = new Array<Types.Popup>();
 	let mapPopupContentCallback: MapPopupContentCallback | undefined = undefined;
 
 	onMount(() => {
@@ -434,57 +432,37 @@
 		mapMarkerMap.clear();
 	}
 
-	export function enqueuePopups(params: MapPopupQueueParams) {
-		// Validate params
-		const paramsSchemaResult = mapPopupQueueParamsSchema.safeParse(params);
-		if (!paramsSchemaResult.success) throw new Error('Invalid popups enqueue params');
+	export function updatePopupsContentCallback(callback: MapPopupContentCallback) {
+		// Validate content callback
+		const popupCallbackSchemaResult = mapPopupContentCallbackSchema.safeParse(callback);
+		if (!popupCallbackSchemaResult.success) throw new Error('Invalid popup content callback');
 
-		// Stop loop
-		if (mapPopupsIntervalId != undefined) {
-			clearInterval(mapPopupsIntervalId);
-			mapPopupsIntervalId = undefined;
-		}
-
-		// Set callback
-		mapPopupsCallback = params.popupCallback;
-		mapPopupContentCallback = params.contentCallback;
-
-		// Start loop
-		const popupsLoop = async () => {
-			const zoom = getZoom();
-			const bounds = getBounds();
-			if (!zoom || !bounds) return;
-
-			const popups = await mapPopupsCallback?.(bounds);
-			if (!popups) return;
-
-			const markers = await getMarkers(popups);
-			await updateMarkers(markers);
-
-			mapMarkerIntervalId = window.setTimeout(popupsLoop, params.interval);
-		};
-
-		popupsLoop();
+		mapPopupContentCallback = callback;
 	}
 
-	export async function insertPopups(popups: Types.Popup[], contentCallback: MapPopupContentCallback) {
+	export async function updatePopups(popups: Types.Popup[]) {
+		// Validate callback exists
+		if (mapPopupContentCallback == undefined) throw new Error('Popup content callback not set');
+
 		// Validate popups
 		const popupsSchemaResult = await mapPopupsSchema.safeParseAsync(popups);
 		if (!popupsSchemaResult.success) throw new Error('Invalid popups');
 
-		// Validate content callback
-		const popupCallbackSchemaResult = mapPopupContentCallbackSchema.safeParse(contentCallback);
-		if (!popupCallbackSchemaResult.success) throw new Error('Invalid popup content callback');
-
 		try {
 			options.events?.onLoadingStart?.call(null);
 
-			// Set callback
-			mapPopupContentCallback = contentCallback;
+			// Update popups
+			for (const popup of popups) {
+				const mapPopupIndex = mapPopups.findIndex((p) => p.id == popup.id);
+				if (mapPopupIndex == -1) {
+					mapPopups.push(popup);
+				} else {
+					mapPopups[mapPopupIndex] = popup;
+				}
+			}
 
-			// Get markers
-			const markers = await getMarkers(popups);
-			await updateMarkers(markers);
+			// Update markers
+			await updateMarkers(await getMarkers(mapPopups));
 		} finally {
 			options.events?.onLoadingEnd?.call(null);
 		}

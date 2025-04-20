@@ -28,7 +28,7 @@
 		const center = map.getCenter();
 		const popups = new Array<MapPopup>();
 		const radius = 20;
-		const count = 300;
+		const count = 1000;
 
 		for (let i = 0; i < count; i++) {
 			const distance = radius / (count - i);
@@ -47,7 +47,7 @@
 
 		map.insertPopups(popups, async (id) => {
 			return new Promise((resolve) => {
-				resolve(`<div style="width:200px; height: 150px; color:violet">${id}</div>`);
+				resolve(`<div style="width:200px; height: 150px; padding: 8px; color:violet">${id}</div>`);
 			});
 		});
 	}
