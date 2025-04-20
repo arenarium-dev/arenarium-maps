@@ -204,30 +204,26 @@
 		marker: Types.Marker;
 		libreMarker: maplibregl.Marker | undefined;
 		element = $state<HTMLElement>();
+		rendered = $state<boolean>(false);
 
 		popup = $state<HTMLElement>();
 		content = $state<HTMLElement>();
 		contentLoading = $state<boolean>(false);
 
 		component = $state<ReturnType<typeof MapMarker>>();
-		componentRendered = $state<boolean>(false);
-
 		circle = $state<ReturnType<typeof MapMarkerCircle>>();
-		circleRendered = $state<boolean>(false);
 
 		constructor(marker: Types.Marker) {
 			this.marker = marker;
 			this.libreMarker = undefined;
 			this.element = undefined;
+			this.rendered = false;
 
 			this.content = undefined;
 			this.contentLoading = false;
 
 			this.component = undefined;
-			this.componentRendered = false;
-
 			this.circle = undefined;
-			this.circleRendered = false;
 		}
 
 		getAngle(zoom: number) {
@@ -329,20 +325,43 @@
 		for (let i = 0; i < markerDataOnMap.length; i++) {
 			const data = markerDataOnMap[i];
 			const marker = data.marker;
-			const component = data.component;
-			const circle = data.circle;
 
 			// Set circle rendered to true if not set
-			if (!data.circleRendered) {
-				data.circleRendered = true;
+			if (!data.rendered) {
+				data.rendered = true;
 			}
 
-			// Set component rendered to true if not set and marker is in displayed depth
-			if (!data.componentRendered && data.marker.zet <= zoom + MAP_DISPLAYED_ZOOM_DEPTH) {
-				data.componentRendered = true;
+			// Skip if circle or component not rendered
+			const component = data.component;
+			const circle = data.circle;
+			if (!circle || !component) continue;
+
+			// Set marker display status
+			if (marker.zet <= zoom + MAP_DISPLAYED_ZOOM_DEPTH) {
+				component.setDisplayed(true);
+			} else {
+				component.setDisplayed(false);
 			}
 
-			// Load popup content if not loaded
+			// Set marker collapse status angle
+			// or set circle distance
+			if (marker.zet <= zoom) {
+				circle.setCollapsed(true);
+
+				component.setCollapsed(false);
+				component.setAngle(data.getAngle(zoom));
+			} else {
+				component.setCollapsed(true);
+
+				circle?.setCollapsed(false);
+				circle?.setDistance(data.getDistance(zoom));
+			}
+
+			// Skip if popup not rendered
+			const popup = data.popup;
+			if (!popup) continue;
+
+			// Start load popup content if not loaded
 			if (data.content == undefined && data.contentLoading == false) {
 				data.contentLoading = true;
 				mapPopupContentCallback(marker.id).then((content) => {
@@ -351,33 +370,14 @@
 				});
 			}
 
-			// Set popup content
-			if (data.popup && data.content) {
-				const element = data.popup.firstElementChild;
-				if (element == null) {
-					data.popup.appendChild(data.content);
-				}
-			}
+			// Skip in content not loaded
+			const content = data.content;
+			if (!content) continue;
 
-			// Set marker display status
-			if (marker.zet <= zoom + MAP_DISPLAYED_ZOOM_DEPTH) {
-				component?.setDisplayed(true);
-			} else {
-				component?.setDisplayed(false);
-			}
-
-			// Set marker collapse status angle
-			// or set circle distance
-			if (marker.zet <= zoom && component != null) {
-				circle?.setCollapsed(true);
-
-				component?.setCollapsed(false);
-				component?.setAngle(data.getAngle(zoom));
-			} else {
-				component?.setCollapsed(true);
-
-				circle?.setCollapsed(false);
-				circle?.setDistance(data.getDistance(zoom));
+			// Set popup content if null
+			const element = popup.firstElementChild;
+			if (element == null) {
+				popup.appendChild(content);
 			}
 		}
 	}
@@ -503,10 +503,8 @@
 	<div class="markers">
 		{#each mapMarkerArray as data (data.marker.id)}
 			<div class="marker" bind:this={data.element}>
-				{#if data.circleRendered}
+				{#if data.rendered}
 					<MapMarkerCircle bind:this={data.circle} />
-				{/if}
-				{#if data.componentRendered && data.content}
 					<MapMarker bind:this={data.component}>
 						<div
 							class="popup"
