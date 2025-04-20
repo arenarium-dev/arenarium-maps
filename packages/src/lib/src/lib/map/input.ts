@@ -61,7 +61,7 @@ export const mapPopupsSchema = z.array(mapPopupSchema);
 
 export const mapPopupCallbackSchema = z.function().args(mapBoundsSchema).returns(z.promise(mapPopupsSchema));
 
-export const mapPopupContentCallbackSchema = z.function().args(z.string()).returns(z.promise(z.string()));
+export const mapPopupContentCallbackSchema = z.function().args(z.string()).returns(z.promise(z.any()));
 
 export type MapCoordinate = z.infer<typeof mapCoordinateSchema>;
 export type MapBounds = z.infer<typeof mapBoundsSchema>;

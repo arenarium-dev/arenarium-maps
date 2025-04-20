@@ -30,6 +30,7 @@
 
 	import maplibregl from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';
+	import type { MapComponent } from '$lib/map/types.js';
 
 	let { options }: { options: MapOptions } = $props();
 
@@ -204,7 +205,8 @@
 		libreMarker: maplibregl.Marker | undefined;
 		element = $state<HTMLElement>();
 
-		content = $state<string>();
+		popup = $state<HTMLElement>();
+		content = $state<HTMLElement>();
 		contentLoading = $state<boolean>(false);
 
 		component = $state<ReturnType<typeof MapMarker>>();
@@ -330,15 +332,6 @@
 			const component = data.component;
 			const circle = data.circle;
 
-			// Load marker content if not loaded
-			if (data.content == undefined && data.contentLoading == false) {
-				data.contentLoading = true;
-				mapPopupContentCallback(marker.id).then((content) => {
-					data.content = content;
-					data.contentLoading = false;
-				});
-			}
-
 			// Set circle rendered to true if not set
 			if (!data.circleRendered) {
 				data.circleRendered = true;
@@ -347,6 +340,23 @@
 			// Set component rendered to true if not set and marker is in displayed depth
 			if (!data.componentRendered && data.marker.zet <= zoom + MAP_DISPLAYED_ZOOM_DEPTH) {
 				data.componentRendered = true;
+			}
+
+			// Load popup content if not loaded
+			if (data.content == undefined && data.contentLoading == false) {
+				data.contentLoading = true;
+				mapPopupContentCallback(marker.id).then((content) => {
+					data.content = content;
+					data.contentLoading = false;
+				});
+			}
+
+			// Set popup content
+			if (data.popup && data.content) {
+				const element = data.popup.firstElementChild;
+				if (element == null) {
+					data.popup.appendChild(data.content);
+				}
 			}
 
 			// Set marker display status
@@ -432,7 +442,7 @@
 		mapMarkerMap.clear();
 	}
 
-	export function updatePopupsContentCallback(callback: MapPopupContentCallback) {
+	export function updatePopupsContentCallback(callback: MapComponent.MapPopupContentCallback) {
 		// Validate content callback
 		const popupCallbackSchemaResult = mapPopupContentCallbackSchema.safeParse(callback);
 		if (!popupCallbackSchemaResult.success) throw new Error('Invalid popup content callback');
@@ -502,9 +512,8 @@
 							class="popup"
 							style="width: {data.marker.width}px; height: {data.marker.height}px;"
 							onclick={() => onPopupClick(data.marker.id)}
-						>
-							{@html data.content}
-						</div>
+							bind:this={data.popup}
+						></div>
 					</MapMarker>
 				{/if}
 			</div>

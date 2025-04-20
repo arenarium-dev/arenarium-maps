@@ -1,6 +1,10 @@
-import type { MapStyle, MapPopupContentCallback, MapBounds, MapCoordinate } from './input.js';
+import type { MapStyle, MapBounds, MapCoordinate } from './input.js';
 
 import type { Types } from '@workspace/shared/src/types.js';
+
+export namespace MapComponent {
+	export type MapPopupContentCallback = (id: string) => Promise<HTMLElement>;
+}
 
 export interface MapComponent {
 	getCenter: () => MapCoordinate;
@@ -14,7 +18,7 @@ export interface MapComponent {
 	getStyle: () => MapStyle;
 	setStyle: (style: MapStyle) => void;
 
-	updatePopupsContentCallback: (callback: MapPopupContentCallback) => void;
+	updatePopupsContentCallback: (callback: MapComponent.MapPopupContentCallback) => Promise<HTMLElement>;
 	updatePopups: (popups: Types.Popup[]) => Promise<void>;
 	removePopups: () => void;
 }
