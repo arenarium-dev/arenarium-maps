@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	import { mountMap, type MapPopup } from '@arenarium/maps';
+	import { mountMap, type MapBounds, type MapPopup } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
 
 	let map: ReturnType<typeof mountMap>;
@@ -24,43 +24,75 @@
 		});
 	});
 
-	function insert() {
-		const center = map.getCenter();
-		const popups = new Array<MapPopup>();
-		const radius = 20;
-		const count = 1000;
+	async function insert() {
+		console.log(map);
+		map.updatePopupsContentCallback(getPopupContent);
 
-		for (let i = 0; i < count; i++) {
-			const distance = radius / (count - i);
-			const lat = center.lat + distance * (-1 + random() * 2);
-			const lng = center.lng + distance * (-1 + random() * 2);
+		const bounds = map.getBounds();
+		const popups = await getPopups(bounds);
 
-			popups.push({
-				id: i.toString(),
-				lat: lat,
-				lng: lng,
-				height: 100,
-				width: 150,
-				index: i
-			});
-		}
-
-		map.insertPopups(popups, async (id) => {
-			return new Promise((resolve) => {
-				resolve(`<div style="width:200px; height: 150px; padding: 8px; color:violet">${id}</div>`);
-			});
-		});
+		const now = performance.now();
+		await map.updatePopups(popups);
+		console.log(`[SET ${popups.length}] ${performance.now() - now}ms`);
 	}
 
 	function remove() {
 		map.removePopups();
 	}
 
-	let randomPrev = 1;
-	function random() {
-		const val = (randomPrev * 16807) % 2147483647;
-		randomPrev = val;
-		return val / 2147483647;
+	async function getPopups(bounds: MapBounds): Promise<MapPopup[]> {
+		const popups = new Array<MapPopup>();
+		const centers = [
+			{ lat: 51.505, lng: -0.09 },
+			{ lat: 45, lng: 22 },
+			{ lat: 52.52, lng: 13.409 },
+			{ lat: 48.8566, lng: 2.3522 }
+		];
+		const radius = 10;
+		const count = 1000;
+		const limit = 100;
+
+		let randomPrev = 1;
+		const random = () => {
+			const val = (randomPrev * 16807) % 2147483647;
+			randomPrev = val;
+			return val / 2147483647;
+		};
+
+		let cnt = 0;
+		for (let i = 0; i < count; i++) {
+			const index = Math.floor(random() * count);
+			const distance = radius / (count - index);
+			const center = centers[index % centers.length];
+
+			const lat = center.lat + distance * (-1 + random() * 2);
+			const lng = center.lng + distance * (-1 + random() * 2);
+			if (lat < bounds.sw.lat || bounds.ne.lat < lat || lng < bounds.sw.lng || bounds.ne.lng < lng) continue;
+			if (cnt++ > limit) break;
+
+			popups.push({
+				id: i.toString(),
+				rank: i,
+				lat: lat,
+				lng: lng,
+				height: 100,
+				width: 150
+			});
+		}
+
+		return await new Promise((resolve) => resolve(popups));
+	}
+
+	async function getPopupContent(id: string): Promise<HTMLElement> {
+		return await new Promise((resolve) => {
+			const element = document.createElement('div');
+			element.style.width = '200px';
+			element.style.height = '150px';
+			element.style.color = 'red';
+			element.style.padding = '8px';
+			element.innerText = id;
+			resolve(element);
+		});
 	}
 </script>
 
