@@ -1,34 +1,20 @@
-import type { MapStyle } from './input.js';
+import type { MapStyle, MapPopupContentCallback, MapPopupQueueParams, MapBounds, MapCoordinate } from './input.js';
 
 import type { Types } from '@workspace/shared/src/types.js';
 
-export namespace MapComponent {
-	export interface Position {
-		lat: number;
-		lng: number;
-		zoom: number;
-	}
-
-	export interface Bounds {
-		sw: { lat: number; lng: number };
-		ne: { lat: number; lng: number };
-	}
-
-	export type PopupContentCallback = (ids: string) => Promise<string>;
-	export type SetPopupsContentCallbackFunction = (callback: PopupContentCallback) => void;
-	export type SetPopupsFunction = (popups: Types.Popup[]) => void;
-}
-
 export interface MapComponent {
-	getCenter: () => { lat: number; lng: number };
-	setCenter: (lat: number, lng: number) => void;
+	getCenter: () => MapCoordinate;
+	setCenter: (coordinate: MapCoordinate) => void;
 	getZoom: () => number;
 	setZoom: (zoom: number) => void;
-	getBounds: () => MapComponent.Bounds;
+	getBounds: () => MapBounds;
 	zoomIn: () => void;
 	zoomOut: () => void;
+
 	getStyle: () => MapStyle;
 	setStyle: (style: MapStyle) => void;
-	insertPopups: (popups: Types.Popup[], callback: MapComponent.PopupContentCallback) => Promise<void>;
+
+	enqueuePopups: (params: MapPopupQueueParams) => void;
+	insertPopups: (popups: Types.Popup[], contentCallback: MapPopupContentCallback) => Promise<void>;
 	removePopups: () => void;
 }

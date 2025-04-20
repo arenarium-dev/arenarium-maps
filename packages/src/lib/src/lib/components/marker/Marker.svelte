@@ -107,6 +107,8 @@
 	});
 
 	function updateStyle(markerAngle: number) {
+		if (!anchor || !marker || !pin) return;
+
 		const params = getPositionParams(markerWidth, markerHeight, markerAngle);
 
 		const markerOffsetX = Math.round(params.markerOffsetX);

@@ -4,7 +4,7 @@
 	import Icon from './components/Icon.svelte';
 
 	import { mountMap } from '$lib/index.js';
-	import type { MapPopup } from '$lib/map/input.js';
+	import type { MapBounds, MapPopup } from '$lib/map/input.js';
 
 	let map: ReturnType<typeof mountMap>;
 
@@ -68,6 +68,27 @@
 	}
 
 	async function addData() {
+		const bounds = map.getBounds();
+		const popups = await getPopups(bounds);
+
+		const now = performance.now();
+		await map.insertPopups(popups, getPopupContent);
+		console.log(`[SET ${popups.length}] ${performance.now() - now}ms`);
+	}
+
+	async function clearData() {
+		map.removePopups();
+	}
+
+	async function enqueueData() {
+		map.enqueuePopups({
+			interval: 1000,
+			popupCallback: getPopups,
+			contentCallback: getPopupContent
+		});
+	}
+
+	async function getPopups(bounds: MapBounds): Promise<MapPopup[]> {
 		const popups = new Array<MapPopup>();
 		const centers = [
 			{ lat: 51.505, lng: -0.09 },
@@ -78,7 +99,6 @@
 		const radius = 10;
 		const count = 1000;
 		const limit = 100;
-		const bounds = map.getBounds();
 
 		let randomPrev = 1;
 		const random = () => {
@@ -99,8 +119,8 @@
 			if (cnt++ > limit) break;
 
 			popups.push({
-				index: i,
 				id: i.toString(),
+				rank: i,
 				lat: lat,
 				lng: lng,
 				height: 100,
@@ -108,17 +128,13 @@
 			});
 		}
 
-		const now = performance.now();
-		await map.insertPopups(popups, async (id) => {
-			return new Promise((resolve) => {
-				resolve(`<div style="width:200px; height: 150px; color:red; padding: 8px;">${id}</div>`);
-			});
-		});
-		console.log(`[SET ${popups.length}] ${performance.now() - now}ms`);
+		return await new Promise((resolve) => resolve(popups));
 	}
 
-	async function clearData() {
-		map.removePopups();
+	async function getPopupContent(id: string): Promise<string> {
+		return await new Promise((resolve) => {
+			resolve(`<div style="width:200px; height: 150px; color:red; padding: 8px;">${id}</div>`);
+		});
 	}
 
 	const zoomDelta = 0.05;
@@ -145,6 +161,7 @@
 	<button class="style" onclick={changeStyle}>Change style</button>
 	<button class="data" onclick={addData}>Add data</button>
 	<button class="data" onclick={clearData}>Clear data</button>
+	<button class="data" onclick={enqueueData}>Enqueue data</button>
 </div>
 
 <div class="zooms">

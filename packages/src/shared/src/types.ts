@@ -1,7 +1,7 @@
 export namespace Types {
     export interface Popup {
         id: string;
-        index: number;
+        rank: number;
         lat: number;
         lng: number;
         width: number;

@@ -1,5 +1,16 @@
 import { z } from 'zod';
 
+// Options
+export const mapCoordinateSchema = z.object({
+	lat: z.number(),
+	lng: z.number()
+});
+
+export const mapBoundsSchema = z.object({
+	sw: mapCoordinateSchema,
+	ne: mapCoordinateSchema
+});
+
 export const mapStyleSchema = z.object({
 	name: z.literal('dark').or(z.literal('light')),
 	url: z.string().optional(),
@@ -36,9 +47,10 @@ export const mapOptionsSchema = z.object({
 		.optional()
 });
 
+// Popups
 export const mapPopupSchema = z.object({
 	id: z.string(),
-	index: z.number(),
+	rank: z.number(),
 	lat: z.number(),
 	lng: z.number(),
 	width: z.number(),
@@ -47,6 +59,21 @@ export const mapPopupSchema = z.object({
 
 export const mapPopupsSchema = z.array(mapPopupSchema);
 
+export const mapPopupCallbackSchema = z.function().args(mapBoundsSchema).returns(z.promise(mapPopupsSchema));
+
+export const mapPopupContentCallbackSchema = z.function().args(z.string()).returns(z.promise(z.string()));
+
+export const mapPopupQueueParamsSchema = z.object({
+	interval: z.number().min(100).max(10000),
+	popupCallback: mapPopupCallbackSchema,
+	contentCallback: mapPopupContentCallbackSchema
+});
+
+export type MapCoordinate = z.infer<typeof mapCoordinateSchema>;
+export type MapBounds = z.infer<typeof mapBoundsSchema>;
 export type MapOptions = z.infer<typeof mapOptionsSchema>;
 export type MapStyle = z.infer<typeof mapStyleSchema>;
 export type MapPopup = z.infer<typeof mapPopupSchema>;
+export type MapPopupCallback = z.infer<typeof mapPopupCallbackSchema>;
+export type MapPopupContentCallback = z.infer<typeof mapPopupContentCallbackSchema>;
+export type MapPopupQueueParams = z.infer<typeof mapPopupQueueParamsSchema>;

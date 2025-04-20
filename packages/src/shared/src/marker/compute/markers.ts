@@ -26,6 +26,8 @@ namespace Nodes {
 		index: number;
 		/** The id of the marker that this node represents. */
 		id: string;
+		/** The rank of the marker node. */
+		rank: number;
 		/** The x coordinate of the marker node. */
 		x: number;
 		/** The y coordinate of the marker node. */
@@ -34,8 +36,6 @@ namespace Nodes {
 		width: number;
 		/** The height of the marker node. */
 		height: number;
-		/** The rank of the marker node. */
-		rank: number;
 
 		// STATE
 		/** State of the marker expanded or not. */
@@ -49,18 +49,18 @@ namespace Nodes {
 		/** The neighbours of the marker node. */
 		neighbours: Array<Node>;
 
-		constructor(popup: Types.Popup, index: number, rank: number) {
+		constructor(popup: Types.Popup, index: number) {
 			const projection = getPoint(popup.lat, popup.lng);
 			const width = popup.width + 4 * MARKER_PADDING;
 			const height = popup.height + 4 * MARKER_PADDING;
 
 			this.index = index;
 			this.id = popup.id;
+			this.rank = popup.rank;
 			this.x = projection.x;
 			this.y = projection.y;
 			this.width = width;
 			this.height = height;
-			this.rank = rank;
 			this.expanded = true;
 			this.angle = Particles.Angles.DEFAULT;
 			this.bounds = this.getBounds(1);
@@ -112,7 +112,7 @@ namespace Nodes {
 		// Create marker nodes
 		for (let i = 0; i < popups.length; i++) {
 			const popup = popups[i];
-			nodes[i] = new Node(popup, i, popups.length - popup.index);
+			nodes[i] = new Node(popup, i);
 		}
 
 		return nodes;

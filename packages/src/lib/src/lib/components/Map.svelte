@@ -7,8 +7,18 @@
 	import { getMarkers } from '../map/data/markers.js';
 	import { BoundsPair } from '../map/data/bounds.js';
 	import { darkStyleSpecification, lightStyleSpecification } from '../map/styles.js';
-	import { mapOptionsSchema, type MapOptions, mapPopupsSchema, type MapStyle } from '../map/input.js';
-	import { type MapComponent } from '../map/types.js';
+	import {
+		mapOptionsSchema,
+		type MapOptions,
+		mapPopupsSchema,
+		type MapStyle,
+		type MapPopupQueueParams,
+		mapPopupQueueParamsSchema,
+		type MapPopupContentCallback,
+		mapPopupContentCallbackSchema,
+		type MapPopupCallback,
+		type MapCoordinate
+	} from '../map/input.js';
 
 	import {
 		MAP_BASE_SIZE,
@@ -22,7 +32,6 @@
 
 	import maplibregl from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';
-	import { z } from 'zod';
 
 	let { options }: { options: MapOptions } = $props();
 
@@ -97,9 +106,15 @@
 		options.events?.onMapClick?.call(null);
 	}
 
+	function onPopupClick(id: string) {
+		options.events?.onPopupClick?.call(null, id);
+	}
+
 	function onWindowResize() {
 		setMapMinZoom(getMapMinZoom());
 	}
+
+	//#region Position
 
 	function getMapMinZoom() {
 		// Zoom =+ 1 doubles the width of the map
@@ -113,15 +128,15 @@
 		map?.setMinZoom(minZoom);
 	}
 
-	export function getCenter() {
+	export function getCenter(): MapCoordinate {
 		const center = map?.getCenter();
-		if (!center) return;
+		if (!center) return { lat: options.position.center.lat, lng: options.position.center.lng };
 
 		return { lat: center.lat, lng: center.lng };
 	}
 
-	export function setCenter(lat: number, lng: number) {
-		map?.setCenter({ lat, lng });
+	export function setCenter(coordinate: MapCoordinate) {
+		map?.setCenter(coordinate);
 	}
 
 	export function getZoom() {
@@ -242,12 +257,14 @@
 		}
 	}
 
-	let mapMarkerIntervalId: number;
+	let mapMarkerIntervalId: number | undefined;
+	let mapPopupsIntervalId: number | undefined;
 
 	let mapMarkerArray = $state(new Array<MarkerData>());
 	let mapMarkerMap = $state(new Map<string, MarkerData>());
 
-	let mapPopupContentCallback: MapComponent.PopupContentCallback | undefined = undefined;
+	let mapPopupsCallback: MapPopupCallback | undefined = undefined;
+	let mapPopupContentCallback: MapPopupContentCallback | undefined = undefined;
 
 	onMount(() => {
 		const markersLoop = () => {
@@ -259,6 +276,7 @@
 
 		return () => {
 			clearInterval(mapMarkerIntervalId);
+			clearInterval(mapPopupsIntervalId);
 		};
 	});
 
@@ -356,84 +374,124 @@
 		}
 	}
 
-	function onPopupClick(id: string) {
-		options.events?.onPopupClick?.call(null, id);
-	}
+	async function updateMarkers(newMarkers: Types.Marker[]) {
+		const newMarkerMap = new Map(newMarkers.map((m) => [m.id, new MarkerData(m)]));
+		const newDataList = new Array<MarkerData>();
 
-	export async function insertPopups(popups: Types.Popup[], callback: MapComponent.PopupContentCallback) {
-		try {
-			options.events?.onLoadingStart?.call(null);
+		// Remove old data
+		const oldDataList = Array.from(mapMarkerArray);
+		for (const oldData of oldDataList) {
+			if (newMarkerMap.has(oldData.marker.id) == false) {
+				oldData.libreMarker?.remove();
 
-			// Set callback
-			mapPopupContentCallback = callback;
-
-			// Validate popups
-			const popupsSchemaResult = await mapPopupsSchema.safeParseAsync(popups);
-			if (!popupsSchemaResult.success) throw new Error('Invalid markers input');
-
-			// Get markers
-			const newMarkers = await getMarkers(popups);
-			const newMarkerMap = new Map(newMarkers.map((m) => [m.id, new MarkerData(m)]));
-			const newDataList = new Array<MarkerData>();
-
-			// Remove old data
-			const oldDataList = Array.from(mapMarkerArray);
-			for (const oldData of oldDataList) {
-				if (newMarkerMap.has(oldData.marker.id) == false) {
-					oldData.libreMarker?.remove();
-
-					mapMarkerMap.delete(oldData.marker.id);
-					mapMarkerArray.splice(mapMarkerArray.indexOf(oldData), 1);
-				}
+				mapMarkerMap.delete(oldData.marker.id);
+				mapMarkerArray.splice(mapMarkerArray.indexOf(oldData), 1);
 			}
+		}
 
-			// Crate or update new data
-			for (const newMarker of newMarkers) {
-				// Check if marker already exists
-				const oldData = mapMarkerMap.get(newMarker.id);
+		// Crate or update new data
+		for (const newMarker of newMarkers) {
+			// Check if marker already exists
+			const oldData = mapMarkerMap.get(newMarker.id);
 
-				if (oldData) {
-					// Update marker data
-					oldData.marker = newMarker;
-					oldData.updateZIndex();
-				} else {
-					// Create marker data
-					const newData = new MarkerData(newMarker);
-					mapMarkerMap.set(newMarker.id, newData);
-					mapMarkerArray.push(newData);
-					newDataList.push(newData);
-				}
+			if (oldData) {
+				// Update marker data
+				oldData.marker = newMarker;
+				oldData.updateZIndex();
+			} else {
+				// Create marker data
+				const newData = new MarkerData(newMarker);
+				mapMarkerMap.set(newMarker.id, newData);
+				mapMarkerArray.push(newData);
+				newDataList.push(newData);
 			}
+		}
 
-			// Wait for new markers content to be rendered
-			await tick();
+		// Wait for new markers content to be rendered
+		await tick();
 
-			// Add new libre markers
-			for (const newData of newDataList) {
-				const marker = newData.marker;
-				const element = newData.element;
-				if (!element) throw new Error('Failed to render marker element.');
+		// Add new libre markers
+		for (const newData of newDataList) {
+			const marker = newData.marker;
+			const element = newData.element;
+			if (!element) throw new Error('Failed to render marker element.');
 
-				// Create new libre marker
-				const mapLibreMarker = new maplibregl.Marker({ element });
-				mapLibreMarker.setLngLat([marker.lng, marker.lat]);
+			// Create new libre marker
+			const mapLibreMarker = new maplibregl.Marker({ element });
+			mapLibreMarker.setLngLat([marker.lng, marker.lat]);
 
-				newData.libreMarker = mapLibreMarker;
-				newData.updateZIndex();
-			}
-		} finally {
-			options.events?.onLoadingEnd?.call(null);
+			newData.libreMarker = mapLibreMarker;
+			newData.updateZIndex();
 		}
 	}
 
-	export function removePopups() {
-		// Remove data
+	function removeMarkers() {
 		for (let i = 0; i < mapMarkerArray.length; i++) {
 			const data = mapMarkerArray[i];
 			data.libreMarker?.remove();
 		}
 		mapMarkerArray.length = 0;
 		mapMarkerMap.clear();
+	}
+
+	export function enqueuePopups(params: MapPopupQueueParams) {
+		// Validate params
+		const paramsSchemaResult = mapPopupQueueParamsSchema.safeParse(params);
+		if (!paramsSchemaResult.success) throw new Error('Invalid popups enqueue params');
+
+		// Stop loop
+		if (mapPopupsIntervalId != undefined) {
+			clearInterval(mapPopupsIntervalId);
+			mapPopupsIntervalId = undefined;
+		}
+
+		// Set callback
+		mapPopupsCallback = params.popupCallback;
+		mapPopupContentCallback = params.contentCallback;
+
+		// Start loop
+		const popupsLoop = async () => {
+			const zoom = getZoom();
+			const bounds = getBounds();
+			if (!zoom || !bounds) return;
+
+			const popups = await mapPopupsCallback?.(bounds);
+			if (!popups) return;
+
+			const markers = await getMarkers(popups);
+			await updateMarkers(markers);
+
+			mapMarkerIntervalId = window.setTimeout(popupsLoop, params.interval);
+		};
+
+		popupsLoop();
+	}
+
+	export async function insertPopups(popups: Types.Popup[], contentCallback: MapPopupContentCallback) {
+		// Validate popups
+		const popupsSchemaResult = await mapPopupsSchema.safeParseAsync(popups);
+		if (!popupsSchemaResult.success) throw new Error('Invalid popups');
+
+		// Validate content callback
+		const popupCallbackSchemaResult = mapPopupContentCallbackSchema.safeParse(contentCallback);
+		if (!popupCallbackSchemaResult.success) throw new Error('Invalid popup content callback');
+
+		try {
+			options.events?.onLoadingStart?.call(null);
+
+			// Set callback
+			mapPopupContentCallback = contentCallback;
+
+			// Get markers
+			const markers = await getMarkers(popups);
+			await updateMarkers(markers);
+		} finally {
+			options.events?.onLoadingEnd?.call(null);
+		}
+	}
+
+	export function removePopups() {
+		removeMarkers();
 	}
 
 	//#endregion
