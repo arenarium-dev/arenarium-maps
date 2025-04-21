@@ -14,9 +14,9 @@
 	let highlight = highlightjs.highlight(text, { language }).value;
 </script>
 
-<pre class="dark"><code class="hljs">{@html highlight}</code></pre>
+<pre><code class="hljs">{@html highlight}</code></pre>
 
-<style>
+<style lang="less">
 	:global {
 		pre {
 			margin: 0px;
@@ -25,20 +25,19 @@
 		pre code.hljs {
 			display: block;
 			overflow-x: auto;
-			padding: 8px 16px;
+			padding: 12px 16px;
 		}
 
 		code.hljs {
 			padding: 4px 8px;
 		}
 
+		.hljs {
+			color: var(--on-surface);
+			background: var(--surface-container-low);
+		}
+
 		.dark {
-			.hljs {
-				/* var(--highlight-color) */
-				color: #ffffff;
-				/* var(--highlight-bg) */
-				background: #1c1b1b;
-			}
 			.hljs-subst {
 				/* var(--highlight-color) */
 				color: #ffffff;
@@ -123,19 +122,13 @@
 		}
 
 		.light {
-			.hljs {
-				/* var(--highlight-color) */
-				color: #2f3337;
-				/* var(--highlight-bg) */
-				background: #f6f6f6;
-			}
 			.hljs-subst {
 				/* var(--highlight-color) */
 				color: #2f3337;
 			}
 			.hljs-comment {
 				/* var(--highlight-comment) */
-				color: #656e77;
+				color: #8794a0;
 			}
 			.hljs-keyword,
 			.hljs-selector-tag,

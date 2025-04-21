@@ -1,10 +1,24 @@
 <script lang="ts">
+	import Icon from '$lib/client/components/utils/Icon.svelte';
+	import { app } from '$lib/client/state/app.svelte';
+
 	let { children } = $props();
+
+	function onThemeClick() {
+		app.theme.set(app.theme.get() === 'dark' ? 'light' : 'dark');
+	}
 </script>
 
 <div class="page">
 	<div class="content">
-		<div class="bar"></div>
+		<div class="bar">
+			<Icon name="globe"></Icon>
+			<div class="title">@arenarium/maps</div>
+			<div class="grow"></div>
+			<button class="theme" onclick={onThemeClick}>
+				<Icon name={app.theme.get() === 'dark' ? 'light_mode' : 'dark_mode'} />
+			</button>
+		</div>
 		{@render children()}
 	</div>
 </div>
@@ -26,18 +40,40 @@
 			flex-grow: 1;
 			display: flex;
 			flex-direction: column;
-			border-left: 2px solid var(--border);
-			border-right: 2px solid var(--border);
+			border-left: 1px solid var(--outline-variant);
+			border-right: 1px solid var(--outline-variant);
 			background-color: var(--surface);
 
 			.bar {
-				display: none;
 				position: sticky;
+				width: 100%;
 				top: 0px;
-				width: @content-width;
 				height: 60px;
-				background-color: var(--surface);
-				border-bottom: 2px solid var(--border);
+				display: flex;
+				align-items: center;
+				gap: 16px;
+				padding: 24px;
+				border-bottom: 1px solid var(--outline-variant);
+				z-index: 1;
+
+				.title {
+					font-size: 20px;
+					font-weight: 600;
+					color: var(--on-surface);
+				}
+
+				button {
+					width: 36px;
+					height: 36px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					cursor: pointer;
+
+					&:hover {
+						background-color: var(--primary-hover);
+					}
+				}
 			}
 		}
 	}
@@ -46,12 +82,6 @@
 		.page {
 			.content {
 				width: 100%;
-
-				.bar {
-					display: initial;
-					width: 100%;
-					z-index: 1;
-				}
 			}
 		}
 	}

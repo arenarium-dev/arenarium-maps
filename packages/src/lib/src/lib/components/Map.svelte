@@ -14,7 +14,6 @@
 		type MapOptions,
 		type MapStyle,
 		type MapPopupContentCallback,
-		type MapPopupCallback,
 		type MapCoordinate
 	} from '../map/input.js';
 

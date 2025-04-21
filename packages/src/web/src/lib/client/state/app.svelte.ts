@@ -8,7 +8,6 @@ export class App {
 
 	theme = new Theme();
 	toast = new Toast();
-	map = new Map();
 
 	initialize() {
 		this.theme.initialize();
