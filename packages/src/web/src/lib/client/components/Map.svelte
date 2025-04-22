@@ -81,35 +81,49 @@
 		map.removePopups();
 	}
 
+	const zoomDelta = 0.05;
+
+	function onZoomIn() {
+		map.setZoom(map.getZoom() + zoomDelta);
+	}
+
+	function onZoomOut() {
+		map.setZoom(map.getZoom() - zoomDelta);
+	}
+
+	//#region Data
+
+	const total = 1000;
+	const limit = 100;
+
+	const added = new Array<boolean>();
+	added.fill(false);
+
+	const radius = 10;
+	const centers = [
+		{ lat: 51.505, lng: -0.09 },
+		{ lat: 45, lng: 22 },
+		{ lat: 52.52, lng: 13.409 },
+		{ lat: 48.8566, lng: 2.3522 }
+	];
+
 	async function getPopups(bounds: MapBounds): Promise<MapPopup[]> {
 		const popups = new Array<MapPopup>();
-		const centers = [
-			{ lat: 51.505, lng: -0.09 },
-			{ lat: 45, lng: 22 },
-			{ lat: 52.52, lng: 13.409 },
-			{ lat: 48.8566, lng: 2.3522 }
-		];
-		const radius = 10;
-		const count = 1000;
-		const limit = 100;
 
-		let randomPrev = 1;
-		const random = () => {
-			const val = (randomPrev * 16807) % 2147483647;
-			randomPrev = val;
-			return val / 2147483647;
-		};
+		let n = 0;
+		for (let i = 0; i < total; i++) {
+			if (added[i]) continue;
 
-		let cnt = 0;
-		for (let i = 0; i < count; i++) {
-			const index = Math.floor(random() * count);
-			const distance = radius / (count - index);
-			const center = centers[index % centers.length];
+			const distance = radius / i;
+			const center = centers[i % centers.length];
 
 			const lat = center.lat + distance * (-1 + random() * 2);
 			const lng = center.lng + distance * (-1 + random() * 2);
 			if (lat < bounds.sw.lat || bounds.ne.lat < lat || lng < bounds.sw.lng || bounds.ne.lng < lng) continue;
-			if (cnt++ > limit) break;
+			if (n >= limit) break;
+
+			n++;
+			added[i] = true;
 
 			popups.push({
 				id: i.toString(),
@@ -136,15 +150,15 @@
 		});
 	}
 
-	const zoomDelta = 0.05;
+	let randomPrev = 1;
 
-	function onZoomIn() {
-		map.setZoom(map.getZoom() + zoomDelta);
+	function random() {
+		const val = (randomPrev * 16807) % 2147483647;
+		randomPrev = val;
+		return val / 2147483647;
 	}
 
-	function onZoomOut() {
-		map.setZoom(map.getZoom() - zoomDelta);
-	}
+	//#endregion
 </script>
 
 <svelte:head>

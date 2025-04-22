@@ -121,7 +121,7 @@
 
 		const shadowX = -1 - 2 * (markerOffsetX / markerWidth);
 		const shadowY = -1 - 2 * (markerOffsetY / markerHeight);
-		anchor.style.filter = ` drop-shadow(0px 0px 4px rgba(0,0,0,0.5)) drop-shadow(${shadowX}px ${shadowY}px 2px rgba(0,0,0,0.5))`;
+		anchor.style.filter = ` drop-shadow(0px 0px 4px rgba(0,0,0,0.3)) drop-shadow(${shadowX}px ${shadowY}px 2px rgba(0,0,0,0.3))`;
 	}
 
 	export const getWidth = () => markerWidth;
