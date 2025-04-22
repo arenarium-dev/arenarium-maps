@@ -6,6 +6,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
+		"update-maps": "pnpm update @arenarium/maps",
 		"preview": "pnpm run build && wrangler pages dev",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -41,7 +42,7 @@
 		"wrangler": "^4.12.0"
 	},
 	"dependencies": {
-		"@arenarium/maps": "^1.0.46",
+		"@arenarium/maps": "^1.0.47",
 		"@better-fetch/fetch": "^1.1.18",
 		"better-auth": "^1.2.7",
 		"drizzle-orm": "^0.40.1",

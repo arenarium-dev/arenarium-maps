@@ -525,7 +525,6 @@
 			position: absolute;
 			width: 100%;
 			height: 100%;
-			background-color: var(--background);
 			font-family: inherit;
 			line-height: inherit;
 		}
@@ -558,7 +557,7 @@
 						.maplibregl-ctrl-attrib-inner {
 							a {
 								color: var(--text);
-								font-weight: 500;
+								font-weight: 600;
 							}
 						}
 					}

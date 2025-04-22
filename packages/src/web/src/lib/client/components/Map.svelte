@@ -1,12 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 
-	import Icon from './utils/Icon.svelte';
+	import Icon from '$lib/client/components/utils/Icon.svelte';
+	import Menu from '$lib/client/components/utils/Menu.svelte';
+	import Progress from '$lib/client/components/utils/Progress.svelte';
+
+	import { app } from '$lib/client/state/app.svelte';
 
 	import { mountMap, type MapBounds, type MapPopup } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
-	import Menu from './utils/Menu.svelte';
-	import { app } from '../state/app.svelte';
 
 	let map = $state<ReturnType<typeof mountMap>>();
 
@@ -47,23 +50,6 @@
 
 		map.updatePopupsContentCallback(getPopupContent);
 	});
-
-	async function addData() {
-		if (!map) return;
-
-		const bounds = map.getBounds();
-		const popups = await getPopups(bounds);
-
-		const now = performance.now();
-		await map.updatePopups(popups);
-		console.log(`[SET ${popups.length}] ${performance.now() - now}ms`);
-	}
-
-	async function clearData() {
-		if (!map) return;
-
-		map.removePopups();
-	}
 
 	//#region Style
 
@@ -146,33 +132,32 @@
 
 	//#endregion
 
-	//#region Side
+	//#region Source
 
-	let fullscreen = $state<boolean>(false);
+	let source = $state<string>('Rentals');
+	let sourceMenuComponent: Menu;
 
-	function onZoomIn() {
-		map?.zoomIn();
+	async function onSourceSelect(value: string) {
+		await clearData();
+		await addData();
 	}
 
-	function onZoomOut() {
-		map?.zoomOut();
+	async function addData() {
+		if (!map) return;
+
+		const bounds = map.getBounds();
+		const popups = await getPopups(bounds);
+
+		const now = performance.now();
+		await map.updatePopups(popups);
+		console.log(`[SET ${popups.length}] ${performance.now() - now}ms`);
 	}
 
-	function onToggleFullscreen() {
-		if (container == undefined) return;
+	async function clearData() {
+		if (!map) return;
 
-		if (fullscreen) {
-			container.style.position = 'absolute';
-			container.style.zIndex = 'initial';
-			fullscreen = false;
-		} else {
-			container.style.position = 'fixed';
-			container.style.zIndex = '10000';
-			fullscreen = true;
-		}
+		map.removePopups();
 	}
-
-	//#endregion
 
 	//#region Data
 
@@ -242,6 +227,36 @@
 	}
 
 	//#endregion
+
+	//#endregion
+
+	//#region Side
+
+	let fullscreen = $state<boolean>(false);
+
+	function onZoomIn() {
+		map?.zoomIn();
+	}
+
+	function onZoomOut() {
+		map?.zoomOut();
+	}
+
+	function onToggleFullscreen() {
+		if (container == undefined) return;
+
+		if (fullscreen) {
+			container.style.position = 'absolute';
+			container.style.zIndex = 'initial';
+			fullscreen = false;
+		} else {
+			container.style.position = 'fixed';
+			container.style.zIndex = '10000';
+			fullscreen = true;
+		}
+	}
+
+	//#endregion
 </script>
 
 <div class="container" bind:this={container}>
@@ -251,7 +266,7 @@
 		<Menu bind:this={styleMenuComponent}>
 			{#snippet button()}
 				<div class="button shadow-small">
-					<Icon name={'palette'} />
+					<Icon name={'palette'} size={22} />
 					<span>{style}</span>
 				</div>
 			{/snippet}
@@ -264,8 +279,21 @@
 				</div>
 			{/snippet}
 		</Menu>
-		<button class="button shadow-small" onclick={addData}>Add data</button>
-		<button class="button shadow-small" onclick={clearData}>Clear data</button>
+		<Menu bind:this={sourceMenuComponent}>
+			{#snippet button()}
+				<div class="button shadow-small">
+					<Icon name={'database'} size={22} />
+					<span>{source}</span>
+				</div>
+			{/snippet}
+			{#snippet menu()}
+				<div class="menu shadow-large">
+					<button class="item" class:selected={source == 'Rentals'} onclick={() => onSourceSelect('Rentals')}>Rentals</button>
+					<button class="item" class:selected={source == 'Events'} onclick={() => onSourceSelect('Events')}>Events</button>
+					<button class="item" class:selected={source == 'News'} onclick={() => onSourceSelect('News')}>News</button>
+				</div>
+			{/snippet}
+		</Menu>
 	</div>
 
 	<div class="side">
@@ -279,6 +307,12 @@
 			<Icon name={'remove'} />
 		</button>
 	</div>
+
+	{#if loading}
+		<div class="progess" transition:fade={{ duration: 125 }}>
+			<Progress />
+		</div>
+	{/if}
 </div>
 
 {#if loading}
@@ -303,23 +337,23 @@
 
 		.top {
 			position: absolute;
-			top: 12px;
-			left: 12px;
+			top: 16px;
+			left: 16px;
 			display: flex;
-			gap: 12px;
+			gap: 16px;
 
 			.button {
 				gap: 8px;
 				padding: 8px 16px 8px 8px;
 				width: initial;
 				font-weight: 600;
-				font-size: 14px;
+				font-size: 13px;
 				cursor: pointer;
 			}
 
 			.menu {
 				margin-top: 12px;
-				margin-left: 24px;
+				margin-left: 22px;
 				display: flex;
 				flex-direction: column;
 				align-items: stretch;
@@ -334,9 +368,10 @@
 					padding: 8px 12px;
 					width: initial;
 					font-weight: 600;
-					font-size: 14px;
+					font-size: 13px;
 					border-radius: 12px;
 					cursor: pointer;
+					transition: all 125ms ease-in-out;
 
 					&.selected {
 						background-color: var(--surface-container);
@@ -369,6 +404,15 @@
 			flex-direction: column;
 			align-items: center;
 			gap: 12px;
+		}
+
+		.progess {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			width: 100%;
+			height: 4px;
+			overflow: hidden;
 		}
 	}
 </style>

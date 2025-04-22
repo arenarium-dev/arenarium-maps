@@ -107,8 +107,8 @@ importers:
   packages/src/web:
     dependencies:
       '@arenarium/maps':
-        specifier: ^1.0.46
-        version: 1.0.46(svelte@5.28.1)
+        specifier: ^1.0.47
+        version: 1.0.47(svelte@5.28.1)
       '@better-fetch/fetch':
         specifier: ^1.1.18
         version: 1.1.18
@@ -222,6 +222,11 @@ packages:
 
   '@arenarium/maps@1.0.46':
     resolution: {integrity: sha512-AOivbO9ZYg/ZrFd145CQ7A/+G5XdBW9ffOs3Si7sAFkQYDTQ0Er6vvwSInUDxm3k+zdreXy4UEP0dvJFZNARnQ==}
+    peerDependencies:
+      svelte: ^5.0.0
+
+  '@arenarium/maps@1.0.47':
+    resolution: {integrity: sha512-w/0aNmSaijeAKbAGy5vF8yYO/5wb2CKQrhUcYQ1dRtfp3ebcP7H9cmdBaeVsw7L8/ItER6fNtt3vtEW3/8t4YA==}
     peerDependencies:
       svelte: ^5.0.0
 
@@ -2869,6 +2874,10 @@ snapshots:
       '@jridgewell/trace-mapping': 0.3.25
 
   '@arenarium/maps@1.0.46(svelte@5.28.1)':
+    dependencies:
+      svelte: 5.28.1
+
+  '@arenarium/maps@1.0.47(svelte@5.28.1)':
     dependencies:
       svelte: 5.28.1
 

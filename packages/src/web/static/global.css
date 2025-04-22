@@ -127,9 +127,6 @@ body {
 	background-color: var(--surface-dim);
 	margin: 0;
 	padding: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
 	overscroll-behavior: none;
 	touch-action: manipulation;
 }
@@ -211,28 +208,4 @@ button {
 
 .grow {
 	flex-grow: 1;
-}
-
-/* SCROLLBAR */
-/* Width */
-::-webkit-scrollbar {
-	height: 4px;
-	width: 4px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-	background: #f5f5f5;
-	/* border-radius: 2px; */
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-	background: #888;
-	/* border-radius: 2px; */
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-	background: #555;
 }

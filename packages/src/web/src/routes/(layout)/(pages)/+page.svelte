@@ -79,8 +79,11 @@ const map = mountMap(...);`;
 
 <style lang="less">
 	.map {
+		margin-bottom: 24px;
 		position: relative;
 		aspect-ratio: 16 / 9;
+		border-radius: 8px;
+		overflow: hidden;
 
 		.shadow {
 			position: absolute;
@@ -88,6 +91,7 @@ const map = mountMap(...);`;
 			left: 0px;
 			width: 100%;
 			height: 100%;
+			border-radius: 8px;
 			box-shadow: inset 0 0 4px 2px rgba(0, 0, 0, 0.2);
 			pointer-events: none;
 		}
@@ -97,7 +101,6 @@ const map = mountMap(...);`;
 		display: flex;
 		flex-direction: column;
 		gap: 24px;
-		padding: 24px;
 
 		.block {
 			display: flex;
