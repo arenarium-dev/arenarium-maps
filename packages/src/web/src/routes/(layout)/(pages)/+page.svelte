@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Map from '$lib/client/components/Map.svelte';
 	import Highlight from '$lib/client/components/Highlight.svelte';
 
 	let moduleInstallHighlight = `npm install @arenarium/maps`;
@@ -37,6 +38,11 @@ const map = mountMap(...);`;
 	let mountHtmlHighlight = `<div id="map"></div>`;
 </script>
 
+<div class="map">
+	<Map />
+	<div class="shadow"></div>
+</div>
+
 <div class="page">
 	<div class="block">
 		<div class="title">Installation</div>
@@ -72,6 +78,21 @@ const map = mountMap(...);`;
 </div>
 
 <style lang="less">
+	.map {
+		position: relative;
+		aspect-ratio: 16 / 9;
+
+		.shadow {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			width: 100%;
+			height: 100%;
+			box-shadow: inset 0 0 4px 2px rgba(0, 0, 0, 0.2);
+			pointer-events: none;
+		}
+	}
+
 	.page {
 		display: flex;
 		flex-direction: column;
@@ -102,7 +123,7 @@ const map = mountMap(...);`;
 			.highlight {
 				padding: 0px;
 				border-radius: 8px;
-				border: 1px solid var(--outline-variant);
+				border: 1px solid var(--surface-container-highest);
 				overflow: hidden;
 			}
 		}

@@ -40,8 +40,8 @@
 			flex-grow: 1;
 			display: flex;
 			flex-direction: column;
-			border-left: 1px solid var(--outline-variant);
-			border-right: 1px solid var(--outline-variant);
+			border-left: 1px solid var(--surface-container-highest);
+			border-right: 1px solid var(--surface-container-highest);
 			background-color: var(--surface);
 
 			.bar {
@@ -53,7 +53,8 @@
 				align-items: center;
 				gap: 16px;
 				padding: 24px;
-				border-bottom: 1px solid var(--outline-variant);
+				background-color: var(--surface);
+				border-bottom: 1px solid var(--surface-container-highest);
 				z-index: 1;
 
 				.title {
