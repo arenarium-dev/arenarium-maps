@@ -12,7 +12,6 @@
 <div class="page">
 	<div class="content">
 		<div class="bar">
-			<Icon name="globe"></Icon>
 			<div class="title">@arenarium/maps</div>
 			<div class="grow"></div>
 			<button class="theme" onclick={onThemeClick}>
@@ -45,9 +44,7 @@
 			background-color: var(--surface);
 
 			.bar {
-				position: sticky;
 				width: 100%;
-				top: 0px;
 				height: 60px;
 				display: flex;
 				align-items: center;

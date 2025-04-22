@@ -5,9 +5,12 @@
 
 	import { mountMap, type MapBounds, type MapPopup } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
+	import Menu from './utils/Menu.svelte';
+	import { app } from '../state/app.svelte';
 
-	let map: ReturnType<typeof mountMap>;
+	let map = $state<ReturnType<typeof mountMap>>();
 
+	let container = $state<HTMLElement>();
 	let loading = $state<boolean>(false);
 	let zoom = $state<number>(0);
 
@@ -45,30 +48,9 @@
 		map.updatePopupsContentCallback(getPopupContent);
 	});
 
-	function changeStyle() {
-		const style = map.getStyle();
-		if (style.name === 'dark') {
-			map.setStyle({
-				name: 'light',
-				colors: {
-					background: 'white',
-					primary: 'blue',
-					text: 'black'
-				}
-			});
-		} else {
-			map.setStyle({
-				name: 'dark',
-				colors: {
-					background: 'lightgray',
-					primary: 'violet',
-					text: 'black'
-				}
-			});
-		}
-	}
-
 	async function addData() {
+		if (!map) return;
+
 		const bounds = map.getBounds();
 		const popups = await getPopups(bounds);
 
@@ -78,18 +60,119 @@
 	}
 
 	async function clearData() {
+		if (!map) return;
+
 		map.removePopups();
 	}
 
-	const zoomDelta = 0.05;
+	//#region Style
+
+	let style = $state<string>('System');
+	let styleMenuComponent: Menu;
+
+	$effect(() => {
+		if (app.ready && app.theme.get() && map) {
+			setTimeout(() => {
+				if (style == 'System') {
+					setStyleSystem();
+				}
+			});
+		}
+	});
+
+	function onStyleSystemClick() {
+		setStyleSystem();
+		style = 'System';
+	}
+
+	function onStyleLightClick() {
+		setStyleLight();
+		style = 'Light';
+	}
+
+	function onStyleDarkClick() {
+		setStyleDark();
+		style = 'Dark';
+	}
+
+	function onStyleCustomClick() {
+		setStyleCustom();
+		style = 'Custom';
+	}
+
+	function setStyleSystem() {
+		const theme = app.theme.get();
+		if (theme == 'dark') {
+			setStyleDark();
+		}
+		if (theme == 'light') {
+			setStyleLight();
+		}
+	}
+
+	function setStyleLight() {
+		map?.setStyle({
+			name: 'light',
+			colors: {
+				background: 'white',
+				primary: 'blue',
+				text: 'black'
+			}
+		});
+	}
+
+	function setStyleDark() {
+		map?.setStyle({
+			name: 'dark',
+			colors: {
+				background: 'lightgray',
+				primary: 'violet',
+				text: 'black'
+			}
+		});
+	}
+
+	function setStyleCustom() {
+		map?.setStyle({
+			name: 'light',
+			url: 'https://tiles.openfreemap.org/styles/liberty',
+			colors: {
+				background: 'white',
+				primary: 'blue',
+				text: 'black'
+			}
+		});
+	}
+
+	//#endregion
+
+	//#region Side
+
+	let fullscreen = $state<boolean>(false);
 
 	function onZoomIn() {
-		map.setZoom(map.getZoom() + zoomDelta);
+		map?.zoomIn();
 	}
 
 	function onZoomOut() {
-		map.setZoom(map.getZoom() - zoomDelta);
+		map?.zoomOut();
 	}
+
+	function onToggleFullscreen() {
+		if (container == undefined) return;
+
+		if (fullscreen) {
+			container.style.position = 'absolute';
+			container.style.zIndex = 'initial';
+			fullscreen = false;
+		} else {
+			container.style.position = 'fixed';
+			container.style.zIndex = '10000';
+			fullscreen = true;
+		}
+	}
+
+	//#endregion
 
 	//#region Data
 
@@ -161,29 +244,41 @@
 	//#endregion
 </script>
 
-<svelte:head>
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" />
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" />
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
-</svelte:head>
+<div class="container" bind:this={container}>
+	<div id="map"></div>
 
-<div id="map"></div>
+	<div class="top">
+		<Menu bind:this={styleMenuComponent}>
+			{#snippet button()}
+				<div class="button shadow-small">
+					<Icon name={'palette'} />
+					<span>{style}</span>
+				</div>
+			{/snippet}
+			{#snippet menu()}
+				<div class="menu shadow-large">
+					<button class="item" class:selected={style == 'System'} onclick={onStyleSystemClick}>System</button>
+					<button class="item" class:selected={style == 'Light'} onclick={onStyleLightClick}>Light</button>
+					<button class="item" class:selected={style == 'Dark'} onclick={onStyleDarkClick}>Dark</button>
+					<button class="item" class:selected={style == 'Custom'} onclick={onStyleCustomClick}>Custom</button>
+				</div>
+			{/snippet}
+		</Menu>
+		<button class="button shadow-small" onclick={addData}>Add data</button>
+		<button class="button shadow-small" onclick={clearData}>Clear data</button>
+	</div>
 
-<div class="buttons">
-	<button class="style" onclick={changeStyle}>Change style</button>
-	<button class="data" onclick={addData}>Add data</button>
-	<button class="data" onclick={clearData}>Clear data</button>
-</div>
-
-<div class="zooms">
-	<div>{zoom.toFixed(2)}</div>
-	<button class="button" onmousedown={onZoomIn}>
-		<Icon name={'add'} />
-	</button>
-	<button class="button" onmousedown={onZoomOut}>
-		<Icon name={'remove'} />
-	</button>
+	<div class="side">
+		<button class="button shadow-small" onclick={onToggleFullscreen}>
+			<Icon name={fullscreen ? 'fullscreen_exit' : 'fullscreen'} />
+		</button>
+		<button class="button shadow-small" onmousedown={onZoomIn}>
+			<Icon name={'add'} />
+		</button>
+		<button class="button shadow-small" onmousedown={onZoomOut}>
+			<Icon name={'remove'} />
+		</button>
+	</div>
 </div>
 
 {#if loading}
@@ -191,70 +286,89 @@
 {/if}
 
 <style lang="less">
-	#map {
+	.container {
 		position: absolute;
 		top: 0px;
 		left: 0px;
 		width: 100%;
 		height: 100%;
-	}
 
-	.buttons {
-		position: absolute;
-		bottom: 20px;
-		left: 20px;
-		display: flex;
-		gap: 8px;
-	}
+		#map {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			width: 100%;
+			height: 100%;
+		}
 
-	button {
-		padding: 8px 16px;
-		border-radius: 8px;
-		background-color: white;
-		color: black;
-		font-size: 14px;
-		font-weight: 500;
-		cursor: pointer;
-	}
+		.top {
+			position: absolute;
+			top: 12px;
+			left: 12px;
+			display: flex;
+			gap: 12px;
 
-	.zooms {
-		position: absolute;
-		bottom: 40px;
-		right: 12px;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 12px;
+			.button {
+				gap: 8px;
+				padding: 8px 16px 8px 8px;
+				width: initial;
+				font-weight: 600;
+				font-size: 14px;
+				cursor: pointer;
+			}
+
+			.menu {
+				margin-top: 12px;
+				margin-left: 24px;
+				display: flex;
+				flex-direction: column;
+				align-items: stretch;
+				gap: 4px;
+				padding: 4px;
+				border-radius: 16px;
+				background-color: var(--surface);
+
+				.item {
+					text-align: start;
+					width: 100%;
+					padding: 8px 12px;
+					width: initial;
+					font-weight: 600;
+					font-size: 14px;
+					border-radius: 12px;
+					cursor: pointer;
+
+					&.selected {
+						background-color: var(--surface-container);
+					}
+
+					&:hover {
+						background-color: var(--surface-container-high);
+					}
+				}
+			}
+		}
 
 		.button {
-			display: inline-flex;
+			display: flex;
 			align-items: center;
 			justify-content: center;
 			width: 36px;
 			height: 36px;
 			border-radius: 18px;
-			color: red;
-			background-color: green;
+			background-color: var(--surface);
+			color: var(--on-surface);
 			transition: all ease-in-out 125ms;
-			outline: none;
-			border: none;
-			cursor: pointer;
-			box-shadow:
-				0 0 4px 2px rgb(from var(--shadow) r g b / 0.2),
-				0 3px 6px rgb(from var(--shadow) r g b / 0.3);
 		}
-	}
 
-	.loading {
-		position: absolute;
-		top: 0px;
-		left: 0px;
-		background-color: rgba(0, 0, 0, 0.5);
-		color: white;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 24px;
-		font-weight: 500;
+		.side {
+			position: absolute;
+			bottom: 40px;
+			right: 12px;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 12px;
+		}
 	}
 </style>
