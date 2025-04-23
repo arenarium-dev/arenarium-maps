@@ -20,7 +20,8 @@
 		<div class="highlight">
 			<Highlight
 				language="javascript"
-				text={`import { mountMap } from '@arenarium/maps';
+				text={`
+import { mountMap } from '@arenarium/maps';
 import '@arenarium/maps/dist/style.css';
 
 const map = mountMap(...);`}
@@ -31,17 +32,24 @@ const map = mountMap(...);`}
 		<div class="highlight">
 			<Highlight
 				language="xml"
-				text={`<script src="https://unpkg.com/@arenarium/maps@latest/dist/index.js"><\/script>
+				text={`
+<script src="https://unpkg.com/@arenarium/maps@latest/dist/index.js"><\/script>
 <link href="https://unpkg.com/@arenarium/maps@latest/dist/style.css" rel="stylesheet" />`}
 			/>
 		</div>
 		<div class="text">Mount the map in your script:</div>
 		<div class="highlight">
-			<Highlight language="javascript" text={`const map = arenarium.mountMap(...);`} />
+			<Highlight
+				language="javascript"
+				text={`
+const map = arenarium.mountMap(...);
+`}
+			/>
 		</div>
 	</div>
 	<div class="block">
 		<div class="title">Usage</div>
+		<div class="header">Initialization</div>
 		<div class="text">Add a container div your HTML:</div>
 		<div class="highlight">
 			<Highlight language="xml" text={`<div id="map"></div>`} />
@@ -50,35 +58,136 @@ const map = mountMap(...);`}
 		<div class="highlight">
 			<Highlight
 				language="javascript"
-				text={`const map = mountMap({
-    // The id of the container element
-    container: 'map',
-    // The initial position of the map
-    position: {
-        center: { lat: 51.505, lng: -0.09 },
-        zoom: 13
-    },
-    // The style of the map
-    style: {
-        // The name of the theme used for the map
-        name: 'light',
-        // The colors used for the popups
-        colors: {
-            primary: '#007bff',
-            background: '#ffffff',
-            text: '#000000'
-        }
-    }
+				text={`
+const map = mountMap({
+	// The id of the container element
+	container: 'map',
+	// The initial position of the map
+	position: {
+		center: { lat: 51.505, lng: -0.09 },
+		zoom: 13
+	},
+	// The style of the map
+	style: {
+		// The name of the theme used for the map
+		name: 'light',
+		// The colors used for the content
+		colors: { primary: 'darkgreen', background: 'white', text: 'black' }
+	}
 });`}
 			/>
 		</div>
+		<div class="header">Styles</div>
+		<div class="text">Set the style to a predefined theme:</div>
+		<div class="highlight">
+			<Highlight
+				language="javascript"
+				text={`
+map.setStyle({ name: 'dark', colors: { primary: 'purple', background: 'darkgray', text: 'black' } });`}
+			/>
+		</div>
+		<div class="text">
+			Or set the style to a custom theme with an URL to the style JSON. The JSON must comply with the <a
+				href="https://maplibre.org/maplibre-style-spec/"
+				target="_blank">MapLibre style specification</a
+			>.
+		</div>
+		<div class="highlight">
+			<Highlight
+				language="javascript"
+				text={`
+map.setStyle({ 
+	name: 'liberty', 
+	url: 'https://tiles.openfreemap.org/styles/liberty.json', 
+	colors: { primary: 'purple', background: 'white', text: 'black' }
+});`}
+			/>
+		</div>
+		<div class="header">Popups</div>
+		<div class="text">Set the popup content callback function:</div>
+		<div class="highlight">
+			<Highlight
+				language="javascript"
+				text={`
+map.updatePopupContentCallback(async (id) => {
+	// Get the popup content and return an HTML element
+    const element = await getElement(id);
+    return element;
+});`}
+			/>
+		</div>
+		<div class="text">
+			Update the popups. The function adds new popups and updates existing ones. It does not remove popups not specified in the
+			array.
+		</div>
+		<div class="highlight">
+			<Highlight
+				language="javascript"
+				text={`
+import { type MapPopup } from '@arenarium/maps';
+
+const popups: Types.Popup[] = [];
+
+for (let i = 0; i < count; i++) {
+    popups.push({
+        id: ...,
+        rank: ..,
+        lat: ...,
+        lng: ...,
+        height: ...,
+        width: ...
+    });
+}
+
+await map.updatePopups(popups);`}
+			/>
+		</div>
+		<div class="text">Remove all popups:</div>
+		<div class="highlight">
+			<Highlight
+				language="javascript"
+				text={`
+await map.removePopups();
+`}
+			/>
+		</div>
+		<div class="header">Events</div>
 		<div class="text">Subscribe to map events:</div>
 		<div class="highlight">
 			<Highlight
 				language="javascript"
-				text={`map.on('click', (event) => {
-    console.log(event);
-});`}
+				text={`
+map.on('idle', (position) => { ... });
+map.on('move', (position) => { ... });
+map.on('click', (coordinate) => { ... });
+map.on('popup_click', (id) => { ... });
+map.on('loading_start', () => { ... });
+map.on('loading_end', () => { ... });`}
+			/>
+		</div>
+		<div class="text">Unsubscribe from events:</div>
+		<div class="highlight">
+			<Highlight language="javascript" text={`map.off(key, handler);`} />
+		</div>
+		<div class="header">Position</div>
+		<div class="text">Get the map position:</div>
+		<div class="highlight">
+			<Highlight
+				language="javascript"
+				text={`
+const position = map.getPosition();
+const bounds = map.getBounds();
+const zoom = map.getZoom();
+`}
+			/>
+		</div>
+		<div class="text">Set the map position:</div>
+		<div class="highlight">
+			<Highlight
+				language="javascript"
+				text={`
+map.setPosition({ center: { lat: 51.505, lng: -0.09 }, zoom: 13 });
+`}
 			/>
 		</div>
 	</div>
@@ -128,6 +237,11 @@ const map = mountMap(...);`}
 
 			.text {
 				font-size: 14px;
+			}
+
+			.text a {
+				color: var(--primary);
+				text-decoration: underline;
 			}
 
 			.highlight {

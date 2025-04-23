@@ -480,7 +480,7 @@
 		mapMarkerMap.clear();
 	}
 
-	export function updatePopupsContentCallback(callback: MapComponent.MapPopupContentCallback) {
+	export function updatePopupContentCallback(callback: MapComponent.MapPopupContentCallback) {
 		// Validate content callback
 		const popupCallbackSchemaResult = mapPopupContentCallbackSchema.safeParse(callback);
 		if (!popupCallbackSchemaResult.success) throw new Error('Invalid popup content callback');

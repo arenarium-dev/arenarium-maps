@@ -18,7 +18,7 @@ export interface MapComponent {
 	getStyle: () => MapStyle;
 	setStyle: (style: MapStyle) => void;
 
-	updatePopupsContentCallback: (callback: MapComponent.MapPopupContentCallback) => Promise<HTMLElement>;
+	updatePopupContentCallback: (callback: MapComponent.MapPopupContentCallback) => Promise<HTMLElement>;
 	updatePopups: (popups: Types.Popup[]) => Promise<void>;
 	removePopups: () => void;
 

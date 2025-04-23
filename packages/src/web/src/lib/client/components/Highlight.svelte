@@ -9,9 +9,9 @@
 	highlightjs.registerLanguage('bash', bash);
 	highlightjs.registerLanguage('javascript', javascript);
 
-	let { language, text } = $props<{ language: 'xml' | 'bash' | 'javascript'; text: string }>();
+	let { language, text }: { language: 'xml' | 'bash' | 'javascript'; text: string } = $props();
 
-	let highlight = highlightjs.highlight(text, { language }).value;
+	let highlight = highlightjs.highlight(text.trim().replaceAll('\t', '    '), { language }).value;
 </script>
 
 <pre><code class="hljs">{@html highlight}</code></pre>
