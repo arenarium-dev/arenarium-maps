@@ -66,7 +66,8 @@ namespace Nodes {
 			this.bounds = this.getBounds(1);
 			this.particle = {
 				center: { x: projection.x, y: projection.y },
-				radius: this.getRadius(1),
+				width: this.getWidth(1),
+				height: this.getHeight(1),
 				index: Particles.Angles.DEGREES.indexOf(Particles.Angles.DEFAULT)
 			};
 			this.neighbours = new Array<Node>();
@@ -89,10 +90,12 @@ namespace Nodes {
 			};
 		}
 
-		private getRadius(scale: number): number {
-			const proprtion = 2;
-			const radius = Math.min(this.width, this.height) / proprtion / scale;
-			return radius;
+		private getWidth(scale: number): number {
+			return this.width / 2 / scale;
+		}
+
+		private getHeight(scale: number): number {
+			return this.height / 2 / scale;
 		}
 
 		public updateBounds(scale: number) {
@@ -100,7 +103,8 @@ namespace Nodes {
 		}
 
 		public updateRadius(scale: number) {
-			this.particle.radius = this.getRadius(scale);
+			this.particle.width = this.getWidth(scale);
+			this.particle.height = this.getHeight(scale);
 		}
 	}
 
@@ -336,12 +340,21 @@ namespace Nodes {
 		export function updateParticles(nodes: Array<Node>, scale: number) {
 			for (let i = 0; i < nodes.length; i++) {
 				const node = nodes[i];
-				node.particle.radius = getRadius(node, scale);
+				node.updateRadius(scale);
 			}
 		}
 
 		export function updateAngles(nodes: Array<Node>) {
 			stable = Particles.updatePointIndexes(nodes.map((n) => [n.particle, n.neighbours.map((n) => n.particle)]));
+
+			for (let i = 0; i < nodes.length; i++) {
+				const node = nodes[i];
+				node.angle = Particles.Angles.DEGREES[node.particle.index];
+			}
+		}
+
+		export function recalibrateAngles(nodes: Array<Node>) {
+			Particles.recalibratePointIndexes(nodes.map((n) => [n.particle, n.neighbours.map((n) => n.particle)]));
 
 			for (let i = 0; i < nodes.length; i++) {
 				const node = nodes[i];
@@ -426,7 +439,7 @@ function getMarkers(popups: Array<Types.Popup>): Types.Marker[] {
 			while (true) {
 				// Run the simulation loop
 				// to update the angles of the nodes
-				while (true) {
+				while (true) {					
 					// Update node angles in the simulation
 					Nodes.Simulation.updateAngles(graph);
 					// Update node bounds

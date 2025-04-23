@@ -53,14 +53,17 @@ export namespace Particles {
 	export class Particle {
 		/** The center of the particle. */
 		center: Point;
-		/** The radius of the circle of possible positions of the particle. */
-		radius: number;
+		/** The width of the rectangle of possible positions of the particle. */
+		width: number;
+		/** The width of the rectangle of possible positions of the particle. */
+		height: number;
 		/** The index of the particle position in the points array. */
 		index: number;
 
-		constructor(center: Point, radius: number, index: number) {
+		constructor(center: Point, width: number, height: number, index: number) {
 			this.center = center;
-			this.radius = radius;
+			this.width = width;
+			this.height = height;
 			this.index = index;
 		}
 	}
@@ -71,10 +74,9 @@ export namespace Particles {
 
 		constructor(particle: Particle, index: number) {
 			const center = particle.center;
-			const radius = particle.radius;
 			const angle = Angles.RADIANS[index];
-			this.x = center.x + radius * Math.cos(angle);
-			this.y = center.y + radius * Math.sin(angle);
+			this.x = center.x + particle.width * Math.cos(angle);
+			this.y = center.y + particle.height * Math.sin(angle);
 		}
 	}
 
@@ -100,17 +102,18 @@ export namespace Particles {
 			const [particle, particleForces] = data[i];
 			const index = particle.index;
 			const center = particle.center;
-			const radius = particle.radius;
+			const width = particle.width;
+			const height = particle.height;
 
 			const prevIndex = getIndex(index, -1);
 			const nextIndex = getIndex(index, +1);
 
-			const prevPointX = center.x + radius * Angles.RADIANS_COS[prevIndex];
-			const prevPointY = center.y + radius * Angles.RADIANS_SIN[prevIndex];
-			const currPointX = center.x + radius * Angles.RADIANS_COS[index];
-			const currPointY = center.y + radius * Angles.RADIANS_SIN[index];
-			const nextPointX = center.x + radius * Angles.RADIANS_COS[nextIndex];
-			const nextPointY = center.y + radius * Angles.RADIANS_SIN[nextIndex];
+			const prevPointX = center.x + width * Angles.RADIANS_COS[prevIndex];
+			const prevPointY = center.y + height * Angles.RADIANS_SIN[prevIndex];
+			const currPointX = center.x + width * Angles.RADIANS_COS[index];
+			const currPointY = center.y + height * Angles.RADIANS_SIN[index];
+			const nextPointX = center.x + width * Angles.RADIANS_COS[nextIndex];
+			const nextPointY = center.y + height * Angles.RADIANS_SIN[nextIndex];
 
 			let prevPointForce: number = 0;
 			let currPointForce: number = 0;
@@ -120,10 +123,11 @@ export namespace Particles {
 				const fParticle = particleForces[j];
 				const fIndex = fParticle.index;
 				const fCenter = fParticle.center;
-				const fRadius = fParticle.radius;
+				const fWidth = fParticle.width;
+				const fHeight = fParticle.height;
 
-				const fPointX = fCenter.x + fRadius * Angles.RADIANS_COS[fIndex];
-				const fPointY = fCenter.y + fRadius * Angles.RADIANS_SIN[fIndex];
+				const fPointX = fCenter.x + fWidth * Angles.RADIANS_COS[fIndex];
+				const fPointY = fCenter.y + fHeight * Angles.RADIANS_SIN[fIndex];
 
 				const prevDx = prevPointX - fPointX;
 				const prevDy = prevPointY - fPointY;
@@ -152,5 +156,28 @@ export namespace Particles {
 		}
 
 		return stable;
+	}
+
+	export function recalibratePointIndexes(data: [Particle, Particle[]][]) {
+		for (let i = 0; i < data.length; i++) {
+			const [particle, particleForces] = data[i];
+			const center = particle.center;
+
+			let forceX: number = 0;
+			let forceY: number = 0;
+
+			for (let j = 0; j < particleForces.length; j++) {
+				const fParticle = particleForces[j];
+				const fCenter = fParticle.center;
+
+				const dx = center.x - fCenter.x;
+				const dy = center.y - fCenter.y;
+
+				forceX += Math.sign(dx) * (1 / (dx * dx));
+				forceY += Math.sign(dy) * (1 / (dy * dy));
+			}
+
+			particle.index = Angles.getAngleIndex(forceX, forceY);
+		}
 	}
 }
