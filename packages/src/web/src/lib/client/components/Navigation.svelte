@@ -1,13 +1,11 @@
 <script lang="ts">
-	import { page } from '$app/state';
-
 	import Menu from '$lib/client/components/utils/Menu.svelte';
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 	import Image from '$lib/client/components/utils/Image.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
 
-	let user = {};
+	let user = $derived(app.user.details);
 
 	// Menu
 	let menuComponent = $state<ReturnType<typeof Menu>>();
@@ -19,7 +17,7 @@
 
 	async function onUserSignIn() {
 		menuComponent?.hide();
-		await app.user.signInPage(page.url.href);
+		await app.user.signIn();
 	}
 
 	async function onUserSignOut() {
@@ -39,14 +37,14 @@
 		</button>
 	{/snippet}
 	{#snippet menu()}
-		<div class="menu shadow-medium">
+		<div class="menu">
 			<div class="content">
 				{#if user}
 					<div class="header">
 						<Image src={user.image} width={40} height={40} radius={20} />
 						<div class="user">
 							<div class="name truncate-text">{user.name}</div>
-							<div class="tag truncate-text">@{user.tag}</div>
+							<div class="email truncate-text">{user.email}</div>
 						</div>
 					</div>
 					<div class="divider"></div>
@@ -114,8 +112,12 @@
 	}
 
 	.menu {
-		margin-top: 12px;
+		margin: 0px 24px;
+		margin-top: 36px;
 		border-radius: 12px;
+		box-shadow:
+			0px 0px 2px 2px rgba(0, 0, 0, 0.2),
+			0px 2px 4px rgba(0, 0, 0, 0.2);
 
 		.content {
 			min-width: 196px;
@@ -126,7 +128,7 @@
 
 			.header {
 				display: grid;
-				grid-template-columns: 40px 156px;
+				grid-template-columns: 40px auto;
 				gap: 16px;
 				align-items: center;
 				padding: 16px;
@@ -143,7 +145,7 @@
 						color: var(--on-surface);
 					}
 
-					.tag {
+					.email {
 						font-size: 13px;
 						font-weight: 500;
 						color: var(--on-surface-dimmest);
@@ -154,7 +156,7 @@
 			.divider {
 				height: 1px;
 				width: 100%;
-				background-color: var(--border);
+				background-color: var(--surface-container-high);
 			}
 
 			.group {

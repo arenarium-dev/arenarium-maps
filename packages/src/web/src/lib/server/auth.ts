@@ -4,7 +4,7 @@
 import { betterAuth } from 'better-auth';
 // import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 
-import { AUTH_SECRET, AUTH_GOOGLE_ID, AUTH_GOOGLE_SECRET } from '$env/static/private';
+import { AUTH_SECRET, AUTH_GITHUB_ID, AUTH_GITHUB_SECRET } from '$env/static/private';
 
 import type { RequestEvent } from '@sveltejs/kit';
 
@@ -25,9 +25,9 @@ export function getBetterAuth(event: RequestEvent) {
 			// 	}
 			// }),
 			socialProviders: {
-				google: {
-					clientId: AUTH_GOOGLE_ID,
-					clientSecret: AUTH_GOOGLE_SECRET
+				github: {
+					clientId: AUTH_GITHUB_ID,
+					clientSecret: AUTH_GITHUB_SECRET
 				}
 			}
 		});

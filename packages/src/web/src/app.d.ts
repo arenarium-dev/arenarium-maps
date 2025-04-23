@@ -2,12 +2,19 @@
 // for information about these interfaces
 declare global {
 	namespace App {
-        interface Platform {
-            env: Env
-            cf: CfProperties
-            ctx: ExecutionContext
-        }
-    }
+		interface Platform {
+			env: Env;
+			cf: CfProperties;
+			ctx: ExecutionContext;
+		}
+
+		interface User {
+			id: string;
+			name: string;
+			email: string;
+			image?: string | null | undefined;
+		}
+	}
 }
 
 export {};

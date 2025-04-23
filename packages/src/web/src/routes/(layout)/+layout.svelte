@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
 
 	import Icon from '$lib/client/components/utils/Icon.svelte';
+	import Navigation from '$lib/client/components/Navigation.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
 
@@ -9,7 +11,7 @@
 
 	// Initialize
 	onMount(() => {
-		app.initialize();
+		app.initialize(page);
 	});
 
 	function onThemeClick() {
@@ -35,9 +37,9 @@
 	<button onclick={onThemeClick}>
 		<Icon name={app.theme.get() === 'dark' ? 'light_mode' : 'dark_mode'} />
 	</button>
-	<button>
-		<Icon name={'account_circle'} />
-	</button>
+	<div class="navigation">
+		<Navigation />
+	</div>
 </div>
 
 <div class="body">
