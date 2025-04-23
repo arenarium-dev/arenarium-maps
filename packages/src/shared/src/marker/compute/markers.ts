@@ -66,8 +66,8 @@ namespace Nodes {
 			this.bounds = this.getBounds(1);
 			this.particle = {
 				center: { x: projection.x, y: projection.y },
-				width: this.getWidth(1),
-				height: this.getHeight(1),
+				width: this.getParticleWidth(1),
+				height: this.getParticleHeight(1),
 				index: Particles.Angles.DEGREES.indexOf(Particles.Angles.DEFAULT)
 			};
 			this.neighbours = new Array<Node>();
@@ -90,11 +90,11 @@ namespace Nodes {
 			};
 		}
 
-		private getWidth(scale: number): number {
+		private getParticleWidth(scale: number): number {
 			return this.width / 2 / scale;
 		}
 
-		private getHeight(scale: number): number {
+		private getParticleHeight(scale: number): number {
 			return this.height / 2 / scale;
 		}
 
@@ -102,9 +102,9 @@ namespace Nodes {
 			this.bounds = this.getBounds(scale);
 		}
 
-		public updateRadius(scale: number) {
-			this.particle.width = this.getWidth(scale);
-			this.particle.height = this.getHeight(scale);
+		public updateParticle(scale: number) {
+			this.particle.width = this.getParticleWidth(scale);
+			this.particle.height = this.getParticleHeight(scale);
 		}
 	}
 
@@ -310,9 +310,11 @@ namespace Nodes {
 					const bounds2 = node2.bounds;
 
 					if (areBoundsOverlaping(bounds2, bounds1)) {
-						score += 1 + (node2.rank - node1.rank) * neighbours1.length;
+						score += 1 + Math.abs(node2.rank - node1.rank);
 					}
 				}
+
+				score = score * neighbours1.length;
 
 				if (score > worstScore) {
 					worstScore = score;
@@ -340,7 +342,7 @@ namespace Nodes {
 		export function updateParticles(nodes: Array<Node>, scale: number) {
 			for (let i = 0; i < nodes.length; i++) {
 				const node = nodes[i];
-				node.updateRadius(scale);
+				node.updateParticle(scale);
 			}
 		}
 
@@ -439,7 +441,7 @@ function getMarkers(popups: Array<Types.Popup>): Types.Marker[] {
 			while (true) {
 				// Run the simulation loop
 				// to update the angles of the nodes
-				while (true) {					
+				while (true) {
 					// Update node angles in the simulation
 					Nodes.Simulation.updateAngles(graph);
 					// Update node bounds

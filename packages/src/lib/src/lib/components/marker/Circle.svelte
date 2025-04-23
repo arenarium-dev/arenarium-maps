@@ -28,8 +28,8 @@
 		position: absolute;
 		left: -@circle-size * 0.5;
 		top: -@circle-size * 0.5;
-		width: @circle-size - 2 * @border-size;
-		height: @circle-size - 2 * @border-size;
+		width: @circle-size;
+		height: @circle-size;
 		border: @border-size solid @background;
 		border-radius: 50%;
 		background-color: @base;
@@ -38,6 +38,7 @@
 		transition-timing-function: cubic-bezier(0.75, 0, 0.25, 1);
 		transition-property: scale;
 		scale: 1;
+		box-sizing: border-box;
 		box-shadow: 0 2px 2px rgba(0, 0, 0, 0.5);
 	}
 

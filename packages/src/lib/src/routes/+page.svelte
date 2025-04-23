@@ -95,7 +95,7 @@
 	//#region Data
 
 	const total = 1000;
-	const limit = 100;
+	const limit = 1000;
 
 	const added = new Array<boolean>();
 	added.fill(false);

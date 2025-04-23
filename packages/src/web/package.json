@@ -42,7 +42,7 @@
 		"wrangler": "^4.12.0"
 	},
 	"dependencies": {
-		"@arenarium/maps": "^1.0.48",
+		"@arenarium/maps": "^1.0.49",
 		"@better-fetch/fetch": "^1.1.18",
 		"better-auth": "^1.2.7",
 		"drizzle-orm": "^0.40.1",
