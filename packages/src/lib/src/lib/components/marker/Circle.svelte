@@ -4,7 +4,7 @@
 
 	let size = $derived(1 - 0.5 * distance);
 	let transform = $derived(collapsed ? '' : `scale(${size})`);
-	let filter = $derived(collapsed ? '' : `brightness(${size})`);
+	let filter = $derived(collapsed ? '' : `grayscale(${0.5 * distance})`);
 	let pulsing = $derived(collapsed ? '' : distance > 0 ? '' : 'pulsing');
 
 	export function setCollapsed(value: boolean) {
@@ -19,15 +19,18 @@
 <div class="circle" class:collapsed class:pulsing style:transform style:filter></div>
 
 <style lang="less">
+	@background: var(--background);
 	@base: var(--primary);
-	@circle-size: 12px;
+	@circle-size: 16px;
+	@border-size: 3px;
 
 	.circle {
 		position: absolute;
 		left: -@circle-size * 0.5;
 		top: -@circle-size * 0.5;
-		width: @circle-size;
-		height: @circle-size;
+		width: @circle-size - 2 * @border-size;
+		height: @circle-size - 2 * @border-size;
+		border: @border-size solid @background;
 		border-radius: 50%;
 		background-color: @base;
 		transform-origin: 50% 50%;
@@ -35,6 +38,7 @@
 		transition-timing-function: cubic-bezier(0.75, 0, 0.25, 1);
 		transition-property: scale;
 		scale: 1;
+		box-shadow: 0 2px 2px rgba(0, 0, 0, 0.5);
 	}
 
 	.circle.collapsed {
