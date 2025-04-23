@@ -298,13 +298,13 @@
 
 	<div class="side">
 		<button class="button shadow-small" onclick={onToggleFullscreen}>
-			<Icon name={fullscreen ? 'fullscreen_exit' : 'fullscreen'} />
+			<Icon name={fullscreen ? 'fullscreen_exit' : 'fullscreen'} size={22} />
 		</button>
 		<button class="button shadow-small" onmousedown={onZoomIn}>
-			<Icon name={'add'} />
+			<Icon name={'add'} size={22} />
 		</button>
 		<button class="button shadow-small" onmousedown={onZoomOut}>
-			<Icon name={'remove'} />
+			<Icon name={'remove'} size={22} />
 		</button>
 	</div>
 
@@ -335,12 +335,24 @@
 			height: 100%;
 		}
 
+		.button {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 36px;
+			height: 36px;
+			border-radius: 18px;
+			background-color: var(--surface);
+			color: var(--on-surface);
+			transition: all ease-in-out 125ms;
+		}
+
 		.top {
 			position: absolute;
 			top: 16px;
 			left: 16px;
 			display: flex;
-			gap: 16px;
+			gap: 12px;
 
 			.button {
 				gap: 8px;
@@ -382,18 +394,6 @@
 					}
 				}
 			}
-		}
-
-		.button {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			width: 36px;
-			height: 36px;
-			border-radius: 18px;
-			background-color: var(--surface);
-			color: var(--on-surface);
-			transition: all ease-in-out 125ms;
 		}
 
 		.side {

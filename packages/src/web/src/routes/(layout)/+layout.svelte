@@ -19,9 +19,9 @@
 
 <svelte:head>
 	<title>Arenarium Maps</title>
-	<meta property="og:title" content="Arenarium Maps" />
+	<meta property="og:title" content="@arenarium/maps" />
 	<meta property="og:type" content="website" />
-	<meta property="og:description" content="Clean popups rendering for maps" />
+	<meta property="og:description" content="Minimalist and performant rendering of popups on a map." />
 	<meta property="og:url" content="https://maps.arenarium.dev" />
 	<meta property="og:image" content="https://maps.arenarium.dev/favicon.png" />
 </svelte:head>
@@ -32,8 +32,11 @@
 	</div>
 	<a class="title" href="/">@arenarium/maps</a>
 	<div class="grow"></div>
-	<button class="theme" onclick={onThemeClick}>
+	<button onclick={onThemeClick}>
 		<Icon name={app.theme.get() === 'dark' ? 'light_mode' : 'dark_mode'} />
+	</button>
+	<button>
+		<Icon name={'account_circle'} />
 	</button>
 </div>
 
@@ -62,7 +65,7 @@
 
 		.icon {
 			display: flex;
-			color: darkgreen;
+			color: #006400;
 		}
 
 		.title {
@@ -94,7 +97,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		background-color: var(--surface-container);
+		background-color: var(--background);
 		overflow: auto;
 
 		.page {
@@ -103,9 +106,7 @@
 			display: flex;
 			flex-direction: column;
 			padding: 24px;
-			border-radius: 8px;
-			// border-left: 1px solid var(--surface-container-highest);
-			// border-right: 1px solid var(--surface-container-highest);
+			border-radius: 12px;
 			background-color: var(--surface);
 			box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.2);
 		}
@@ -113,8 +114,12 @@
 
 	@media (max-width: @page-width) {
 		.body {
+			padding: 0px;
+
 			.page {
 				width: 100%;
+				border-radius: 0px;
+				box-shadow: none;
 			}
 		}
 	}

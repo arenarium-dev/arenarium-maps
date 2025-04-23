@@ -51,8 +51,8 @@ namespace Nodes {
 
 		constructor(popup: Types.Popup, index: number) {
 			const projection = getPoint(popup.lat, popup.lng);
-			const width = popup.width + 4 * MARKER_PADDING;
-			const height = popup.height + 4 * MARKER_PADDING;
+			const width = popup.width + 3 * MARKER_PADDING;
+			const height = popup.height + 3 * MARKER_PADDING;
 
 			this.index = index;
 			this.id = popup.id;
@@ -271,7 +271,7 @@ namespace Nodes {
 			}
 		}
 
-		export function getOverlaping(nodes: Array<Node>, scale: number): boolean {
+		export function getOverlaping(nodes: Array<Node>): boolean {
 			for (let i = 0; i < nodes.length; i++) {
 				const node1 = nodes[i];
 				const bounds1 = node1.bounds;
@@ -290,7 +290,7 @@ namespace Nodes {
 			return false;
 		}
 
-		export function getOverlapingIndex(nodes: Array<Node>, scale: number): number {
+		export function getOverlapingIndex(nodes: Array<Node>): number {
 			let worstNodeIndex = -1;
 			let worstScore = 0;
 
@@ -306,7 +306,7 @@ namespace Nodes {
 					const bounds2 = node2.bounds;
 
 					if (areBoundsOverlaping(bounds2, bounds1)) {
-						score += 1 + node2.rank - node1.rank;
+						score += 1 + (node2.rank - node1.rank) * neighbours1.length;
 					}
 				}
 
@@ -416,7 +416,7 @@ function getMarkers(popups: Array<Types.Popup>): Types.Marker[] {
 			// Update node bounds
 			Nodes.Bounds.updateBounds(graph, zoomScale);
 			// Check if there are overlaping nodes in graph
-			if (Nodes.Bounds.getOverlaping(graph, zoomScale) == false) continue;
+			if (Nodes.Bounds.getOverlaping(graph) == false) continue;
 
 			// Initialize the simulation for a given zoom level
 			Nodes.Simulation.updateParticles(graph, zoomScale);
@@ -435,12 +435,12 @@ function getMarkers(popups: Array<Types.Popup>): Types.Marker[] {
 					// Check if the last simulation update was stable
 					if (Nodes.Simulation.getStable()) break;
 					// Or there are overlaping nodes
-					if (Nodes.Bounds.getOverlaping(graph, zoomScale) == false) break;
+					if (Nodes.Bounds.getOverlaping(graph) == false) break;
 				}
 
 				// Get the index of the overlaping node
 				// If there is an no overlaping node break
-				const collapsedNodeIndex = Nodes.Bounds.getOverlapingIndex(graph, zoomScale);
+				const collapsedNodeIndex = Nodes.Bounds.getOverlapingIndex(graph);
 				if (collapsedNodeIndex == -1) break;
 
 				// Else, collapse it
