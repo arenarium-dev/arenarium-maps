@@ -99,7 +99,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		background-color: var(--background);
+		background-color: var(--surface-container);
 		overflow: auto;
 
 		.page {

@@ -1,9 +1,15 @@
-import { z } from 'zod';
+import { map, z } from 'zod';
 
 // Options
+
 export const mapCoordinateSchema = z.object({
 	lat: z.number(),
 	lng: z.number()
+});
+
+export const mapPositionSchema = z.object({
+	center: mapCoordinateSchema,
+	zoom: z.number()
 });
 
 export const mapBoundsSchema = z.object({
@@ -30,24 +36,69 @@ export const mapOptionsSchema = z.object({
 		}),
 		zoom: z.number()
 	}),
-	style: mapStyleSchema,
-	events: z
-		.object({
-			onMapIdle: z.function().returns(z.void()).optional(),
-			onMapMove: z
-				.function()
-				.args(z.object({ lat: z.number(), lng: z.number(), zoom: z.number() }))
-				.returns(z.void())
-				.optional(),
-			onMapClick: z.function().returns(z.void()).optional(),
-			onPopupClick: z.function().args(z.string()).returns(z.void()).optional(),
-			onLoadingStart: z.function().returns(z.void()).optional(),
-			onLoadingEnd: z.function().returns(z.void()).optional()
-		})
-		.optional()
+	style: mapStyleSchema
 });
 
+export type MapCoordinate = z.infer<typeof mapCoordinateSchema>;
+export type MapPosition = z.infer<typeof mapPositionSchema>;
+export type MapBounds = z.infer<typeof mapBoundsSchema>;
+export type MapOptions = z.infer<typeof mapOptionsSchema>;
+export type MapStyle = z.infer<typeof mapStyleSchema>;
+
+// Events
+
+export const mapEventType = z.enum(['idle', 'move', 'click', 'popup_click', 'loading_start', 'loading_end']);
+export const mapEventIdleHandlerSchema = z.function().returns(z.void());
+export const mapEventMoveHandlerSchema = z.function().args(mapPositionSchema).returns(z.void());
+export const mapEventClickHandlerSchema = z.function().returns(z.void());
+export const mapEventPopupClickHandlerSchema = z.function().args(z.string()).returns(z.void());
+export const mapEventLoadingStartHandlerSchema = z.function().returns(z.void());
+export const mapEventLoadingEndHandlerSchema = z.function().returns(z.void());
+
+export interface EventPayloadMap {
+	idle: null;
+	move: MapPosition;
+	click: null;
+	popup_click: string;
+	loading_start: null;
+	loading_end: null;
+}
+
+export interface EventHandlerMap {
+	idle: MapEventIdleHandler;
+	move: MapEventMoveHandler;
+	click: MapEventClickHandler;
+	popup_click: MapEventPopupClickHandler;
+	loading_start: MapEventLoadingStartHandler;
+	loading_end: MapEventLoadingEndHandler;
+}
+
+export type EventId = keyof EventHandlerMap;
+export type EventHandler<E extends EventId> = (payload: EventPayloadMap[E]) => void;
+
+export const eventHandlerSchemas = {
+	idle: mapEventIdleHandlerSchema,
+	move: mapEventMoveHandlerSchema,
+	click: mapEventClickHandlerSchema,
+	popup_click: mapEventPopupClickHandlerSchema,
+	loading_start: mapEventLoadingStartHandlerSchema,
+	loading_end: mapEventLoadingEndHandlerSchema
+} satisfies { [K in EventId]: z.ZodType<EventHandlerMap[K]> };
+
+export type MapEvent = z.infer<typeof mapEventType>;
+export type MapEventIdleHandler = z.infer<typeof mapEventIdleHandlerSchema>;
+export type MapEventMoveHandler = z.infer<typeof mapEventMoveHandlerSchema>;
+export type MapEventClickHandler = z.infer<typeof mapEventClickHandlerSchema>;
+export type MapEventPopupClickHandler = z.infer<typeof mapEventPopupClickHandlerSchema>;
+export type MapEventLoadingStartHandler = z.infer<typeof mapEventLoadingStartHandlerSchema>;
+export type MapEventLoadingEndHandler = z.infer<typeof mapEventLoadingEndHandlerSchema>;
+
+let x: MapEventMoveHandler = (position) => {
+	console.log(position.center, position.zoom);
+};
+
 // Popups
+
 export const mapPopupSchema = z.object({
 	id: z.string(),
 	rank: z.number(),
@@ -58,15 +109,9 @@ export const mapPopupSchema = z.object({
 });
 
 export const mapPopupsSchema = z.array(mapPopupSchema);
-
 export const mapPopupCallbackSchema = z.function().args(mapBoundsSchema).returns(z.promise(mapPopupsSchema));
-
 export const mapPopupContentCallbackSchema = z.function().args(z.string()).returns(z.promise(z.any()));
 
-export type MapCoordinate = z.infer<typeof mapCoordinateSchema>;
-export type MapBounds = z.infer<typeof mapBoundsSchema>;
-export type MapOptions = z.infer<typeof mapOptionsSchema>;
-export type MapStyle = z.infer<typeof mapStyleSchema>;
 export type MapPopup = z.infer<typeof mapPopupSchema>;
 export type MapPopupCallback = z.infer<typeof mapPopupCallbackSchema>;
 export type MapPopupContentCallback = z.infer<typeof mapPopupContentCallbackSchema>;

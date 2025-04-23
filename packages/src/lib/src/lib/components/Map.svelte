@@ -14,8 +14,13 @@
 		type MapOptions,
 		type MapStyle,
 		type MapPopupContentCallback,
-		type MapCoordinate
+		type MapCoordinate,
+		eventHandlerSchemas,
+		type EventId,
+		type EventHandler,
+		type EventPayloadMap
 	} from '../map/input.js';
+	import type { MapComponent } from '../map/types.js';
 
 	import {
 		MAP_BASE_SIZE,
@@ -29,11 +34,8 @@
 
 	import maplibregl from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';
-	import type { MapComponent } from '$lib/map/types.js';
 
 	let { options }: { options: MapOptions } = $props();
-
-	//#region Map
 
 	let map: maplibregl.Map;
 	let mapContainer: HTMLElement;
@@ -65,6 +67,8 @@
 		});
 	}
 
+	//#region Events
+
 	function loadMapEvents() {
 		// Load event
 		map.on('load', onMapLoaded);
@@ -89,28 +93,63 @@
 	}
 
 	function onMapMove() {
-		if (options.events?.onMapMove) {
-			const center = map.getCenter();
-			const zoom = map.getZoom();
-			options.events.onMapMove({ lat: center.lat, lng: center.lng, zoom: zoom });
-		}
+		const center = map.getCenter();
+		const zoom = map.getZoom();
+		emit('move', { center: center, zoom: zoom });
 	}
 
 	function onMapIdle() {
-		options.events?.onMapIdle?.call(null);
+		emit('idle', null);
 	}
 
 	function onMapClick(e: maplibregl.MapMouseEvent) {
-		options.events?.onMapClick?.call(null);
+		emit('click', null);
 	}
 
 	function onPopupClick(id: string) {
-		options.events?.onPopupClick?.call(null, id);
+		emit('popup_click', id);
 	}
 
-	function onWindowResize() {
-		setMapMinZoom(getMapMinZoom());
+	// Stores handlers: Map<EventId, Set<Function>>
+	// Using Set to automatically handle duplicate handler registrations.
+	// Storing as Function internally, but on/off methods enforce specific types.
+	const handlers: Map<EventId, Set<Function>> = new Map();
+
+	export function on<E extends EventId>(eventId: E, handler: EventHandler<E>): void {
+		const schema = eventHandlerSchemas[eventId];
+		if (!schema) throw new Error(`No schema defined for event ${eventId}`);
+
+		const schemaValidationResult = schema.safeParse(handler);
+		if (!schemaValidationResult.success) throw new Error(`Invalid handler for event ${eventId}`);
+
+		if (!handlers.has(eventId)) handlers.set(eventId, new Set());
+		handlers.get(eventId)?.add(handler as Function);
 	}
+
+	export function off<E extends EventId>(eventId: E, handler: EventHandler<E>): void {
+		const eventHandlers = handlers.get(eventId);
+		if (eventHandlers) {
+			const deleted = eventHandlers.delete(handler as Function);
+			if (deleted && eventHandlers.size === 0) {
+				handlers.delete(eventId);
+			}
+		}
+	}
+
+	export function emit<E extends EventId>(eventId: E, payload: EventPayloadMap[E]): void {
+		const eventHandlers = handlers.get(eventId);
+		if (eventHandlers && eventHandlers.size > 0) {
+			[...eventHandlers].forEach((handler) => {
+				try {
+					handler(payload);
+				} catch (error) {
+					console.error(error);
+				}
+			});
+		}
+	}
+
+	//#endregion
 
 	//#region Position
 
@@ -458,7 +497,7 @@
 		if (!popupsSchemaResult.success) throw new Error('Invalid popups');
 
 		try {
-			options.events?.onLoadingStart?.call(null);
+			emit('loading_start', null);
 
 			// Update popups
 			for (const popup of popups) {
@@ -473,7 +512,7 @@
 			// Update markers
 			await updateMarkers(await getMarkers(mapPopups));
 		} finally {
-			options.events?.onLoadingEnd?.call(null);
+			emit('loading_end', null);
 		}
 	}
 
@@ -484,7 +523,7 @@
 	//#endregion
 </script>
 
-<svelte:window onresize={onWindowResize} />
+<svelte:window onresize={() => setMapMinZoom(getMapMinZoom())} />
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->

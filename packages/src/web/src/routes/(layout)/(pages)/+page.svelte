@@ -1,20 +1,56 @@
 <script lang="ts">
 	import Map from '$lib/client/components/Map.svelte';
 	import Highlight from '$lib/client/components/Highlight.svelte';
+</script>
 
-	let moduleInstallHighlight = `npm install @arenarium/maps`;
+<div class="map">
+	<Map />
+	<div class="shadow"></div>
+</div>
 
-	let moduleMountHighlight = `import { mountMap } from '@arenarium/maps';
+<div class="page">
+	<div class="block">
+		<div class="title">Installation</div>
+		<div class="header">NPM</div>
+		<div class="text">Install the package using the following command:</div>
+		<div class="highlight">
+			<Highlight language="bash" text={`npm install @arenarium/maps`} />
+		</div>
+		<div class="text">Import the package in your project and mount the map:</div>
+		<div class="highlight">
+			<Highlight
+				language="javascript"
+				text={`import { mountMap } from '@arenarium/maps';
 import '@arenarium/maps/dist/style.css';
 
-const map = mountMap(...);`;
-
-	let cdnInstallHighlight = `<script src="https://unpkg.com/@arenarium/maps@latest/dist/index.js"><\/script>
-<link href="https://unpkg.com/@arenarium/maps@latest/dist/style.css" rel="stylesheet" />`;
-
-	let cdnMountHighlight = `const map = arenarium.mountMap(...);`;
-
-	let mountJavascriptHighlight = `const map = mountMap({
+const map = mountMap(...);`}
+			/>
+		</div>
+		<div class="header">CDN</div>
+		<div class="text">Add the following script and stylesheet to your HTML:</div>
+		<div class="highlight">
+			<Highlight
+				language="xml"
+				text={`<script src="https://unpkg.com/@arenarium/maps@latest/dist/index.js"><\/script>
+<link href="https://unpkg.com/@arenarium/maps@latest/dist/style.css" rel="stylesheet" />`}
+			/>
+		</div>
+		<div class="text">Mount the map in your script:</div>
+		<div class="highlight">
+			<Highlight language="javascript" text={`const map = arenarium.mountMap(...);`} />
+		</div>
+	</div>
+	<div class="block">
+		<div class="title">Usage</div>
+		<div class="text">Add a container div your HTML:</div>
+		<div class="highlight">
+			<Highlight language="xml" text={`<div id="map"></div>`} />
+		</div>
+		<div class="text">Initialize the map with options:</div>
+		<div class="highlight">
+			<Highlight
+				language="javascript"
+				text={`const map = mountMap({
     // The id of the container element
     container: 'map',
     // The initial position of the map
@@ -33,46 +69,17 @@ const map = mountMap(...);`;
             text: '#000000'
         }
     }
-});`;
-
-	let mountHtmlHighlight = `<div id="map"></div>`;
-</script>
-
-<div class="map">
-	<Map />
-	<div class="shadow"></div>
-</div>
-
-<div class="page">
-	<div class="block">
-		<div class="title">Installation</div>
-		<div class="header">NPM</div>
-		<div class="text">Install the package using the following command:</div>
-		<div class="highlight">
-			<Highlight language="bash" text={moduleInstallHighlight} />
+});`}
+			/>
 		</div>
-		<div class="text">Import the package in your project and mount the map:</div>
+		<div class="text">Subscribe to map events:</div>
 		<div class="highlight">
-			<Highlight language="javascript" text={moduleMountHighlight} />
-		</div>
-		<div class="header">CDN</div>
-		<div class="text">Add the following script and stylesheet to your HTML:</div>
-		<div class="highlight">
-			<Highlight language="xml" text={cdnInstallHighlight} />
-		</div>
-		<div class="text">Mount the map in your script:</div>
-		<div class="highlight">
-			<Highlight language="javascript" text={cdnMountHighlight} />
-		</div>
-	</div>
-	<div class="block">
-		<div class="title">Usage</div>
-		<div class="text">Initialize the map with options:</div>
-		<div class="highlight">
-			<Highlight language="javascript" text={mountJavascriptHighlight} />
-		</div>
-		<div class="highlight">
-			<Highlight language="xml" text={mountHtmlHighlight} />
+			<Highlight
+				language="javascript"
+				text={`map.on('click', (event) => {
+    console.log(event);
+});`}
+			/>
 		</div>
 	</div>
 </div>

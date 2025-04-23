@@ -26,21 +26,27 @@
 					primary: 'violet',
 					text: 'black'
 				}
-			},
-			events: {
-				onPopupClick: (id) => {
-					alert(`Popup ${id} clicked`);
-				},
-				onLoadingStart: () => {
-					loading = true;
-				},
-				onLoadingEnd: () => {
-					loading = false;
-				},
-				onMapMove: (e) => {
-					zoom = e.zoom;
-				}
 			}
+		});
+
+		map.on('loading_start', () => {
+			loading = true;
+		});
+
+		map.on('loading_end', () => {
+			loading = false;
+		});
+
+		map.on('move', (e) => {
+			zoom = e.zoom;
+		});
+
+		map.on('idle', () => {
+			console.log('idle');
+		});
+
+		map.on('popup_click', (id) => {
+			alert(`Popup ${id} clicked`);
 		});
 
 		map.updatePopupsContentCallback(getPopupContent);
