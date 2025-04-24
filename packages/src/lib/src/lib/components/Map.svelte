@@ -568,7 +568,7 @@
 	style="--primary: {style.colors.primary}; --background: {style.colors.background}; --text: {style.colors.text};"
 >
 	<div class="map" bind:this={mapContainer}></div>
-	<div class="logo"><a href="https://arenarium.dev" target="_blank">@arenarium.dev</a></div>
+	<div class="logo"><a href="https://arenarium.dev" target="_blank">@arenarium/maps</a></div>
 	<div class="markers">
 		{#each mapMarkerArray as data (data.marker.id)}
 			<div class="marker" bind:this={data.element}>

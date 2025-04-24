@@ -311,7 +311,7 @@ namespace Nodes {
 					const bounds2 = node2.bounds;
 
 					if (areBoundsOverlaping(bounds2, bounds1)) {
-						score += 1 + Math.abs(node2.rank - node1.rank);
+						score += 1 + (node2.rank - node1.rank);
 					}
 				}
 
