@@ -11,12 +11,13 @@ export function mountMap(options: MapOptions) {
 	const target = document.getElementById(options.container);
 	if (!target) throw new Error(`Container not found: ${options.container}`);
 
-	return mount(Map, {
+	const map: MapComponent = mount(Map, {
 		target: target,
 		props: {
 			options: options
 		}
-	}) as MapComponent;
+	});
+	return map;
 }
 
 export function unmountMap(map: ReturnType<typeof mountMap>) {

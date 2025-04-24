@@ -14,6 +14,9 @@ export interface MapComponent {
 	getBounds: () => MapBounds;
 	zoomIn: () => void;
 	zoomOut: () => void;
+	setMinZoom: (zoom: number) => void;
+	setMaxZoom: (zoom: number) => void;
+	setMaxBounds: (bounds: MapBounds) => void;
 
 	getStyle: () => MapStyle;
 	setStyle: (style: MapStyle) => void;

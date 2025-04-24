@@ -11,10 +11,11 @@
 		mapOptionsSchema,
 		mapPopupsSchema,
 		mapPopupContentCallbackSchema,
+		type MapCoordinate,
+		type MapBounds,
 		type MapOptions,
 		type MapStyle,
 		type MapPopupContentCallback,
-		type MapCoordinate,
 		eventHandlerSchemas,
 		type EventId,
 		type EventHandler,
@@ -40,6 +41,10 @@
 	let map: maplibregl.Map;
 	let mapContainer: HTMLElement;
 
+	let mapMinZoom: number;
+	let mapMaxZoom: number;
+	let mapMaxBounds: MapBounds | undefined;
+
 	let mapWidth = $state<number>(0);
 	let mapLoaded = $state<boolean>(false);
 
@@ -51,14 +56,19 @@
 	});
 
 	function loadMap() {
-		const position = options.position;
+		mapMinZoom = options.restriction?.minZoom ?? MAP_MIN_ZOOM;
+		mapMaxZoom = options.restriction?.maxZoom ?? MAP_MAX_ZOOM;
+		mapMaxBounds = options.restriction?.maxBounds;
 
 		map = new maplibregl.Map({
 			style: getMapLibreStyle(options.style),
-			center: { lat: position.center.lat, lng: position.center.lng },
-			zoom: position.zoom,
-			minZoom: getMapMinZoom(),
-			maxZoom: MAP_MAX_ZOOM,
+			center: { lat: options.position.center.lat, lng: options.position.center.lng },
+			zoom: options.position.zoom,
+			minZoom: getViewportMinZoom(mapMinZoom),
+			maxZoom: mapMaxZoom,
+			maxBounds: mapMaxBounds
+				? [mapMaxBounds.sw.lng, mapMaxBounds.sw.lat, mapMaxBounds.ne.lng, mapMaxBounds.ne.lat]
+				: undefined,
 			container: mapContainer,
 			pitchWithRotate: false,
 			attributionControl: {
@@ -78,6 +88,7 @@
 		map.on('idle', onMapIdle);
 		// Click event
 		map.on('click', onMapClick);
+
 		// Disable map rotation using right click + drag
 		map.dragRotate.disable();
 		// Disable map rotation using keyboard
@@ -153,53 +164,78 @@
 
 	//#region Position
 
-	function getMapMinZoom() {
+	function getViewportMinZoom(minZoom: number) {
 		// Zoom =+ 1 doubles the width of the map
 		// Min zoom has to have the whole map in window
 		const mapWidthAtZoom0 = MAP_BASE_SIZE;
 		const mapWidthMinZoom = Math.ceil(Math.log2(mapWidth / mapWidthAtZoom0));
-		return Math.max(MAP_MIN_ZOOM, mapWidthMinZoom);
-	}
-
-	function setMapMinZoom(minZoom: number) {
-		map?.setMinZoom(minZoom);
+		return Math.max(minZoom, mapWidthMinZoom);
 	}
 
 	export function getCenter(): MapCoordinate {
-		const center = map?.getCenter();
+		const center = map.getCenter();
 		if (!center) return { lat: options.position.center.lat, lng: options.position.center.lng };
 
 		return { lat: center.lat, lng: center.lng };
 	}
 
-	export function setCenter(coordinate: MapCoordinate) {
-		map?.setCenter(coordinate);
-	}
-
 	export function getZoom() {
-		return map?.getZoom() ?? options.position.zoom;
-	}
-
-	export function setZoom(zoom: number) {
-		map?.setZoom(zoom);
+		return map.getZoom() ?? options.position.zoom;
 	}
 
 	export function getBounds() {
-		const bounds = map?.getBounds();
-		if (!bounds) return;
+		if (!map) throw new Error('Map not loaded!');
 
+		const bounds = map.getBounds();
 		return {
 			sw: { lat: bounds.getSouthWest().lat, lng: bounds.getSouthWest().lng },
 			ne: { lat: bounds.getNorthEast().lat, lng: bounds.getNorthEast().lng }
 		};
 	}
 
+	export function setCenter(coordinate: MapCoordinate) {
+		if (!map) throw new Error('Map not loaded! Consider using the position option');
+
+		map.setCenter(coordinate);
+	}
+
+	export function setZoom(zoom: number) {
+		if (!map) throw new Error('Map not loaded! Consider using the position option');
+
+		map.setZoom(zoom);
+	}
+
 	export function zoomIn() {
-		map?.zoomIn();
+		if (!map) throw new Error('Map not loaded! Consider using the position option');
+
+		map.zoomIn();
 	}
 
 	export function zoomOut() {
-		map?.zoomOut();
+		if (!map) throw new Error('Map not loaded! Consider using the position option.');
+
+		map.zoomOut();
+	}
+
+	export function setMinZoom(zoom: number) {
+		if (!map) throw new Error('Map not loaded! Consider using the restriction option.');
+
+		mapMinZoom = zoom;
+		map.setMinZoom(getViewportMinZoom(zoom));
+	}
+
+	export function setMaxZoom(zoom: number) {
+		if (!map) throw new Error('Map not loaded! Consider using the restriction option.');
+
+		mapMaxZoom = zoom;
+		map.setMaxZoom(zoom);
+	}
+
+	export function setMaxBounds(bounds: MapBounds) {
+		if (!map) throw new Error('Map not loaded! Consider using the restriction option.');
+
+		mapMaxBounds = bounds;
+		map.setMaxBounds([bounds.sw.lng, bounds.sw.lat, bounds.ne.lng, bounds.ne.lat]);
 	}
 
 	//#endregion
@@ -510,7 +546,7 @@
 			}
 
 			// Update markers
-			await updateMarkers(await getMarkers(mapPopups));
+			await updateMarkers(await getMarkers(mapPopups, mapMinZoom, mapMaxZoom));
 		} finally {
 			emit('loading_end', null);
 		}
@@ -523,7 +559,7 @@
 	//#endregion
 </script>
 
-<svelte:window onresize={() => setMapMinZoom(getMapMinZoom())} />
+<svelte:window onresize={() => map.setMinZoom(getViewportMinZoom(mapMinZoom))} />
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->

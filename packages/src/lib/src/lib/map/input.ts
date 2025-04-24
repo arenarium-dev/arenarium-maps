@@ -1,4 +1,6 @@
-import { map, z } from 'zod';
+import { MAP_MAX_ZOOM, MAP_MIN_ZOOM } from '@workspace/shared/src/constants.js';
+
+import { z } from 'zod';
 
 // Options
 
@@ -36,6 +38,13 @@ export const mapOptionsSchema = z.object({
 		}),
 		zoom: z.number()
 	}),
+	restriction: z
+		.object({
+			minZoom: z.number().min(MAP_MIN_ZOOM).max(MAP_MAX_ZOOM).optional(),
+			maxZoom: z.number().min(MAP_MIN_ZOOM).max(MAP_MAX_ZOOM).optional(),
+			maxBounds: mapBoundsSchema.optional()
+		})
+		.optional(),
 	style: mapStyleSchema
 });
 

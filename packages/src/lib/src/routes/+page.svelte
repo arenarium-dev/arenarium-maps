@@ -18,6 +18,14 @@
 				center: { lat: 51.505, lng: -0.09 },
 				zoom: 4
 			},
+			restriction: {
+				minZoom: 10,
+				maxZoom: 18,
+				// maxBounds: {
+				// 	sw: { lat: 51.505, lng: -0.09 },
+				// 	ne: { lat: 54.505, lng: 3.09 }
+				// }
+			},
 			style: {
 				name: 'light',
 				url: 'https://tiles.openfreemap.org/styles/liberty',
@@ -42,14 +50,12 @@
 		});
 
 		map.on('idle', () => {
-			console.log('idle');
+			// console.log('idle');
 		});
 
 		map.on('popup_click', (id) => {
 			alert(`Popup ${id} clicked`);
 		});
-
-		map.updatePopupsContentCallback(getPopupContent);
 	});
 
 	function changeStyle() {
@@ -59,7 +65,7 @@
 				name: 'light',
 				colors: {
 					background: 'white',
-					primary: 'blue',
+					primary: 'purple',
 					text: 'black'
 				}
 			});
@@ -76,6 +82,8 @@
 	}
 
 	async function addData() {
+		map.updatePopupContentCallback(getPopupContent);
+
 		const bounds = map.getBounds();
 		const popups = await getPopups(bounds);
 

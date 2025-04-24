@@ -163,6 +163,7 @@ namespace Nodes {
 
 				const zwt = getBoundsZoomWhenTouching(bounds1, bounds2);
 				const zoom = Zoom.getZoomIndex(zwt);
+				if (zoom < Zoom.Min) continue;
 
 				const zoomNeighbourDelta1 = neighboursDeltas1[zoom];
 				const zoomNeighbourDelta2 = neighboursDeltas2[zoom];
@@ -366,8 +367,8 @@ namespace Nodes {
 	}
 
 	export namespace Zoom {
-		export const MIN = MAP_MIN_ZOOM;
-		export const MAX = MAP_MAX_ZOOM;
+		export let Min = MAP_MIN_ZOOM;
+		export let Max = MAP_MAX_ZOOM;
 
 		export const SCALE = MAP_ZOOM_SCALE;
 		export const STEP = 1 / SCALE;
@@ -377,11 +378,11 @@ namespace Nodes {
 		}
 
 		export function getZoomIndex(zwt: number) {
-			return Math.min(Math.ceil(zwt * SCALE), MAX * SCALE);
+			return Math.min(Math.ceil(zwt * SCALE), Max * SCALE);
 		}
 
 		export function getZoomMax(nodesNeighbourDeltas: Nodes.NodeNeighbourDeltas): number {
-			let zoom = MIN;
+			let zoom = Min;
 
 			for (let i = 0; i < nodesNeighbourDeltas.length; i++) {
 				const nodeNeighbourDeltas = nodesNeighbourDeltas[i];
@@ -398,7 +399,11 @@ namespace Nodes {
 	}
 }
 
-function getMarkers(popups: Array<Types.Popup>): Types.Marker[] {
+function getMarkers(popups: Array<Types.Popup>, minZoom: number, maxZoom: number): Types.Marker[] {
+	// Initialize zoom
+	Nodes.Zoom.Min = minZoom;
+	Nodes.Zoom.Max = maxZoom;
+
 	// Initialize markers
 	const markers = popups.map((p) => Marker.create(p));
 	const markerMap = new Map(markers.map((p) => [p.id, p]));
@@ -408,14 +413,14 @@ function getMarkers(popups: Array<Types.Popup>): Types.Marker[] {
 	const nodeNeighbourDeltas = Nodes.createNeighbourDeltas(nodes);
 
 	// Initialize zoom
-	const maxZoom = Nodes.Zoom.getZoomMax(nodeNeighbourDeltas);
-	const minZoom = Nodes.Zoom.MIN;
+	const zoomMin = Nodes.Zoom.Min;
+	const zoomMax = Nodes.Zoom.getZoomMax(nodeNeighbourDeltas);
 
 	// Initially add the last threshold event
 	Nodes.updateMarkers(nodes, markerMap, Nodes.Zoom.addSteps(maxZoom, 1));
 
 	// Go from last to first zoom
-	for (let zoom = maxZoom; zoom >= minZoom; zoom -= Nodes.Zoom.STEP) {
+	for (let zoom = zoomMax; zoom >= zoomMin; zoom = Nodes.Zoom.addSteps(zoom, -1)) {
 		// Calculate scale
 		const zoomScale = Math.pow(2, zoom);
 		const zoomIndex = Math.round(zoom * Nodes.Zoom.SCALE);

@@ -14,11 +14,11 @@ app.get('/', (c) => {
 
 app.post('/:version/markers', async (c) => {
 	// Get the data from the request body
-	const popups = await c.req.json<Types.Popup[]>();
-	if (!popups || popups.length == 0) return c.json([]);
+	const body = await c.req.json<Types.MarkersRequest>();
+	if (!body) return c.text('Invalid request body', 400);
 
 	// Get the markers
-	const markers = getMarkers(popups);
+	const markers = getMarkers(body.popups, body.minZoom, body.maxZoom);
 	return c.json(markers);
 });
 
