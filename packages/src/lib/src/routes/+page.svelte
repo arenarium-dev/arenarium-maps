@@ -216,7 +216,7 @@
 
 	.buttons {
 		position: fixed;
-		bottom: 20px;
+		bottom: 40px;
 		left: 20px;
 		display: flex;
 		gap: 8px;

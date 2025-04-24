@@ -568,6 +568,7 @@
 	style="--primary: {style.colors.primary}; --background: {style.colors.background}; --text: {style.colors.text};"
 >
 	<div class="map" bind:this={mapContainer}></div>
+	<div class="logo"><a href="https://arenarium.dev" target="_blank">@arenarium.dev</a></div>
 	<div class="markers">
 		{#each mapMarkerArray as data (data.marker.id)}
 			<div class="marker" bind:this={data.element}>
@@ -602,6 +603,24 @@
 			height: 100%;
 			font-family: inherit;
 			line-height: inherit;
+		}
+
+		.logo {
+			position: absolute;
+			bottom: 0px;
+			left: 0px;
+			background-color: color-mix(in srgb, var(--background) 50%, transparent 50%);
+			color: var(--text);
+			font-size: 10px;
+			padding: 2px 5px;
+			border-top-right-radius: 5px;
+			box-shadow: 1px -1px 2px rgba(0, 0, 0, 0.2);
+
+			a {
+				color: var(--text);
+				text-decoration: none;
+				font-weight: 600;
+			}
 		}
 
 		.markers {
