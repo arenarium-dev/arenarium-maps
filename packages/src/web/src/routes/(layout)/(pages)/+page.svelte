@@ -213,6 +213,11 @@ map.setMaxBounds({
 `}
 			/>
 		</div>
+		<div class="title" id="about">About</div>
+		<div class="text">
+			@arenarium/maps aims to be the best way to show ranked popups on a map. For any situation where you need to show a large
+			amount of popups on a map, where the popups are ranked by some criteria, @arenarium/maps is the best solution.
+		</div>
 	</div>
 </div>
 
@@ -250,7 +255,7 @@ map.setMaxBounds({
 			.title {
 				font-size: 24px;
 				font-weight: 600;
-				padding-bottom: 12px;
+				padding-bottom: 0px;
 			}
 
 			.header {

@@ -169,7 +169,7 @@
 	const added = new Array<boolean>();
 	added.fill(false);
 
-	const radius = 10;
+	const radius = 1;
 	const centers = [
 		{ lat: 51.505, lng: -0.09 },
 		{ lat: 45, lng: 22 },
@@ -184,11 +184,10 @@
 		for (let i = 0; i < total; i++) {
 			if (added[i]) continue;
 
-			const distance = radius / i;
 			const center = centers[i % centers.length];
 
-			const lat = center.lat + distance * (-1 + random() * 2);
-			const lng = center.lng + distance * (-1 + random() * 2);
+			const lat = center.lat + radius * (-1 + random() * 2);
+			const lng = center.lng + radius * (-1 + random() * 2);
 			if (lat < bounds.sw.lat || bounds.ne.lat < lat || lng < bounds.sw.lng || bounds.ne.lng < lng) continue;
 			if (n >= limit) break;
 
