@@ -4,6 +4,7 @@
 
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 	import Navigation from '$lib/client/components/Navigation.svelte';
+	import Toast from '$lib/client/components/Toast.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
 
@@ -28,100 +29,110 @@
 	<meta property="og:image" content="https://maps.arenarium.dev/favicon.png" />
 </svelte:head>
 
-<div class="bar">
-	<div class="icon">
-		<Icon name={'psychiatry'} size={24} />
+<div class="body">
+	<div class="bar">
+		<div class="icon">
+			<Icon name={'psychiatry'} size={24} />
+		</div>
+		<a class="title" href="/">@arenarium/maps</a>
+		<div class="grow"></div>
+		<button onclick={onThemeClick}>
+			<Icon name={app.theme.get() === 'dark' ? 'light_mode' : 'dark_mode'} />
+		</button>
+		<div class="navigation">
+			<Navigation />
+		</div>
 	</div>
-	<a class="title" href="/">@arenarium/maps</a>
-	<div class="grow"></div>
-	<button onclick={onThemeClick}>
-		<Icon name={app.theme.get() === 'dark' ? 'light_mode' : 'dark_mode'} />
-	</button>
-	<div class="navigation">
-		<Navigation />
+	<div class="container">
+		<div class="page">
+			{@render children()}
+		</div>
 	</div>
 </div>
 
-<div class="body">
-	<div class="page">
-		{@render children()}
-	</div>
-</div>
+<Toast />
 
 <style lang="less">
 	@page-width: 1024px;
 
-	.bar {
-		position: fixed;
-		top: 0px;
-		left: 0px;
-		width: 100%;
-		height: 60px;
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 24px;
-		background-color: var(--surface);
-		box-shadow: 0 3px 4px rgba(0, 0, 0, 0.2);
-		z-index: 1;
-
-		.icon {
-			display: flex;
-			color: #006400;
-		}
-
-		.title {
-			font-size: 18px;
-			font-weight: 600;
-			color: var(--on-surface);
-		}
-
-		button {
-			width: 36px;
-			height: 36px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			cursor: pointer;
-
-			&:hover {
-				background-color: var(--primary-hover);
-			}
-		}
-	}
-
 	.body {
-		margin-top: 60px;
-		padding-top: 24px;
-		padding-bottom: 24px;
-		height: 100%;
-		width: 100%;
+		min-height: 100%;
 		display: flex;
 		flex-direction: column;
-		align-items: center;
-		background-color: var(--surface-container);
-		overflow: auto;
 
-		.page {
-			width: @page-width;
+		.bar {
+			position: sticky;
+			top: 0px;
+			left: 0px;
+			width: 100%;
+			height: 60px;
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			padding: 24px;
+			background-color: var(--surface);
+			box-shadow: 0 3px 4px rgba(0, 0, 0, 0.2);
+			z-index: 1;
+
+			.icon {
+				display: flex;
+				color: #006400;
+			}
+
+			.title {
+				font-size: 18px;
+				font-weight: 600;
+				color: var(--on-surface);
+			}
+
+			button {
+				width: 36px;
+				height: 36px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+
+				&:hover {
+					background-color: var(--primary-hover);
+				}
+			}
+		}
+
+		.container {
 			flex-grow: 1;
+			padding-top: 24px;
+			padding-bottom: 24px;
+			width: 100%;
 			display: flex;
 			flex-direction: column;
-			padding: 24px;
-			border-radius: 12px;
-			background-color: var(--surface);
-			box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.2);
+			align-items: center;
+			background-color: var(--surface-container);
+			overflow: auto;
+
+			.page {
+				width: @page-width;
+				flex-grow: 1;
+				display: flex;
+				flex-direction: column;
+				padding: 24px;
+				border-radius: 12px;
+				background-color: var(--surface);
+				box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.2);
+			}
 		}
 	}
 
 	@media (max-width: @page-width) {
 		.body {
-			padding: 0px;
+			.container {
+				padding: 0px;
 
-			.page {
-				width: 100%;
-				border-radius: 0px;
-				box-shadow: none;
+				.page {
+					width: 100%;
+					border-radius: 0px;
+					box-shadow: none;
+				}
 			}
 		}
 	}

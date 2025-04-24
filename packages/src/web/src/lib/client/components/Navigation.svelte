@@ -4,6 +4,7 @@
 	import Image from '$lib/client/components/utils/Image.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
+	import { goto } from '$app/navigation';
 
 	let user = $derived(app.user.details);
 
@@ -11,8 +12,9 @@
 	let menuComponent = $state<ReturnType<typeof Menu>>();
 
 	// User
-	function onUserClick() {
+	async function onUserClick() {
 		menuComponent?.hide();
+		await goto('/profile');
 	}
 
 	async function onUserSignIn() {
