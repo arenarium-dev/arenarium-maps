@@ -67,6 +67,15 @@ const map = mountMap({
 		center: { lat: 51.505, lng: -0.09 },
 		zoom: 13
 	},
+	// The restriction of the map zoom and bounds (optional)
+	restriction: {
+		minZoom: 10,
+		maxZoom: 15,
+		maxBounds: {
+			sw: { lat: 48.505, lng: -3.09 },
+			ne: { lat: 54.505, lng: 3.09 }
+		}
+	},
 	// The style of the map
 	style: {
 		// The name of the theme used for the map
@@ -118,7 +127,7 @@ map.updatePopupContentCallback(async (id) => {
 		</div>
 		<div class="text">
 			Update the popups. The function adds new popups and updates existing ones. It does not remove popups not specified in the
-			array.
+			array. It is designed to continuously update the popups on the map.
 		</div>
 		<div class="highlight">
 			<Highlight
@@ -187,6 +196,20 @@ const zoom = map.getZoom();
 				language="javascript"
 				text={`
 map.setPosition({ center: { lat: 51.505, lng: -0.09 }, zoom: 13 });
+`}
+			/>
+		</div>
+		<div class="text">Set the map restriction:</div>
+		<div class="highlight">
+			<Highlight
+				language="javascript"
+				text={`
+map.setMinZoom(10);
+map.setMaxZoom(18);
+map.setMaxBounds({
+	sw: { lat: 51.505, lng: -0.09 },
+	ne: { lat: 54.505, lng: 3.09 }
+});
 `}
 			/>
 		</div>

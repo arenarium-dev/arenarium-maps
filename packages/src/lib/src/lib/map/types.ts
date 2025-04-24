@@ -8,15 +8,15 @@ export namespace MapComponent {
 
 export interface MapComponent {
 	getCenter: () => MapCoordinate;
-	setCenter: (coordinate: MapCoordinate) => void;
 	getZoom: () => number;
-	setZoom: (zoom: number) => void;
 	getBounds: () => MapBounds;
-	zoomIn: () => void;
-	zoomOut: () => void;
+	setCenter: (coordinate: MapCoordinate) => void;
+	setZoom: (zoom: number) => void;
 	setMinZoom: (zoom: number) => void;
 	setMaxZoom: (zoom: number) => void;
 	setMaxBounds: (bounds: MapBounds) => void;
+	zoomIn: () => void;
+	zoomOut: () => void;
 
 	getStyle: () => MapStyle;
 	setStyle: (style: MapStyle) => void;

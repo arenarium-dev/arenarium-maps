@@ -31,24 +31,26 @@
 					primary: 'violet',
 					text: 'black'
 				}
-			},
-			events: {
-				onPopupClick: (id) => {
-					alert(`Popup ${id} clicked`);
-				},
-				onLoadingStart: () => {
-					loading = true;
-				},
-				onLoadingEnd: () => {
-					loading = false;
-				},
-				onMapMove: (e) => {
-					zoom = e.zoom;
-				}
 			}
 		});
 
-		map.updatePopupsContentCallback(getPopupContent);
+		map.on('move', (e) => {
+			zoom = e.zoom;
+		});
+
+		map.on('popup_click', (id) => {
+			alert(`Popup ${id} clicked`);
+		});
+
+		map.on('loading_start', () => {
+			loading = true;
+		});
+
+		map.on('loading_end', () => {
+			loading = false;
+		});
+
+		map.updatePopupContentCallback(getPopupContent);
 	});
 
 	//#region Style
