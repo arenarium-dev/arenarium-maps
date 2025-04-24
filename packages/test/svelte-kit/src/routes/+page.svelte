@@ -25,7 +25,6 @@
 	});
 
 	async function insert() {
-		console.log(map);
 		map.updatePopupsContentCallback(getPopupContent);
 
 		const bounds = map.getBounds();

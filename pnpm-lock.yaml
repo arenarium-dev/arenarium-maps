@@ -186,8 +186,8 @@ importers:
   packages/test/svelte-kit:
     dependencies:
       '@arenarium/maps':
-        specifier: ^1.0.46
-        version: 1.0.46(svelte@5.28.1)
+        specifier: latest
+        version: 1.0.50(svelte@5.28.1)
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^4.0.0
@@ -219,11 +219,6 @@ packages:
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
-
-  '@arenarium/maps@1.0.46':
-    resolution: {integrity: sha512-AOivbO9ZYg/ZrFd145CQ7A/+G5XdBW9ffOs3Si7sAFkQYDTQ0Er6vvwSInUDxm3k+zdreXy4UEP0dvJFZNARnQ==}
-    peerDependencies:
-      svelte: ^5.0.0
 
   '@arenarium/maps@1.0.50':
     resolution: {integrity: sha512-+JrqwFQlY1lZ5YosvQcREjC//Q2SdwSPy/RCPwXAR2PU2vOX2O1V2f+NHFJfZ+zY9FmUt/xmc64pfYSMH31wnQ==}
@@ -2872,10 +2867,6 @@ snapshots:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
-
-  '@arenarium/maps@1.0.46(svelte@5.28.1)':
-    dependencies:
-      svelte: 5.28.1
 
   '@arenarium/maps@1.0.50(svelte@5.28.1)':
     dependencies:
