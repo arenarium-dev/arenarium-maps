@@ -162,9 +162,9 @@
 				border: none;
 				padding: 10px 18px;
 				border-radius: 8px;
-				border: 1px solid var(--outline-variant);
 				cursor: pointer;
 				font-weight: 600;
+				border: 1px solid var(--on-primary-container);
 				background-color: var(--primary-container);
 				color: var(--on-primary-container);
 				transition: all ease-in-out 125ms;

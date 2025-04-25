@@ -195,16 +195,12 @@
 <style lang="less">
 	.button {
 		border-radius: 8px;
-		border: 1px solid var(--outline-variant);
 		font-weight: 600;
+		border: 1px solid var(--on-primary-container);
 		background-color: var(--primary-container);
 		color: var(--on-primary-container);
 		padding: 6px 12px;
 		transition: all ease-in-out 125ms;
-
-		&:hover {
-			box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.2);
-		}
 	}
 
 	.header {
@@ -275,7 +271,7 @@
 			input[type='text'] {
 				height: 38px;
 				padding: 8px 12px;
-				border: 1px solid #ccc;
+				border: 1px solid var(--outline-variant);
 				border-radius: 8px;
 				background-color: var(--surface-container-lowest);
 				font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
@@ -300,7 +296,14 @@
 					align-items: center;
 					justify-content: center;
 					padding: 0px;
+					border: 1px solid var(--outline-variant);
+					background-color: var(--surface-container-lowest);
+					color: var(--on-surface-variant);
 					cursor: pointer;
+
+					&:hover {
+						box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.2);
+					}
 				}
 			}
 		}
