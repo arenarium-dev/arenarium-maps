@@ -56,7 +56,9 @@
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="toast shadow-small {severity}" onclick={hideToast} transition:fly={{ duration: 125, y: 16 }}>
 		<div class="text">{text}</div>
-		<button class="text button" onclick={onButtonClick}>{buttonText}</button>
+		{#if buttonFuction}
+			<button class="text button" onclick={onButtonClick}>{buttonText}</button>
+		{/if}
 	</div>
 {/if}
 

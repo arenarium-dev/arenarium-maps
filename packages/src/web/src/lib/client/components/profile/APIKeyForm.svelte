@@ -1,62 +1,70 @@
 <script lang="ts">
-	let name = $state('');
-	let domains = $state('');
+	import { domainsSchema, nameSchema } from '$lib/shared/validation';
+
+	let { success, id, name, domains } = $props<{ success: Function; id: string; name: string; domains: string[] }>();
+
+	let title = $derived(id ? 'Edit API Key' : 'Create API Key');
+	let button = $derived(id ? 'Save' : 'Create');
+
+	let nameValue = $state<string>(name);
+	let domainsValue = $state<string>(domains.join(','));
 
 	let submitting = $state(false);
-	let errorMessage = $state('');
-	let successMessage = $state('');
+	let error = $state('');
 
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
 
-		if (!name.trim()) {
-			errorMessage = 'API Key name cannot be empty.';
-			successMessage = ''; // Clear success message if there was one
+		const name = nameValue.trim();
+		const domains = domainsValue
+			.split(',')
+			.map((d) => d.trim())
+			.filter((d) => d);
+
+		if (!nameSchema.safeParse(nameValue).success) {
+			error = 'API Key name cannot be empty.';
+			return;
+		}
+
+		if (!domainsSchema.safeParse(domains).success) {
+			error = 'Invalid domains.';
 			return;
 		}
 
 		submitting = true;
-		errorMessage = ''; // Clear previous errors
-		successMessage = ''; // Clear previous success
+		error = ''; // Clear previous errors
 
-		// --- Placeholder for API Call ---
-		// In a real application, you would make a fetch request here
-		// to your backend endpoint to create the key.
 		try {
-			// Example: Simulate API call delay
-			await new Promise((resolve) => setTimeout(resolve, 1000));
-
 			// Assume the API call is successful and returns the new key details
-			// const response = await fetch('/api/keys', {
-			//     method: 'POST',
-			//     headers: { 'Content-Type': 'application/json' },
-			//     body: JSON.stringify({ name: keyName /*, permissions: ... */ })
-			// });
-			// if (!response.ok) {
-			//     throw new Error('Failed to create API key');
-			// }
-			// const newKeyData = await response.json();
+			const response = await fetch('/api/key', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					id: id,
+					name: name,
+					domains: domains
+				})
+			});
+			if (!response.ok) {
+				throw new Error('Failed to create API key');
+			}
 
-			// --- Handle Success ---
-			errorMessage = `Successfully created API key: "${name}".`; // In a real app, you might show the actual key here ONCE.
-			name = ''; // Reset the form field
+			// Handle Success
+			nameValue = '';
+			domainsValue = '';
 
-			// Optionally: Emit an event to notify the parent component
-			// import { createEventDispatcher } from 'svelte';
-			// const dispatch = createEventDispatcher();
-			// dispatch('keycreated', newKeyData); // Send new key data up
+			success();
 		} catch (error: any) {
-			console.error('Error creating API key:', error);
-			errorMessage = error.message || 'An unexpected error occurred. Please try again.';
+			console.error('Error posting API key:', error);
+			error = error.message || 'An unexpected error occurred. Please try again.';
 		} finally {
 			submitting = false; // Re-enable the button
 		}
-		// --- End Placeholder ---
 	}
 </script>
 
 <div class="container shadow-medium">
-	<h3>Create API Key</h3>
+	<h3>{title}</h3>
 
 	<form onsubmit={handleSubmit} aria-labelledby="header">
 		<div class="group">
@@ -68,8 +76,8 @@
 				required
 				disabled={submitting}
 				aria-required="true"
-				aria-describedby={errorMessage ? 'error-message-desc' : undefined}
-				bind:value={name}
+				aria-describedby={error ? 'error-message-desc' : undefined}
+				bind:value={nameValue}
 			/>
 		</div>
 		<div class="group">
@@ -77,33 +85,27 @@
 			<input
 				type="text"
 				id="domains"
-				placeholder="http://localhost:3000, https://example.com"
+				placeholder="localhost:3000, example.com"
 				required
 				disabled={submitting}
 				aria-required="true"
-				aria-describedby={errorMessage ? 'error-message-desc' : undefined}
-				bind:value={domains}
+				aria-describedby={error ? 'error-message-desc' : undefined}
+				bind:value={domainsValue}
 			/>
 		</div>
 
-		{#if successMessage}
-			<div class="message success-message" role="alert">
-				{successMessage}
-			</div>
-		{/if}
-
-		{#if errorMessage}
+		{#if error}
 			<div class="message error-message" role="alert">
-				{errorMessage}
+				{error}
 			</div>
 		{/if}
 
 		<div class="buttons">
 			<button type="submit" class="button" disabled={submitting}>
 				{#if submitting}
-					Creating...
+					Loading...
 				{:else}
-					Create Key
+					{button}
 				{/if}
 			</button>
 		</div>
@@ -187,16 +189,10 @@
 			border: 1px solid transparent;
 		}
 
-		.success-message {
-			color: #155724;
-			background-color: #d4edda;
-			border-color: #c3e6cb;
-		}
-
 		.error-message {
-			color: #721c24;
-			background-color: #f8d7da;
-			border-color: #f5c6cb;
+			color: var(--on-error);
+			background-color: var(--error);
+			border-color: var(--outline-variant);
 		}
 	}
 

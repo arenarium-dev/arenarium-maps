@@ -1,30 +1,96 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { SvelteMap } from 'svelte/reactivity';
+	import { page } from '$app/state';
+	import { invalidate } from '$app/navigation';
 
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 	import Modal from '$lib/client/components/utils/Modal.svelte';
-	import KeyForm from '$lib/client/components/profile/KeyForm.svelte';
+	import APIKeyForm from '$lib/client/components/profile/APIKeyForm.svelte';
+
+	import { app } from '$lib/client/state/app.svelte';
 
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
+	type APIKey = (typeof data.apiKeys)[number];
 
-	//#region Create
+	//#region CRUD
 
-	let createModal = $state<ReturnType<typeof Modal>>();
+	let formModal = $state<ReturnType<typeof Modal>>();
+	let formId = $state<string>('');
+	let formName = $state<string>('');
+	let formDomains = $state<string[]>([]);
 
 	function createApiKey() {
-		createModal?.show();
+		formId = '';
+		formName = '';
+		formDomains = [];
+		formModal?.show();
+	}
+
+	function editApiKey(apiKey: APIKey) {
+		formId = apiKey.id;
+		formName = apiKey.name;
+		formDomains = apiKey.domains;
+		formModal?.show();
+	}
+
+	async function onFromSuccess() {
+		// Show success message
+		app.toast.set({
+			text: `API key ${formId ? 'updated' : 'created'}.`,
+			severity: 'info',
+			seconds: 2
+		});
+
+		// Hide the modal
+		formModal?.hide();
+
+		// Doesnt work without this
+		await new Promise((resolve) => setTimeout(resolve, 1));
+
+		// Invalidate the data
+		invalidate('data:profile');
+	}
+
+	async function deleteApiKey(apiKey: APIKey) {
+		try {
+			// Clear the toast
+			app.toast.set(null);
+
+			// Delete the key
+			await fetch(`/api/key`, {
+				method: 'DELETE',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ id: apiKey.id })
+			});
+
+			// Show success message
+			app.toast.set({
+				text: 'API key "' + apiKey.name + '" deleted.',
+				severity: 'info'
+			});
+
+			// Invalidate the data
+			invalidate('data:profile');
+		} catch (err) {
+			console.error('Failed to delete API key: ', err);
+		}
 	}
 
 	//#endregion
 
 	//#region Clipboard
 
-	async function copyApiKey(text: string) {
+	async function copyApiKey(apiKey: APIKey) {
 		try {
-			await navigator.clipboard.writeText(text);
+			await navigator.clipboard.writeText(apiKey.key);
+			app.toast.set({
+				text: 'API key copied to clipboard.',
+				severity: 'info',
+				seconds: 2
+			});
 		} catch (err) {
 			console.error('Failed to copy API key: ', err);
 		}
@@ -79,54 +145,51 @@
 	<p class="empty">You currently have no API keys.</p>
 {:else}
 	<ul class="keys">
-		{#each data.apiKeys as apiKey (apiKey.id)}
-			<li class="item">
-				<div class="info">
-					<span class="name">{apiKey.name}</span>
-					<span class="domains">Domains: {apiKey.domains.join(', ')}</span>
-				</div>
-				<input
-					type="text"
-					readonly
-					value={visibleKeys.get(apiKey.id) ? apiKey.key : maskApiKey(apiKey.key)}
-					class:monospace={visibleKeys.get(apiKey.id)}
-					aria-label="API Key Value"
-				/>
-				<div class="buttons">
-					<button
-						class="button"
-						onclick={() => toggleApiKeyVisibility(apiKey.id)}
-						title={visibleKeys.get(apiKey.id) ? 'Hide key' : 'Show key'}
-						aria-label={visibleKeys.get(apiKey.id) ? 'Hide API key' : 'Show API key'}
-					>
-						{#if visibleKeys.get(apiKey.id)}
-							<Icon name={'visibility'} />
-						{:else}
-							<Icon name={'visibility_off'} />
-						{/if}
-					</button>
-					<button class="button copy" onclick={() => copyApiKey(apiKey.key)} title="Copy key" aria-label="Copy API key">
-						<Icon name={'content_copy'} />
-					</button>
-					<button class="button edit" title="Edit key" aria-label="Edit API key">
-						<Icon name={'edit'} />
-					</button>
-					<button
-						class="button delete"
-						onclick={() => alert(`Deletion for key ${apiKey.id} not implemented yet.`)}
-						title="Delete key"
-						aria-label="Delete API key"
-					>
-						<Icon name={'delete'} />
-					</button>
-				</div>
-			</li>
-		{/each}
+		{#key page.data}
+			{#each data.apiKeys as apiKey (apiKey.id)}
+				<li class="item">
+					<div class="info">
+						<span class="name">{apiKey.name}</span>
+						<span class="domains">{apiKey.domains.join(', ')}</span>
+					</div>
+					<input
+						type="text"
+						readonly
+						value={visibleKeys.get(apiKey.id) ? apiKey.key : maskApiKey(apiKey.key)}
+						class:monospace={visibleKeys.get(apiKey.id)}
+						aria-label="API Key Value"
+					/>
+					<div class="buttons">
+						<button
+							class="button"
+							onclick={() => toggleApiKeyVisibility(apiKey.id)}
+							title={visibleKeys.get(apiKey.id) ? 'Hide key' : 'Show key'}
+							aria-label={visibleKeys.get(apiKey.id) ? 'Hide API key' : 'Show API key'}
+						>
+							{#if visibleKeys.get(apiKey.id)}
+								<Icon name={'visibility'} />
+							{:else}
+								<Icon name={'visibility_off'} />
+							{/if}
+						</button>
+						<button class="button copy" title="Copy key" aria-label="Copy API key" onclick={() => copyApiKey(apiKey)}>
+							<Icon name={'content_copy'} />
+						</button>
+						<button class="button edit" title="Edit key" aria-label="Edit API key" onclick={() => editApiKey(apiKey)}>
+							<Icon name={'edit'} />
+						</button>
+						<button class="button delete" title="Delete key" aria-label="Delete API key" onclick={() => deleteApiKey(apiKey)}>
+							<Icon name={'delete'} />
+						</button>
+					</div>
+				</li>
+			{/each}
+		{/key}
 	</ul>
 {/if}
 
-<Modal bind:this={createModal}>
-	<KeyForm />
+<Modal bind:this={formModal}>
+	<APIKeyForm success={onFromSuccess} id={formId} name={formName} domains={formDomains} />
 </Modal>
 
 <style lang="less">
