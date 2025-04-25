@@ -15,6 +15,9 @@
 		"db:push": "drizzle-kit push",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
+		"db:generate": "drizzle-kit generate",
+		"db:cf-migrate-dev": "wrangler d1 migrations apply arenarium-maps-db --local",
+		"db:cf-migrate-production": "wrangler d1 migrations apply arenarium-maps-db --remote",
 		"deploy": "pnpm run build && wrangler pages deploy",
 		"cf-typegen": "wrangler types && move worker-configuration.d.ts src/"
 	},

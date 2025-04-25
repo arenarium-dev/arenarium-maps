@@ -4,17 +4,17 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "web",
+	"name": "arenarium-maps-web",
 	"compatibility_date": "2025-04-07",
 	"pages_build_output_dir": ".svelte-kit/cloudflare",
 	"observability": {
 		"enabled": true
-	}
+	},
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
 	 */
-	// "placement": { "mode": "smart" },
+	"placement": { "mode": "smart" },
 
 	/**
 	 * Bindings
@@ -44,4 +44,12 @@
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings
 	 */
 	// "services": [{ "binding": "MY_SERVICE", "service": "my-service" }]
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "arenarium-maps-db",
+			"database_id": "7f0c2ae8-13e7-4fcf-bdb9-bcb9bdf3d499",
+			"migrations_dir": "./drizzle"
+		}
+	]
 }

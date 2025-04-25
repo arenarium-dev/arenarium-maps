@@ -1,14 +1,15 @@
+// https://github.com/drizzle-team/drizzle-orm/blob/main/examples/cloudflare-d1/README.md
+
 import { defineConfig } from 'drizzle-kit';
-if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
 
 export default defineConfig({
-	schema: './src/lib/server/db/schema.ts',
-
+	schema: './src/lib/server/database/schema.ts',
+	out: './drizzle',
+	dialect: 'sqlite',
+	driver: 'd1-http',
 	dbCredentials: {
-		url: process.env.DATABASE_URL
-	},
-
-	verbose: true,
-	strict: true,
-	dialect: 'sqlite'
+		accountId: process.env.CLOUDFLARE_ACCOUNT_ID!,
+		databaseId: process.env.CLOUDFLARE_DATABASE_ID!,
+		token: process.env.CLOUDFLARE_D1_TOKEN!
+	}
 });

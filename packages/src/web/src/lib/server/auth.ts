@@ -1,8 +1,8 @@
-// import * as schema from '$lib/server/database/schema';
-// import { getDb } from '$lib/server/database/client';
+import * as schema from '$lib/server/database/schema';
+import { getDb } from '$lib/server/database/client';
 
 import { betterAuth } from 'better-auth';
-// import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 
 import { AUTH_SECRET, AUTH_GITHUB_ID, AUTH_GITHUB_SECRET } from '$env/static/private';
 
@@ -15,15 +15,15 @@ export function getBetterAuth(event: RequestEvent) {
 		auth = betterAuth({
 			secret: AUTH_SECRET,
 			baseURL: event.url.origin,
-			// database: drizzleAdapter(getDb(event.platform?.env.DB), {
-			// 	provider: 'sqlite',
-			// 	schema: {
-			// 		user: schema.users,
-			// 		session: schema.sessions,
-			// 		account: schema.account,
-			// 		verification: schema.verification
-			// 	}
-			// }),
+			database: drizzleAdapter(getDb(event.platform?.env.DB), {
+				provider: 'sqlite',
+				schema: {
+					user: schema.users,
+					session: schema.sessions,
+					account: schema.account,
+					verification: schema.verification
+				}
+			}),
 			socialProviders: {
 				github: {
 					clientId: AUTH_GITHUB_ID,

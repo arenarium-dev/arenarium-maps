@@ -1,18 +1,11 @@
 import { relations, sql } from 'drizzle-orm';
-import { text, integer, sqliteTable, uniqueIndex, index, foreignKey, real } from 'drizzle-orm/sqlite-core';
+import { text, integer, sqliteTable, uniqueIndex, index } from 'drizzle-orm/sqlite-core';
 
-export const kv = sqliteTable('tableKv', {
-	key: text('key').notNull().primaryKey(),
-	value: text('value', { mode: 'json' }).notNull(),
-	timestamp: integer('timestamp', { mode: 'timestamp' })
-		.notNull()
-		.default(sql`(unixepoch())`)
-});
+//#region BetterAuth
 
 export const users = sqliteTable(
 	'tableUsers',
 	{
-		// Base
 		id: text('id').primaryKey(),
 		email: text('email').notNull().unique(),
 		emailVerified: integer('emailVerified', { mode: 'boolean' }).notNull().default(false),
@@ -23,15 +16,9 @@ export const users = sqliteTable(
 			.default(sql`(unixepoch())`),
 		updatedAt: integer('updatedAt', { mode: 'timestamp' })
 			.notNull()
-			.default(sql`(unixepoch())`),
-		// Extended
-		latitude: real('latitude'),
-		longitude: real('longitude'),
-		tier: integer('tier')
+			.default(sql`(unixepoch())`)
 	},
-	(table) => ({
-		emailIdx: uniqueIndex('tableUsersEmailIndex').on(table.email)
-	})
+	(table) => [uniqueIndex('tableUsersEmailIndex').on(table.email)]
 );
 
 export const sessions = sqliteTable('tableUserSessions', {
@@ -86,136 +73,45 @@ export const verification = sqliteTable('tableUserVerifications', {
 		.default(sql`(unixepoch())`)
 });
 
-export const posts = sqliteTable(
-	'tablePosts',
+//#endregion
+
+export const apiKeys = sqliteTable(
+	'tableApiKeys',
 	{
 		id: text('id').primaryKey(),
-		// References
 		userId: text('userId').notNull(),
-		replyId: text('replyId'),
-		// Status
-		active: integer('active', { mode: 'boolean' }).notNull(),
-		// Date
-		createdDate: integer('createdDate', { mode: 'timestamp' })
-			.notNull()
-			.default(sql`(unixepoch())`),
-		updatedDate: integer('updatedDate', { mode: 'timestamp' }),
-		// Location
-		lat: real('lat').notNull(),
-		lng: real('lng').notNull(),
-		// Link
-		link: text('linkMetadata', { mode: 'json' }),
-		// Message
-		message: text('message'),
-		// Tags
-		tags: text('tags'),
-		// Mode
-		mode: integer('mode').notNull().default(0),
-		// Rectangle
-		rectangle: text('rectangleMetadata', { mode: 'json' }),
-		// Derived
-		votes: integer('votes').notNull().default(0),
-		replies: integer('replies').notNull().default(0)
+		key: text('key').notNull(),
+		name: text('name').notNull(),
+		domains: text('domains', { mode: 'json' }).notNull(),
+		createdAt: integer('createdAt', { mode: 'timestamp' }),
+		updatedAt: integer('updatedAt', { mode: 'timestamp' }),
+		active: integer('active', { mode: 'boolean' }).notNull()
 	},
-	(table) => ({
-		userIdIdx: index('tablePostsUserIdIndex').on(table.userId),
-		createdDateIdx: index('tablePostsDateIndex').on(table.createdDate),
-		userReference: foreignKey({
-			name: 'tablePostsUserIdFk',
-			columns: [table.userId],
-			foreignColumns: [users.id],			
-		}),
-		replyReference: foreignKey({
-			name: 'tablePostsReplyIdFk',
-			columns: [table.replyId],
-			foreignColumns: [table.id],	
-		})
-	})
+	(table) => [index('tableApiKeysIndex').on(table.key)]
 );
 
-export const votes = sqliteTable(
-	'tableVotes',
+export const apiKeyUsages = sqliteTable(
+	'tableApiKeyUsages',
 	{
-		userId: text('userId').notNull(),
-		postId: text('postId').notNull(),
-		value: integer('value').notNull(),
+		id: text('id').primaryKey(),
+		key: text('keyId').notNull(),
+		count: integer('count').notNull(),
 		date: integer('date', { mode: 'timestamp' })
 			.notNull()
 			.default(sql`(unixepoch())`)
 	},
-	(table) => ({
-		userIdx: index('tableVotesUserIdIndex').on(table.userId),
-		postIdx: index('tableVotesPostIdIndex').on(table.postId),
-		dateIdx: index('tableVotesDateIndex').on(table.date),
-		postReference: foreignKey({
-			name: 'tableVotesPostIdFk',
-			columns: [table.postId],
-			foreignColumns: [posts.id]
-		})
-	})
-);
-
-export const notifications = sqliteTable(
-	'tableNotifications',
-	{
-		id: text('id').primaryKey(),
-		userId: text('userId').notNull(),
-		data: text('data', { mode: 'json' }).notNull(),
-		read: integer('read', { mode: 'boolean' }).notNull(),
-		date: integer('date', { mode: 'timestamp' })
-			.notNull()
-			.default(sql`(unixepoch())`)
-	},
-	(table) => ({
-		userIdx: index('tableNotificationsUserIdIndex').on(table.userId),
-		dateIdx: index('tableNotificationsDateIndex').on(table.date)
-	})
-);
-
-export const logs = sqliteTable(
-	'tableLogs',
-	{
-		index: integer('index').primaryKey(),
-		date: integer('date', { mode: 'timestamp' })
-			.notNull()
-			.default(sql`(unixepoch())`),
-		message: text('title').notNull(),
-		data: text('data', { mode: 'json' }).notNull()
-	},
-	(table) => ({
-		dateIdx: index('tableLogsDateIndex').on(table.date)
-	})
+	(table) => [index('tableApiKeyUsagesIndex').on(table.key)]
 );
 
 export const userRelations = relations(users, ({ many }) => ({
-	userPosts: many(posts)
+	userApiKeys: many(apiKeys)
 }));
-
-export const postRelations = relations(posts, ({ one, many }) => ({
-	postUser: one(users, { fields: [posts.userId], references: [users.id] }),
-	postReply: one(posts, { relationName: 'reply', fields: [posts.replyId], references: [posts.id] }),
-	postReplies: many(posts, { relationName: 'reply' }),
-	postVotes: many(votes)
-}));
-
-export const voteRelations = relations(votes, ({ one }) => ({
-	votePost: one(posts, { fields: [votes.postId], references: [posts.id] })
-}));
-
-export type DbKv = typeof kv.$inferSelect;
-export type DbKvInsert = typeof kv.$inferInsert;
 
 export type DbUser = typeof users.$inferSelect;
 export type DbUserInsert = typeof users.$inferInsert;
 
-export type DbPost = typeof posts.$inferSelect;
-export type DbPostInsert = typeof posts.$inferInsert;
+export type DbApiKey = typeof apiKeys.$inferSelect;
+export type DbApiKeyInsert = typeof apiKeys.$inferInsert;
 
-export type DbVote = typeof votes.$inferSelect;
-export type DbVoteInsert = typeof votes.$inferInsert;
-
-export type DbNotification = typeof notifications.$inferSelect;
-export type DbNotificationInsert = typeof notifications.$inferInsert;
-
-export type DbLog = typeof logs.$inferSelect;
-export type DbLogInsert = typeof logs.$inferInsert;
+export type DbApiKeyUsage = typeof apiKeyUsages.$inferSelect;
+export type DbApiKeyUsageInsert = typeof apiKeyUsages.$inferInsert;

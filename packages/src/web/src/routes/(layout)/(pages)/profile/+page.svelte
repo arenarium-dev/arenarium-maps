@@ -6,26 +6,9 @@
 	import Modal from '$lib/client/components/utils/Modal.svelte';
 	import KeyForm from '$lib/client/components/profile/KeyForm.svelte';
 
-	let apiKeys = $state([
-		{
-			id: 'key-1',
-			name: 'Default Server Key',
-			key: crypto.randomUUID().replace(/-/g, ''),
-			createdAt: '2024-10-26T10:00:00Z'
-		},
-		{
-			id: 'key-2',
-			name: 'Read-Only Analytics Key',
-			key: crypto.randomUUID(),
-			createdAt: '2025-01-15T14:30:00Z'
-		},
-		{
-			id: 'key-3',
-			name: 'Staging Environment Key',
-			key: crypto.randomUUID(),
-			createdAt: '2025-04-20T09:15:00Z'
-		}
-	]);
+	import type { PageProps } from './$types';
+
+	let { data }: PageProps = $props();
 
 	//#region Create
 
@@ -33,22 +16,6 @@
 
 	function createApiKey() {
 		createModal?.show();
-	}
-
-	//#endregion
-
-	//#region Info
-
-	function formatDate(dateString: string) {
-		try {
-			return new Date(dateString).toLocaleDateString(undefined, {
-				year: 'numeric',
-				month: 'short',
-				day: 'numeric'
-			});
-		} catch (e) {
-			return 'Invalid Date';
-		}
 	}
 
 	//#endregion
@@ -70,7 +37,7 @@
 	let visibleKeys = new SvelteMap();
 
 	onMount(() => {
-		apiKeys.forEach((key) => {
+		data.apiKeys.forEach((key) => {
 			if (!visibleKeys.has(key.id)) {
 				visibleKeys.set(key.id, false); // Start hidden
 			}
@@ -108,15 +75,15 @@
 	</button>
 </div>
 
-{#if apiKeys.length === 0}
+{#if data.apiKeys.length === 0}
 	<p class="empty">You currently have no API keys.</p>
 {:else}
 	<ul class="keys">
-		{#each apiKeys as apiKey (apiKey.id)}
+		{#each data.apiKeys as apiKey (apiKey.id)}
 			<li class="item">
 				<div class="info">
 					<span class="name">{apiKey.name}</span>
-					<span class="created">Created: {formatDate(apiKey.createdAt)}</span>
+					<span class="domains">Domains: {apiKey.domains.join(', ')}</span>
 				</div>
 				<input
 					type="text"
@@ -236,7 +203,7 @@
 					margin-bottom: 4px;
 				}
 
-				.created {
+				.domains {
 					font-size: 14px;
 					opacity: 0.75;
 				}
