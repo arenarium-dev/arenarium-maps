@@ -19,6 +19,7 @@ export namespace Types {
 	}
 
 	export interface MarkersRequest {
+		apiKey: string;
 		popups: Popup[];
 		minZoom: number;
 		maxZoom: number;

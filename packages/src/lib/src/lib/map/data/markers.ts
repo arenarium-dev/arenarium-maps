@@ -1,6 +1,11 @@
 import type { Types } from '@workspace/shared/src/types.js';
 
-export async function getMarkers(popups: Types.Popup[], minZoom: number, maxZoom: number): Promise<Types.Marker[]> {
+export async function getMarkers(
+	apiKey: string,
+	popups: Types.Popup[],
+	minZoom: number,
+	maxZoom: number
+): Promise<Types.Marker[]> {
 	if (import.meta.env.DEV) {
 		switch (import.meta.env.MODE) {
 			case 'browser': {
@@ -8,17 +13,18 @@ export async function getMarkers(popups: Types.Popup[], minZoom: number, maxZoom
 				return markersImport.getMarkers(popups, minZoom, maxZoom);
 			}
 			default: {
-				return await getMarkersApi(popups, minZoom, maxZoom);
+				return await getMarkersApi(apiKey, popups, minZoom, maxZoom);
 			}
 		}
 	} else {
-		return await getMarkersApi(popups, minZoom, maxZoom);
+		return await getMarkersApi(apiKey, popups, minZoom, maxZoom);
 	}
 }
 
-async function getMarkersApi(popups: Types.Popup[], minZoom: number, maxZoom: number): Promise<Types.Marker[]> {
+async function getMarkersApi(apiKey: string, popups: Types.Popup[], minZoom: number, maxZoom: number): Promise<Types.Marker[]> {
 	const url = import.meta.env.VITE_API_URL;
 	const body: Types.MarkersRequest = {
+		apiKey: apiKey,
 		popups: popups,
 		minZoom: minZoom,
 		maxZoom: maxZoom

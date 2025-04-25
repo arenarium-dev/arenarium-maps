@@ -4,7 +4,12 @@ import { cors } from 'hono/cors';
 import { getMarkers } from '@workspace/shared/src/marker/compute/markers.js';
 import type { Types } from '@workspace/shared/src/types.js';
 
-const app = new Hono();
+type Bindings = {
+	API_KEY_HOST_URL: string;
+	API_KEY_DEV_VALUE: string;
+};
+
+const app = new Hono<{ Bindings: Bindings }>();
 
 app.use('/*', cors());
 

@@ -30,6 +30,7 @@ export const mapStyleSchema = z.object({
 });
 
 export const mapOptionsSchema = z.object({
+	apiKey: z.string().min(1).max(64),
 	container: z.string(),
 	position: z.object({
 		center: z.object({

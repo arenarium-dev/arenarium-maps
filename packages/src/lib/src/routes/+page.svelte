@@ -6,6 +6,8 @@
 	import { mountMap } from '$lib/index.js';
 	import type { MapBounds, MapPopup } from '$lib/map/input.js';
 
+	import { PUBLIC_API_KEY_DEV_VALUE } from '$env/static/public';
+
 	let map: ReturnType<typeof mountMap>;
 
 	let loading = $state<boolean>(false);
@@ -13,6 +15,7 @@
 
 	onMount(() => {
 		map = mountMap({
+			apiKey: PUBLIC_API_KEY_DEV_VALUE,
 			container: 'map',
 			position: {
 				center: { lat: 51.505, lng: -0.09 },

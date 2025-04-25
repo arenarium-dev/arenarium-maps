@@ -546,7 +546,7 @@
 			}
 
 			// Update markers
-			await updateMarkers(await getMarkers(mapPopups, mapMinZoom, mapMaxZoom));
+			await updateMarkers(await getMarkers(options.apiKey, mapPopups, mapMinZoom, mapMaxZoom));
 		} finally {
 			emit('loading_end', null);
 		}
