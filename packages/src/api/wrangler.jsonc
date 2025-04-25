@@ -9,7 +9,7 @@
 	"env": {
 		"production": {
 			"vars": {
-				"API_KEY_HOST_URL": "https://arenarium-maps-web.pages.dev"
+				"API_KEY_HOST_URL": "https://arenarium-maps.pages.dev"
 			}
 		}
 	}

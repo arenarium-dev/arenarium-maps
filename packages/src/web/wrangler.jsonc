@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "arenarium-maps-web",
+	"name": "arenarium-maps",
 	"compatibility_date": "2025-04-07",
 	"pages_build_output_dir": ".svelte-kit/cloudflare",
 	"observability": {

@@ -54,12 +54,14 @@ const map = arenarium.mountMap(...);
 		<div class="highlight">
 			<Highlight language="xml" text={`<div id="map"></div>`} />
 		</div>
-		<div class="text">Initialize the map with options:</div>
+		<div class="text">Initialize the map with options. To get the api key, sign in and create an API key.</div>
 		<div class="highlight">
 			<Highlight
 				language="javascript"
 				text={`
 const map = mountMap({
+	// The API key
+	apiKey: '...',
 	// The id of the container element
 	container: 'map',
 	// The initial position of the map

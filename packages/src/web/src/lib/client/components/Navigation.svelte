@@ -14,7 +14,7 @@
 	// User
 	async function onUserClick() {
 		menuComponent?.hide();
-		await goto('/profile');
+		await goto('/keys');
 	}
 
 	async function onUserSignIn() {
@@ -53,8 +53,8 @@
 					<div class="group">
 						<div class="item">
 							<button class="content" onclick={onUserClick}>
-								<Icon name={'account_box'} />
-								<span class="text">Profile</span>
+								<Icon name={'key'} />
+								<span class="text">API Keys</span>
 							</button>
 						</div>
 						<div class="item">
