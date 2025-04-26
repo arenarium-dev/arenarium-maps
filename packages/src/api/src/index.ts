@@ -14,6 +14,10 @@ const app = new Hono<{ Bindings: Bindings }>();
 app.use('/*', cors());
 
 app.get('/', (c) => {
+	return c.text('Hello Aranarium Maps!');
+});
+
+app.get('/api', (c) => {
 	return c.text('Hello Aranarium Maps API!');
 });
 

@@ -5,8 +5,12 @@
 	"compatibility_date": "2025-04-16",
 	"routes": [
 		{
-			"pattern": "api.maps.arenarium.dev/*",
+			"pattern": "api.maps.arenarium.dev",
 			"custom_domain": true
+		},
+		{
+			"pattern": "api.maps.arenarium.dev/*",
+			"zone_name": "arenarium.dev"
 		}
 	],
 	"vars": {
