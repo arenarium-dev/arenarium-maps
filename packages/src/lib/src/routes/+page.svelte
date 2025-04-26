@@ -31,10 +31,9 @@
 			// },
 			style: {
 				name: 'light',
-				url: 'https://tiles.openfreemap.org/styles/liberty',
 				colors: {
 					background: 'white',
-					primary: 'violet',
+					primary: 'purple',
 					text: 'black'
 				}
 			}
@@ -63,20 +62,35 @@
 
 	function changeStyle() {
 		const style = map.getStyle();
-		if (style.name === 'dark') {
-			map.setStyle({
-				name: 'light',
-				colors: {
-					background: 'white',
-					primary: 'purple',
-					text: 'black'
-				}
-			});
-		} else {
+
+		if (style.name === 'light') {
 			map.setStyle({
 				name: 'dark',
 				colors: {
 					background: 'lightgray',
+					primary: 'violet',
+					text: 'black'
+				}
+			});
+		}
+
+		if (style.name === 'dark') {
+			map.setStyle({
+				name: 'light',
+				url: 'https://tiles.openfreemap.org/styles/liberty',
+				colors: {
+					background: 'white',
+					primary: 'red',
+					text: 'black'
+				}
+			});
+		}
+
+		if (style.url != undefined) {
+			map.setStyle({
+				name: 'light',
+				colors: {
+					background: 'white',
 					primary: 'violet',
 					text: 'black'
 				}

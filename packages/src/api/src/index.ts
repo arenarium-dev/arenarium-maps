@@ -22,6 +22,17 @@ app.post('/:version/markers', async (c) => {
 	const body = await c.req.json<Types.MarkersRequest>();
 	if (!body) return c.text('Invalid request body', 400);
 
+	// Get the API key
+	const key = body.apiKey;
+	if (!key) return c.text('Missing API key', 400);
+
+	// Check if the API key is valid
+	if (key != c.env.API_KEY_DEV_VALUE) {
+		const url = `${c.env.API_KEY_HOST_URL}/api/key/${key}`;
+		const response = await fetch(url);
+		if (!response.ok) return c.text('Invalid API key', 401);
+	}
+
 	// Get the markers
 	const markers = getMarkers(body.popups, body.minZoom, body.maxZoom);
 	return c.json(markers);

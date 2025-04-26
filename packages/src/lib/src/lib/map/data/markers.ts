@@ -1,37 +1,26 @@
 import type { Types } from '@workspace/shared/src/types.js';
 
-export async function getMarkers(
-	apiKey: string,
-	popups: Types.Popup[],
-	minZoom: number,
-	maxZoom: number
-): Promise<Types.Marker[]> {
+export async function getMarkers(request: Types.MarkersRequest): Promise<Types.Marker[]> {
 	if (import.meta.env.DEV) {
 		switch (import.meta.env.MODE) {
 			case 'browser': {
 				const markersImport = await import('@workspace/shared/src/marker/compute/markers.js');
-				return markersImport.getMarkers(popups, minZoom, maxZoom);
+				return markersImport.getMarkers(request.popups, request.minZoom, request.maxZoom);
 			}
 			default: {
-				return await getMarkersApi(apiKey, popups, minZoom, maxZoom);
+				return await getMarkersApi(request);
 			}
 		}
 	} else {
-		return await getMarkersApi(apiKey, popups, minZoom, maxZoom);
+		return await getMarkersApi(request);
 	}
 }
 
-async function getMarkersApi(apiKey: string, popups: Types.Popup[], minZoom: number, maxZoom: number): Promise<Types.Marker[]> {
+async function getMarkersApi(request: Types.MarkersRequest): Promise<Types.Marker[]> {
 	const url = import.meta.env.VITE_API_URL;
-	const body: Types.MarkersRequest = {
-		apiKey: apiKey,
-		popups: popups,
-		minZoom: minZoom,
-		maxZoom: maxZoom
-	};
 	const response = await fetch(`${url}/v1/markers`, {
 		method: 'POST',
-		body: JSON.stringify(body)
+		body: JSON.stringify(request)
 	});
 
 	if (!response.ok || !response.body) {
