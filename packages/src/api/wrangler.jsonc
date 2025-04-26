@@ -14,14 +14,7 @@
 		}
 	],
 	"vars": {
-		"API_KEY_HOST_URL": "http://localhost:8080"
-	},
-	"env": {
-		"production": {
-			"vars": {
-				"API_KEY_HOST_URL": "https://arenarium-maps.pages.dev"
-			}
-		}
+		"API_KEY_HOST_URL": "https://arenarium-maps.pages.dev"
 	}
 	// "compatibility_flags": [
 	//   "nodejs_compat"
