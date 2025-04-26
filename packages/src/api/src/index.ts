@@ -14,13 +14,13 @@ const app = new Hono<{ Bindings: Bindings }>();
 app.use('/*', cors());
 
 app.get('/', (c) => {
-	return c.text('Hello Hono!');
+	return c.text('Hello Aranarium Maps API!');
 });
 
 app.post('/:version/markers', async (c) => {
 	// Get the data from the request body
 	const body = await c.req.json<Types.MarkersRequest>();
-	if (!body) return c.text('Invalid request body', 400);
+	if (!body) return c.text('Missing request body', 400);
 
 	// Get the API key
 	const key = body.apiKey;

@@ -25,7 +25,7 @@
 	});
 
 	async function insert() {
-		map.updatePopupsContentCallback(getPopupContent);
+		map.updatePopupContentCallback(getPopupContent);
 
 		const bounds = map.getBounds();
 		const popups = await getPopups(bounds);
