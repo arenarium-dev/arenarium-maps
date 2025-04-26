@@ -19,6 +19,7 @@
 
 	onMount(() => {
 		map = mountMap({
+			apiKey: 'd915900e3bed477080b3af9c5cf32b5d',
 			container: 'map',
 			position: {
 				center: { lat: 51.505, lng: -0.09 },
@@ -56,7 +57,6 @@
 	//#region Style
 
 	let style = $state<string>('System');
-	let styleMenuComponent: Menu;
 
 	$effect(() => {
 		if (app.ready && app.theme.get() && map) {
@@ -103,7 +103,7 @@
 			name: 'light',
 			colors: {
 				background: 'white',
-				primary: 'blue',
+				primary: 'purple',
 				text: 'black'
 			}
 		});
@@ -137,7 +137,6 @@
 	//#region Source
 
 	let source = $state<string>('Rentals');
-	let sourceMenuComponent: Menu;
 
 	async function onSourceSelect(value: string) {
 		await clearData();
@@ -264,7 +263,7 @@
 	<div id="map"></div>
 
 	<div class="top">
-		<Menu bind:this={styleMenuComponent}>
+		<Menu>
 			{#snippet button()}
 				<div class="button shadow-small">
 					<Icon name={'palette'} size={22} />
@@ -280,7 +279,7 @@
 				</div>
 			{/snippet}
 		</Menu>
-		<Menu bind:this={sourceMenuComponent}>
+		<Menu>
 			{#snippet button()}
 				<div class="button shadow-small">
 					<Icon name={'database'} size={22} />
