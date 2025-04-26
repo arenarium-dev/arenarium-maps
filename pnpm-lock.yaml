@@ -187,7 +187,7 @@ importers:
     dependencies:
       '@arenarium/maps':
         specifier: latest
-        version: 1.0.53(svelte@5.28.2)
+        version: 1.0.54(svelte@5.28.2)
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^4.0.0
@@ -225,8 +225,8 @@ packages:
     peerDependencies:
       svelte: ^5.0.0
 
-  '@arenarium/maps@1.0.53':
-    resolution: {integrity: sha512-U+8Xd/wFjBbLvKij+VAN6cXxJSp3tWS+uQhySUPPR9gdbPH7WjGvb7jpX3n1vSf+WGHNBUTjBoMywprCIB0khw==}
+  '@arenarium/maps@1.0.54':
+    resolution: {integrity: sha512-4Beh+7RqG7IuafZUInyiekpT4gDHmKdXAQyM/JQL/kJH+X8k8qGwkBC6tzGTVZPZdeMSKW/Z5ntYxHkrVxXX0w==}
     peerDependencies:
       svelte: ^5.0.0
 
@@ -2961,7 +2961,7 @@ snapshots:
     dependencies:
       svelte: 5.28.2
 
-  '@arenarium/maps@1.0.53(svelte@5.28.2)':
+  '@arenarium/maps@1.0.54(svelte@5.28.2)':
     dependencies:
       svelte: 5.28.2
 

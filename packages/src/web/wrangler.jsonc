@@ -10,11 +10,33 @@
 	"observability": {
 		"enabled": true
 	},
+	"vars": {
+		"AUTH_SECRET": "BxUBCbpAe3v8NQ5Yyd1OrQIeaH45p9NHXpGAAeKah2Ye",
+		"AUTH_GITHUB_ID": "Ov23lil6tiSRo1n39FEe",
+		"AUTH_GITHUB_SECRET": "53229d4a7f81f0d3be2a36860927bcf136224b46"
+	},
+	"env": {
+		"production": {
+			"vars": {
+				"AUTH_SECRET": "BxUBCbpAe3v8NQ5Yyd1OrQIeaH45p9NHXpGAAeKah2Ye",
+				"AUTH_GITHUB_ID": "Ov23lixPTsYP5DBtATkX",
+				"AUTH_GITHUB_SECRET": "edff8fa2b4abc64aede4e24d224b6086f264df37"
+			}
+		}
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "arenarium-maps-db",
+			"database_id": "7f0c2ae8-13e7-4fcf-bdb9-bcb9bdf3d499",
+			"migrations_dir": "./drizzle"
+		}
+	]
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
 	 */
-	"placement": { "mode": "smart" },
+	// "placement": { "mode": "smart" },
 
 	/**
 	 * Bindings
@@ -44,12 +66,4 @@
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings
 	 */
 	// "services": [{ "binding": "MY_SERVICE", "service": "my-service" }]
-	"d1_databases": [
-		{
-			"binding": "DB",
-			"database_name": "arenarium-maps-db",
-			"database_id": "7f0c2ae8-13e7-4fcf-bdb9-bcb9bdf3d499",
-			"migrations_dir": "./drizzle"
-		}
-	]
 }

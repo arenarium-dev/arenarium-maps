@@ -8,6 +8,7 @@
 
 	onMount(() => {
 		map = mountMap({
+			apiKey: '',
 			container: 'map',
 			position: {
 				center: { lat: 51.505, lng: -0.09 },
