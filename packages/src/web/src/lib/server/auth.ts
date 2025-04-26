@@ -4,8 +4,6 @@ import { getDb } from '$lib/server/database/client';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 
-import { AUTH_SECRET, AUTH_GITHUB_ID, AUTH_GITHUB_SECRET } from '$env/static/private';
-
 import type { RequestEvent } from '@sveltejs/kit';
 
 let auth: ReturnType<typeof betterAuth> | undefined = undefined;
@@ -13,7 +11,7 @@ let auth: ReturnType<typeof betterAuth> | undefined = undefined;
 export function getBetterAuth(event: RequestEvent) {
 	if (auth == undefined) {
 		auth = betterAuth({
-			secret: AUTH_SECRET,
+			secret: event.platform?.env.AUTH_SECRET,
 			baseURL: event.url.origin,
 			database: drizzleAdapter(getDb(event.platform?.env.DB), {
 				provider: 'sqlite',
@@ -26,8 +24,8 @@ export function getBetterAuth(event: RequestEvent) {
 			}),
 			socialProviders: {
 				github: {
-					clientId: AUTH_GITHUB_ID,
-					clientSecret: AUTH_GITHUB_SECRET
+					clientId: event.platform?.env.AUTH_GITHUB_ID,
+					clientSecret: event.platform?.env.AUTH_GITHUB_SECRET
 				}
 			}
 		});

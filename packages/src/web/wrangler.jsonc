@@ -24,6 +24,7 @@
 		}
 	],
 	"env": {
+		
 		"production": {
 			"vars": {
 				"AUTH_SECRET": "BxUBCbpAe3v8NQ5Yyd1OrQIeaH45p9NHXpGAAeKah2Ye",
