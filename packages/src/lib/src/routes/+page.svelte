@@ -6,10 +6,7 @@
 	import { mountMap } from '$lib/index.js';
 	import type { MapBounds, MapPopup, MapPopupData, MapPopupState, MapPopupStatesRequest } from '$lib/map/input.js';
 
-	import type { Types } from '@workspace/shared/src/types.js';
-
 	import { PUBLIC_API_KEY_FREE_KEY, PUBLIC_API_URL } from '$env/static/public';
-	import { on } from 'svelte/events';
 
 	let map: ReturnType<typeof mountMap>;
 
@@ -39,14 +36,6 @@
 					text: 'black'
 				}
 			}
-		});
-
-		map.on('loading_start', () => {
-			loading = true;
-		});
-
-		map.on('loading_end', () => {
-			loading = false;
 		});
 
 		map.on('move', (e) => {
@@ -101,13 +90,11 @@
 	}
 
 	async function addData() {
-		map.setPopupContentCallback(getPopupContent);
-
 		const bounds = map.getBounds();
 		const popups = await getPopups(bounds);
 
 		const now = performance.now();
-		await map.setPopups(popups);
+		await map.updatePopups(popups);
 		console.log(`[SET ${popups.length}] ${performance.now() - now}ms`);
 	}
 
@@ -203,7 +190,8 @@
 		for (let i = 0; i < data.length; i++) {
 			popups[i] = {
 				data: data[i],
-				state: states[i]
+				state: states[i],
+				contentCallback: getPopupContent
 			};
 		}
 
@@ -237,7 +225,7 @@
 			throw new Error('Failed to get markers');
 		}
 
-		const states: Types.PopupState[] = await response.json();
+		const states: MapPopupState[] = await response.json();
 		return states;
 	}
 

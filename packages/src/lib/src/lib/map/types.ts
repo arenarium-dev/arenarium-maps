@@ -1,6 +1,4 @@
-import type { MapStyle, MapBounds, MapCoordinate, EventId, EventHandler, EventPayloadMap } from './input.js';
-
-import type { Types } from '@workspace/shared/src/types.js';
+import type { MapStyle, MapBounds, MapCoordinate, EventId, EventHandler, EventPayloadMap, MapPopup } from './input.js';
 
 export namespace MapComponent {
 	export type MapPopupContentCallback = (id: string) => Promise<HTMLElement>;
@@ -21,9 +19,7 @@ export interface MapComponent {
 	getStyle: () => MapStyle;
 	setStyle: (style: MapStyle) => void;
 
-	setPopupContentCallback: (callback: MapComponent.MapPopupContentCallback) => Promise<HTMLElement>;
-	setPopups: (popups: Types.Popup[]) => Promise<void>;
-	getPopups: () => Types.Popup[];
+	updatePopups: (popups: MapPopup[]) => Promise<void>;
 	removePopups: () => void;
 
 	on: <E extends EventId>(eventId: E, handler: EventHandler<E>) => void;

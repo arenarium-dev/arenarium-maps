@@ -16,9 +16,4 @@ export namespace Types {
 		minZoom: number;
 		maxZoom: number;
 	}
-
-	export interface Popup {
-		data: PopupData;
-		state: PopupState;
-	}
 }

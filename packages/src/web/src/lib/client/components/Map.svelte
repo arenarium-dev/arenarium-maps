@@ -11,8 +11,6 @@
 	import { mountMap, type MapBounds, type MapPopup } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
 
-	let { key }: { key: string } = $props();
-
 	let map = $state<ReturnType<typeof mountMap>>();
 
 	let container = $state<HTMLElement>();
@@ -21,7 +19,6 @@
 
 	onMount(() => {
 		map = mountMap({
-			apiKey: key,
 			container: 'map',
 			position: {
 				center: { lat: 51.505, lng: -0.09 },
@@ -53,7 +50,7 @@
 			loading = false;
 		});
 
-		map.updatePopupContentCallback(getPopupContent);
+		map.setPopupContentCallback(getPopupContent);
 	});
 
 	//#region Style

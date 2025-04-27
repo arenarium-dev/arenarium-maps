@@ -8,19 +8,18 @@
 	import { darkStyleSpecification, lightStyleSpecification } from '../map/styles.js';
 	import {
 		mapOptionsSchema,
-		mapPopupsSchema,
-		mapPopupContentCallbackSchema,
+		mapPopupsSchema,		
 		type MapCoordinate,
 		type MapBounds,
 		type MapOptions,
 		type MapStyle,
+		type MapPopup,
 		type MapPopupContentCallback,
 		eventHandlerSchemas,
 		type EventId,
 		type EventHandler,
-		type EventPayloadMap
+		type EventPayloadMap,
 	} from '../map/input.js';
-	import type { MapComponent } from '../map/types.js';
 
 	import {
 		MAP_BASE_SIZE,
@@ -273,7 +272,7 @@
 
 	//#region Data
 
-	interface Marker {
+	class MarkerData {
 		id: string;
 		rank: number;
 		lat: number;
@@ -282,36 +281,44 @@
 		height: number;
 		zoom: number;
 		angles: [number, number][];
-	}
 
-	class MarkerData {
-		marker: Marker;
 		libreMarker: maplibregl.Marker | undefined;
 		element = $state<HTMLElement>();
 		rendered = $state<boolean>(false);
 
-		popup = $state<HTMLElement>();
 		content = $state<HTMLElement>();
-		contentLoading = $state<boolean>(false);
+		contentDiv = $state<HTMLElement>();
+		contentLoading = false;
+		contentCallback: MapPopupContentCallback;
 
 		component = $state<ReturnType<typeof MapMarker>>();
 		circle = $state<ReturnType<typeof MapMarkerCircle>>();
 
-		constructor(marker: Marker) {
-			this.marker = marker;
+		constructor(popup: MapPopup) {
+			this.id = popup.data.id;
+			this.rank = popup.data.rank;
+			this.lat = popup.data.lat;
+			this.lng = popup.data.lng;
+			this.width = popup.data.width;
+			this.height = popup.data.height;
+			this.zoom = popup.state[0];
+			this.angles = popup.state[1];
+
 			this.libreMarker = undefined;
 			this.element = undefined;
 			this.rendered = false;
 
 			this.content = undefined;
+			this.contentDiv = undefined;
 			this.contentLoading = false;
+			this.contentCallback = popup.contentCallback;
 
 			this.component = undefined;
 			this.circle = undefined;
 		}
 
 		getAngle(zoom: number) {
-			let angles = this.marker.angles;
+			let angles = this.angles;
 			let angle = angles[0];
 			let index = 0;
 
@@ -325,14 +332,14 @@
 		}
 
 		getDistance(zoom: number) {
-			return (this.marker.zoom - zoom) / MAP_VISIBLE_ZOOM_DEPTH;
+			return (this.zoom - zoom) / MAP_VISIBLE_ZOOM_DEPTH;
 		}
 
 		updateZIndex() {
 			const element = this.libreMarker?.getElement();
 			if (!element) throw new Error('Failed to update zIndex');
 
-			const zIndex = Math.round((MAP_MAX_ZOOM - this.marker.zoom) * MAP_ZOOM_SCALE);
+			const zIndex = Math.round((MAP_MAX_ZOOM - this.zoom) * MAP_ZOOM_SCALE);
 			element.style.zIndex = zIndex.toString();
 		}
 	}
@@ -341,9 +348,6 @@
 
 	let mapMarkerArray = $state(new Array<MarkerData>());
 	let mapMarkerMap = $state(new Map<string, MarkerData>());
-
-	let mapPopups = new Array<Types.Popup>();
-	let mapPopupContentCallback: MapPopupContentCallback | undefined = undefined;
 
 	onMount(() => {
 		const markersLoop = () => {
@@ -362,7 +366,6 @@
 		// Check if map is loaded or marker data is empty
 		if (mapLoaded == false) return;
 		if (mapMarkerArray.length == 0) return;
-		if (mapPopupContentCallback == undefined) return;
 
 		// Get map zoom
 		const zoom = map.getZoom();
@@ -376,16 +379,15 @@
 		const windowBounds = new BoundsPair(map, 0, window.innerHeight, window.innerWidth, 0);
 
 		for (let i = 0; i < mapMarkerArray.length; i++) {
-			const data = mapMarkerArray[i];
-			const marker = data.marker;
-			const libreMarker = data.libreMarker;
+			const marker = mapMarkerArray[i];
+			const libreMarker = marker.libreMarker;
 			if (!libreMarker) continue;
 
 			// Expanded markers (offset bounds)
 			if (marker.zoom <= zoom) {
 				if (offsetBounds.contains(marker.lat, marker.lng)) {
 					if (libreMarker._map != map) libreMarker.addTo(map);
-					markerDataOnMap.push(data);
+					markerDataOnMap.push(marker);
 					continue;
 				}
 			}
@@ -394,7 +396,7 @@
 			if (marker.zoom <= zoom + MAP_VISIBLE_ZOOM_DEPTH) {
 				if (windowBounds.contains(marker.lat, marker.lng)) {
 					if (libreMarker._map != map) libreMarker.addTo(map);
-					markerDataOnMap.push(data);
+					markerDataOnMap.push(marker);
 					continue;
 				}
 			}
@@ -405,17 +407,16 @@
 
 		// Process markers on map
 		for (let i = 0; i < markerDataOnMap.length; i++) {
-			const data = markerDataOnMap[i];
-			const marker = data.marker;
+			const marker = markerDataOnMap[i];
 
 			// Set circle rendered to true if not set
-			if (!data.rendered) {
-				data.rendered = true;
+			if (!marker.rendered) {
+				marker.rendered = true;
 			}
 
 			// Skip if circle or component not rendered
-			const component = data.component;
-			const circle = data.circle;
+			const component = marker.component;
+			const circle = marker.circle;
 			if (!circle || !component) continue;
 
 			// Set marker display status
@@ -431,69 +432,70 @@
 				circle.setCollapsed(true);
 
 				component.setCollapsed(false);
-				component.setAngle(data.getAngle(zoom));
+				component.setAngle(marker.getAngle(zoom));
 			} else {
 				component.setCollapsed(true);
 
 				circle?.setCollapsed(false);
-				circle?.setDistance(data.getDistance(zoom));
+				circle?.setDistance(marker.getDistance(zoom));
 			}
 
-			// Skip if popup not rendered
-			const popup = data.popup;
-			if (!popup) continue;
+			// Skip if content div not rendered
+			const contentDiv = marker.contentDiv;
+			if (!contentDiv) continue;
 
 			// Start load popup content if not loaded
-			if (data.content == undefined && data.contentLoading == false) {
-				data.contentLoading = true;
-				mapPopupContentCallback(marker.id).then((content) => {
-					data.content = content;
-					data.contentLoading = false;
+			if (marker.content == undefined && marker.contentLoading == false) {
+				marker.contentLoading = true;
+				marker.contentCallback(marker.id).then((content) => {
+					marker.content = content;
+					marker.contentLoading = false;
 				});
 			}
 
 			// Skip in content not loaded
-			const content = data.content;
+			const content = marker.content;
 			if (!content) continue;
 
 			// Set popup content if null
-			const element = popup.firstElementChild;
+			const element = contentDiv.firstElementChild;
 			if (element == null) {
-				popup.appendChild(content);
+				contentDiv.appendChild(content);
 			}
 		}
 	}
 
-	async function updateMarkers(newMarkers: Marker[]) {
-		const newMarkerMap = new Map(newMarkers.map((m) => [m.id, new MarkerData(m)]));
-		const newDataList = new Array<MarkerData>();
+	async function updateMarkers(newPopups: MapPopup[]) {
+		const newPopupsMap = new Map(newPopups.map((m) => [m.data.id, new MarkerData(m)]));
+		const newMarkerArray = new Array<MarkerData>();
 
-		// Remove old data
-		const oldDataList = Array.from(mapMarkerArray);
-		for (const oldData of oldDataList) {
-			if (newMarkerMap.has(oldData.marker.id) == false) {
-				oldData.libreMarker?.remove();
+		// Remove old markers
+		const oldMarkerArray = Array.from(mapMarkerArray);
+		for (const oldMarker of oldMarkerArray) {
+			if (newPopupsMap.has(oldMarker.id) == false) {
+				oldMarker.libreMarker?.remove();
 
-				mapMarkerMap.delete(oldData.marker.id);
-				mapMarkerArray.splice(mapMarkerArray.indexOf(oldData), 1);
+				mapMarkerMap.delete(oldMarker.id);
+				mapMarkerArray.splice(mapMarkerArray.indexOf(oldMarker), 1);
 			}
 		}
 
-		// Crate or update new data
-		for (const newMarker of newMarkers) {
+		// Crate or update new markers
+		for (const newPopup of newPopups) {
 			// Check if marker already exists
-			const oldData = mapMarkerMap.get(newMarker.id);
+			const oldMarker = mapMarkerMap.get(newPopup.data.id);
 
-			if (oldData) {
-				// Update marker data
-				oldData.marker = newMarker;
-				oldData.updateZIndex();
+			if (oldMarker) {
+				// Update marker state
+				oldMarker.zoom = newPopup.state[0];
+				oldMarker.angles = newPopup.state[1];
+				oldMarker.updateZIndex();
 			} else {
 				// Create marker data
-				const newData = new MarkerData(newMarker);
-				mapMarkerMap.set(newMarker.id, newData);
-				mapMarkerArray.push(newData);
-				newDataList.push(newData);
+				const newMarker = new MarkerData(newPopup);
+				mapMarkerMap.set(newPopup.data.id, newMarker);
+				mapMarkerArray.push(newMarker);
+				newMarkerArray.push(newMarker);
 			}
 		}
 
@@ -501,72 +503,35 @@
 		await tick();
 
 		// Add new libre markers
-		for (const newData of newDataList) {
-			const marker = newData.marker;
-			const element = newData.element;
+		for (const newMarker of newMarkerArray) {
+			const element = newMarker.element;
 			if (!element) throw new Error('Failed to render marker element.');
 
 			// Create new libre marker
 			const mapLibreMarker = new maplibregl.Marker({ element });
-			mapLibreMarker.setLngLat([marker.lng, marker.lat]);
+			mapLibreMarker.setLngLat([newMarker.lng, newMarker.lat]);
 
-			newData.libreMarker = mapLibreMarker;
-			newData.updateZIndex();
+			newMarker.libreMarker = mapLibreMarker;
+			newMarker.updateZIndex();
 		}
 	}
 
 	function removeMarkers() {
 		for (let i = 0; i < mapMarkerArray.length; i++) {
-			const data = mapMarkerArray[i];
-			data.libreMarker?.remove();
+			const marker = mapMarkerArray[i];
+			marker.libreMarker?.remove();
 		}
 		mapMarkerArray.length = 0;
 		mapMarkerMap.clear();
 	}
 
-	export function setPopupContentCallback(callback: MapComponent.MapPopupContentCallback) {
-		// Validate content callback
-		const popupCallbackSchemaResult = mapPopupContentCallbackSchema.safeParse(callback);
-		if (!popupCallbackSchemaResult.success) throw new Error('Invalid popup content callback');
-
-		mapPopupContentCallback = callback;
-	}
-
-	export async function setPopups(popups: Types.Popup[]) {
-		// Validate callback exists
-		if (mapPopupContentCallback == undefined) throw new Error('Popup content callback not set');
-
+	export async function updatePopups(popups: MapPopup[]) {
 		// Validate popups
 		const popupsSchemaResult = await mapPopupsSchema.safeParseAsync(popups);
 		if (!popupsSchemaResult.success) throw new Error('Invalid popups');
 
-		try {
-			emit('loading_start', null);
-
-			// Update popups
-			mapPopups = popups;
-
-			// Get markers
-			const markers = popups.map<Marker>((p) => ({
-				id: p.data.id,
-				rank: p.data.rank,
-				lat: p.data.lat,
-				lng: p.data.lng,
-				width: p.data.width,
-				height: p.data.height,
-				zoom: p.state[0],
-				angles: p.state[1]
-			}));
-
-			// Update markers
-			await updateMarkers(markers);
-		} finally {
-			emit('loading_end', null);
-		}
-	}
-
-	export function getPopups(): Types.Popup[] {
-		return JSON.parse(JSON.stringify(mapPopups));
+		// Update markers
+		await updateMarkers(popups);
 	}
 
 	export function removePopups() {
@@ -587,16 +552,16 @@
 	<div class="map" bind:this={mapContainer}></div>
 	<div class="logo"><a href="https://arenarium.dev" target="_blank">@arenarium/maps</a></div>
 	<div class="markers">
-		{#each mapMarkerArray as data (data.marker.id)}
-			<div class="marker" bind:this={data.element}>
-				{#if data.rendered}
-					<MapMarkerCircle bind:this={data.circle} />
-					<MapMarker bind:this={data.component}>
+		{#each mapMarkerArray as marker (marker.id)}
+			<div class="marker" bind:this={marker.element}>
+				{#if marker.rendered}
+					<MapMarkerCircle bind:this={marker.circle} />
+					<MapMarker bind:this={marker.component}>
 						<div
 							class="popup"
-							style="width: {data.marker.width}px; height: {data.marker.height}px;"
-							onclick={() => onPopupClick(data.marker.id)}
-							bind:this={data.popup}
+							style="width: {marker.width}px; height: {marker.height}px;"
+							onclick={() => onPopupClick(marker.id)}
+							bind:this={marker.contentDiv}
 						></div>
 					</MapMarker>
 				{/if}

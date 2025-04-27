@@ -56,7 +56,7 @@ export type MapStyle = z.infer<typeof mapStyleSchema>;
 
 // Events
 
-export const mapEventType = z.enum(['idle', 'move', 'click', 'popup_click', 'loading_start', 'loading_end']);
+export const mapEventType = z.enum(['idle', 'move', 'click', 'popup_click']);
 export const mapEventIdleHandlerSchema = z.function().returns(z.void());
 export const mapEventMoveHandlerSchema = z.function().args(mapPositionSchema).returns(z.void());
 export const mapEventClickHandlerSchema = z.function().returns(z.void());
@@ -119,9 +119,12 @@ export const mapPopupDataSchema = z.object({
 
 export const mapPopupStateSchema = z.tuple([z.number(), z.array(z.tuple([z.number(), z.number()]))]);
 
+export const mapPopupContentCallbackSchema = z.function().args(z.string()).returns(z.promise(z.any()));
+
 export const mapPopupSchema = z.object({
 	data: mapPopupDataSchema,
-	state: mapPopupStateSchema
+	state: mapPopupStateSchema,
+	contentCallback: mapPopupContentCallbackSchema
 });
 
 export const mapPopupsSchema = z.array(mapPopupSchema);
@@ -132,8 +135,6 @@ export const mapPopupStatesRequestSchema = z.object({
 	minZoom: z.number(),
 	maxZoom: z.number()
 });
-
-export const mapPopupContentCallbackSchema = z.function().args(z.string()).returns(z.promise(z.any()));
 
 export type MapPopup = z.infer<typeof mapPopupSchema>;
 export type MapPopupData = z.infer<typeof mapPopupDataSchema>;
