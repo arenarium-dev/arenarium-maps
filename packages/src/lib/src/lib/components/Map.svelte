@@ -29,7 +29,6 @@
 		MAP_VISIBLE_ZOOM_DEPTH,
 		MAP_ZOOM_SCALE
 	} from '@workspace/shared/src/constants.js';
-	import { type Types } from '@workspace/shared/src/types.js';
 
 	import maplibregl from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';

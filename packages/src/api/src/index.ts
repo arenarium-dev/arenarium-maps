@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 
 import { getStates } from '@workspace/shared/src/marker/compute/states.js';
-import type { Types } from '@workspace/shared/src/types.js';
+import type { Popup } from '@workspace/shared/src/types.js';
 
 type Bindings = {
 	API_KEY_HOST_URL: string;
@@ -28,7 +28,7 @@ app.get('/api', (c) => {
 
 app.post('/:version/popups/states', async (c) => {
 	// Get the data from the request body
-	const body = await c.req.json<Types.PopupStatesRequest>();
+	const body = await c.req.json<Popup.StatesRequest>();
 	if (!body) return c.text('Missing request body', 400);
 
 	// Get the API key

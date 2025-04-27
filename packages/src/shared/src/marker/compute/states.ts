@@ -2,7 +2,7 @@ import { getRectangleOffsets } from '../rectangle.js';
 import { Particles } from './particles.js';
 import { getBoundsZoomWhenTouching, areBoundsOverlaping, type Bounds } from './bounds.js';
 import { getPoint } from '../projection.js';
-import { Types } from '../../types.js';
+import { Popup } from '../../types.js';
 import { MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE, MARKER_PADDING } from '../../constants.js';
 
 namespace Nodes {
@@ -40,7 +40,7 @@ namespace Nodes {
 		/** The neighbours of the marker node. */
 		neighbours: Array<Node>;
 
-		constructor(data: Types.PopupData, index: number) {
+		constructor(data: Popup.Data, index: number) {
 			const projection = getPoint(data.lat, data.lng);
 			const width = data.width + 3 * MARKER_PADDING;
 			const height = data.height + 3 * MARKER_PADDING;
@@ -101,7 +101,7 @@ namespace Nodes {
 
 	export type NodeNeighbourDeltas = Array<Array<Array<Node>>>;
 
-	export function createNodes(data: Array<Types.PopupData>): Array<Node> {
+	export function createNodes(data: Array<Popup.Data>): Array<Node> {
 		let nodes = new Array<Node>(data.length);
 
 		// Create marker nodes
@@ -390,7 +390,7 @@ namespace Nodes {
 	}
 }
 
-function getStates(data: Array<Types.PopupData>, minZoom: number, maxZoom: number): Types.PopupState[] {
+function getStates(data: Array<Popup.Data>, minZoom: number, maxZoom: number): Popup.State[] {
 	// Initialize zoom
 	Nodes.Zoom.Min = minZoom;
 	Nodes.Zoom.Max = maxZoom;

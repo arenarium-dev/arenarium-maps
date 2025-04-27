@@ -1,7 +1,7 @@
-export namespace Types {
-	export type PopupState = [number, [number, number][]];
+export namespace Popup {
+	export type State = [number, [number, number][]];
 
-	export interface PopupData {
+	export interface Data {
 		id: string;
 		rank: number;
 		lat: number;
@@ -10,9 +10,9 @@ export namespace Types {
 		height: number;
 	}
 
-	export interface PopupStatesRequest {
+	export interface StatesRequest {
 		apiKey: string;
-		data: PopupData[];
+		data: Data[];
 		minZoom: number;
 		maxZoom: number;
 	}
