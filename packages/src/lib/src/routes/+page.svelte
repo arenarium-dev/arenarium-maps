@@ -4,9 +4,12 @@
 	import Icon from './components/Icon.svelte';
 
 	import { mountMap } from '$lib/index.js';
-	import type { MapBounds, MapPopup } from '$lib/map/input.js';
+	import type { MapBounds, MapPopup, MapPopupData, MapPopupState, MapPopupStatesRequest } from '$lib/map/input.js';
 
-	import { PUBLIC_API_KEY_DEV_VALUE } from '$env/static/public';
+	import type { Types } from '@workspace/shared/src/types.js';
+
+	import { PUBLIC_API_KEY_FREE_KEY, PUBLIC_API_URL } from '$env/static/public';
+	import { on } from 'svelte/events';
 
 	let map: ReturnType<typeof mountMap>;
 
@@ -15,20 +18,19 @@
 
 	onMount(() => {
 		map = mountMap({
-			apiKey: PUBLIC_API_KEY_DEV_VALUE,
 			container: 'map',
 			position: {
 				center: { lat: 51.505, lng: -0.09 },
 				zoom: 4
 			},
-			// restriction: {
-			// 	minZoom: 10,
-			// 	maxZoom: 18,
-			// 	maxBounds: {
-			// 		sw: { lat: 51.505, lng: -0.09 },
-			// 		ne: { lat: 54.505, lng: 3.09 }
-			// 	}
-			// },
+			restriction: {
+				minZoom: 10,
+				maxZoom: 18
+				// maxBounds: {
+				// 	sw: { lat: 51.505, lng: -0.09 },
+				// 	ne: { lat: 54.505, lng: 3.09 }
+				// }
+			},
 			style: {
 				name: 'light',
 				colors: {
@@ -99,17 +101,18 @@
 	}
 
 	async function addData() {
-		map.updatePopupContentCallback(getPopupContent);
+		map.setPopupContentCallback(getPopupContent);
 
 		const bounds = map.getBounds();
 		const popups = await getPopups(bounds);
 
 		const now = performance.now();
-		await map.updatePopups(popups);
+		await map.setPopups(popups);
 		console.log(`[SET ${popups.length}] ${performance.now() - now}ms`);
 	}
 
 	async function clearData() {
+		count = 0;
 		map.removePopups();
 	}
 
@@ -125,41 +128,60 @@
 
 	//#region Data
 
+	let count = 0;
+
 	const total = 1000;
-	const limit = 1000;
+	const limit = 100;
 
-	const added = new Array<boolean>();
-	added.fill(false);
+	let lats = new Array<number>();
+	let lngs = new Array<number>();
+	let ranks = new Array<number>();
 
-	const radius = 10;
-	const centers = [
-		{ lat: 51.505, lng: -0.09 },
-		{ lat: 45, lng: 22 },
-		{ lat: 52.52, lng: 13.409 },
-		{ lat: 48.8566, lng: 2.3522 }
-	];
+	onMount(() => {
+		const radius = 10;
+		const centers = [
+			{ lat: 51.505, lng: -0.09 },
+			{ lat: 45, lng: 22 },
+			{ lat: 52.52, lng: 13.409 },
+			{ lat: 48.8566, lng: 2.3522 }
+		];
 
-	async function getPopups(bounds: MapBounds): Promise<MapPopup[]> {
-		const popups = new Array<MapPopup>();
+		let randomPrev = 1;
 
-		let n = 0;
+		const random = () => {
+			const val = (randomPrev * 16807) % 2147483647;
+			randomPrev = val;
+			return val / 2147483647;
+		};
+
 		for (let i = 0; i < total; i++) {
-			if (added[i]) continue;
-
 			const distance = radius / i;
 			const center = centers[i % centers.length];
 
 			const lat = center.lat + distance * (-1 + random() * 2);
 			const lng = center.lng + distance * (-1 + random() * 2);
-			if (lat < bounds.sw.lat || bounds.ne.lat < lat || lng < bounds.sw.lng || bounds.ne.lng < lng) continue;
-			if (n >= limit) break;
 
-			n++;
-			added[i] = true;
+			lats.push(lat);
+			lngs.push(lng);
 
 			const rank = Math.floor(random() * total);
-			popups.push({
-				id: rank.toString(),
+			ranks.push(rank);
+		}
+	});
+
+	async function getPopups(bounds: MapBounds): Promise<MapPopup[]> {
+		const data = new Array<MapPopupData>();
+
+		count = Math.min(total, limit + count);
+
+		for (let i = 0; i < count; i++) {
+			const lat = lats[i];
+			const lng = lngs[i];
+			if (lat < bounds.sw.lat || bounds.ne.lat < lat || lng < bounds.sw.lng || bounds.ne.lng < lng) continue;
+
+			const rank = ranks[i];
+			data.push({
+				id: i.toString() + '-' + rank.toString(),
 				rank: rank,
 				lat: lat,
 				lng: lng,
@@ -168,7 +190,55 @@
 			});
 		}
 
+		const getStatesRequest: MapPopupStatesRequest = {
+			apiKey: PUBLIC_API_KEY_FREE_KEY,
+			data: data,
+			minZoom: 10,
+			maxZoom: 18
+		};
+
+		const popups = new Array<MapPopup>(data.length);
+		const states = await getPopupStates(getStatesRequest);
+
+		for (let i = 0; i < data.length; i++) {
+			popups[i] = {
+				data: data[i],
+				state: states[i]
+			};
+		}
+
 		return await new Promise((resolve) => resolve(popups));
+	}
+
+	async function getPopupStates(request: MapPopupStatesRequest): Promise<MapPopupState[]> {
+		if (import.meta.env.DEV) {
+			switch (import.meta.env.MODE) {
+				case 'browser': {
+					const statesImport = await import('@workspace/shared/src/marker/compute/states.js');
+					return statesImport.getStates(request.data, request.minZoom, request.maxZoom);
+				}
+				default: {
+					return await getStatesApi(request);
+				}
+			}
+		} else {
+			return await getStatesApi(request);
+		}
+	}
+
+	async function getStatesApi(request: MapPopupStatesRequest): Promise<MapPopupState[]> {
+		const url = PUBLIC_API_URL;
+		const response = await fetch(`${url}/v1/popups/states`, {
+			method: 'POST',
+			body: JSON.stringify(request)
+		});
+
+		if (!response.ok || !response.body) {
+			throw new Error('Failed to get markers');
+		}
+
+		const states: Types.PopupState[] = await response.json();
+		return states;
 	}
 
 	async function getPopupContent(id: string): Promise<HTMLElement> {
@@ -181,14 +251,6 @@
 			element.innerText = id;
 			resolve(element);
 		});
-	}
-
-	let randomPrev = 1;
-
-	function random() {
-		const val = (randomPrev * 16807) % 2147483647;
-		randomPrev = val;
-		return val / 2147483647;
 	}
 
 	//#endregion

@@ -5,21 +5,12 @@ import { getPoint } from '../projection.js';
 import { Types } from '../../types.js';
 import { MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE, MARKER_PADDING } from '../../constants.js';
 
-namespace Marker {
-	export function create(popup: Types.Popup): Types.Marker {
-		return {
-			id: popup.id,
-			lat: popup.lat,
-			lng: popup.lng,
-			width: popup.width,
-			height: popup.height,
-			zet: NaN,
-			angs: []
-		};
-	}
-}
-
 namespace Nodes {
+	export interface Marker {
+		zet: number;
+		angs: [number, number][];
+	}
+
 	export class Node {
 		// PROPERTIES
 		/** The index of the node in the nodes array. */
@@ -49,14 +40,14 @@ namespace Nodes {
 		/** The neighbours of the marker node. */
 		neighbours: Array<Node>;
 
-		constructor(popup: Types.Popup, index: number) {
-			const projection = getPoint(popup.lat, popup.lng);
-			const width = popup.width + 3 * MARKER_PADDING;
-			const height = popup.height + 3 * MARKER_PADDING;
+		constructor(data: Types.PopupData, index: number) {
+			const projection = getPoint(data.lat, data.lng);
+			const width = data.width + 3 * MARKER_PADDING;
+			const height = data.height + 3 * MARKER_PADDING;
 
 			this.index = index;
-			this.id = popup.id;
-			this.rank = popup.rank;
+			this.id = data.id;
+			this.rank = data.rank;
 			this.x = projection.x;
 			this.y = projection.y;
 			this.width = width;
@@ -110,12 +101,12 @@ namespace Nodes {
 
 	export type NodeNeighbourDeltas = Array<Array<Array<Node>>>;
 
-	export function createNodes(popups: Array<Types.Popup>): Array<Node> {
-		let nodes = new Array<Node>(popups.length);
+	export function createNodes(data: Array<Types.PopupData>): Array<Node> {
+		let nodes = new Array<Node>(data.length);
 
 		// Create marker nodes
-		for (let i = 0; i < popups.length; i++) {
-			const popup = popups[i];
+		for (let i = 0; i < data.length; i++) {
+			const popup = data[i];
 			nodes[i] = new Node(popup, i);
 		}
 
@@ -249,7 +240,7 @@ namespace Nodes {
 		}
 	}
 
-	export function updateMarkers(nodes: Array<Nodes.Node>, markers: Map<string, Types.Marker>, zoom: number) {
+	export function updateMarkers(nodes: Array<Node>, markers: Map<string, Marker>, zoom: number) {
 		for (let i = 0; i < nodes.length; i++) {
 			const node = nodes[i];
 			if (node.expanded == false) continue;
@@ -399,17 +390,16 @@ namespace Nodes {
 	}
 }
 
-function getMarkers(popups: Array<Types.Popup>, minZoom: number, maxZoom: number): Types.Marker[] {
+function getStates(data: Array<Types.PopupData>, minZoom: number, maxZoom: number): Types.PopupState[] {
 	// Initialize zoom
 	Nodes.Zoom.Min = minZoom;
 	Nodes.Zoom.Max = maxZoom;
 
 	// Initialize markers
-	const markers = popups.map((p) => Marker.create(p));
-	const markerMap = new Map(markers.map((p) => [p.id, p]));
+	const markers = new Map<string, Nodes.Marker>(data.map((p) => [p.id, { zet: NaN, angs: [] }]));
 
 	// Initialze nodes
-	const nodes = Nodes.createNodes(popups);
+	const nodes = Nodes.createNodes(data);
 	const nodeNeighbourDeltas = Nodes.createNeighbourDeltas(nodes);
 
 	// Initialize zoom
@@ -417,7 +407,7 @@ function getMarkers(popups: Array<Types.Popup>, minZoom: number, maxZoom: number
 	const zoomMax = Nodes.Zoom.getZoomMax(nodeNeighbourDeltas);
 
 	// Initially add the last threshold event
-	Nodes.updateMarkers(nodes, markerMap, Nodes.Zoom.addSteps(maxZoom, 1));
+	Nodes.updateMarkers(nodes, markers, Nodes.Zoom.addSteps(maxZoom, 1));
 
 	// Go from last to first zoom
 	for (let zoom = zoomMax; zoom >= zoomMin; zoom = Nodes.Zoom.addSteps(zoom, -1)) {
@@ -474,10 +464,10 @@ function getMarkers(popups: Array<Types.Popup>, minZoom: number, maxZoom: number
 		}
 
 		// Update markers
-		Nodes.updateMarkers(nodes, markerMap, Number(zoom.toFixed(1)));
+		Nodes.updateMarkers(nodes, markers, Number(zoom.toFixed(1)));
 	}
 
-	return markers;
+	return Array.from(markers.values().map((s) => [s.zet, s.angs]));
 }
 
-export { getMarkers };
+export { getStates };

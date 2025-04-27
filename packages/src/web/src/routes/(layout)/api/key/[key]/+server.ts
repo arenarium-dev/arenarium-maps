@@ -1,4 +1,4 @@
-import { error, text } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 
 import * as schema from '$lib/server/database/schema';
 import { getDb } from '$lib/server/database/client';
@@ -16,5 +16,5 @@ export const GET: RequestHandler = async (event) => {
 	});
 	if (!dbApiKey) error(404, 'API key not found');
 
-	return text(dbApiKey.name);
+	return new Response(null);
 };

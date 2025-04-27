@@ -30,7 +30,6 @@ export const mapStyleSchema = z.object({
 });
 
 export const mapOptionsSchema = z.object({
-	apiKey: z.string().min(1).max(64),
 	container: z.string(),
 	position: z.object({
 		center: z.object({
@@ -109,7 +108,7 @@ let x: MapEventMoveHandler = (position) => {
 
 // Popups
 
-export const mapPopupSchema = z.object({
+export const mapPopupDataSchema = z.object({
 	id: z.string(),
 	rank: z.number(),
 	lat: z.number(),
@@ -118,10 +117,26 @@ export const mapPopupSchema = z.object({
 	height: z.number()
 });
 
+export const mapPopupStateSchema = z.tuple([z.number(), z.array(z.tuple([z.number(), z.number()]))]);
+
+export const mapPopupSchema = z.object({
+	data: mapPopupDataSchema,
+	state: mapPopupStateSchema
+});
+
 export const mapPopupsSchema = z.array(mapPopupSchema);
-export const mapPopupCallbackSchema = z.function().args(mapBoundsSchema).returns(z.promise(mapPopupsSchema));
+
+export const mapPopupStatesRequestSchema = z.object({
+	apiKey: z.string(),
+	data: z.array(mapPopupDataSchema),
+	minZoom: z.number(),
+	maxZoom: z.number()
+});
+
 export const mapPopupContentCallbackSchema = z.function().args(z.string()).returns(z.promise(z.any()));
 
 export type MapPopup = z.infer<typeof mapPopupSchema>;
-export type MapPopupCallback = z.infer<typeof mapPopupCallbackSchema>;
+export type MapPopupData = z.infer<typeof mapPopupDataSchema>;
+export type MapPopupState = z.infer<typeof mapPopupStateSchema>;
+export type MapPopupStatesRequest = z.infer<typeof mapPopupStatesRequestSchema>;
 export type MapPopupContentCallback = z.infer<typeof mapPopupContentCallbackSchema>;

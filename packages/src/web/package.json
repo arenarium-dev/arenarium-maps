@@ -44,7 +44,8 @@
 		"wrangler": "^4.13.0"
 	},
 	"dependencies": {
-		"@arenarium/maps": "^1.0.54",
+		"@workspace/shared": "workspace:*",
+		"@arenarium/maps": "latest",
 		"@better-fetch/fetch": "^1.1.18",
 		"better-auth": "^1.2.7",
 		"drizzle-orm": "^0.40.1",

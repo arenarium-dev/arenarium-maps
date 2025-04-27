@@ -1,5 +1,7 @@
 export namespace Types {
-	export interface Popup {
+	export type PopupState = [number, [number, number][]];
+
+	export interface PopupData {
 		id: string;
 		rank: number;
 		lat: number;
@@ -8,20 +10,15 @@ export namespace Types {
 		height: number;
 	}
 
-	export interface Marker {
-		id: string;
-		lat: number;
-		lng: number;
-		width: number;
-		height: number;
-		zet: number;
-		angs: [number, number][];
-	}
-
-	export interface MarkersRequest {
+	export interface PopupStatesRequest {
 		apiKey: string;
-		popups: Popup[];
+		data: PopupData[];
 		minZoom: number;
 		maxZoom: number;
+	}
+
+	export interface Popup {
+		data: PopupData;
+		state: PopupState;
 	}
 }
