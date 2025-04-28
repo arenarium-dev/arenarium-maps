@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { page } from '$app/state';
-
 	import Map from '$lib/client/components/Map.svelte';
 	import Highlight from '$lib/client/components/Highlight.svelte';
 </script>
 
 <div class="map">
-	<Map key={page.data.apiKey} />
+	<Map />
 	<div class="shadow"></div>
 </div>
 
