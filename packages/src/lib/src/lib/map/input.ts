@@ -102,10 +102,6 @@ export type MapEventPopupClickHandler = z.infer<typeof mapEventPopupClickHandler
 export type MapEventLoadingStartHandler = z.infer<typeof mapEventLoadingStartHandlerSchema>;
 export type MapEventLoadingEndHandler = z.infer<typeof mapEventLoadingEndHandlerSchema>;
 
-let x: MapEventMoveHandler = (position) => {
-	console.log(position.center, position.zoom);
-};
-
 // Popups
 
 export const mapPopupDataSchema = z.object({
@@ -136,8 +132,8 @@ export const mapPopupStatesRequestSchema = z.object({
 	maxZoom: z.number()
 });
 
-export type MapPopup = z.infer<typeof mapPopupSchema>;
 export type MapPopupData = z.infer<typeof mapPopupDataSchema>;
 export type MapPopupState = z.infer<typeof mapPopupStateSchema>;
-export type MapPopupStatesRequest = z.infer<typeof mapPopupStatesRequestSchema>;
 export type MapPopupContentCallback = z.infer<typeof mapPopupContentCallbackSchema>;
+export type MapPopup = z.infer<typeof mapPopupSchema>;
+export type MapPopupStatesRequest = z.infer<typeof mapPopupStatesRequestSchema>;
