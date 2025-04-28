@@ -1,10 +1,13 @@
 <script lang="ts">
+	import { slide } from 'svelte/transition';
+	import { sineInOut } from 'svelte/easing';
+	import { goto } from '$app/navigation';
+
 	import Menu from '$lib/client/components/utils/Menu.svelte';
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 	import Image from '$lib/client/components/utils/Image.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
-	import { goto } from '$app/navigation';
 
 	let user = $derived(app.user.details);
 
@@ -25,6 +28,22 @@
 	async function onUserSignOut() {
 		menuComponent?.hide();
 		await app.user.signOut();
+	}
+
+	// Theme
+	let theme = $derived(app.theme.get());
+
+	function onThemeClick(e: Event) {
+		e.stopPropagation();
+
+		switch (theme) {
+			case 'light':
+				app.theme.set('dark');
+				break;
+			case 'dark':
+				app.theme.set('light');
+				break;
+		}
 	}
 </script>
 
@@ -77,6 +96,17 @@
 				<div class="divider"></div>
 				<div class="group">
 					<div class="item">
+						{#key theme}
+							<button class="content" onclick={onThemeClick} transition:slide={{ duration: 125, easing: sineInOut }}>
+								<Icon name={theme == 'light' ? 'dark_mode' : 'light_mode'} />
+								<span class="text">{theme == 'light' ? 'Dark' : 'Light'} Mode</span>
+							</button>
+						{/key}
+					</div>
+				</div>
+				<div class="divider"></div>
+				<div class="group">
+					<div class="item">
 						<a href="/#about" class="content">
 							<Icon name={'info'} />
 							<div class="text">About</div>
@@ -114,7 +144,7 @@
 	}
 
 	.menu {
-		margin: 0px 24px;
+		margin: 0px 12px;
 		margin-top: 36px;
 		border-radius: 12px;
 		box-shadow:

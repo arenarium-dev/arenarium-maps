@@ -14,10 +14,6 @@
 	onMount(() => {
 		app.initialize(page);
 	});
-
-	function onThemeClick() {
-		app.theme.set(app.theme.get() === 'dark' ? 'light' : 'dark');
-	}
 </script>
 
 <svelte:head>
@@ -36,18 +32,12 @@
 		</div>
 		<a class="title" href="/">@arenarium/maps</a>
 		<div class="grow"></div>
-		<button onclick={onThemeClick}>
-			<Icon name={app.theme.get() === 'dark' ? 'light_mode' : 'dark_mode'} />
-		</button>
+		<a class="title" href="/docs">Docs</a>
 		<div class="navigation">
 			<Navigation />
 		</div>
 	</div>
-	<div class="container">
-		<div class="page">
-			{@render children()}
-		</div>
-	</div>
+	{@render children()}
 </div>
 
 <Toast />
@@ -83,56 +73,6 @@
 				font-size: 18px;
 				font-weight: 600;
 				color: var(--on-surface);
-			}
-
-			button {
-				width: 36px;
-				height: 36px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				cursor: pointer;
-
-				&:hover {
-					background-color: var(--primary-hover);
-				}
-			}
-		}
-
-		.container {
-			flex-grow: 1;
-			padding-top: 24px;
-			padding-bottom: 24px;
-			width: 100%;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			background-color: var(--surface-container);
-			overflow: auto;
-
-			.page {
-				width: @page-width;
-				flex-grow: 1;
-				display: flex;
-				flex-direction: column;
-				padding: 24px;
-				border-radius: 12px;
-				background-color: var(--surface);
-				box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.2);
-			}
-		}
-	}
-
-	@media (max-width: @page-width) {
-		.body {
-			.container {
-				padding: 0px;
-
-				.page {
-					width: 100%;
-					border-radius: 0px;
-					box-shadow: none;
-				}
 			}
 		}
 	}

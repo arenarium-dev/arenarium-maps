@@ -6,7 +6,7 @@
 
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 	import Modal from '$lib/client/components/utils/Modal.svelte';
-	import APIKeyForm from '$lib/client/components/profile/APIKeyForm.svelte';
+	import APIKeyForm from '$lib/client/components/keys/APIKeyForm.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
 
