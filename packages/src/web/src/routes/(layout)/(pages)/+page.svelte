@@ -11,7 +11,6 @@
 
 	import { mountMap, type MapBounds, type MapPopup, type MapPopupData, type MapPopupState } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
-	import Toast from '$lib/client/components/Toast.svelte';
 
 	let map: ReturnType<typeof mountMap>;
 	let loading = $state<boolean>(false);
@@ -33,22 +32,16 @@
 			}
 		});
 
-		map.on('popup_click', (id) => {
-			console.log(`Popup ${id} clicked`);
-			app.toast.set({
-				text: `Popup ${id} clicked.`,
-				severity: 'info',
-				seconds: 2
-			});
-		});
-
 		map.on('idle', () => {
-			console.log('idle');
 			onMapIdle();
 		});
 	});
 
-	//#region Style
+	//#region Tune
+
+	let mainMenuComponent = $state<ReturnType<typeof Menu>>();
+	let palleteMenuComponent = $state<ReturnType<typeof Menu>>();
+	let sourceMenuComponent = $state<ReturnType<typeof Menu>>();
 
 	let style = $state<string>('Website');
 
@@ -61,6 +54,18 @@
 			});
 		}
 	});
+
+	function onPalleteClick(e: Event) {
+		e.stopPropagation();
+		palleteMenuComponent?.show();
+		sourceMenuComponent?.hide();
+	}
+
+	function onSourceClick(e: Event) {
+		e.stopPropagation();
+		palleteMenuComponent?.hide();
+		sourceMenuComponent?.show();
+	}
 
 	function onStyleWebsiteClick() {
 		setStyleWebsite();
@@ -131,10 +136,8 @@
 	//#region Source
 
 	let source = $state<string>('Rentals');
+	let sourceAutoUpdate = $state<boolean>(false);
 	let sourcePopupData = new Map<string, MapPopupData>();
-
-	let sourceAutoUpdateAsked = false;
-	let sourceAutoUpdate = false;
 
 	function onMapIdle() {
 		const bounds = map.getBounds();
@@ -151,9 +154,14 @@
 		processBoundsChange(bounds);
 	}
 
+	function onSourceAutoUpdateClick(e: Event) {
+		e.stopPropagation();
+		sourceAutoUpdate = !sourceAutoUpdate;
+	}
+
 	async function getPopupData(bounds: MapBounds): Promise<MapPopupData[]> {
 		const data = await Fetch.that<MapPopupData[]>(
-			`/api/popup/data?total=100&swlat=${bounds.sw.lat}&swlng=${bounds.sw.lng}&nelat=${bounds.ne.lat}&nelng=${bounds.ne.lng}`
+			`/api/popup/data?total=128&swlat=${bounds.sw.lat}&swlng=${bounds.sw.lng}&nelat=${bounds.ne.lat}&nelng=${bounds.ne.lng}`
 		);
 		return data;
 	}
@@ -217,21 +225,6 @@
 
 			// Update the popups
 			await map.updatePopups(popups);
-
-			if (!sourceAutoUpdateAsked) {
-				sourceAutoUpdateAsked = true;
-
-				app.toast.set({
-					text: 'Enable auto update?',
-					severity: 'info',
-					callback: {
-						name: 'Yes',
-						function: async () => {
-							sourceAutoUpdate = true;
-						}
-					}
-				});
-			}
 		} catch (err) {
 			console.error(err);
 			app.toast.set({
@@ -259,7 +252,7 @@
 			}
 
 			app.toast.set({
-				text: `Update with ${dataDelta.length} new popups?`,
+				text: `Load ${dataDelta.length} new popups?`,
 				severity: 'info',
 				callback: {
 					name: 'Yes',
@@ -308,31 +301,51 @@
 		<Menu>
 			{#snippet button()}
 				<div class="button shadow-small">
-					<Icon name={'palette'} size={22} />
-					<span>{style}</span>
+					<Icon name={'tune'} size={22} />
 				</div>
 			{/snippet}
 			{#snippet menu()}
 				<div class="menu shadow-large">
-					<button class="item" class:selected={style == 'Website'} onclick={onStyleWebsiteClick}>Website</button>
-					<button class="item" class:selected={style == 'Light'} onclick={onStyleLightClick}>Light</button>
-					<button class="item" class:selected={style == 'Dark'} onclick={onStyleDarkClick}>Dark</button>
-					<button class="item" class:selected={style == 'Custom'} onclick={onStyleCustomClick}>Custom</button>
-				</div>
-			{/snippet}
-		</Menu>
-		<Menu>
-			{#snippet button()}
-				<div class="button shadow-small">
-					<Icon name={'database'} size={22} />
-					<span>{source}</span>
-				</div>
-			{/snippet}
-			{#snippet menu()}
-				<div class="menu shadow-large">
-					<button class="item" class:selected={source == 'Rentals'} onclick={() => onSourceSelect('Rentals')}>Rentals</button>
-					<button class="item" class:selected={source == 'Events'} onclick={() => onSourceSelect('Events')}>Events</button>
-					<button class="item" class:selected={source == 'News'} onclick={() => onSourceSelect('News')}>News</button>
+					<Menu axis={'x'} bind:this={palleteMenuComponent}>
+						{#snippet button()}
+							<button class="item" onclick={onPalleteClick}>
+								<Icon name={'palette'} size={22} />
+								<span>{style}</span>
+								<Icon name={'arrow_right'} />
+							</button>
+						{/snippet}
+						{#snippet menu()}
+							<div class="menu pallete shadow-large">
+								<button class="item" class:selected={style == 'Website'} onclick={onStyleWebsiteClick}>Website</button>
+								<button class="item" class:selected={style == 'Light'} onclick={onStyleLightClick}>Light</button>
+								<button class="item" class:selected={style == 'Dark'} onclick={onStyleDarkClick}>Dark</button>
+								<button class="item" class:selected={style == 'Custom'} onclick={onStyleCustomClick}>Custom</button>
+							</div>
+						{/snippet}
+					</Menu>
+					<Menu axis={'x'} bind:this={sourceMenuComponent}>
+						{#snippet button()}
+							<button class="item" onclick={onSourceClick}>
+								<Icon name={'database'} size={22} />
+								<span>{source}</span>
+								<Icon name={'arrow_right'} />
+							</button>
+						{/snippet}
+						{#snippet menu()}
+							<div class="menu source shadow-large">
+								<button class="item" class:selected={source == 'Rentals'} onclick={() => onSourceSelect('Rentals')}
+									>Rentals</button
+								>
+								<button class="item" class:selected={source == 'Events'} onclick={() => onSourceSelect('Events')}>Events</button
+								>
+								<button class="item" class:selected={source == 'News'} onclick={() => onSourceSelect('News')}>News</button>
+							</div>
+						{/snippet}
+					</Menu>
+					<button class="item" onclick={onSourceAutoUpdateClick}>
+						<Icon name={sourceAutoUpdate ? 'check_box' : 'check_box_outline_blank'} size={22} />
+						<span>Auto Load</span>
+					</button>
 				</div>
 			{/snippet}
 		</Menu>
@@ -384,12 +397,12 @@
 			top: 16px;
 			left: 16px;
 			display: flex;
+			flex-direction: column;
+			align-items: start;
 			gap: 12px;
 
 			.button {
 				gap: 8px;
-				padding: 8px 16px 8px 8px;
-				width: initial;
 				font-weight: 600;
 				font-size: 13px;
 				cursor: pointer;
@@ -397,25 +410,29 @@
 
 			.menu {
 				margin-top: 12px;
-				margin-left: 22px;
 				display: flex;
 				flex-direction: column;
 				align-items: stretch;
-				gap: 4px;
 				padding: 4px;
 				border-radius: 16px;
 				background-color: var(--surface);
 
 				.item {
-					text-align: start;
 					width: 100%;
-					padding: 8px 12px;
-					width: initial;
+					display: flex;
+					align-items: center;
+					gap: 8px;
+					padding: 8px;
 					font-weight: 600;
 					font-size: 13px;
 					border-radius: 12px;
 					cursor: pointer;
 					transition: all 125ms ease-in-out;
+
+					span {
+						flex-grow: 1;
+						text-align: start;
+					}
 
 					&.selected {
 						background-color: var(--surface-container);
@@ -425,6 +442,13 @@
 						background-color: var(--surface-container-high);
 					}
 				}
+			}
+
+			.menu.pallete,
+			.menu.source {
+				margin-top: 0px;
+				margin-left: 20px;
+				gap: 4px;
 			}
 		}
 
