@@ -1,4 +1,4 @@
-import { error, text } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 
 import { type MapPopupData } from '@arenarium/maps';
 
@@ -6,13 +6,12 @@ import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event) => {
 	const total = Number(event.url.searchParams.get('total'));
-	const limit = Number(event.url.searchParams.get('limit'));
 	const swlat = Number(event.url.searchParams.get('swlat'));
 	const swlng = Number(event.url.searchParams.get('swlng'));
 	const nelat = Number(event.url.searchParams.get('nelat'));
 	const nelng = Number(event.url.searchParams.get('nelng'));
 
-	if (isNaN(total) || isNaN(limit) || isNaN(swlat) || isNaN(swlng) || isNaN(nelat) || isNaN(nelng)) {
+	if (isNaN(total) || isNaN(swlat) || isNaN(swlng) || isNaN(nelat) || isNaN(nelng)) {
 		return error(400, 'Invalid parameters');
 	}
 
@@ -22,17 +21,8 @@ export const GET: RequestHandler = async (event) => {
 	const coordinatesJson = await coordinatesResponse.json<any>();
 	const coordinates = coordinatesJson.coordinates;
 
-	let randomPrev = 1;
-
-	function random() {
-		const val = (randomPrev * 16807) % 2147483647;
-		randomPrev = val;
-		return val / 2147483647;
-	}
-
 	const data = new Array<MapPopupData>();
 
-	let n = 0;
 	for (let i = 0; i < total; i++) {
 		const lat = coordinates[i % coordinates.length].lat;
 		const lng = coordinates[i % coordinates.length].lng;
@@ -48,9 +38,7 @@ export const GET: RequestHandler = async (event) => {
 			height: 100,
 			width: 150
 		});
-
-		n++;
 	}
 
-	return text('OK');
+	return json(data);
 };

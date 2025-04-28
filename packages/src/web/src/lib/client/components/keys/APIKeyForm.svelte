@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Fetch } from '$lib/client/core/fetch';
 	import { domainsSchema, nameSchema } from '$lib/shared/validation';
 
 	let { success, id, name, domains } = $props<{ success: Function; id: string; name: string; domains: string[] }>();
@@ -36,18 +37,14 @@
 
 		try {
 			// Assume the API call is successful and returns the new key details
-			const response = await fetch('/api/key', {
+			await Fetch.that('/api/keys', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
+				body: {
 					id: id,
 					name: name,
 					domains: domains
-				})
+				}
 			});
-			if (!response.ok) {
-				throw new Error('Failed to create API key');
-			}
 
 			// Handle Success
 			nameValue = '';

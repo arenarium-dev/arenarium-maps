@@ -7,15 +7,9 @@
 	import Progress from '$lib/client/components/utils/Progress.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
+	import { Fetch } from '$lib/client/core/fetch';
 
-	import {
-		mountMap,
-		type MapBounds,
-		type MapPopup,
-		type MapPopupData,
-		type MapPopupState,
-		type MapPopupStatesRequest
-	} from '@arenarium/maps';
+	import { mountMap, type MapBounds, type MapPopup, type MapPopupData, type MapPopupState } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
 
 	let map = $state<ReturnType<typeof mountMap>>();
@@ -36,10 +30,6 @@
 					text: 'black'
 				}
 			}
-		});
-
-		map.on('move', (e) => {
-			zoom = e.zoom;
 		});
 
 		map.on('popup_click', (id) => {
@@ -148,11 +138,22 @@
 		if (!map) return;
 
 		const bounds = map.getBounds();
-		const popups = await getPopups(bounds);
+		const data = await getPopupData(bounds);
+		const states = await getPopupStates(data);
+
+		const popups = new Array<MapPopup>();
+		for (let i = 0; i < data.length; i++) {
+			const popup: MapPopup = {
+				data: data[i],
+				state: states[i],
+				contentCallback: getPopupContent
+			};
+			popups.push(popup);
+		}
 
 		const now = performance.now();
 		await map.updatePopups(popups);
-		console.log(`[SET ${popups.length}] ${performance.now() - now}ms`);
+		console.log(`[SET ${data.length}] ${performance.now() - now}ms`);
 	}
 
 	async function clearData() {
@@ -163,12 +164,24 @@
 
 	//#region Data
 
-	async function getPopups(bounds: MapBounds): Promise<MapPopup[]> {
-		return await new Promise((resolve) => resolve(data));
+	async function getPopupData(bounds: MapBounds): Promise<MapPopupData[]> {
+		const data = await Fetch.that<MapPopupData[]>(
+			`/api/popup/data?total=1000&swlat=${bounds.sw.lat}&swlng=${bounds.sw.lng}&nelat=${bounds.ne.lat}&nelng=${bounds.ne.lng}`
+		);
+		return data;
 	}
 
-	async function getPopupStates(request: MapPopupStatesRequest): Promise<MapPopupState[]> {
-
+	async function getPopupStates(data: MapPopupData[]): Promise<MapPopupState[]> {
+		const request = {
+			data: data,
+			minZoom: 0,
+			maxZoom: 18
+		};
+		const states = await Fetch.that<MapPopupState[]>(`/api/popup/states`, {
+			method: 'POST',
+			body: request
+		});
+		return states;
 	}
 
 	async function getPopupContent(id: string): Promise<HTMLElement> {
@@ -200,7 +213,7 @@
 	//#endregion
 </script>
 
-<div class="container" bind:this={container}>
+<div class="container">
 	<div id="map"></div>
 
 	<div class="top">

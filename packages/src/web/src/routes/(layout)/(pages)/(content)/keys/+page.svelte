@@ -6,7 +6,7 @@
 
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 	import Modal from '$lib/client/components/utils/Modal.svelte';
-	import APIKeyForm from '$lib/client/components/keys/APIKeyForm.svelte';
+	import ApiKeyForm from '$lib/client/components/keys/ApiKeyForm.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
 
@@ -189,7 +189,7 @@
 {/if}
 
 <Modal bind:this={formModal}>
-	<APIKeyForm success={onFromSuccess} id={formId} name={formName} domains={formDomains} />
+	<ApiKeyForm success={onFromSuccess} id={formId} name={formName} domains={formDomains} />
 </Modal>
 
 <style lang="less">

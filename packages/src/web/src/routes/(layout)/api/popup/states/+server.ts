@@ -1,6 +1,6 @@
-import { error, json, text } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 
-import { type MapPopupData } from '@arenarium/maps';
+import { type MapPopupData, type MapPopupState, type MapPopupStatesRequest } from '@arenarium/maps';
 
 import { API_KEY_FREE_KEY, API_URL } from '$env/static/private';
 
@@ -26,7 +26,7 @@ export const POST: RequestHandler = async (event) => {
 	});
 
 	if (!statesResponse.ok || !statesResponse.body) {
-		throw new Error('Failed to get markers');
+		error(500, 'Failed to get popup states');
 	}
 
 	const states: MapPopupState[] = await statesResponse.json();
