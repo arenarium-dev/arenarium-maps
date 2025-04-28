@@ -26,7 +26,7 @@ app.get('/api', (c) => {
 	return c.text('Hello Aranarium Maps API!');
 });
 
-app.post('/:version/popups/states', async (c) => {
+app.post('/:version/popup/states', async (c) => {
 	// Get the data from the request body
 	const body = await c.req.json<Popup.StatesRequest>();
 	if (!body) return c.text('Missing request body', 400);

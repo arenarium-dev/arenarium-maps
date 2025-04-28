@@ -216,7 +216,7 @@
 
 	async function getStatesApi(request: MapPopupStatesRequest): Promise<MapPopupState[]> {
 		const url = PUBLIC_API_URL;
-		const response = await fetch(`${url}/v1/popups/states`, {
+		const response = await fetch(`${url}/v1/popup/states`, {
 			method: 'POST',
 			body: JSON.stringify(request)
 		});
