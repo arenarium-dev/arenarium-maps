@@ -11,8 +11,9 @@
 
 	import { mountMap, type MapBounds, type MapPopup, type MapPopupData, type MapPopupState } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
+	import Toast from '$lib/client/components/Toast.svelte';
 
-	let map = $state<ReturnType<typeof mountMap>>();
+	let map: ReturnType<typeof mountMap>;
 	let loading = $state<boolean>(false);
 
 	onMount(() => {
@@ -33,15 +34,17 @@
 		});
 
 		map.on('popup_click', (id) => {
-			alert(`Popup ${id} clicked`);
+			console.log(`Popup ${id} clicked`);
+			app.toast.set({
+				text: `Popup ${id} clicked.`,
+				severity: 'info',
+				seconds: 2
+			});
 		});
 
-		map.on('loading_start', () => {
-			loading = true;
-		});
-
-		map.on('loading_end', () => {
-			loading = false;
+		map.on('idle', () => {
+			console.log('idle');
+			onMapIdle();
 		});
 	});
 
@@ -128,47 +131,41 @@
 	//#region Source
 
 	let source = $state<string>('Rentals');
+	let sourcePopupData = new Map<string, MapPopupData>();
+
+	let sourceAutoUpdateAsked = false;
+	let sourceAutoUpdate = false;
+
+	function onMapIdle() {
+		const bounds = map.getBounds();
+		processBoundsChange(bounds);
+	}
 
 	async function onSourceSelect(value: string) {
-		await clearData();
-		await addData();
-	}
+		source = value;
+		sourcePopupData.clear();
 
-	async function addData() {
-		if (!map) return;
+		await clearData();
 
 		const bounds = map.getBounds();
-		const data = await getPopupData(bounds);
-		const states = await getPopupStates(data);
-
-		const popups = new Array<MapPopup>();
-		for (let i = 0; i < data.length; i++) {
-			const popup: MapPopup = {
-				data: data[i],
-				state: states[i],
-				contentCallback: getPopupContent
-			};
-			popups.push(popup);
-		}
-
-		const now = performance.now();
-		await map.updatePopups(popups);
-		console.log(`[SET ${data.length}] ${performance.now() - now}ms`);
+		processBoundsChange(bounds);
 	}
-
-	async function clearData() {
-		if (!map) return;
-
-		map.removePopups();
-	}
-
-	//#region Data
 
 	async function getPopupData(bounds: MapBounds): Promise<MapPopupData[]> {
 		const data = await Fetch.that<MapPopupData[]>(
-			`/api/popup/data?total=1000&swlat=${bounds.sw.lat}&swlng=${bounds.sw.lng}&nelat=${bounds.ne.lat}&nelng=${bounds.ne.lng}`
+			`/api/popup/data?total=100&swlat=${bounds.sw.lat}&swlng=${bounds.sw.lng}&nelat=${bounds.ne.lat}&nelng=${bounds.ne.lng}`
 		);
 		return data;
+	}
+
+	function getPopupDataDelta(data: MapPopupData[]) {
+		const newPopupData = new Array<MapPopupData>();
+		for (const d of data) {
+			if (!sourcePopupData.has(d.id)) {
+				newPopupData.push(d);
+			}
+		}
+		return newPopupData;
 	}
 
 	async function getPopupStates(data: MapPopupData[]): Promise<MapPopupState[]> {
@@ -196,7 +193,98 @@
 		});
 	}
 
-	//#endregion
+	async function processPopupData(data: MapPopupData[]) {
+		try {
+			loading = true;
+
+			// Update the loaded data
+			data.forEach((d) => sourcePopupData.set(d.id, d));
+
+			// Get the new states
+			const statePopupData = Array.from(sourcePopupData.values());
+			const states = await getPopupStates(statePopupData);
+
+			// Create the new popups
+			const popups = new Array<MapPopup>();
+			for (let i = 0; i < states.length; i++) {
+				const popup: MapPopup = {
+					data: statePopupData[i],
+					state: states[i],
+					contentCallback: getPopupContent
+				};
+				popups.push(popup);
+			}
+
+			// Update the popups
+			await map.updatePopups(popups);
+
+			if (!sourceAutoUpdateAsked) {
+				sourceAutoUpdateAsked = true;
+
+				app.toast.set({
+					text: 'Enable auto update?',
+					severity: 'info',
+					callback: {
+						name: 'Yes',
+						function: async () => {
+							sourceAutoUpdate = true;
+						}
+					}
+				});
+			}
+		} catch (err) {
+			console.error(err);
+			app.toast.set({
+				text: 'Failed to get popup state.',
+				severity: 'error',
+				seconds: 2
+			});
+		} finally {
+			loading = false;
+		}
+	}
+
+	async function processBoundsChange(bounds: MapBounds) {
+		try {
+			app.toast.set(null);
+			loading = true;
+
+			const data = await getPopupData(bounds);
+			const dataDelta = getPopupDataDelta(data);
+			if (dataDelta.length === 0) return;
+
+			if (sourceAutoUpdate || sourcePopupData.size === 0) {
+				await processPopupData(dataDelta);
+				return;
+			}
+
+			app.toast.set({
+				text: `Update with ${dataDelta.length} new popups?`,
+				severity: 'info',
+				callback: {
+					name: 'Yes',
+					function: async () => {
+						await processPopupData(dataDelta);
+					}
+				}
+			});
+		} catch (err) {
+			console.error(err);
+			app.toast.set({
+				text: 'Failed to process popups.',
+				severity: 'error',
+				seconds: 2
+			});
+		} finally {
+			loading = false;
+		}
+	}
+
+	async function clearData() {
+		if (!map) return;
+
+		map.removePopups();
+	}
 
 	//#endregion
 
@@ -265,10 +353,6 @@
 		</div>
 	{/if}
 </div>
-
-{#if loading}
-	<div class="loading">Loading...</div>
-{/if}
 
 <style lang="less">
 	.container {

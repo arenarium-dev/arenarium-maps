@@ -59,27 +59,18 @@ export type MapStyle = z.infer<typeof mapStyleSchema>;
 export const mapEventType = z.enum(['idle', 'move', 'click', 'popup_click']);
 export const mapEventIdleHandlerSchema = z.function().returns(z.void());
 export const mapEventMoveHandlerSchema = z.function().args(mapPositionSchema).returns(z.void());
-export const mapEventClickHandlerSchema = z.function().returns(z.void());
-export const mapEventPopupClickHandlerSchema = z.function().args(z.string()).returns(z.void());
-export const mapEventLoadingStartHandlerSchema = z.function().returns(z.void());
-export const mapEventLoadingEndHandlerSchema = z.function().returns(z.void());
+export const mapEventClickHandlerSchema = z.function().args(mapCoordinateSchema).returns(z.void());
 
 export interface EventPayloadMap {
 	idle: null;
 	move: MapPosition;
-	click: null;
-	popup_click: string;
-	loading_start: null;
-	loading_end: null;
+	click: MapCoordinate;
 }
 
 export interface EventHandlerMap {
 	idle: MapEventIdleHandler;
 	move: MapEventMoveHandler;
 	click: MapEventClickHandler;
-	popup_click: MapEventPopupClickHandler;
-	loading_start: MapEventLoadingStartHandler;
-	loading_end: MapEventLoadingEndHandler;
 }
 
 export type EventId = keyof EventHandlerMap;
@@ -89,18 +80,12 @@ export const eventHandlerSchemas = {
 	idle: mapEventIdleHandlerSchema,
 	move: mapEventMoveHandlerSchema,
 	click: mapEventClickHandlerSchema,
-	popup_click: mapEventPopupClickHandlerSchema,
-	loading_start: mapEventLoadingStartHandlerSchema,
-	loading_end: mapEventLoadingEndHandlerSchema
 } satisfies { [K in EventId]: z.ZodType<EventHandlerMap[K]> };
 
 export type MapEvent = z.infer<typeof mapEventType>;
 export type MapEventIdleHandler = z.infer<typeof mapEventIdleHandlerSchema>;
 export type MapEventMoveHandler = z.infer<typeof mapEventMoveHandlerSchema>;
 export type MapEventClickHandler = z.infer<typeof mapEventClickHandlerSchema>;
-export type MapEventPopupClickHandler = z.infer<typeof mapEventPopupClickHandlerSchema>;
-export type MapEventLoadingStartHandler = z.infer<typeof mapEventLoadingStartHandlerSchema>;
-export type MapEventLoadingEndHandler = z.infer<typeof mapEventLoadingEndHandlerSchema>;
 
 // Popups
 

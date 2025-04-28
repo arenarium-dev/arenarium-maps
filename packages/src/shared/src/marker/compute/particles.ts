@@ -1,4 +1,4 @@
-import { MARKER_DEFAULT_ANGLE } from '../../constants';
+import { MARKER_DEFAULT_ANGLE } from '../../constants.js';
 
 export namespace Particles {
 	export namespace Angles {

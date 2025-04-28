@@ -23,16 +23,26 @@ export const GET: RequestHandler = async (event) => {
 
 	const data = new Array<MapPopupData>();
 
-	for (let i = 0; i < total; i++) {
+	let randomPrev = 1;
+	const random = () => {
+		const val = (randomPrev * 16807) % 2147483647;
+		randomPrev = val;
+		return val / 2147483647;
+	};
+
+	let count = 0;
+	for (let i = 0; i < coordinates.length; i++) {
+		const rank = Math.floor(random() * total);
 		const lat = coordinates[i % coordinates.length].lat;
 		const lng = coordinates[i % coordinates.length].lng;
-		if (lat < swlat || nelat < lat || lng < swlng || nelng < lng) {
-			continue;
-		}
+		if (lat < swlat || nelat < lat || lng < swlng || nelng < lng) continue;
+
+		count++;
+		if (count > total) break;
 
 		data.push({
 			id: i.toString(),
-			rank: i,
+			rank: rank,
 			lat: lat,
 			lng: lng,
 			height: 100,

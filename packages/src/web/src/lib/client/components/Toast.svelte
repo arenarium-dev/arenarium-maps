@@ -79,9 +79,9 @@
 		cursor: pointer;
 
 		.text {
-			font-size: 14px;
+			font-size: 13px;
 			line-height: 18px;
-			font-weight: bold;
+			font-weight: 600;
 		}
 	}
 
@@ -93,7 +93,7 @@
 		}
 
 		.button {
-			color: var(--primary-container);
+			color: var(--primary);
 		}
 	}
 

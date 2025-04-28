@@ -2,8 +2,8 @@ import { getRectangleOffsets } from '../rectangle.js';
 import { Particles } from './particles.js';
 import { getBoundsZoomWhenTouching, areBoundsOverlaping, type Bounds } from './bounds.js';
 import { getPoint } from '../projection.js';
-import { Popup } from '../../types.js';
 import { MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE, MARKER_PADDING } from '../../constants.js';
+import { type Popup } from '../../types.js';
 
 namespace Nodes {
 	export interface Marker {

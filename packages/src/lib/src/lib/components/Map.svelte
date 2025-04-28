@@ -8,7 +8,7 @@
 	import { darkStyleSpecification, lightStyleSpecification } from '../map/styles.js';
 	import {
 		mapOptionsSchema,
-		mapPopupsSchema,		
+		mapPopupsSchema,
 		type MapCoordinate,
 		type MapBounds,
 		type MapOptions,
@@ -18,7 +18,7 @@
 		eventHandlerSchemas,
 		type EventId,
 		type EventHandler,
-		type EventPayloadMap,
+		type EventPayloadMap
 	} from '../map/input.js';
 
 	import {
@@ -111,11 +111,7 @@
 	}
 
 	function onMapClick(e: maplibregl.MapMouseEvent) {
-		emit('click', null);
-	}
-
-	function onPopupClick(id: string) {
-		emit('popup_click', id);
+		emit('click', { lat: e.lngLat.lat, lng: e.lngLat.lng });
 	}
 
 	// Stores handlers: Map<EventId, Set<Function>>
@@ -556,12 +552,7 @@
 				{#if marker.rendered}
 					<MapMarkerCircle bind:this={marker.circle} />
 					<MapMarker bind:this={marker.component}>
-						<div
-							class="popup"
-							style="width: {marker.width}px; height: {marker.height}px;"
-							onclick={() => onPopupClick(marker.id)}
-							bind:this={marker.contentDiv}
-						></div>
+						<div class="popup" style="width: {marker.width}px; height: {marker.height}px;" bind:this={marker.contentDiv}></div>
 					</MapMarker>
 				{/if}
 			</div>

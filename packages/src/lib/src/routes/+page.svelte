@@ -6,8 +6,6 @@
 	import { mountMap } from '$lib/index.js';
 	import type { MapBounds, MapPopup, MapPopupData, MapPopupState, MapPopupStatesRequest } from '$lib/map/input.js';
 
-	import { PUBLIC_API_KEY_FREE_KEY, PUBLIC_API_URL } from '$env/static/public';
-
 	let map: ReturnType<typeof mountMap>;
 
 	let loading = $state<boolean>(false);
@@ -44,10 +42,6 @@
 
 		map.on('idle', () => {
 			// console.log('idle');
-		});
-
-		map.on('popup_click', (id) => {
-			alert(`Popup ${id} clicked`);
 		});
 	});
 
@@ -115,6 +109,12 @@
 
 	//#region Data
 
+	interface StatesRequest {
+		minZoom: number;
+		maxZoom: number;
+		data: MapPopupData[];
+	}
+
 	let count = 0;
 
 	const total = 1000;
@@ -177,8 +177,7 @@
 			});
 		}
 
-		const getStatesRequest: MapPopupStatesRequest = {
-			apiKey: PUBLIC_API_KEY_FREE_KEY,
+		const getStatesRequest: StatesRequest = {
 			data: data,
 			minZoom: 10,
 			maxZoom: 18
@@ -198,7 +197,7 @@
 		return await new Promise((resolve) => resolve(popups));
 	}
 
-	async function getPopupStates(request: MapPopupStatesRequest): Promise<MapPopupState[]> {
+	async function getPopupStates(request: StatesRequest): Promise<MapPopupState[]> {
 		if (import.meta.env.DEV) {
 			switch (import.meta.env.MODE) {
 				case 'browser': {
@@ -214,9 +213,8 @@
 		}
 	}
 
-	async function getStatesApi(request: MapPopupStatesRequest): Promise<MapPopupState[]> {
-		const url = PUBLIC_API_URL;
-		const response = await fetch(`${url}/v1/popup/states`, {
+	async function getStatesApi(request: StatesRequest): Promise<MapPopupState[]> {
+		const response = await fetch(`/api`, {
 			method: 'POST',
 			body: JSON.stringify(request)
 		});
