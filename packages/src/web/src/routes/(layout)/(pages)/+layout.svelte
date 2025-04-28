@@ -58,7 +58,7 @@
 			height: 60px;
 			display: flex;
 			align-items: center;
-			gap: 12px;
+			gap: 20px;
 			padding: 24px;
 			background-color: var(--surface);
 			box-shadow: 0 3px 4px rgba(0, 0, 0, 0.2);

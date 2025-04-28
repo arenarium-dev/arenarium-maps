@@ -107,7 +107,7 @@ importers:
   packages/src/web:
     dependencies:
       '@arenarium/maps':
-        specifier: ^1.0.56
+        specifier: latest
         version: 1.0.56(svelte@5.28.2)
       '@better-fetch/fetch':
         specifier: ^1.1.18
