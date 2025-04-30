@@ -467,7 +467,7 @@ function getStates(data: Array<Popup.Data>, minZoom: number, maxZoom: number): P
 		Nodes.updateMarkers(nodes, markers, Number(zoom.toFixed(1)));
 	}
 
-	return Array.from(markers.values().map((s) => [s.zet, s.angs]));
+	return Array.from(markers.values()).map((s) => [s.zet, s.angs]);
 }
 
 export { getStates };

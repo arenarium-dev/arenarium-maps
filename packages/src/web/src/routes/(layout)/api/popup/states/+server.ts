@@ -1,34 +1,32 @@
 import { error, json } from '@sveltejs/kit';
 
-import { type MapPopupData, type MapPopupState, type MapPopupStatesRequest } from '@arenarium/maps';
+import { API_KEY_FREE_KEY } from '$env/static/private';
 
-import { API_KEY_FREE_KEY, API_URL } from '$env/static/private';
+import type { Popup } from '@workspace/shared/src/types.js';
 
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async (event) => {
-	const body: {
-		minZoom: number;
-		maxZoom: number;
-		data: MapPopupData[];
-	} = await event.request.json();
+	const requestBody: { data: Popup.Data[]; minZoom: number; maxZoom: number } = await event.request.json();
+	if (!requestBody) return error(400, 'Invalid request body');
 
-	const statesRequestBody: MapPopupStatesRequest = {
+	const statesBody: Popup.StatesRequest = {
 		apiKey: API_KEY_FREE_KEY,
-		data: body.data,
-		minZoom: body.minZoom,
-		maxZoom: body.maxZoom
+		data: requestBody.data,
+		minZoom: requestBody.minZoom,
+		maxZoom: requestBody.maxZoom
 	};
-	const statesUrl = API_URL;
-	const statesResponse = await fetch(`${statesUrl}/v1/popup/states`, {
+
+	const statesResponse = await event.fetch('/api/public/v1/popup/states', {
 		method: 'POST',
-		body: JSON.stringify(statesRequestBody)
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(statesBody)
 	});
 
-	if (!statesResponse.ok || !statesResponse.body) {
-		error(500, 'Failed to get popup states');
-	}
+	if (!statesResponse.ok) return error(500, 'Failed to get states');
 
-	const states: MapPopupState[] = await statesResponse.json();
+	const states: Popup.State[] = await statesResponse.json();
 	return json(states);
 };
