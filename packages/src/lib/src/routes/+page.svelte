@@ -164,9 +164,9 @@
 		for (let i = 0; i < count; i++) {
 			const lat = lats[i];
 			const lng = lngs[i];
+			const rank = ranks[i];
 			if (lat < bounds.sw.lat || bounds.ne.lat < lat || lng < bounds.sw.lng || bounds.ne.lng < lng) continue;
 
-			const rank = ranks[i];
 			data.push({
 				id: i.toString() + '-' + rank.toString(),
 				rank: rank,

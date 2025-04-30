@@ -516,6 +516,7 @@
 			const marker = mapMarkerArray[i];
 			marker.libreMarker?.remove();
 		}
+		
 		mapMarkerArray.length = 0;
 		mapMarkerMap.clear();
 	}
