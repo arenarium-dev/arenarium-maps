@@ -17,6 +17,10 @@
 		collapsed = value;
 	}
 
+	export function getCollapsed() {
+		return collapsed;
+	}
+
 	export function setDisplayed(value: boolean) {
 		hidden = !value;
 	}

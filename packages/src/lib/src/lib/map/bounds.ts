@@ -1,6 +1,6 @@
 import maplibregl from 'maplibre-gl';
 
-export class BoundsPair {
+export class MapBoundsPair {
 	private bounds1: maplibregl.LngLatBounds;
 	private bounds2: maplibregl.LngLatBounds;
 

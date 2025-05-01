@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { onMount, tick } from 'svelte';
+	import { onMount } from 'svelte';
 
 	import MapMarker from './marker/Marker.svelte';
 	import MapMarkerCircle from './marker/Circle.svelte';
 
-	import { BoundsPair } from '../map/bounds.js';
+	import { MapBoundsPair } from '../map/bounds.js';
 	import { darkStyleSpecification, lightStyleSpecification } from '../map/styles.js';
 	import {
 		mapOptionsSchema,
@@ -43,7 +43,9 @@
 	let mapMaxBounds: MapBounds | undefined;
 
 	let mapWidth = $state<number>(0);
+	let mapHeight = $state<number>(0);
 	let mapLoaded = $state<boolean>(false);
+	let mapBounds = $state<MapBounds>();
 
 	onMount(() => {
 		mapOptionsSchema.parse(options);
@@ -63,9 +65,7 @@
 			zoom: options.position.zoom,
 			minZoom: getViewportMinZoom(mapMinZoom),
 			maxZoom: mapMaxZoom,
-			maxBounds: mapMaxBounds
-				? [mapMaxBounds.sw.lng, mapMaxBounds.sw.lat, mapMaxBounds.ne.lng, mapMaxBounds.ne.lat]
-				: undefined,
+			maxBounds: mapMaxBounds ? [mapMaxBounds.sw.lng, mapMaxBounds.sw.lat, mapMaxBounds.ne.lng, mapMaxBounds.ne.lat] : undefined,
 			container: mapContainer,
 			pitchWithRotate: false,
 			attributionControl: {
@@ -104,10 +104,22 @@
 		const center = map.getCenter();
 		const zoom = map.getZoom();
 		emit('move', { center: center, zoom: zoom });
+
+		const bounds = map.getBounds();
+		mapBounds = {
+			sw: { lat: bounds.getSouthWest().lat, lng: bounds.getSouthWest().lng },
+			ne: { lat: bounds.getNorthEast().lat, lng: bounds.getNorthEast().lng }
+		};
 	}
 
 	function onMapIdle() {
 		emit('idle', null);
+
+		const bounds = map.getBounds();
+		mapBounds = {
+			sw: { lat: bounds.getSouthWest().lat, lng: bounds.getSouthWest().lng },
+			ne: { lat: bounds.getNorthEast().lat, lng: bounds.getNorthEast().lng }
+		};
 	}
 
 	function onMapClick(e: maplibregl.MapMouseEvent) {
@@ -267,7 +279,7 @@
 
 	//#region Data
 
-	class MarkerData {
+	export class MapMarkerData {
 		id: string;
 		rank: number;
 		lat: number;
@@ -277,17 +289,17 @@
 		zoom: number;
 		angles: [number, number][];
 
-		libreMarker: maplibregl.Marker | undefined;
 		element = $state<HTMLElement>();
+		libreMarker: maplibregl.Marker | undefined;
+
 		rendered = $state<boolean>(false);
+		component = $state<ReturnType<typeof MapMarker>>();
+		circle = $state<ReturnType<typeof MapMarkerCircle>>();
 
 		content = $state<HTMLElement>();
 		contentDiv = $state<HTMLElement>();
 		contentLoading = false;
 		contentCallback: MapPopupContentCallback;
-
-		component = $state<ReturnType<typeof MapMarker>>();
-		circle = $state<ReturnType<typeof MapMarkerCircle>>();
 
 		constructor(popup: MapPopup) {
 			this.id = popup.data.id;
@@ -299,17 +311,88 @@
 			this.zoom = popup.state[0];
 			this.angles = popup.state[1];
 
-			this.libreMarker = undefined;
 			this.element = undefined;
+			this.libreMarker = undefined;
+
 			this.rendered = false;
+			this.component = undefined;
+			this.circle = undefined;
 
 			this.content = undefined;
 			this.contentDiv = undefined;
 			this.contentLoading = false;
 			this.contentCallback = popup.contentCallback;
+		}
 
-			this.component = undefined;
-			this.circle = undefined;
+		createLibreMarker() {
+			const element = this.element;
+			if (!element) throw new Error('Failed to create libre marker');
+
+			// Create new libre marker
+			const mapLibreMarker = new maplibregl.Marker({ element });
+			mapLibreMarker.setLngLat([this.lng, this.lat]);
+
+			this.libreMarker = mapLibreMarker;
+			this.updateZIndex();
+		}
+
+		updateZIndex() {
+			const element = this.element;
+			if (!element) throw new Error('Failed to update zIndex');
+
+			const zIndex = Math.round((MAP_MAX_ZOOM - this.zoom) * MAP_ZOOM_SCALE);
+			element.style.zIndex = zIndex.toString();
+		}
+
+		updateMap(map: maplibregl.Map | null) {
+			if (!this.libreMarker) throw new Error('Failed to update map');
+
+			if (this.libreMarker._map != map) {
+				if (map) {
+					this.libreMarker.addTo(map);
+					this.component?.setDisplayed(true);
+				} else {
+					this.libreMarker.remove();
+					this.component?.setDisplayed(false);
+				}
+			}
+		}
+
+		updateState(zoom: number) {
+			const component = this.component;
+			const circle = this.circle;
+			if (!component || !circle) throw new Error('Failed to update state');
+
+			// Set marker collapse status angle
+			// or set circle distance
+			if (this.zoom <= zoom) {
+				circle.setCollapsed(true);
+
+				component.setCollapsed(false);
+				component.setAngle(this.getAngle(zoom));
+			} else {
+				component.setCollapsed(true);
+
+				circle.setCollapsed(false);
+				circle.setDistance(this.getDistance(zoom));
+			}
+		}
+
+		updateContent() {
+			if (this.contentLoading) return;
+
+			this.contentLoading = true;
+			this.contentCallback(this.id).then((content) => {
+				if (this.contentDiv == undefined) return;
+				this.contentDiv.appendChild(content);
+
+				this.content = content;
+				this.contentLoading = false;
+			});
+		}
+
+		isInBlock(zoom: number, bounds: MapBoundsPair) {
+			return this.zoom <= zoom && bounds.contains(this.lat, this.lng);
 		}
 
 		getAngle(zoom: number) {
@@ -330,19 +413,20 @@
 			return (this.zoom - zoom) / MAP_VISIBLE_ZOOM_DEPTH;
 		}
 
-		updateZIndex() {
-			const element = this.libreMarker?.getElement();
-			if (!element) throw new Error('Failed to update zIndex');
-
-			const zIndex = Math.round((MAP_MAX_ZOOM - this.zoom) * MAP_ZOOM_SCALE);
-			element.style.zIndex = zIndex.toString();
+		getExpanded() {
+			if (!this.component) return false;
+			return this.component.getCollapsed() == false;
 		}
 	}
 
 	let mapMarkerIntervalId: number | undefined;
 
-	let mapMarkerArray = $state(new Array<MarkerData>());
-	let mapMarkerMap = $state(new Map<string, MarkerData>());
+	let mapMarkerArray = $state(new Array<MapMarkerData>());
+	let mapMarkerMap = $state(new Map<string, MapMarkerData>());
+
+	let offset = MAP_BASE_SIZE;
+	let mapOffsetBounds = $derived(mapBounds ? new MapBoundsPair(map!, -offset, mapHeight + offset, mapWidth + offset, -offset) : undefined);
+	let mapWindowBounds = $derived(mapBounds ? new MapBoundsPair(map!, 0, mapHeight, mapWidth, 0) : undefined);
 
 	onMount(() => {
 		const markersLoop = () => {
@@ -352,117 +436,80 @@
 
 		markersLoop();
 
-		return () => {
-			clearInterval(mapMarkerIntervalId);
-		};
+		return () => clearInterval(mapMarkerIntervalId);
 	});
 
 	function processMarkers() {
 		// Check if map is loaded or marker data is empty
 		if (mapLoaded == false) return;
 		if (mapMarkerArray.length == 0) return;
+		if (mapOffsetBounds == undefined) return;
+		if (mapWindowBounds == undefined) return;
 
 		// Get map zoom
 		const zoom = map.getZoom();
 		if (!zoom) return;
 
-		// Get markers on map
-		const markerDataOnMap = new Array<MarkerData>();
+		// Get/Create markers on map
+		const markersWithElements = new Array<MapMarkerData>();
 
-		const offset = MAP_BASE_SIZE;
-		const offsetBounds = new BoundsPair(map, -offset, window.innerHeight + offset, window.innerWidth + offset, -offset);
-		const windowBounds = new BoundsPair(map, 0, window.innerHeight, window.innerWidth, 0);
-
-		for (let i = 0; i < mapMarkerArray.length; i++) {
-			const marker = mapMarkerArray[i];
-			const libreMarker = marker.libreMarker;
-			if (!libreMarker) continue;
-
-			// Expanded markers (offset bounds)
-			if (marker.zoom <= zoom) {
-				if (offsetBounds.contains(marker.lat, marker.lng)) {
-					if (libreMarker._map != map) libreMarker.addTo(map);
-					markerDataOnMap.push(marker);
-					continue;
-				}
+		for (const marker of mapMarkerArray) {
+			// Check if libre marker exists (marker is on map)
+			if (marker.libreMarker) {
+				markersWithElements.push(marker);
 			}
-
-			// Visible markers (window bounds)
-			if (marker.zoom <= zoom + MAP_VISIBLE_ZOOM_DEPTH) {
-				if (windowBounds.contains(marker.lat, marker.lng)) {
-					if (libreMarker._map != map) libreMarker.addTo(map);
-					markerDataOnMap.push(marker);
-					continue;
-				}
+			// Check if element rendered
+			else if (marker.element) {
+				// Create new libre marker
+				marker.createLibreMarker();
+				markersWithElements.push(marker);
 			}
-
-			// Clear map for rest of markers
-			if (libreMarker._map != null) libreMarker.remove();
 		}
 
-		// Process markers on map
-		for (let i = 0; i < markerDataOnMap.length; i++) {
-			const marker = markerDataOnMap[i];
+		// Get markers inside visible bounds
+		const markersInBounds = new Array<MapMarkerData>();
+		const mapOffsetZoom = zoom;
+		const mapWindowZoom = zoom + MAP_VISIBLE_ZOOM_DEPTH;
 
-			// Set circle rendered to true if not set
-			if (!marker.rendered) {
-				marker.rendered = true;
-			}
-
-			// Skip if circle or component not rendered
-			const component = marker.component;
-			const circle = marker.circle;
-			if (!circle || !component) continue;
-
-			// Set marker display status
-			if (marker.zoom <= zoom + MAP_DISPLAYED_ZOOM_DEPTH) {
-				component.setDisplayed(true);
+		for (const marker of markersWithElements) {
+			// Check if marker is in offset or window bounds
+			if (marker.isInBlock(mapOffsetZoom, mapOffsetBounds) || marker.isInBlock(mapWindowZoom, mapWindowBounds)) {
+				marker.updateMap(map);
+				markersInBounds.push(marker);
 			} else {
-				component.setDisplayed(false);
+				marker.updateMap(null);
 			}
+		}
 
-			// Set marker collapse status angle
-			// or set circle distance
-			if (marker.zoom <= zoom) {
-				circle.setCollapsed(true);
+		// Get displayed markers inside bounds
+		const markersExpanded = new Array<MapMarkerData>();
 
-				component.setCollapsed(false);
-				component.setAngle(marker.getAngle(zoom));
-			} else {
-				component.setCollapsed(true);
+		for (const marker of markersInBounds) {
+			// Set marker rendered flag to true if not
+			marker.rendered = true;
+			// Check if marker components are rendered
+			if (!marker.component || !marker.circle) continue;
 
-				circle?.setCollapsed(false);
-				circle?.setDistance(marker.getDistance(zoom));
-			}
+			// Update marker state
+			marker.updateState(zoom);
+			// Add marker if expanded
+			if (marker.getExpanded()) markersExpanded.push(marker);
+		}
 
+		// Process markers that are displayed
+		for (const marker of markersExpanded) {
 			// Skip if content div not rendered
-			const contentDiv = marker.contentDiv;
-			if (!contentDiv) continue;
-
+			if (marker.contentDiv == undefined) continue;
+			// Check if content is already loaded or loading
+			if (marker.content != undefined || marker.contentLoading) continue;
 			// Start load popup content if not loaded
-			if (marker.content == undefined && marker.contentLoading == false) {
-				marker.contentLoading = true;
-				marker.contentCallback(marker.id).then((content) => {
-					marker.content = content;
-					marker.contentLoading = false;
-				});
-			}
-
-			// Skip in content not loaded
-			const content = marker.content;
-			if (!content) continue;
-
-			// Set popup content if null
-			const element = contentDiv.firstElementChild;
-			if (element == null) {
-				contentDiv.appendChild(content);
-			}
+			marker.updateContent();
 		}
 	}
 
 	async function updateMarkers(newPopups: MapPopup[]) {
-		const newPopupsMap = new Map(newPopups.map((m) => [m.data.id, new MarkerData(m)]));
-		const newMarkerArray = new Array<MarkerData>();
+		const newPopupsMap = new Map(newPopups.map((m) => [m.data.id, new MapMarkerData(m)]));
+		const newMarkerArray = new Array<MapMarkerData>();
 
 		// Remove old markers
 		const oldMarkerArray = Array.from(mapMarkerArray);
@@ -487,27 +534,11 @@
 				oldMarker.updateZIndex();
 			} else {
 				// Create marker data
-				const newMarker = new MarkerData(newPopup);
+				const newMarker = new MapMarkerData(newPopup);
 				mapMarkerMap.set(newPopup.data.id, newMarker);
 				mapMarkerArray.push(newMarker);
 				newMarkerArray.push(newMarker);
 			}
-		}
-
-		// Wait for new markers content to be rendered
-		await tick();
-
-		// Add new libre markers
-		for (const newMarker of newMarkerArray) {
-			const element = newMarker.element;
-			if (!element) throw new Error('Failed to render marker element.');
-
-			// Create new libre marker
-			const mapLibreMarker = new maplibregl.Marker({ element });
-			mapLibreMarker.setLngLat([newMarker.lng, newMarker.lat]);
-
-			newMarker.libreMarker = mapLibreMarker;
-			newMarker.updateZIndex();
 		}
 	}
 
@@ -516,7 +547,7 @@
 			const marker = mapMarkerArray[i];
 			marker.libreMarker?.remove();
 		}
-		
+
 		mapMarkerArray.length = 0;
 		mapMarkerMap.clear();
 	}
@@ -541,11 +572,8 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div
-	class="container"
-	style="--primary: {style.colors.primary}; --background: {style.colors.background}; --text: {style.colors.text};"
->
-	<div class="map" bind:this={mapContainer}></div>
+<div class="container" style="--primary: {style.colors.primary}; --background: {style.colors.background}; --text: {style.colors.text};">
+	<div class="map" bind:this={mapContainer} bind:clientWidth={mapWidth} bind:clientHeight={mapHeight}></div>
 	<div class="logo"><a href="https://arenarium.dev" target="_blank">@arenarium/maps</a></div>
 	<div class="markers">
 		{#each mapMarkerArray as marker (marker.id)}

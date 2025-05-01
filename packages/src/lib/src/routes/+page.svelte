@@ -228,6 +228,7 @@
 	}
 
 	async function getPopupContent(id: string): Promise<HTMLElement> {
+		await new Promise((res) => setTimeout(res, 1000));
 		return await new Promise((resolve) => {
 			const element = document.createElement('div');
 			element.style.width = '200px';
