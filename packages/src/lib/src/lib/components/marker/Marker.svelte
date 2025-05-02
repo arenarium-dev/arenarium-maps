@@ -11,7 +11,7 @@
 	//#region State
 
 	let collapsed = $state<boolean>(true);
-	let hidden = $state<boolean>(false);
+	let displayed = $state<boolean>(false);
 
 	export function setCollapsed(value: boolean) {
 		collapsed = value;
@@ -22,11 +22,11 @@
 	}
 
 	export function setDisplayed(value: boolean) {
-		hidden = !value;
+		displayed = value;
 	}
 
 	export function getDisplayed() {
-		return !hidden;
+		return displayed;
 	}
 
 	//#endregion
@@ -42,7 +42,7 @@
 	let angleDefined = false;
 
 	$effect(() => {
-		if (hidden) {
+		if (displayed == false) {
 			angleTween.set(angle, { duration: 0 });
 			angleValue = angle;
 			updateStyle(angleValue);
@@ -134,15 +134,9 @@
 	//#endregion
 </script>
 
-<div class="anchor" class:collapsed class:hidden bind:this={anchor}>
+<div class="anchor" class:collapsed class:hidden={!displayed} bind:this={anchor}>
 	<div class="pin" bind:this={pin}></div>
-	<div
-		class="marker"
-		style:padding={MARKER_PADDING + 'px'}
-		bind:this={marker}
-		bind:clientWidth={markerWidth}
-		bind:clientHeight={markerHeight}
-	>
+	<div class="marker" style:padding={MARKER_PADDING + 'px'} bind:this={marker} bind:clientWidth={markerWidth} bind:clientHeight={markerHeight}>
 		<div class="popup">
 			{@render children()}
 		</div>

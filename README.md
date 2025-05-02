@@ -1,6 +1,6 @@
 TODO:
 
-Make map timer be in charge of removing the markers by colaping,
-so that the popup update is smoother
+Add separate libre makers for circle and marker because of zindex
+Set marker displaed false when out of bounds
 
 Add a test for thresholds output
