@@ -1,12 +1,14 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { mount, onMount, tick } from 'svelte';
 
 	import Icon from './components/Icon.svelte';
+	import Popup from './components/Popup.svelte';
 
 	import { mountMap } from '$lib/index.js';
 	import type { MapBounds, MapPopup, MapPopupData, MapPopupState, MapPopupStatesRequest } from '$lib/map/input.js';
 
 	let map: ReturnType<typeof mountMap>;
+	let mapPopups = new Map<string, MapPopup>();
 
 	let loading = $state<boolean>(false);
 	let zoom = $state<number>(0);
@@ -87,6 +89,9 @@
 		const bounds = map.getBounds();
 		const popups = await getPopups(bounds);
 
+		popups.forEach((popup) => mapPopups.set(popup.data.id, popup));
+		await tick();
+
 		const now = performance.now();
 		await map.updatePopups(popups);
 		console.log(`[SET ${popups.length}] ${performance.now() - now}ms`);
@@ -94,6 +99,7 @@
 
 	async function clearData() {
 		count = 0;
+		mapPopups.clear();
 		map.removePopups();
 	}
 
@@ -168,7 +174,7 @@
 			if (lat < bounds.sw.lat || bounds.ne.lat < lat || lng < bounds.sw.lng || bounds.ne.lng < lng) continue;
 
 			data.push({
-				id: i.toString() + '-' + rank.toString(),
+				id: 'popup-' + i.toString() + '-' + rank.toString(),
 				rank: rank,
 				lat: lat,
 				lng: lng,
@@ -228,14 +234,15 @@
 	}
 
 	async function getPopupContent(id: string): Promise<HTMLElement> {
-		await new Promise((res) => setTimeout(res, 1000));
 		return await new Promise((resolve) => {
+			const popup = mapPopups.get(id);
+			if (popup == undefined) throw new Error('Failed to get popup');
+
 			const element = document.createElement('div');
-			element.style.width = '200px';
-			element.style.height = '150px';
-			element.style.color = 'red';
-			element.style.padding = '8px';
-			element.innerText = id;
+			mount(Popup, { target: element, props: { id: id, popup: popup } });
+
+			element.style.width = popup.data.width + 'px';
+			element.style.height = popup.data.height + 'px';
 			resolve(element);
 		});
 	}
