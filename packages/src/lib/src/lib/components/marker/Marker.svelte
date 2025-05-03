@@ -8,18 +8,13 @@
 
 	let { children }: { children: Snippet } = $props();
 
-	//#region State
+	let anchor: HTMLElement;
+	let marker: HTMLElement;
+	let pin: HTMLElement;
 
-	let collapsed = $state<boolean>(true);
-	let displayed = $state<boolean>(false);
+	//#region Displayed
 
-	export function setCollapsed(value: boolean) {
-		collapsed = value;
-	}
-
-	export function getCollapsed() {
-		return collapsed;
-	}
+	let displayed = $state<boolean>(true);
 
 	export function setDisplayed(value: boolean) {
 		displayed = value;
@@ -27,6 +22,35 @@
 
 	export function getDisplayed() {
 		return displayed;
+	}
+
+	//#endregion
+
+	//#region Collapse
+
+	let scale = 0;
+	let scaleValue = 0;
+	let scaleTween = new Tween(0, { easing: sineInOut });
+
+	$effect(() => {
+		scaleValue = scaleTween.current;
+	});
+
+	export function setCollapsed(value: boolean) {
+		const scaleSet = value ? 0 : 1;
+		if (scale == scaleSet) return;
+
+		scale = scaleSet;
+		scaleTween.set(scale, { duration: 200 });
+		window.requestAnimationFrame(styleStep);
+	}
+
+	export function getCollapsed() {
+		return scale == 0;
+	}
+
+	export function getExpanded() {
+		return scale > 0;
 	}
 
 	//#endregion
@@ -42,14 +66,6 @@
 	let angleDefined = false;
 
 	$effect(() => {
-		if (displayed == false) {
-			angleTween.set(angle, { duration: 0 });
-			angleValue = angle;
-			updateStyle(angleValue);
-		}
-	});
-
-	$effect(() => {
 		angleValue = angleTween.current;
 	});
 
@@ -63,23 +79,16 @@
 		}
 	}
 
-	function angleStep() {
-		if (angle != angleValue) {
-			updateStyle(angleValue);
-			window.requestAnimationFrame(angleStep);
-		}
-	}
-
 	export function setAngle(value: number) {
 		if (value != angle) {
 			angle = value;
 			if (angleDefined) {
 				angleTween.set(value, { duration: 400 });
-				window.requestAnimationFrame(angleStep);
+				window.requestAnimationFrame(styleStep);
 			} else {
 				angleTween.set(value, { duration: 0 });
 				angleValue = value;
-				updateStyle(angleValue);
+				styleStep();
 			}
 		}
 
@@ -88,14 +97,54 @@
 
 	//#endregion
 
+	//#region Style
+
+	$effect(() => {
+		if (displayed == false) {
+			scaleTween.set(scale, { duration: 0 });
+			scaleValue = scale;
+
+			angleTween.set(angle, { duration: 0 });
+			angleValue = angle;
+
+			updateStyle(angleValue, scaleValue);
+		}
+	});
+
+	function styleStep() {
+		if (angle != angleValue || scale != scaleValue) {
+			updateStyle(angleValue, scaleValue);
+			window.requestAnimationFrame(styleStep);
+		}
+	}
+
+	function updateStyle(angle: number, scale: number) {
+		if (!anchor || !marker || !pin) return;
+
+		const params = getPositionParams(markerWidth, markerHeight, angle);
+
+		const markerOffsetX = Math.round(params.markerOffsetX);
+		const markerOffsetY = Math.round(params.markerOffsetY);
+		marker.style.transform = `translate(${markerOffsetX}px, ${markerOffsetY}px)`;
+		marker.style.scale = `${scale}`;
+
+		const pinAngleDeg = params.pinAngleDeg;
+		const pinSkewDeg = params.pinSkewDeg;
+		pin.style.transform = `rotate(${pinAngleDeg}deg) skew(${pinSkewDeg}deg, ${pinSkewDeg}deg)`;
+		pin.style.scale = `${scale}`;
+
+		const shadowX = -1 - 2 * (markerOffsetX / markerWidth);
+		const shadowY = -1 - 2 * (markerOffsetY / markerHeight);
+		anchor.style.filter = `drop-shadow(0px 0px 4px rgba(0,0,0,0.4)) drop-shadow(${shadowX}px ${shadowY}px 2px rgba(0,0,0,0.4))`;
+		anchor.style.opacity = `${scale}`;
+	}
+
+	//#endregion
+
 	//#region Position
 
 	let markerWidth = $state<number>(0);
 	let markerHeight = $state<number>(0);
-
-	let anchor: HTMLElement;
-	let marker: HTMLElement;
-	let pin: HTMLElement;
 
 	$effect(() => {
 		if (markerWidth && markerHeight) {
@@ -106,27 +155,9 @@
 
 	$effect(() => {
 		if (markerWidth && markerHeight) {
-			updateStyle(angleValue);
+			updateStyle(angleValue, scaleValue);
 		}
 	});
-
-	function updateStyle(markerAngle: number) {
-		if (!anchor || !marker || !pin) return;
-
-		const params = getPositionParams(markerWidth, markerHeight, markerAngle);
-
-		const markerOffsetX = Math.round(params.markerOffsetX);
-		const markerOffsetY = Math.round(params.markerOffsetY);
-		marker.style.transform = `translate(${markerOffsetX}px, ${markerOffsetY}px)`;
-
-		const pinAngleDeg = params.pinAngleDeg;
-		const pinSkewDeg = params.pinSkewDeg;
-		pin.style.transform = `rotate(${pinAngleDeg}deg) skew(${pinSkewDeg}deg, ${pinSkewDeg}deg)`;
-
-		const shadowX = -1 - 2 * (markerOffsetX / markerWidth);
-		const shadowY = -1 - 2 * (markerOffsetY / markerHeight);
-		anchor.style.filter = ` drop-shadow(0px 0px 4px rgba(0,0,0,0.4)) drop-shadow(${shadowX}px ${shadowY}px 2px rgba(0,0,0,0.4))`;
-	}
 
 	export const getWidth = () => markerWidth;
 	export const getHeight = () => markerHeight;
@@ -134,7 +165,7 @@
 	//#endregion
 </script>
 
-<div class="anchor" class:collapsed class:hidden={!displayed} bind:this={anchor}>
+<div class="anchor" class:hidden={!displayed} bind:this={anchor}>
 	<div class="pin" bind:this={pin}></div>
 	<div class="marker" style:padding={MARKER_PADDING + 'px'} bind:this={marker} bind:clientWidth={markerWidth} bind:clientHeight={markerHeight}>
 		<div class="popup">
@@ -185,55 +216,21 @@
 	}
 
 	/* Transition properties */
-	@transition-duration: 250ms;
-	@transition-timing-function: cubic-bezier(0.75, 0, 0.25, 1);
-
 	.anchor {
-		transition-duration: @transition-duration;
-		transition-timing-function: @transition-timing-function;
 		transition-property: opacity;
 		will-change: opacity;
 
 		.marker {
 			transform-origin: 0% 0%;
 			transform-style: preserve-3d;
-			transition-duration: @transition-duration;
-			transition-timing-function: @transition-timing-function;
 			transition-property: scale;
 			will-change: transform, scale;
 		}
 
 		.pin {
 			transform-origin: 0% 0%;
-			transition-duration: @transition-duration;
-			transition-timing-function: @transition-timing-function;
 			transition-property: scale;
 			will-change: transform, scale;
-		}
-	}
-
-	/* Collapsed properties */
-	.anchor {
-		opacity: 1;
-
-		.marker {
-			scale: 1;
-		}
-
-		.pin {
-			scale: 1;
-		}
-	}
-
-	.anchor.collapsed {
-		opacity: 0;
-
-		.marker {
-			scale: 0;
-		}
-
-		.pin {
-			scale: 0;
 		}
 	}
 

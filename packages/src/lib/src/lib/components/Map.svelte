@@ -395,12 +395,13 @@
 			const circle = this.circleComponent;
 			if (!circle) throw new Error('Failed to update circle state');
 
-			// Set circle collapse status and distance
+			// Set circle scale
 			if (this.zoom <= zoom) {
-				circle.setCollapsed(true);
+				circle.setScale(0);
 			} else {
-				circle.setCollapsed(false);
-				circle.setDistance(this.getDistance(zoom));
+				const distance = (this.zoom - zoom) / MAP_VISIBLE_ZOOM_DEPTH;
+				const scale = 1 - distance * 0.5;
+				circle.setScale(scale);
 			}
 		}
 
@@ -457,9 +458,14 @@
 			return (this.zoom - zoom) / MAP_VISIBLE_ZOOM_DEPTH;
 		}
 
-		getExpanded() {
+		getMarkerExpanded() {
 			if (!this.markerComponent) return false;
-			return this.markerComponent.getCollapsed() == false;
+			return this.markerComponent.getExpanded();
+		}
+
+		getMarkerCollapsed() {
+			if (!this.markerComponent) return false;
+			return this.markerComponent.getCollapsed();
 		}
 	}
 
@@ -506,15 +512,15 @@
 
 		// Check if circle is in bounds
 		if (data.isInBlock(zoom + MAP_VISIBLE_ZOOM_DEPTH, bounds)) {
+			// Check if circle exist on map
 			if (data.circleLibreMarker == undefined) {
+				// Create circle
 				data.createCircleLibreMarker();
 			}
 
+			// Update circle map and state
 			data.updateCircleMap(map);
-
-			if (data.circleComponent != undefined) {
-				data.updateCircleState(zoom);
-			}
+			data.updateCircleState(zoom);
 		} else {
 			if (data.circleLibreMarker != undefined) {
 				data.updateCircleMap(null);
@@ -527,22 +533,29 @@
 
 		// Check if marker is in bounds
 		if (data.isInBlock(zoom + MAP_DISPLAYED_ZOOM_DEPTH, bounds)) {
+			// Check if marker exist on map
 			if (data.markerLibreMarker == undefined) {
+				// Create marker
 				data.createMarkerLibreMarker();
 			}
 
+			// Update marker map and state
 			data.updateMarkerMap(map);
+			data.updateMarkerState(zoom);
 
-			if (data.markerComponent != undefined) {
-				data.updateMarkerState(zoom);
-
-				if (data.markerComponent.getCollapsed() == false) {
-					data.updateMarkerContent();
-				}
+			// If marker is expanded, update content
+			if (data.getMarkerExpanded()) {
+				data.updateMarkerContent();
 			}
 		} else {
+			// Check if marker exist on map
 			if (data.markerLibreMarker != undefined) {
-				data.updateMarkerMap(null);
+				// Wait until marker is collapsed before removing it
+				if (data.getMarkerCollapsed()) {
+					data.updateMarkerMap(null);
+				} else {
+					data.updateMarkerState(zoom);
+				}
 			}
 		}
 	}

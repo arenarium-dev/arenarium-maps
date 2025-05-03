@@ -1,22 +1,45 @@
 <script lang="ts">
-	let collapsed = $state<boolean | undefined>(true);
-	let distance = $state<number>(0);
+	import { sineInOut } from 'svelte/easing';
+	import { Tween } from 'svelte/motion';
 
-	let size = $derived(1 - 0.5 * distance);
-	let transform = $derived(collapsed ? '' : `scale(${size})`);
-	let filter = $derived(collapsed ? '' : `grayscale(${0.5 * distance})`);
-	let pulsing = $derived(collapsed ? '' : distance > 0 ? '' : 'pulsing');
+	let circle: HTMLElement;
 
-	export function setCollapsed(value: boolean) {
-		collapsed = value;
+	let scale = 0;
+	let scaleValue = 0;
+	let scaleTween = new Tween(0, { easing: sineInOut });
+
+	$effect(() => {
+		scaleValue = scaleTween.current;
+	});
+
+	$effect(() => {
+		updateStyle(scaleValue);
+	});
+
+	function styleStep() {
+		if (scale != scaleValue) {
+			updateStyle(scaleValue);
+			window.requestAnimationFrame(styleStep);
+		}
 	}
 
-	export function setDistance(value: number) {
-		distance = Math.max(0, Math.min(1, value));
+	function updateStyle(scale: number) {
+		circle.style.scale = `${scale}`;
+		circle.style.filter = `brightness(${0.4 + 0.6 * scale})`;
 	}
+
+	export function setScale(value: number) {
+		if (scale == value) return;
+
+		scale = value;
+		scaleTween.set(scale, { duration: 200 });
+		window.requestAnimationFrame(styleStep);
+	}
+
+	//#endregion
 </script>
 
-<div class="circle" class:collapsed class:pulsing style:transform style:filter></div>
+<div class="circle" bind:this={circle}></div>
 
 <style lang="less">
 	@background: var(--background);
@@ -34,36 +57,8 @@
 		border-radius: 50%;
 		background-color: @base;
 		transform-origin: 50% 50%;
-		transition-duration: 325ms;
-		transition-timing-function: cubic-bezier(0.75, 0, 0.25, 1);
-		transition-property: scale;
-		scale: 1;
+		transition-property: scale, filter;
 		box-sizing: border-box;
 		box-shadow: 0 2px 2px rgba(0, 0, 0, 0.5);
-	}
-
-	.circle.collapsed {
-		scale: 0;
-	}
-
-	.circle.pulsing {
-		animation: pulse 1s infinite ease-in;
-	}
-
-	@keyframes pulse {
-		0% {
-			transform: scale(1);
-			filter: brightness(1);
-		}
-
-		50% {
-			transform: scale(1.25);
-			filter: brightness(1.5);
-		}
-
-		100% {
-			transform: scale(1);
-			filter: brightness(1);
-		}
 	}
 </style>
