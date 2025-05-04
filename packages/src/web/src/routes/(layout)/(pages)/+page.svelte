@@ -192,8 +192,8 @@
 	async function getPopupContent(id: string): Promise<HTMLElement> {
 		return await new Promise((resolve) => {
 			const element = document.createElement('div');
-			element.style.width = '200px';
-			element.style.height = '150px';
+			element.style.width = '150px';
+			element.style.height = '100px';
 			element.style.color = 'red';
 			element.style.padding = '8px';
 			element.innerText = id;

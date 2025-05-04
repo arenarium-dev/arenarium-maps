@@ -79,7 +79,7 @@ export type EventHandler<E extends EventId> = (payload: EventPayloadMap[E]) => v
 export const eventHandlerSchemas = {
 	idle: mapEventIdleHandlerSchema,
 	move: mapEventMoveHandlerSchema,
-	click: mapEventClickHandlerSchema,
+	click: mapEventClickHandlerSchema
 } satisfies { [K in EventId]: z.ZodType<EventHandlerMap[K]> };
 
 export type MapEvent = z.infer<typeof mapEventType>;

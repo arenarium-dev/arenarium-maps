@@ -1,6 +1,4 @@
 TODO:
 
-Add separate libre makers for circle and marker because of zindex
-Set marker displaed false when out of bounds
-
+Add circle and loading content callback
 Add a test for thresholds output
