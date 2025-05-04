@@ -1,16 +1,18 @@
 <script lang="ts">
 	import { Tween } from 'svelte/motion';
 	import { sineInOut } from 'svelte/easing';
-	import { type Snippet } from 'svelte';
 
 	import { getPositionParams } from '@workspace/shared/src/marker/position.js';
 	import { MARKER_DEFAULT_ANGLE, MARKER_PADDING } from '@workspace/shared/src/constants.js';
 
-	let { children }: { children: Snippet } = $props();
+	let { width, height }: { width: number; height: number } = $props();
 
 	let anchor: HTMLElement;
 	let marker: HTMLElement;
 	let pin: HTMLElement;
+	let popup: HTMLElement;
+
+	export const getPopup = () => popup;
 
 	//#region Displayed
 
@@ -168,9 +170,7 @@
 <div class="anchor" class:hidden={!displayed} bind:this={anchor}>
 	<div class="pin" bind:this={pin}></div>
 	<div class="marker" style:padding={MARKER_PADDING + 'px'} bind:this={marker} bind:clientWidth={markerWidth} bind:clientHeight={markerHeight}>
-		<div class="popup">
-			{@render children()}
-		</div>
+		<div class="popup" style:width={`${width}px`} style:height={`${height}px`} bind:this={popup}></div>
 	</div>
 </div>
 

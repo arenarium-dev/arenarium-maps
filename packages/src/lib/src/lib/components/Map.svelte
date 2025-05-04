@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { mount, onMount } from 'svelte';
 
 	import MapMarker from './marker/Marker.svelte';
 	import MapMarkerCircle from './marker/Circle.svelte';
@@ -284,14 +284,14 @@
 		lng: number;
 		zoom: number;
 
-		element = $state<HTMLElement>();
-		component = $state<T>();
+		element: HTMLElement | undefined;
+		component: T | undefined;
 		libreMarker: maplibregl.Marker | undefined;
 
-		constructor(lat: number, lng: number, zoom: number) {
-			this.lat = lat;
-			this.lng = lng;
-			this.zoom = zoom;
+		constructor(popup: MapPopup) {
+			this.lat = popup.data.lat;
+			this.lng = popup.data.lng;
+			this.zoom = popup.state[0];
 
 			this.element = undefined;
 			this.component = undefined;
@@ -308,19 +308,28 @@
 			this.libreMarker = libreMarker;
 		}
 
+		isCreated() {
+			return this.element != undefined;
+		}
+
 		isInBlock(zoom: number, bounds: MapBoundsPair) {
 			return this.zoom <= zoom && bounds.contains(this.lat, this.lng);
 		}
 	}
 
 	class MapPopupCircle extends MapPopupComponent<ReturnType<typeof MapMarkerCircle>> {
-		constructor(lat: number, lng: number, zoom: number) {
-			super(lat, lng, zoom);
+		createElement() {
+			this.element = document.createElement('div');
+			this.element.classList.add('circle');
+			this.component = mount(MapMarkerCircle, { target: this.element });
+
+			this.createLibreMarker();
+			this.updateZIndex();
 		}
 
 		updateZIndex() {
 			const element = this.element;
-			if (!element) throw new Error('Failed to update zIndexes');
+			if (!element) return;
 
 			const zIndex = Math.round((MAP_MAX_ZOOM - this.zoom) * MAP_ZOOM_SCALE);
 			element.style.zIndex = zIndex.toString();
@@ -352,39 +361,53 @@
 
 	class MapPopupMarker extends MapPopupComponent<ReturnType<typeof MapMarker>> {
 		id: string;
+		width: number;
+		height: number;
 		angles: [number, number][];
 
-		content = $state<HTMLElement>();
-		contentDiv = $state<HTMLElement>();
+		content: HTMLElement | undefined;
 		contentLoading = false;
 		contentCallback: MapPopupContentCallback;
 
-		constructor(lat: number, lng: number, zoom: number, angles: [number, number][], id: string, contentCallback: MapPopupContentCallback) {
-			super(lat, lng, zoom);
+		constructor(popup: MapPopup) {
+			super(popup);
 
-			this.id = id;
-			this.angles = angles;
-			this.contentCallback = contentCallback;
+			this.id = popup.data.id;
+			this.angles = popup.state[1];
+			this.width = popup.data.width;
+			this.height = popup.data.height;
+			this.contentCallback = popup.contentCallback;
+		}
+
+		createElement() {
+			this.element = document.createElement('div');
+			this.element.classList.add('marker');
+			this.component = mount(MapMarker, { target: this.element, props: { width: this.width, height: this.height } });
+
+			this.createLibreMarker();
+			this.updateZIndex();
 		}
 
 		updateZIndex() {
 			const element = this.element;
-			if (!element) throw new Error('Failed to update zIndexes');
+			if (!element) return;
 
 			const zIndex = Math.round((MAP_MAX_ZOOM - this.zoom) * MAP_ZOOM_SCALE) + Number.MAX_SAFE_INTEGER / 2;
 			element.style.zIndex = zIndex.toString();
 		}
 
 		updateMap(map: maplibregl.Map | null) {
-			if (this.libreMarker == undefined) throw new Error('Failed to update marker map');
+			const libreMarker = this.libreMarker;
+			const component = this.component;
+			if (libreMarker == undefined || component == undefined) throw new Error('Failed to update marker map');
 
-			if (this.libreMarker._map != map) {
+			if (libreMarker._map != map) {
 				if (map) {
-					this.libreMarker.addTo(map);
-					this.component?.setDisplayed(true);
+					libreMarker.addTo(map);
+					component.setDisplayed(true);
 				} else {
-					this.libreMarker.remove();
-					this.component?.setDisplayed(false);
+					libreMarker.remove();
+					component.setDisplayed(false);
 				}
 			}
 		}
@@ -403,17 +426,19 @@
 		}
 
 		updateContent() {
-			// Skip if content div not rendered
-			if (this.contentDiv == undefined) return;
 			// Check if content is already loaded or loading
 			if (this.content != undefined) return;
 			// Start load popup content loaded
 			if (this.contentLoading) return;
 
+			// Check if content div rendered
+			const contentDiv = this.component?.getPopup();
+			if (contentDiv == undefined) return;
+
 			this.contentLoading = true;
 			this.contentCallback(this.id).then((content) => {
-				if (this.contentDiv == undefined) return;
-				this.contentDiv.appendChild(content);
+				if (contentDiv == undefined) return;
+				contentDiv.appendChild(content);
 
 				this.content = content;
 				this.contentLoading = false;
@@ -448,8 +473,6 @@
 	class MapPopupData {
 		id: string;
 		rank: number;
-		width: number;
-		height: number;
 
 		circle: MapPopupCircle;
 		marker: MapPopupMarker;
@@ -457,18 +480,16 @@
 		constructor(popup: MapPopup) {
 			this.id = popup.data.id;
 			this.rank = popup.data.rank;
-			this.width = popup.data.width;
-			this.height = popup.data.height;
 
-			this.circle = new MapPopupCircle(popup.data.lat, popup.data.lng, popup.state[0]);
-			this.marker = new MapPopupMarker(popup.data.lat, popup.data.lng, popup.state[0], popup.state[1], popup.data.id, popup.contentCallback);
+			this.circle = new MapPopupCircle(popup);
+			this.marker = new MapPopupMarker(popup);
 		}
 	}
 
 	let mapPopupsIntervalId: number | undefined;
 
-	let mapPopupDataArray = $state(new Array<MapPopupData>());
-	let mapPopupDataMap = $state(new Map<string, MapPopupData>());
+	let mapPopupDataArray = new Array<MapPopupData>();
+	let mapPopupDataMap = new Map<string, MapPopupData>();
 
 	let offset = MAP_BASE_SIZE;
 	let mapOffsetBounds = $derived(mapBounds ? new MapBoundsPair(map!, -offset, mapHeight + offset, mapWidth + offset, -offset) : undefined);
@@ -504,37 +525,29 @@
 	}
 
 	function processPopupCircle(circle: MapPopupCircle, zoom: number, bounds: MapBoundsPair) {
-		if (circle.element == undefined) return;
-
 		// Check if circle is in bounds
 		if (circle.isInBlock(zoom + MAP_VISIBLE_ZOOM_DEPTH, bounds)) {
 			// Check if circle exist on map
-			if (circle.libreMarker == undefined) {
-				// Create circle
-				circle.createLibreMarker();
-				circle.updateZIndex();
+			if (circle.isCreated() == false) {
+				circle.createElement();
 			}
 
 			// Update circle map and state
 			circle.updateMap(map);
 			circle.updateState(zoom);
 		} else {
-			if (circle.libreMarker != undefined) {
+			if (circle.isCreated() == true) {
 				circle.updateMap(null);
 			}
 		}
 	}
 
 	function processPopupMarker(marker: MapPopupMarker, zoom: number, bounds: MapBoundsPair) {
-		if (marker.element == undefined) return;
-
 		// Check if marker is in bounds
 		if (marker.isInBlock(zoom + MAP_DISPLAYED_ZOOM_DEPTH, bounds)) {
 			// Check if marker exist on map
-			if (marker.libreMarker == undefined) {
-				// Create marker
-				marker.createLibreMarker();
-				marker.updateZIndex();
+			if (marker.isCreated() == false) {
+				marker.createElement();
 			}
 
 			// Update marker map and state
@@ -547,7 +560,7 @@
 			}
 		} else {
 			// Check if marker exist on map
-			if (marker.libreMarker != undefined) {
+			if (marker.isCreated() == true) {
 				// Wait until marker is collapsed before removing it
 				if (marker.getCollapsed()) {
 					marker.updateMap(null);
@@ -630,18 +643,6 @@
 <div class="container" style="--primary: {style.colors.primary}; --background: {style.colors.background}; --text: {style.colors.text};">
 	<div class="map" bind:this={mapContainer} bind:clientWidth={mapWidth} bind:clientHeight={mapHeight}></div>
 	<div class="logo"><a href="https://arenarium.dev" target="_blank">@arenarium/maps</a></div>
-	<div class="markers">
-		{#each mapPopupDataArray as data (data.id)}
-			<div class="circle" bind:this={data.circle.element}>
-				<MapMarkerCircle bind:this={data.circle.component} />
-			</div>
-			<div class="marker" bind:this={data.marker.element}>
-				<MapMarker bind:this={data.marker.component}>
-					<div class="popup" style="width: {data.width}px; height: {data.height}px;" bind:this={data.marker.contentDiv}></div>
-				</MapMarker>
-			</div>
-		{/each}
-	</div>
 </div>
 
 <style lang="less">
@@ -677,16 +678,6 @@
 				text-decoration: none;
 				font-weight: 600;
 			}
-		}
-
-		.markers {
-			position: absolute;
-			overflow: hidden;
-			display: none;
-		}
-
-		.popup {
-			overflow: hidden;
 		}
 
 		:global {
