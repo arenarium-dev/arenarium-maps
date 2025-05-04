@@ -280,6 +280,7 @@
 				element.style.fontWeight = '600';
 				element.style.padding = '2px 4px';
 				element.innerHTML = '$' + id + '0';
+				element.addEventListener('click', () => map.revealPopup(id));
 				resolve(element);
 			}
 		});

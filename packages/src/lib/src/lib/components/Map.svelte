@@ -519,6 +519,9 @@
 	class MapPopupData {
 		id: string;
 		rank: number;
+		lat: number;
+		lng: number;
+		zoom: number;
 
 		circle: MapPopupCircle;
 		marker: MapPopupMarker;
@@ -526,6 +529,9 @@
 		constructor(popup: MapPopup) {
 			this.id = popup.data.id;
 			this.rank = popup.data.rank;
+			this.lat = popup.data.lat;
+			this.lng = popup.data.lng;
+			this.zoom = popup.state[0];
 
 			this.circle = new MapPopupCircle(popup);
 			this.marker = new MapPopupMarker(popup);
@@ -682,6 +688,13 @@
 
 	export function removePopups() {
 		removePopupData();
+	}
+
+	export function revealPopup(id: string) {
+		const popup = mapPopupDataMap.get(id);
+		if (popup == undefined) return;
+
+		map.flyTo({ center: { lat: popup.lat, lng: popup.lng }, zoom: popup.zoom });
 	}
 
 	//#endregion

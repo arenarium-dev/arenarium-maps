@@ -21,6 +21,7 @@ export interface MapComponent {
 
 	updatePopups: (popups: MapPopup[]) => Promise<void>;
 	removePopups: () => void;
+	revealPopup: (id: string) => MapPopup | undefined;
 
 	on: <E extends EventId>(eventId: E, handler: EventHandler<E>) => void;
 	off: <E extends EventId>(eventId: E, handler: EventHandler<E>) => void;
