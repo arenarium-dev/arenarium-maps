@@ -1,4 +1,4 @@
-import { eventHandlerSchemas, type EventId, type EventHandlerMap, type EventPayloadMap } from './input.js';
+import { eventHandlerSchemas, type EventId, type EventHandlerMap, type EventPayloadMap } from './schemas.js';
 
 // Type helper for a handler function for a specific event E
 type EventHandler<E extends EventId> = (payload: EventHandlerMap[E]) => void;

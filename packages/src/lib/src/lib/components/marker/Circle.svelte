@@ -3,6 +3,9 @@
 	import { Tween } from 'svelte/motion';
 
 	let circle: HTMLElement;
+	let pin: HTMLElement;
+
+	export const getPin = () => pin;
 
 	let scale = 0;
 	let scaleValue = 0;
@@ -39,26 +42,39 @@
 	//#endregion
 </script>
 
-<div class="circle" bind:this={circle}></div>
+<div class="circle" bind:this={circle}>
+	<div class="pin" bind:this={pin}>
+		<div class="content"></div>
+	</div>
+</div>
 
 <style lang="less">
 	@background: var(--background);
 	@base: var(--primary);
 	@circle-size: 16px;
-	@border-size: 3px;
+	@padding-size: 3px;
 
 	.circle {
 		position: absolute;
-		left: -@circle-size * 0.5;
-		top: -@circle-size * 0.5;
-		width: @circle-size;
-		height: @circle-size;
-		border: @border-size solid @background;
-		border-radius: 50%;
-		background-color: @base;
-		transform-origin: 50% 50%;
+		background-color: @background;
+		padding: @padding-size;
+		border-radius: @circle-size * 0.5;
+		transform: translate(-50%, -50%);
+		transform-origin: 0% 0%;
+		transform-style: preserve-3d;
 		transition-property: scale, filter;
 		box-sizing: border-box;
 		box-shadow: 0 2px 2px rgba(0, 0, 0, 0.5);
+
+		.pin {
+			background-color: @base;
+			border-radius: @circle-size * 0.35;
+			overflow: hidden;
+
+			.content {
+				width: @circle-size - @padding-size * 2;
+				height: @circle-size - @padding-size * 2;
+			}
+		}
 	}
 </style>

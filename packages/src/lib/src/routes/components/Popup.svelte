@@ -5,7 +5,7 @@
 </script>
 
 <div {id} class="popup">
-	{id}
+	{id}-{popup.data.rank}
 </div>
 
 <style lang="less">

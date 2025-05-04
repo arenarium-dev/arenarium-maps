@@ -10,7 +10,7 @@ import type {
 	MapPopupData,
 	MapPopupStatesRequest,
 	MapPopupContentCallback
-} from './map/input.js';
+} from './map/schemas.js';
 
 export { Map };
 export {

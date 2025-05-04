@@ -5,7 +5,7 @@
 	import Popup from './components/Popup.svelte';
 
 	import { mountMap } from '$lib/index.js';
-	import type { MapBounds, MapPopup, MapPopupData, MapPopupState, MapPopupStatesRequest } from '$lib/map/input.js';
+	import type { MapBounds, MapPopup, MapPopupData, MapPopupState, MapPopupStatesRequest } from '$lib/map/schemas.js';
 
 	let map: ReturnType<typeof mountMap>;
 	let mapPopups = new Map<string, MapPopup>();
@@ -174,7 +174,7 @@
 			if (lat < bounds.sw.lat || bounds.ne.lat < lat || lng < bounds.sw.lng || bounds.ne.lng < lng) continue;
 
 			data.push({
-				id: 'popup-' + i.toString() + '-' + rank.toString(),
+				id: i.toString(),
 				rank: rank,
 				lat: lat,
 				lng: lng,
@@ -196,7 +196,9 @@
 			popups[i] = {
 				data: data[i],
 				state: states[i],
-				contentCallback: getPopupContent
+				bodyContentCallback: getPopupContent,
+				bodyPlaceholderCallback: getPopupPlaceholder,
+				pinContentCallback: getPopupPin
 			};
 		}
 
@@ -234,6 +236,7 @@
 	}
 
 	async function getPopupContent(id: string): Promise<HTMLElement> {
+		await new Promise((resolve) => setTimeout(resolve, 1000));
 		return await new Promise((resolve) => {
 			const popup = mapPopups.get(id);
 			if (popup == undefined) throw new Error('Failed to get popup');
@@ -244,6 +247,41 @@
 			element.style.width = popup.data.width + 'px';
 			element.style.height = popup.data.height + 'px';
 			resolve(element);
+		});
+	}
+
+	async function getPopupPlaceholder(id: string): Promise<HTMLElement> {
+		return await new Promise((resolve) => {
+			const popup = mapPopups.get(id);
+			if (popup == undefined) throw new Error('Failed to get popup');
+
+			const element = document.createElement('div');
+			element.innerHTML = '<div class="placeholder"> Loading ' + popup.data.id + '</div>';
+			resolve(element);
+		});
+	}
+
+	async function getPopupPin(id: string): Promise<HTMLElement> {
+		return await new Promise((resolve) => {
+			const popup = mapPopups.get(id);
+			if (popup == undefined) throw new Error('Failed to get popup');
+
+			if (Number.parseInt(id) % 10 <= 3) {
+				const element = document.createElement('div');
+				element.style.display = 'flex';
+				element.style.padding = '2px';
+				mount(Icon, { target: element, props: { name: 'location_on', size: 16, color: 'white' } });
+
+				resolve(element);
+			} else if (Number.parseInt(id) % 10 <= 6) {
+				const element = document.createElement('div');
+				element.style.color = 'white';
+				element.style.fontSize = '12px';
+				element.style.fontWeight = '600';
+				element.style.padding = '2px 4px';
+				element.innerHTML = '$' + id + '0';
+				resolve(element);
+			}
 		});
 	}
 

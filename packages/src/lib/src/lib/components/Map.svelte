@@ -19,7 +19,7 @@
 		type EventId,
 		type EventHandler,
 		type EventPayloadMap
-	} from '../map/input.js';
+	} from '../map/schemas.js';
 
 	import {
 		MAP_BASE_SIZE,
@@ -280,6 +280,7 @@
 	//#region Data
 
 	class MapPopupComponent<T> {
+		id: string;
 		lat: number;
 		lng: number;
 		zoom: number;
@@ -289,6 +290,7 @@
 		libreMarker: maplibregl.Marker | undefined;
 
 		constructor(popup: MapPopup) {
+			this.id = popup.data.id;
 			this.lat = popup.data.lat;
 			this.lng = popup.data.lng;
 			this.zoom = popup.state[0];
@@ -318,6 +320,16 @@
 	}
 
 	class MapPopupCircle extends MapPopupComponent<ReturnType<typeof MapMarkerCircle>> {
+		pinLoading = false;
+		pinLoaded = false;
+		pinContentCallback: MapPopupContentCallback | undefined;
+
+		constructor(popup: MapPopup) {
+			super(popup);
+
+			this.pinContentCallback = popup.pinContentCallback;
+		}
+
 		createElement() {
 			this.element = document.createElement('div');
 			this.element.classList.add('circle');
@@ -357,17 +369,37 @@
 				circle.setScale(scale);
 			}
 		}
+
+		updatePin() {
+			if (this.pinContentCallback == undefined) return;
+			if (this.pinLoaded || this.pinLoading) return;
+
+			const pin = this.component?.getPin();
+			if (pin == undefined) return;
+
+			this.pinLoading = true;
+			this.pinContentCallback(this.id).then((content) => {
+				pin.removeChild(pin.firstChild!);
+				pin.appendChild(content);
+				this.pinLoaded = true;
+				this.pinLoading = false;
+			});
+		}
+
+		isPinLoaded() {
+			return this.pinContentCallback == undefined || this.pinLoaded;
+		}
 	}
 
 	class MapPopupMarker extends MapPopupComponent<ReturnType<typeof MapMarker>> {
-		id: string;
 		width: number;
 		height: number;
 		angles: [number, number][];
 
-		content: HTMLElement | undefined;
-		contentLoading = false;
-		contentCallback: MapPopupContentCallback;
+		bodyLoading = false;
+		bodyLoaded = false;
+		bodyContentCallback: MapPopupContentCallback;
+		bodyPlaceholderCallback: MapPopupContentCallback | undefined;
 
 		constructor(popup: MapPopup) {
 			super(popup);
@@ -376,7 +408,9 @@
 			this.angles = popup.state[1];
 			this.width = popup.data.width;
 			this.height = popup.data.height;
-			this.contentCallback = popup.contentCallback;
+
+			this.bodyContentCallback = popup.bodyContentCallback;
+			this.bodyPlaceholderCallback = popup.bodyPlaceholderCallback;
 		}
 
 		createElement() {
@@ -425,23 +459,31 @@
 			}
 		}
 
-		updateContent() {
+		updateBody() {
 			// Check if content is already loaded or loading
-			if (this.content != undefined) return;
-			// Start load popup content loaded
-			if (this.contentLoading) return;
+			if (this.bodyLoaded || this.bodyLoading) return;
 
 			// Check if content div rendered
-			const contentDiv = this.component?.getPopup();
-			if (contentDiv == undefined) return;
+			const body = this.component?.getBody();
+			if (body == undefined) return;
 
-			this.contentLoading = true;
-			this.contentCallback(this.id).then((content) => {
-				if (contentDiv == undefined) return;
-				contentDiv.appendChild(content);
+			// If has placeholder callback, load it
+			if (this.bodyPlaceholderCallback != undefined) {
+				this.bodyPlaceholderCallback(this.id).then((placeholder) => {
+					body.appendChild(placeholder);
+				});
+			}
 
-				this.content = content;
-				this.contentLoading = false;
+			// Load body callback
+			this.bodyLoading = true;
+			this.bodyContentCallback(this.id).then((content) => {
+				// Check if content div has placeholder and remove it
+				if (body.firstChild != undefined) {
+					body.removeChild(body.firstChild);
+				}
+				body.appendChild(content);
+				this.bodyLoading = false;
+				this.bodyLoaded = true;
 			});
 		}
 
@@ -467,6 +509,10 @@
 		getCollapsed() {
 			if (!this.component) return false;
 			return this.component.getCollapsed();
+		}
+
+		isBodyLoaded() {
+			return this.bodyLoaded;
 		}
 	}
 
@@ -535,6 +581,11 @@
 			// Update circle map and state
 			circle.updateMap(map);
 			circle.updateState(zoom);
+
+			// Update circle pin if not loaded
+			if (circle.isPinLoaded() == false) {
+				circle.updatePin();
+			}
 		} else {
 			if (circle.isCreated() == true) {
 				circle.updateMap(null);
@@ -554,9 +605,9 @@
 			marker.updateMap(map);
 			marker.updateState(zoom);
 
-			// If marker is expanded, update content
-			if (marker.getExpanded()) {
-				marker.updateContent();
+			// If marker is expanded, update body if not loaded
+			if (marker.getExpanded() && marker.isBodyLoaded() == false) {
+				marker.updateBody();
 			}
 		} else {
 			// Check if marker exist on map

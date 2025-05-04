@@ -10,9 +10,9 @@
 	let anchor: HTMLElement;
 	let marker: HTMLElement;
 	let pin: HTMLElement;
-	let popup: HTMLElement;
+	let body: HTMLElement;
 
-	export const getPopup = () => popup;
+	export const getBody = () => body;
 
 	//#region Displayed
 
@@ -170,7 +170,7 @@
 <div class="anchor" class:hidden={!displayed} bind:this={anchor}>
 	<div class="pin" bind:this={pin}></div>
 	<div class="marker" style:padding={MARKER_PADDING + 'px'} bind:this={marker} bind:clientWidth={markerWidth} bind:clientHeight={markerHeight}>
-		<div class="popup" style:width={`${width}px`} style:height={`${height}px`} bind:this={popup}></div>
+		<div class="body" style:width={`${width}px`} style:height={`${height}px`} bind:this={body}></div>
 	</div>
 </div>
 
@@ -190,7 +190,7 @@
 			left: 0px;
 			top: 0px;
 
-			.popup {
+			.body {
 				display: flex;
 				flex-direction: column;
 				align-items: center;

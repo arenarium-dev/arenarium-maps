@@ -1,4 +1,4 @@
-import type { MapStyle, MapBounds, MapCoordinate, EventId, EventHandler, EventPayloadMap, MapPopup } from './input.js';
+import type { MapStyle, MapBounds, MapCoordinate, EventId, EventHandler, EventPayloadMap, MapPopup } from './schemas.js';
 
 export namespace MapComponent {
 	export type MapPopupContentCallback = (id: string) => Promise<HTMLElement>;
