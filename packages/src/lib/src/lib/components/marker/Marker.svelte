@@ -219,6 +219,7 @@
 	.anchor {
 		transition-property: opacity;
 		will-change: opacity;
+		backface-visibility: hidden;
 
 		.marker {
 			transform-origin: 0% 0%;

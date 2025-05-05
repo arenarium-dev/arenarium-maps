@@ -65,6 +65,7 @@
 		transition-property: scale, filter;
 		box-sizing: border-box;
 		box-shadow: 0 2px 2px rgba(0, 0, 0, 0.5);
+		backface-visibility: hidden;
 
 		.pin {
 			background-color: @base;
