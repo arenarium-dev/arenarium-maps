@@ -241,13 +241,9 @@
 				const popup: MapPopup = {
 					data: statePopupData[i],
 					state: states[i],
-					callbacks: {
-						body: {
-							content: getPopupContent,
-						},
-						pin: {
-							content: getPinContent
-						}
+					content: {
+						bodyCallback: getPopupBody,
+						pinCallback: getPopupPin
 					}
 				};
 				popups.push(popup);
@@ -280,9 +276,7 @@
 		return states;
 	}
 
-	async function getPopupContent(id: string): Promise<HTMLElement> {
-		const delay = Math.random() * 500;
-		await new Promise((resolve) => setTimeout(resolve, delay));
+	async function getPopupBody(id: string): Promise<HTMLElement> {
 		return await new Promise((resolve) => {
 			const element = document.createElement('div');
 			mount(RentalPopup, { target: element, props: { id } });
@@ -290,7 +284,7 @@
 		});
 	}
 
-	async function getPinContent(id: string): Promise<HTMLElement> {
+	async function getPopupPin(id: string): Promise<HTMLElement> {
 		return await new Promise((resolve) => {
 			const element = document.createElement('div');
 			mount(RentalPin, { target: element, props: { id } });
