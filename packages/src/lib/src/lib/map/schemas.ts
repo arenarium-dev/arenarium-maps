@@ -110,7 +110,11 @@ export const mapPopupSchema = z.object({
 			content: mapPopupContentCallbackSchema,
 			placeholder: mapPopupContentCallbackSchema.optional()
 		}),
-		pin: mapPopupContentCallbackSchema.optional()
+		pin: z
+			.object({
+				content: mapPopupContentCallbackSchema
+			})
+			.optional()
 	})
 });
 

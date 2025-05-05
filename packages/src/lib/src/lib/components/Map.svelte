@@ -327,7 +327,7 @@
 		constructor(popup: MapPopup) {
 			super(popup);
 
-			this.pinContentCallback = popup.callbacks.body.content;
+			this.pinContentCallback = popup.callbacks.pin?.content;
 		}
 
 		createElement() {

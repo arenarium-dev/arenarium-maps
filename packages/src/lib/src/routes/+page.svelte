@@ -201,7 +201,9 @@
 						content: getPopupContent,
 						placeholder: getPopupPlaceholder
 					},
-					pin: getPopupPin
+					pin: {
+						content: getPopupPin
+					}
 				}
 			};
 		}
