@@ -244,7 +244,9 @@
 							content: getPopupContent,
 							placeholder: getPopupPlaceholder
 						},
-						pin: getPinContent
+						pin: {
+							content: getPinContent
+						}
 					}
 				};
 				popups.push(popup);
@@ -278,7 +280,8 @@
 	}
 
 	async function getPopupContent(id: string): Promise<HTMLElement> {
-		await new Promise((resolve) => setTimeout(resolve, 10000));
+		const delay = Math.random() * 500;
+		await new Promise((resolve) => setTimeout(resolve, delay));
 		return await new Promise((resolve) => {
 			const element = document.createElement('div');
 			mount(RentalPopup, { target: element, props: { id } });
@@ -325,7 +328,7 @@
 			{#snippet button()}
 				<div class="button shadow-small">
 					<Icon name={'tune'} size={22} />
-					<span>{source}</span>
+					<span>{source} Demo</span>
 				</div>
 			{/snippet}
 			{#snippet menu()}
