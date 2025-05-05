@@ -7,6 +7,7 @@
 	import Progress from '$lib/client/components/utils/Progress.svelte';
 
 	import RentalPopup from '$lib/client/components/demo/rentals/Popup.svelte';
+	import RentalPlaceholder from '$lib/client/components/demo/rentals/Placeholder.svelte';
 	import RentalPin from '$lib/client/components/demo/rentals/Pin.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
@@ -238,8 +239,13 @@
 				const popup: MapPopup = {
 					data: statePopupData[i],
 					state: states[i],
-					bodyContentCallback: getPopupContent,
-					pinContentCallback: getPinContent
+					callbacks: {
+						body: {
+							content: getPopupContent,
+							placeholder: getPopupPlaceholder
+						},
+						pin: getPinContent
+					}
 				};
 				popups.push(popup);
 			}
@@ -272,9 +278,18 @@
 	}
 
 	async function getPopupContent(id: string): Promise<HTMLElement> {
+		await new Promise((resolve) => setTimeout(resolve, 10000));
 		return await new Promise((resolve) => {
 			const element = document.createElement('div');
 			mount(RentalPopup, { target: element, props: { id } });
+			resolve(element);
+		});
+	}
+
+	async function getPopupPlaceholder(id: string): Promise<HTMLElement> {
+		return await new Promise((resolve) => {
+			const element = document.createElement('div');
+			mount(RentalPlaceholder, { target: element });
 			resolve(element);
 		});
 	}
