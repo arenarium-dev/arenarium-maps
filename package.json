@@ -4,12 +4,10 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
-	"keywords": [
-		
-	],
+	"keywords": [],
 	"author": "",
 	"license": "ISC",
-	"packageManager": "pnpm@10.7.1",
+	"packageManager": "pnpm@10.10.0",
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"esbuild"

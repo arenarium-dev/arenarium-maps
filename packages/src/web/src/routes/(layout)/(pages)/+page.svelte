@@ -1,10 +1,13 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { mount, onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 	import Menu from '$lib/client/components/utils/Menu.svelte';
 	import Progress from '$lib/client/components/utils/Progress.svelte';
+
+	import RentalPopup from '$lib/client/components/demo/rentals/Popup.svelte';
+	import RentalPin from '$lib/client/components/demo/rentals/Pin.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
 	import { Fetch } from '$lib/client/core/fetch';
@@ -112,9 +115,9 @@
 		map?.setStyle({
 			name: 'dark',
 			colors: {
-				background: 'lightgray',
+				background: 'var(--surface)',
 				primary: 'violet',
-				text: 'black'
+				text: 'var(--on-surface)'
 			}
 		});
 	}
@@ -159,87 +162,8 @@
 		sourceAutoUpdate = !sourceAutoUpdate;
 	}
 
-	async function getPopupData(bounds: MapBounds): Promise<MapPopupData[]> {
-		const data = await Fetch.that<MapPopupData[]>(
-			`/api/popup/data?total=128&swlat=${bounds.sw.lat}&swlng=${bounds.sw.lng}&nelat=${bounds.ne.lat}&nelng=${bounds.ne.lng}`
-		);
-		return data;
-	}
-
-	function getPopupDataDelta(data: MapPopupData[]) {
-		const newPopupData = new Array<MapPopupData>();
-		for (const d of data) {
-			if (!sourcePopupData.has(d.id)) {
-				newPopupData.push(d);
-			}
-		}
-		return newPopupData;
-	}
-
-	async function getPopupStates(data: MapPopupData[]): Promise<MapPopupState[]> {
-		const request = {
-			data: data,
-			minZoom: 0,
-			maxZoom: 18
-		};
-		const states = await Fetch.that<MapPopupState[]>(`/api/popup/states`, {
-			method: 'POST',
-			body: request
-		});
-		return states;
-	}
-
-	async function getPopupContent(id: string): Promise<HTMLElement> {
-		return await new Promise((resolve) => {
-			const element = document.createElement('div');
-			element.style.width = '150px';
-			element.style.height = '100px';
-			element.style.color = 'red';
-			element.style.padding = '8px';
-			element.innerText = id;
-			resolve(element);
-		});
-	}
-
-	async function processPopupData(data: MapPopupData[]) {
-		try {
-			loading = true;
-
-			// Update the loaded data
-			data.forEach((d) => sourcePopupData.set(d.id, d));
-
-			// Get the new states
-			const statePopupData = Array.from(sourcePopupData.values());
-			const states = await getPopupStates(statePopupData);
-
-			// Create the new popups
-			const popups = new Array<MapPopup>();
-			for (let i = 0; i < states.length; i++) {
-				const popup: MapPopup = {
-					data: statePopupData[i],
-					state: states[i],
-					contentCallback: getPopupContent
-				};
-				popups.push(popup);
-			}
-
-			// Update the popups
-			await map.updatePopups(popups);
-		} catch (err) {
-			console.error(err);
-			app.toast.set({
-				text: 'Failed to get popup state.',
-				severity: 'error',
-				seconds: 2
-			});
-		} finally {
-			loading = false;
-		}
-	}
-
 	async function processBoundsChange(bounds: MapBounds) {
 		try {
-			app.toast.set(null);
 			loading = true;
 
 			const data = await getPopupData(bounds);
@@ -279,6 +203,90 @@
 		map.removePopups();
 	}
 
+	async function getPopupData(bounds: MapBounds): Promise<MapPopupData[]> {
+		const data = await Fetch.that<MapPopupData[]>(
+			`/api/popup/data?total=128&swlat=${bounds.sw.lat}&swlng=${bounds.sw.lng}&nelat=${bounds.ne.lat}&nelng=${bounds.ne.lng}`
+		);
+		return data;
+	}
+
+	function getPopupDataDelta(data: MapPopupData[]) {
+		const newPopupData = new Array<MapPopupData>();
+		for (const d of data) {
+			if (!sourcePopupData.has(d.id)) {
+				newPopupData.push(d);
+			}
+		}
+		return newPopupData;
+	}
+
+	async function processPopupData(data: MapPopupData[]) {
+		try {
+			loading = true;
+
+			// Update the loaded data
+			data.forEach((d) => sourcePopupData.set(d.id, d));
+
+			// Get the new states
+			const statePopupData = Array.from(sourcePopupData.values());
+			const states = await getPopupStates(statePopupData);
+			console.log('Loaded states:', states.length);
+
+			// Create the new popups
+			const popups = new Array<MapPopup>();
+			for (let i = 0; i < states.length; i++) {
+				const popup: MapPopup = {
+					data: statePopupData[i],
+					state: states[i],
+					bodyContentCallback: getPopupContent,
+					pinContentCallback: getPinContent
+				};
+				popups.push(popup);
+			}
+
+			// Update the popups
+			await map.updatePopups(popups);
+		} catch (err) {
+			console.error(err);
+			app.toast.set({
+				text: 'Failed to get popup state.',
+				severity: 'error',
+				seconds: 2
+			});
+		} finally {
+			loading = false;
+		}
+	}
+
+	async function getPopupStates(data: MapPopupData[]): Promise<MapPopupState[]> {
+		const request = {
+			data: data,
+			minZoom: 0,
+			maxZoom: 18
+		};
+		const states = await Fetch.that<MapPopupState[]>(`/api/popup/states`, {
+			method: 'POST',
+			body: request
+		});
+		return states;
+	}
+
+	async function getPopupContent(id: string): Promise<HTMLElement> {
+		return await new Promise((resolve) => {
+			const element = document.createElement('div');
+			mount(RentalPopup, { target: element, props: { id } });
+			resolve(element);
+		});
+	}
+
+	async function getPinContent(id: string): Promise<HTMLElement> {
+		return await new Promise((resolve) => {
+			const element = document.createElement('div');
+			mount(RentalPin, { target: element, props: { id } });
+			resolve(element);
+		});
+	}
+
 	//#endregion
 
 	//#region Side
@@ -302,6 +310,7 @@
 			{#snippet button()}
 				<div class="button shadow-small">
 					<Icon name={'tune'} size={22} />
+					<span>{source}</span>
 				</div>
 			{/snippet}
 			{#snippet menu()}
@@ -333,12 +342,9 @@
 						{/snippet}
 						{#snippet menu()}
 							<div class="menu source shadow-large">
-								<button class="item" class:selected={source == 'Rentals'} onclick={() => onSourceSelect('Rentals')}
-									>Rentals</button
-								>
-								<button class="item" class:selected={source == 'Events'} onclick={() => onSourceSelect('Events')}>Events</button
-								>
-								<button class="item" class:selected={source == 'News'} onclick={() => onSourceSelect('News')}>News</button>
+								<button class="item" class:selected={source == 'Rentals'} onclick={() => onSourceSelect('Rentals')}>Rentals</button>
+								<button class="item" class:selected={source == 'Events'} disabled onclick={() => onSourceSelect('Events')}>Events</button>
+								<button class="item" class:selected={source == 'News'} disabled onclick={() => onSourceSelect('News')}>News</button>
 							</div>
 						{/snippet}
 					</Menu>
@@ -402,9 +408,14 @@
 			gap: 12px;
 
 			.button {
+				width: auto;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
 				gap: 8px;
+				padding: 8px 12px 8px 10px;
 				font-weight: 600;
-				font-size: 13px;
+				font-size: 14px;
 				cursor: pointer;
 			}
 
@@ -438,7 +449,11 @@
 						background-color: var(--surface-container);
 					}
 
-					&:hover {
+					&:disabled {
+						opacity: 0.5;
+					}
+
+					&:hover:not(:disabled) {
 						background-color: var(--surface-container-high);
 					}
 				}

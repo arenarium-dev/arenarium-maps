@@ -45,7 +45,7 @@ export const GET: RequestHandler = async (event) => {
 			rank: rank,
 			lat: lat,
 			lng: lng,
-			height: 100,
+			height: 130,
 			width: 150
 		});
 	}
