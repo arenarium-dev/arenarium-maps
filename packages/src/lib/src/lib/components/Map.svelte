@@ -379,7 +379,6 @@
 
 			this.pinLoading = true;
 			this.pinContentCallback(this.id).then((content) => {
-				pin.removeChild(pin.firstChild!);
 				pin.appendChild(content);
 				this.pinLoaded = true;
 				this.pinLoading = false;
