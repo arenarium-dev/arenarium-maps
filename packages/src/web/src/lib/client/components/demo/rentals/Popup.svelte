@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { app } from '$lib/client/state/app.svelte';
 	import { onMount } from 'svelte';
 
 	let { id }: { id: string } = $props();
@@ -32,29 +31,19 @@
 		'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?q=80&w=267&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
 		'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?q=80&w=267&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
 		'https://images.unsplash.com/photo-1560185007-5f0bb1866cab?q=80&w=267&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-		'https://images.unsplash.com/photo-1534595038511-9f219fe0c979?q=80&w=267&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+		'https://images.unsplash.com/photo-1534595038511-9f219fe0c979?q=80&w=267&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+		'https://images.unsplash.com/photo-1618221469555-7f3ad97540d6?q=80&w=266&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
 	];
 	let imageIndex = Number.parseInt(id) % images.length;
 
 	let price = Number.parseInt(id) * 10;
-
 	let beds = Math.floor(Math.random() * 3) + 1;
 	let baths = Math.floor(Math.random() * 2) + 1;
 	let sqft = Math.floor(Math.random() * 100) + 100;
-
-	function onClick(e: Event) {
-		e.preventDefault();
-		e.stopPropagation();
-
-		app.toast.set({
-			text: `Popup ${id} clicked.`,
-			severity: 'info'
-		});
-	}
 </script>
 
 {#if mounted}
-	<button class="popup" onclick={onClick}>
+	<button class="popup">
 		<div class="image">
 			<img loading="lazy" src={images[imageIndex]} alt={id} />
 		</div>

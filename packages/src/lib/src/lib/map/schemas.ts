@@ -116,8 +116,8 @@ export const mapPopupsSchema = z.array(mapPopupSchema);
 export const mapPopupStatesRequestSchema = z.object({
 	apiKey: z.string(),
 	data: z.array(mapPopupDataSchema),
-	minZoom: z.number(),
-	maxZoom: z.number()
+	minZoom: z.number().optional(),
+	maxZoom: z.number().optional()
 });
 
 export type MapPopupData = z.infer<typeof mapPopupDataSchema>;

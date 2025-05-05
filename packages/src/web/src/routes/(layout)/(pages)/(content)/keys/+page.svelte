@@ -6,6 +6,7 @@
 
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 	import Modal from '$lib/client/components/utils/Modal.svelte';
+	import Toast from '$lib/client/components/Toast.svelte';
 	import ApiKeyForm from '$lib/client/components/keys/ApiKeyForm.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
@@ -191,6 +192,8 @@
 <Modal bind:this={formModal}>
 	<ApiKeyForm success={onFromSuccess} id={formId} name={formName} domains={formDomains} />
 </Modal>
+
+<Toast />
 
 <style lang="less">
 	.button {

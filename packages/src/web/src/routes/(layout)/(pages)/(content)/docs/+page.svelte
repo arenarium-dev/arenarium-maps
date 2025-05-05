@@ -54,8 +54,6 @@ const map = arenarium.mountMap(...);
 				language="javascript"
 				text={`
 const map = mountMap({
-	// The API key
-	apiKey: '...',
 	// The id of the container element
 	container: 'map',
 	// The initial position of the map
@@ -76,7 +74,7 @@ const map = mountMap({
 	style: {
 		// The name of the theme used for the map
 		name: 'light',
-		// The colors used for the content
+		// The colors used for the popups and content
 		colors: { primary: 'darkgreen', background: 'white', text: 'black' }
 	}
 });`}
@@ -109,21 +107,66 @@ map.setStyle({
 			/>
 		</div>
 		<div class="header">Popups</div>
-		<div class="text">Set the popup content callback function:</div>
+		<div class="text">Create the <code>MapPopupData</code> array:</div>
 		<div class="highlight">
 			<Highlight
 				language="javascript"
 				text={`
-map.updatePopupContentCallback(async (id) => {
-	// Get the popup content and return an HTML element
-    const element = await getElement(id);
-    return element;
-});`}
+import { type MapPopupData } from '@arenarium/maps';
+
+const popupData: MapPopupData[] = [];
+
+for (let i = 0; i < count; i++) {
+    popupData.push({
+		// The unique ID of the popup
+        id: ...,
+		// The rank of the popup used when comparing with other popups
+        rank: ..,
+		// The latitude of the popup
+        lat: ...,
+		// The longitude of the popup
+        lng: ...,
+		// The height of the popup content body
+        height: ...,
+		// The width of the popup content body
+        width: ...
+    });
+}`}
 			/>
 		</div>
 		<div class="text">
-			Update the popups. The function adds new popups and updates existing ones. It does not remove popups not specified in the
-			array. It is designed to continuously update the popups on the map.
+			Use the api to get the <code>MapPopupState</code> array. To get the api key, sign in and go to the <a href="/keys">keys</a> page.
+		</div>
+		<div class="highlight">
+			<Highlight
+				language="javascript"
+				text={`
+import { type MapPopupState, type MapPopupStatesRequest } from '@arenarium/maps';
+
+const body: MapPopupStatesRequest = {
+	// The API key
+	key: 'YOUR_API_KEY',
+	// The popup data
+	data: popupData,
+	// The minimum zoom level of the map, optional
+	minZoom: ...,
+	// The maximum zoom level of the map, optional
+	maxZoom: ...
+};
+
+const response = await fetch('https://arenarium.dev/api/popup/states', {
+	method: 'POST',
+	body: JSON.stringify(body)
+});
+
+const popupStates: MapPopupState[] = await response.json();
+`}
+			/>
+		</div>
+		<div class="text">
+			Create the <code>MapPopups</code> array with the <code>MapPopupData</code> and <code>MapPopupState</code> arrays and add the content callbacks for
+			the body and the pin. The callbacks should return a <code>HTMLElement</code> object. Finally update the map with the popups. The function adds new popups
+			and updates existing ones. It does not remove popups not specified in the array. It is designed to continuously update the popups on the map.
 		</div>
 		<div class="highlight">
 			<Highlight
@@ -131,16 +174,18 @@ map.updatePopupContentCallback(async (id) => {
 				text={`
 import { type MapPopup } from '@arenarium/maps';
 
-const popups: Types.Popup[] = [];
+const popups: MapPopup[] = [];
 
 for (let i = 0; i < count; i++) {
     popups.push({
-        id: ...,
-        rank: ..,
-        lat: ...,
-        lng: ...,
-        height: ...,
-        width: ...
+		data: popupData[i],
+        state: popupStates[i],
+        content: {
+			// The body content callback, required
+            bodyCallback: ...,
+			// The pin content callback, optional
+            pinCallback: ...
+        }
     });
 }
 
@@ -164,10 +209,7 @@ await map.removePopups();
 				text={`
 map.on('idle', (position) => { ... });
 map.on('move', (position) => { ... });
-map.on('click', (coordinate) => { ... });
-map.on('popup_click', (id) => { ... });
-map.on('loading_start', () => { ... });
-map.on('loading_end', () => { ... });`}
+map.on('click', (coordinate) => { ... });`}
 			/>
 		</div>
 		<div class="text">Unsubscribe from events:</div>
@@ -211,8 +253,8 @@ map.setMaxBounds({
 		</div>
 		<div class="title" id="about">About</div>
 		<div class="text">
-			@arenarium/maps aims to be the best way to show ranked popups on a map. For any situation where you need to show a large
-			amount of popups on a map, where the popups are ranked by some criteria, @arenarium/maps is the best solution.
+			Use <strong>@arenarium/maps</strong> to effectively visualize large numbers of ranked popups on your maps. This library excels when you need to clearly
+			present many location-based markers ordered according to a specific ranking or priority.
 		</div>
 	</div>
 </div>
@@ -222,6 +264,13 @@ map.setMaxBounds({
 		display: flex;
 		flex-direction: column;
 		gap: 24px;
+
+		code {
+			background-color: var(--surface-container-high);
+			padding: 0px 4px;
+			border-radius: 4px;
+			font-weight: 600;
+		}
 
 		.block {
 			display: flex;

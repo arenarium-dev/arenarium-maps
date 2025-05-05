@@ -4,7 +4,6 @@
 
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 	import Navigation from '$lib/client/components/Navigation.svelte';
-	import Toast from '$lib/client/components/Toast.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
 
@@ -39,8 +38,6 @@
 	</div>
 	{@render children()}
 </div>
-
-<Toast />
 
 <style lang="less">
 	@page-width: 1024px;

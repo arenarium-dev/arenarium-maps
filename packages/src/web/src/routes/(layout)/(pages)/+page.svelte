@@ -5,6 +5,7 @@
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 	import Menu from '$lib/client/components/utils/Menu.svelte';
 	import Progress from '$lib/client/components/utils/Progress.svelte';
+	import Toast from '$lib/client/components/Toast.svelte';
 
 	import RentalPopup from '$lib/client/components/demo/rentals/Popup.svelte';
 	import RentalPin from '$lib/client/components/demo/rentals/Pin.svelte';
@@ -315,7 +316,7 @@
 			{#snippet button()}
 				<div class="button shadow-small">
 					<Icon name={'tune'} size={22} />
-					<span>{source} Demo</span>
+					<span>{source}</span>
 				</div>
 			{/snippet}
 			{#snippet menu()}
@@ -372,11 +373,13 @@
 	</div>
 
 	{#if loading}
-		<div class="progess" transition:fade={{ duration: 125 }}>
+		<div class="progess" transition:fade={{ duration: 125, delay: 50 }}>
 			<Progress />
 		</div>
 	{/if}
 </div>
+
+<Toast />
 
 <style lang="less">
 	.container {

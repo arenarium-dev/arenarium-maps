@@ -5,7 +5,10 @@ import { getDb } from '$lib/server/database/client';
 import { API_KEY_FREE_KEY } from '$env/static/private';
 
 import { getStates } from '@workspace/shared/src/marker/compute/states.js';
+import { MAP_MAX_ZOOM, MAP_MIN_ZOOM } from '@workspace/shared/src/constants';
 import type { Popup } from '@workspace/shared/src/types.js';
+
+import { z } from 'zod';
 
 import type { RequestHandler } from './$types';
 
@@ -21,11 +24,22 @@ export const OPTIONS: RequestHandler = () => {
 
 export const POST: RequestHandler = async (event) => {
 	const statesRequest: Popup.StatesRequest = await event.request.json();
-	if (!statesRequest) return error(400, 'Invalid request body');
+	if (!statesRequest) error(400, 'Invalid request body');
+
+	const data = statesRequest.data;
+	if (!data) error(400, 'Missing data');
+
+	const number = z.number();
+
+	const minZoom = statesRequest.minZoom ?? MAP_MIN_ZOOM;
+	if (number.safeParse(minZoom).success == false) error(400, 'Invalid min zoom');
+
+	const maxZoom = statesRequest.maxZoom ?? MAP_MAX_ZOOM;
+	if (number.safeParse(maxZoom).success == false) error(400, 'Invalid max zoom');
 
 	// Get the API key
 	const key = statesRequest.apiKey;
-	if (!key) return error(400, 'Missing API key');
+	if (!key) error(400, 'Missing API key');
 
 	if (key != API_KEY_FREE_KEY) {
 		const db = getDb(event.platform?.env.DB);
@@ -35,6 +49,6 @@ export const POST: RequestHandler = async (event) => {
 		if (!dbApiKey) error(404, 'API key not found');
 	}
 
-	const states = getStates(statesRequest.data, statesRequest.minZoom, statesRequest.maxZoom);
+	const states = getStates(data, minZoom, maxZoom);
 	return json(states);
 };

@@ -13,7 +13,7 @@ export namespace Popup {
 	export interface StatesRequest {
 		apiKey: string;
 		data: Data[];
-		minZoom: number;
-		maxZoom: number;
+		minZoom?: number;
+		maxZoom?: number;
 	}
 }
