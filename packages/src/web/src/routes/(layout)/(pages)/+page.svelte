@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mount, onMount } from 'svelte';
+	import { mount, onDestroy, onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 
 	import Icon from '$lib/client/components/utils/Icon.svelte';
@@ -7,7 +7,6 @@
 	import Progress from '$lib/client/components/utils/Progress.svelte';
 
 	import RentalPopup from '$lib/client/components/demo/rentals/Popup.svelte';
-	import RentalPlaceholder from '$lib/client/components/demo/rentals/Placeholder.svelte';
 	import RentalPin from '$lib/client/components/demo/rentals/Pin.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
@@ -41,9 +40,12 @@
 		});
 	});
 
+	onDestroy(() => {
+		app.toast.set(null);
+	});
+
 	//#region Tune
 
-	let mainMenuComponent = $state<ReturnType<typeof Menu>>();
 	let palleteMenuComponent = $state<ReturnType<typeof Menu>>();
 	let sourceMenuComponent = $state<ReturnType<typeof Menu>>();
 
@@ -117,7 +119,7 @@
 			name: 'dark',
 			colors: {
 				background: 'var(--surface)',
-				primary: 'violet',
+				primary: 'purple',
 				text: 'var(--on-surface)'
 			}
 		});
@@ -242,7 +244,6 @@
 					callbacks: {
 						body: {
 							content: getPopupContent,
-							placeholder: getPopupPlaceholder
 						},
 						pin: {
 							content: getPinContent
@@ -285,14 +286,6 @@
 		return await new Promise((resolve) => {
 			const element = document.createElement('div');
 			mount(RentalPopup, { target: element, props: { id } });
-			resolve(element);
-		});
-	}
-
-	async function getPopupPlaceholder(id: string): Promise<HTMLElement> {
-		return await new Promise((resolve) => {
-			const element = document.createElement('div');
-			mount(RentalPlaceholder, { target: element });
 			resolve(element);
 		});
 	}

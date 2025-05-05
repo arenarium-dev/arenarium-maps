@@ -327,7 +327,7 @@
 		constructor(popup: MapPopup) {
 			super(popup);
 
-			this.pinContentCallback = popup.callbacks.pin?.content;
+			this.pinContentCallback = popup.content.pinCallback;
 		}
 
 		createElement() {
@@ -399,7 +399,6 @@
 		bodyLoading = false;
 		bodyLoaded = false;
 		bodyContentCallback: MapPopupContentCallback;
-		bodyPlaceholderCallback: MapPopupContentCallback | undefined;
 
 		constructor(popup: MapPopup) {
 			super(popup);
@@ -409,8 +408,7 @@
 			this.width = popup.data.width;
 			this.height = popup.data.height;
 
-			this.bodyContentCallback = popup.callbacks.body.content;
-			this.bodyPlaceholderCallback = popup.callbacks.body.placeholder;
+			this.bodyContentCallback = popup.content.bodyCallback;
 		}
 
 		createElement() {
@@ -467,20 +465,9 @@
 			const body = this.component?.getBody();
 			if (body == undefined) return;
 
-			// If has placeholder callback, load it
-			if (this.bodyPlaceholderCallback != undefined) {
-				this.bodyPlaceholderCallback(this.id).then((placeholder) => {
-					body.appendChild(placeholder);
-				});
-			}
-
 			// Load body callback
 			this.bodyLoading = true;
 			this.bodyContentCallback(this.id).then((content) => {
-				// Check if content div has placeholder and remove it
-				if (body.firstChild != undefined) {
-					body.removeChild(body.firstChild);
-				}
 				body.appendChild(content);
 				this.bodyLoading = false;
 				this.bodyLoaded = true;

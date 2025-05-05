@@ -6,7 +6,8 @@
 
 	let mounted = $state<boolean>(false);
 
-	onMount(() => {
+	onMount(async () => {
+		await new Promise((resolve) => setTimeout(resolve, Math.random() * 500));
 		mounted = true;
 	});
 
@@ -52,34 +53,42 @@
 	}
 </script>
 
-<button class="popup" onclick={onClick}>
-	<div class="image">
-		{#if mounted}
+{#if mounted}
+	<button class="popup" onclick={onClick}>
+		<div class="image">
 			<img loading="lazy" src={images[imageIndex]} alt={id} />
-		{/if}
-	</div>
-	<div class="text">
-		<div class="price">
-			<span class="amount">${price}</span>
 		</div>
-		<div class="details">
-			<div class="beds">
-				<span class="value">{beds}</span>
-				<span class="label">bd</span>
+		<div class="text">
+			<div class="price">
+				<span class="amount">${price}</span>
 			</div>
-			<span class="divider">|</span>
-			<div class="baths">
-				<span class="value">{baths}</span>
-				<span class="label">ba</span>
-			</div>
-			<span class="divider">|</span>
-			<div class="sqft">
-				<span class="value">{sqft}</span>
-				<span class="label">sqft</span>
+			<div class="details">
+				<div class="beds">
+					<span class="value">{beds}</span>
+					<span class="label">bd</span>
+				</div>
+				<span class="divider">|</span>
+				<div class="baths">
+					<span class="value">{baths}</span>
+					<span class="label">ba</span>
+				</div>
+				<span class="divider">|</span>
+				<div class="sqft">
+					<span class="value">{sqft}</span>
+					<span class="label">sqft</span>
+				</div>
 			</div>
 		</div>
+	</button>
+{:else}
+	<div class="placeholder">
+		<div class="image"></div>
+		<div class="text">
+			<div class="price"></div>
+			<div class="details"></div>
+		</div>
 	</div>
-</button>
+{/if}
 
 <style lang="less">
 	.popup {
@@ -134,6 +143,44 @@
 					align-items: center;
 					gap: 4px;
 				}
+			}
+		}
+	}
+
+	.placeholder {
+		width: 150px;
+		height: 150px;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		padding: 4px;
+
+		.image {
+			width: 100%;
+			aspect-ratio: 16 / 9;
+			background-color: var(--surface-container);
+			border-radius: 8px;
+			overflow: hidden;
+			cursor: pointer;
+		}
+
+		.text {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+
+			.price {
+				height: 18px;
+				width: 100px;
+				background-color: var(--surface-container);
+				border-radius: 8px;
+			}
+
+			.details {
+				height: 16px;
+				width: 100%;
+				background-color: var(--surface-container);
+				border-radius: 8px;
 			}
 		}
 	}

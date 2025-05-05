@@ -196,14 +196,9 @@
 			popups[i] = {
 				data: data[i],
 				state: states[i],
-				callbacks: {
-					body: {
-						content: getPopupContent,
-						placeholder: getPopupPlaceholder
-					},
-					pin: {
-						content: getPopupPin
-					}
+				content: {
+					bodyCallback: getPopupBody,
+					pinCallback: getPopupPin
 				}
 			};
 		}
@@ -241,7 +236,7 @@
 		return states;
 	}
 
-	async function getPopupContent(id: string): Promise<HTMLElement> {
+	async function getPopupBody(id: string): Promise<HTMLElement> {
 		await new Promise((resolve) => setTimeout(resolve, 1000));
 		return await new Promise((resolve) => {
 			const popup = mapPopups.get(id);
@@ -252,17 +247,6 @@
 
 			element.style.width = popup.data.width + 'px';
 			element.style.height = popup.data.height + 'px';
-			resolve(element);
-		});
-	}
-
-	async function getPopupPlaceholder(id: string): Promise<HTMLElement> {
-		return await new Promise((resolve) => {
-			const popup = mapPopups.get(id);
-			if (popup == undefined) throw new Error('Failed to get popup');
-
-			const element = document.createElement('div');
-			element.innerHTML = '<div class="placeholder"> Loading ' + popup.data.id + '</div>';
 			resolve(element);
 		});
 	}

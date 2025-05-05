@@ -43,9 +43,7 @@
 </script>
 
 <div class="circle" bind:this={circle}>
-	<div class="pin" bind:this={pin}>
-		<div class="content"></div>
-	</div>
+	<div class="pin" bind:this={pin}></div>
 </div>
 
 <style lang="less">
@@ -68,14 +66,11 @@
 		backface-visibility: hidden;
 
 		.pin {
-			background-color: @base;
+			min-width: @circle-size - @padding-size * 2;
+			min-height: @circle-size - @padding-size * 2;
 			border-radius: @circle-size * 0.35;
+			background-color: @base;
 			overflow: hidden;
-
-			.content {
-				width: @circle-size - @padding-size * 2;
-				height: @circle-size - @padding-size * 2;
-			}
 		}
 	}
 </style>
