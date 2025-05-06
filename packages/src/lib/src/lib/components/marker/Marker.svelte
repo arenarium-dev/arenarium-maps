@@ -191,9 +191,6 @@
 			top: 0px;
 
 			.body {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
 				border-radius: 12px;
 				border-style: solid;
 				border-width: @border-width;
