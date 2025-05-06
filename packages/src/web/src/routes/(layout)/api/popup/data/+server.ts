@@ -34,7 +34,6 @@ export const GET: RequestHandler = async (event) => {
 
 	let count = 0;
 	for (let i = 0; i < coordinates.length; i++) {
-		const rank = Math.floor(random() * total);
 		const lat = coordinates[i % coordinates.length].lat;
 		const lng = coordinates[i % coordinates.length].lng;
 		if (lat < swlat || nelat < lat || lng < swlng || nelng < lng) continue;
@@ -44,7 +43,7 @@ export const GET: RequestHandler = async (event) => {
 
 		data.push({
 			id: i.toString(),
-			rank: rank,
+			rank: i,
 			lat: lat,
 			lng: lng,
 			height: height,

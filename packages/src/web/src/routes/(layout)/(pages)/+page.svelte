@@ -315,7 +315,7 @@
 			const element = document.createElement('div');
 			switch (source) {
 				case 'Basic':
-					mount(BasicPopup, { target: element });
+					mount(BasicPopup, { target: element, props: { id } });
 					break;
 				case 'Rentals':
 					mount(RentalPopup, { target: element, props: { id, lat: popup.lat, lng: popup.lng } });
