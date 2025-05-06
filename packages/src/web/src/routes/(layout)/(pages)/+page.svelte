@@ -221,8 +221,8 @@
 
 		switch (source) {
 			case 'basic':
-				width = 48;
-				height = 48;
+				width = 64;
+				height = 64;
 				break;
 			case 'rentals':
 				width = 150;
