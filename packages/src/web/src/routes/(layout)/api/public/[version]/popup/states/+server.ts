@@ -59,5 +59,13 @@ export const POST: RequestHandler = async (event) => {
 	}
 
 	const states = getStates(data, minZoom, maxZoom);
-	return json(states);
+	return new Response(JSON.stringify(states), {
+		headers: {
+			'Content-Type': 'application/json',
+			'Access-Control-Allow-Origin': '*', // Allow any origin
+			'Access-Control-Allow-Methods': 'POST, OPTIONS',
+			'Access-Control-Allow-Headers': 'Content-Type' // Important if client sends Content-Type header
+		},
+		status: 200
+	});
 };
