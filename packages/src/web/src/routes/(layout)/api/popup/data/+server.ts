@@ -6,6 +6,8 @@ import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event) => {
 	const total = Number(event.url.searchParams.get('total'));
+	const width = Number(event.url.searchParams.get('width'));
+	const height = Number(event.url.searchParams.get('height'));
 	const swlat = Number(event.url.searchParams.get('swlat'));
 	const swlng = Number(event.url.searchParams.get('swlng'));
 	const nelat = Number(event.url.searchParams.get('nelat'));
@@ -45,8 +47,8 @@ export const GET: RequestHandler = async (event) => {
 			rank: rank,
 			lat: lat,
 			lng: lng,
-			height: 130,
-			width: 150
+			height: height,
+			width: width
 		});
 	}
 

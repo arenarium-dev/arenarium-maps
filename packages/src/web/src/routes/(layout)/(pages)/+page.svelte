@@ -7,6 +7,7 @@
 	import Progress from '$lib/client/components/utils/Progress.svelte';
 	import Toast from '$lib/client/components/Toast.svelte';
 
+	import BasicPopup from '$lib/client/components/demo/basic/Popup.svelte';
 	import RentalPopup from '$lib/client/components/demo/rentals/Popup.svelte';
 	import RentalPin from '$lib/client/components/demo/rentals/Pin.svelte';
 
@@ -15,6 +16,7 @@
 
 	import { mountMap, type MapBounds, type MapPopup, type MapPopupData, type MapPopupState } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
+	import { page } from '$app/state';
 
 	let map: ReturnType<typeof mountMap>;
 	let loading = $state<boolean>(false);
@@ -109,7 +111,7 @@
 			name: 'light',
 			colors: {
 				background: 'white',
-				primary: 'purple',
+				primary: 'darkmagenta',
 				text: 'black'
 			}
 		});
@@ -120,7 +122,7 @@
 			name: 'dark',
 			colors: {
 				background: 'var(--surface)',
-				primary: 'purple',
+				primary: 'green',
 				text: 'var(--on-surface)'
 			}
 		});
@@ -142,7 +144,10 @@
 
 	//#region Source
 
-	let source = $state<string>('Rentals');
+	let sourceHash = page.url.hash.slice(1);
+	let sources = ['Basic', 'Rentals', 'Events', 'News'];
+
+	let source = $state<string>(sources.includes(sourceHash) ? sourceHash : 'Basic');
 	let sourceAutoUpdate = $state<boolean>(false);
 	let sourcePopupData = new Map<string, MapPopupData>();
 
@@ -154,6 +159,8 @@
 	async function onSourceSelect(value: string) {
 		source = value;
 		sourcePopupData.clear();
+
+		window.location.hash = value;
 
 		await clearData();
 
@@ -208,9 +215,32 @@
 	}
 
 	async function getPopupData(bounds: MapBounds): Promise<MapPopupData[]> {
-		const data = await Fetch.that<MapPopupData[]>(
-			`/api/popup/data?total=128&swlat=${bounds.sw.lat}&swlng=${bounds.sw.lng}&nelat=${bounds.ne.lat}&nelng=${bounds.ne.lng}`
-		);
+		let width = 0;
+		let height = 0;
+
+		switch (source) {
+			case 'Basic':
+				width = 48;
+				height = 48;
+				break;
+			case 'Rentals':
+				width = 150;
+				height = 130;
+				break;
+			default:
+				throw new Error('Invalid source');
+		}
+
+		const params = new URLSearchParams();
+		params.append('total', '128');
+		params.append('swlat', bounds.sw.lat.toString());
+		params.append('swlng', bounds.sw.lng.toString());
+		params.append('nelat', bounds.ne.lat.toString());
+		params.append('nelng', bounds.ne.lng.toString());
+		params.append('width', width.toString());
+		params.append('height', height.toString());
+
+		const data = await Fetch.that<MapPopupData[]>(`/api/popup/data?${params}`);
 		return data;
 	}
 
@@ -283,7 +313,14 @@
 			if (!popup) throw new Error('Popup not found');
 
 			const element = document.createElement('div');
-			mount(RentalPopup, { target: element, props: { id, lat: popup.lat, lng: popup.lng } });
+			switch (source) {
+				case 'Basic':
+					mount(BasicPopup, { target: element });
+					break;
+				case 'Rentals':
+					mount(RentalPopup, { target: element, props: { id, lat: popup.lat, lng: popup.lng } });
+					break;
+			}
 			resolve(element);
 		});
 	}
@@ -291,7 +328,11 @@
 	async function getPopupPin(id: string): Promise<HTMLElement> {
 		return await new Promise((resolve) => {
 			const element = document.createElement('div');
-			mount(RentalPin, { target: element, props: { id } });
+			switch (source) {
+				case 'Rentals':
+					mount(RentalPin, { target: element, props: { id } });
+					break;
+			}
 			resolve(element);
 		});
 	}
@@ -351,6 +392,7 @@
 						{/snippet}
 						{#snippet menu()}
 							<div class="menu source shadow-large">
+								<button class="item" class:selected={source == 'Basic'} onclick={() => onSourceSelect('Basic')}>Basic</button>
 								<button class="item" class:selected={source == 'Rentals'} onclick={() => onSourceSelect('Rentals')}>Rentals</button>
 								<button class="item" class:selected={source == 'Events'} disabled onclick={() => onSourceSelect('Events')}>Events</button>
 								<button class="item" class:selected={source == 'News'} disabled onclick={() => onSourceSelect('News')}>News</button>
