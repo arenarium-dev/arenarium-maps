@@ -279,8 +279,11 @@
 
 	async function getPopupBody(id: string): Promise<HTMLElement> {
 		return await new Promise((resolve) => {
+			const popup = sourcePopupData.get(id);
+			if (!popup) throw new Error('Popup not found');
+
 			const element = document.createElement('div');
-			mount(RentalPopup, { target: element, props: { id } });
+			mount(RentalPopup, { target: element, props: { id, lat: popup.lat, lng: popup.lng } });
 			resolve(element);
 		});
 	}

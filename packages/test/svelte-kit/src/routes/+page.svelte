@@ -8,7 +8,7 @@
 
 	onMount(() => {
 		map = mountMap({
-			apiKey: '6bcac3cf6c714c7ca451917be52e810c',
+			// apiKey: '6bcac3cf6c714c7ca451917be52e810c',
 			container: 'map',
 			position: {
 				center: { lat: 51.505, lng: -0.09 },
@@ -26,8 +26,6 @@
 	});
 
 	async function insert() {
-		map.updatePopupContentCallback(getPopupContent);
-
 		const bounds = map.getBounds();
 		const popups = await getPopups(bounds);
 

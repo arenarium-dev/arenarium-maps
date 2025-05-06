@@ -1,5 +1,5 @@
 import { relations, sql } from 'drizzle-orm';
-import { text, integer, sqliteTable, uniqueIndex, index } from 'drizzle-orm/sqlite-core';
+import { text, integer, sqliteTable, uniqueIndex, index, foreignKey } from 'drizzle-orm/sqlite-core';
 
 //#region BetterAuth
 
@@ -87,24 +87,47 @@ export const apiKeys = sqliteTable(
 		updatedAt: integer('updatedAt', { mode: 'timestamp' }),
 		active: integer('active', { mode: 'boolean' }).notNull()
 	},
-	(table) => [index('tableApiKeysIndex').on(table.key)]
+	(table) => [
+		index('tableApiKeysIndex').on(table.key),
+		foreignKey({
+			name: 'tableApiKeysUserIdFk',
+			columns: [table.userId],
+			foreignColumns: [users.id]
+		})
+	]
 );
 
 export const apiKeyUsages = sqliteTable(
 	'tableApiKeyUsages',
 	{
 		id: text('id').primaryKey(),
-		key: text('keyId').notNull(),
+		keyId: text('keyId').notNull(),
 		count: integer('count').notNull(),
 		date: integer('date', { mode: 'timestamp' })
 			.notNull()
 			.default(sql`(unixepoch())`)
 	},
-	(table) => [index('tableApiKeyUsagesIndex').on(table.key)]
+	(table) => [
+		index('tableApiKeyUsagesIndex').on(table.keyId),
+		foreignKey({
+			name: 'tableApiKeyUsagesKeyIdFk',
+			columns: [table.keyId],
+			foreignColumns: [apiKeys.id]
+		})
+	]
 );
 
 export const userRelations = relations(users, ({ many }) => ({
 	userApiKeys: many(apiKeys)
+}));
+
+export const apiKeyRelations = relations(apiKeys, ({ one, many }) => ({
+	apiKeyUser: one(users, { fields: [apiKeys.userId], references: [users.id] }),
+	apiKeyUsages: many(apiKeyUsages)
+}));
+
+export const apiKeyUsageRelations = relations(apiKeyUsages, ({ one }) => ({
+	apiKeyUsageKey: one(apiKeys, { fields: [apiKeyUsages.keyId], references: [apiKeys.id] })
 }));
 
 export type DbUser = typeof users.$inferSelect;

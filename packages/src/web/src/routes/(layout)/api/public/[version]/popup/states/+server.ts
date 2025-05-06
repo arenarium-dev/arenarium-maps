@@ -1,5 +1,6 @@
 import { error, json } from '@sveltejs/kit';
 
+import * as schema from '$lib/server/database/schema';
 import { getDb } from '$lib/server/database/client';
 
 import { API_KEY_FREE_KEY } from '$env/static/private';
@@ -47,6 +48,14 @@ export const POST: RequestHandler = async (event) => {
 			where: (k, { and, eq }) => and(eq(k.key, key), eq(k.active, true))
 		});
 		if (!dbApiKey) error(404, 'API key not found');
+
+		// Update usage
+		const dbUsage: schema.DbApiKeyUsageInsert = {
+			id: crypto.randomUUID(),
+			keyId: dbApiKey.id,
+			count: data.length
+		};
+		await db.insert(schema.apiKeyUsages).values([dbUsage]);
 	}
 
 	const states = getStates(data, minZoom, maxZoom);
