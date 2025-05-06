@@ -27,10 +27,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: var(--surface);
 
 		.icon {
-            display: flex;
+			display: flex;
 			padding: 1px;
 		}
 

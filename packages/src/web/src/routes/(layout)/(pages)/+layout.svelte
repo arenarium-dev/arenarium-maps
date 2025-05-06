@@ -72,5 +72,9 @@
 				color: var(--on-surface);
 			}
 		}
+
+		a:hover {
+			text-decoration: underline;
+		}
 	}
 </style>

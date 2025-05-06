@@ -32,7 +32,7 @@
 				name: 'light',
 				colors: {
 					background: 'white',
-					primary: 'violet',
+					primary: 'darkgreen',
 					text: 'black'
 				}
 			}
@@ -52,12 +52,12 @@
 	let palleteMenuComponent = $state<ReturnType<typeof Menu>>();
 	let sourceMenuComponent = $state<ReturnType<typeof Menu>>();
 
-	let style = $state<string>('Website');
+	let style = $state<string>('website');
 
 	$effect(() => {
 		if (app.ready && app.theme.get() && map) {
 			setTimeout(() => {
-				if (style == 'Website') {
+				if (style == 'website') {
 					setStyleWebsite();
 				}
 			});
@@ -78,22 +78,22 @@
 
 	function onStyleWebsiteClick() {
 		setStyleWebsite();
-		style = 'Website';
+		style = 'website';
 	}
 
 	function onStyleLightClick() {
 		setStyleLight();
-		style = 'Light';
+		style = 'light';
 	}
 
 	function onStyleDarkClick() {
 		setStyleDark();
-		style = 'Dark';
+		style = 'dark';
 	}
 
 	function onStyleCustomClick() {
 		setStyleCustom();
-		style = 'Custom';
+		style = 'custom';
 	}
 
 	function setStyleWebsite() {
@@ -111,7 +111,7 @@
 			name: 'light',
 			colors: {
 				background: 'white',
-				primary: 'darkmagenta',
+				primary: 'darkgreen',
 				text: 'black'
 			}
 		});
@@ -122,7 +122,7 @@
 			name: 'dark',
 			colors: {
 				background: 'var(--surface)',
-				primary: 'green',
+				primary: 'lightgreen',
 				text: 'var(--on-surface)'
 			}
 		});
@@ -144,10 +144,11 @@
 
 	//#region Source
 
-	let sourceHash = page.url.hash.slice(1);
-	let sources = ['Basic', 'Rentals', 'Events', 'News'];
+	type Source = 'basic' | 'rentals' | 'events' | 'news';
+	let sourceHash = page.url.hash.slice(1) as Source;
+	let sources: Source[] = ['basic', 'rentals', 'events', 'news'];
 
-	let source = $state<string>(sources.includes(sourceHash) ? sourceHash : 'Basic');
+	let source = $state<'basic' | 'rentals' | 'events' | 'news'>(sources.includes(sourceHash) ? sourceHash : 'basic');
 	let sourceAutoUpdate = $state<boolean>(false);
 	let sourcePopupData = new Map<string, MapPopupData>();
 
@@ -156,11 +157,11 @@
 		processBoundsChange(bounds);
 	}
 
-	async function onSourceSelect(value: string) {
+	async function onSourceSelect(value: Source) {
 		source = value;
 		sourcePopupData.clear();
 
-		window.location.hash = value;
+		window.location.hash = value.toLowerCase();
 
 		await clearData();
 
@@ -219,11 +220,11 @@
 		let height = 0;
 
 		switch (source) {
-			case 'Basic':
+			case 'basic':
 				width = 48;
 				height = 48;
 				break;
-			case 'Rentals':
+			case 'rentals':
 				width = 150;
 				height = 130;
 				break;
@@ -314,10 +315,10 @@
 
 			const element = document.createElement('div');
 			switch (source) {
-				case 'Basic':
+				case 'basic':
 					mount(BasicPopup, { target: element, props: { id } });
 					break;
-				case 'Rentals':
+				case 'rentals':
 					mount(RentalPopup, { target: element, props: { id, lat: popup.lat, lng: popup.lng } });
 					break;
 			}
@@ -329,7 +330,7 @@
 		return await new Promise((resolve) => {
 			const element = document.createElement('div');
 			switch (source) {
-				case 'Rentals':
+				case 'rentals':
 					mount(RentalPin, { target: element, props: { id } });
 					break;
 			}
@@ -360,7 +361,7 @@
 			{#snippet button()}
 				<div class="button shadow-small">
 					<Icon name={'tune'} size={22} />
-					<span>{source}</span>
+					<span>{source.charAt(0).toUpperCase() + source.slice(1)}</span>
 				</div>
 			{/snippet}
 			{#snippet menu()}
@@ -369,16 +370,16 @@
 						{#snippet button()}
 							<button class="item" onclick={onPalleteClick}>
 								<Icon name={'palette'} size={22} />
-								<span>{style}</span>
+								<span>{style.charAt(0).toUpperCase() + style.slice(1)}</span>
 								<Icon name={'arrow_right'} />
 							</button>
 						{/snippet}
 						{#snippet menu()}
 							<div class="menu pallete shadow-large">
-								<button class="item" class:selected={style == 'Website'} onclick={onStyleWebsiteClick}>Website</button>
-								<button class="item" class:selected={style == 'Light'} onclick={onStyleLightClick}>Light</button>
-								<button class="item" class:selected={style == 'Dark'} onclick={onStyleDarkClick}>Dark</button>
-								<button class="item" class:selected={style == 'Custom'} onclick={onStyleCustomClick}>Custom</button>
+								<button class="item" class:selected={style == 'website'} onclick={onStyleWebsiteClick}>Website</button>
+								<button class="item" class:selected={style == 'light'} onclick={onStyleLightClick}>Light</button>
+								<button class="item" class:selected={style == 'dark'} onclick={onStyleDarkClick}>Dark</button>
+								<button class="item" class:selected={style == 'custom'} onclick={onStyleCustomClick}>Custom</button>
 							</div>
 						{/snippet}
 					</Menu>
@@ -386,16 +387,16 @@
 						{#snippet button()}
 							<button class="item" onclick={onSourceClick}>
 								<Icon name={'database'} size={22} />
-								<span>{source}</span>
+								<span>{source.charAt(0).toUpperCase() + source.slice(1)}</span>
 								<Icon name={'arrow_right'} />
 							</button>
 						{/snippet}
 						{#snippet menu()}
 							<div class="menu source shadow-large">
-								<button class="item" class:selected={source == 'Basic'} onclick={() => onSourceSelect('Basic')}>Basic</button>
-								<button class="item" class:selected={source == 'Rentals'} onclick={() => onSourceSelect('Rentals')}>Rentals</button>
-								<button class="item" class:selected={source == 'Events'} disabled onclick={() => onSourceSelect('Events')}>Events</button>
-								<button class="item" class:selected={source == 'News'} disabled onclick={() => onSourceSelect('News')}>News</button>
+								<button class="item" class:selected={source == 'basic'} onclick={() => onSourceSelect('basic')}>Basic</button>
+								<button class="item" class:selected={source == 'rentals'} onclick={() => onSourceSelect('rentals')}>Rentals</button>
+								<button class="item" class:selected={source == 'events'} disabled onclick={() => onSourceSelect('events')}>Events</button>
+								<button class="item" class:selected={source == 'news'} disabled onclick={() => onSourceSelect('news')}>News</button>
 							</div>
 						{/snippet}
 					</Menu>
