@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	import { mountMap, type MapBounds, type MapPopup } from '@arenarium/maps';
+	import { mountMap, type MapBounds, type MapPopup, type MapPopupData, type MapPopupState, type MapPopupStatesRequest } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
 
 	let map: ReturnType<typeof mountMap>;
@@ -39,7 +39,7 @@
 	}
 
 	async function getPopups(bounds: MapBounds): Promise<MapPopup[]> {
-		const popups = new Array<MapPopup>();
+		const popupsData = new Array<MapPopupData>();
 		const centers = [
 			{ lat: 51.505, lng: -0.09 },
 			{ lat: 45, lng: 22 },
@@ -68,7 +68,7 @@
 			if (lat < bounds.sw.lat || bounds.ne.lat < lat || lng < bounds.sw.lng || bounds.ne.lng < lng) continue;
 			if (cnt++ > limit) break;
 
-			popups.push({
+			popupsData.push({
 				id: i.toString(),
 				rank: i,
 				lat: lat,
@@ -78,7 +78,30 @@
 			});
 		}
 
-		return await new Promise((resolve) => resolve(popups));
+		const popupStatesRequest: MapPopupStatesRequest = {
+			apiKey: '6bcac3cf6c714c7ca451917be52e810c',
+			data: popupsData
+		};
+		const popupStatesResponse = await fetch('https://arenarium.dev/api/public/v1/popup/states', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(popupStatesRequest)
+		});
+		const popupStates: MapPopupState[] = await popupStatesResponse.json();
+
+		const popups = new Array<MapPopup>();
+
+		for (let i = 0; i < popupsData.length; i++) {
+			popups.push({
+				data: popupsData[i],
+				state: popupStates[i],
+				content: {
+					bodyCallback: getPopupContent
+				}
+			});
+		}
+
+		return popups;
 	}
 
 	async function getPopupContent(id: string): Promise<HTMLElement> {

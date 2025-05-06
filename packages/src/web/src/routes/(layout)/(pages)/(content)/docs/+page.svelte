@@ -154,7 +154,7 @@ const body: MapPopupStatesRequest = {
 	maxZoom: ...
 };
 
-const response = await fetch('https://arenarium.dev/api/popup/states', {
+const response = await fetch('https://arenarium.dev/api/public/v1/popup/states', {
 	method: 'POST',
 	body: JSON.stringify(body)
 });
