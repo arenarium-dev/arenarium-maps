@@ -73,15 +73,23 @@
 		border-radius: 16px;
 		display: flex;
 		flex-direction: row;
-		gap: 12px;
-		padding: 12px 18px;
 		z-index: 3000;
+		overflow: hidden;
 		cursor: pointer;
 
 		.text {
+			padding: 12px 18px;
 			font-size: 13px;
 			line-height: 18px;
 			font-weight: 600;
+		}
+
+		.button {
+			transition: all 125ms ease-in-out;
+
+			&:hover {
+				filter: brightness(0.9);
+			}
 		}
 	}
 
@@ -93,7 +101,8 @@
 		}
 
 		.button {
-			color: var(--primary);
+			background-color: var(--primary-container);
+			color: var(--on-primary-container);
 		}
 	}
 
@@ -105,7 +114,8 @@
 		}
 
 		.button {
-			color: var(--on-error-container);
+			background-color: var(--error);
+			color: var(--on-error);
 		}
 	}
 </style>
