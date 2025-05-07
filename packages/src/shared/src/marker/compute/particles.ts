@@ -36,15 +36,15 @@ export namespace Particles {
 
 			if (forceX > 0) {
 				if (forceY > 0) {
-					return 0 + index;
-				} else {
 					return (12 - index) % 12;
+				} else {
+					return 0 + index;
 				}
 			} else {
 				if (forceY > 0) {
-					return 6 - index;
-				} else {
 					return 6 + index;
+				} else {
+					return 6 - index;
 				}
 			}
 		}
@@ -158,7 +158,7 @@ export namespace Particles {
 		return stable;
 	}
 
-	export function recalibratePointIndexes(data: [Particle, Particle[]][]) {
+	export function initializePointIndexes(data: [Particle, Particle[]][]) {
 		for (let i = 0; i < data.length; i++) {
 			const [particle, particleForces] = data[i];
 			const center = particle.center;
@@ -172,9 +172,15 @@ export namespace Particles {
 
 				const dx = center.x - fCenter.x;
 				const dy = center.y - fCenter.y;
+				if (dx == 0 && dy == 0) continue;
 
-				forceX += Math.sign(dx) * (1 / (dx * dx));
-				forceY += Math.sign(dy) * (1 / (dy * dy));
+				const distance = Math.sqrt(dx * dx + dy * dy);
+				const force = 1 / (distance * distance);
+
+				// X axis is regular
+				forceX += (force * dx) / distance;
+				// Y axis is inverted
+				forceY += -(force * dy) / distance;
 			}
 
 			particle.index = Angles.getAngleIndex(forceX, forceY);

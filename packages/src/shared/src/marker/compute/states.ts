@@ -6,9 +6,14 @@ import { MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE, MARKER_PADDING } from '../.
 import { type Popup } from '../../types.js';
 
 namespace Nodes {
-	export interface Marker {
-		zet: number;
-		angs: [number, number][];
+	export class Marker {
+		zoomWhenExpanded: number;
+		angles: [number, number][];
+
+		constructor() {
+			this.zoomWhenExpanded = NaN;
+			this.angles = [];
+		}
 	}
 
 	export class Node {
@@ -227,6 +232,21 @@ namespace Nodes {
 		}
 	}
 
+	export function updateArray(nodes: Array<Node>, newNodes: Array<Node>) {
+		let changed = false;
+
+		for (let i = 0; i < newNodes.length; i++) {
+			const newNode = newNodes[i];
+			const newNodeIndex = nodes.indexOf(newNode);
+			if (newNodeIndex == -1) {
+				nodes.push(newNode);
+				changed = true;
+			}
+		}
+
+		return changed;
+	}
+
 	export function updateCollapsed(node: Node) {
 		// Set node expanded to false
 		node.expanded = false;
@@ -248,14 +268,14 @@ namespace Nodes {
 			const marker = markers.get(node.id);
 			if (!marker) throw new Error('Marker not found');
 
-			// Update marker zet
-			marker.zet = zoom;
+			// Update marker zoom when expanded
+			marker.zoomWhenExpanded = zoom;
 
 			// Update marker angles
 			// If the last angle value is different from the new angle value, add the new angle
 			// (ang[0] = threshold, ang[1] = value)
-			if (marker.angs.length == 0 || marker.angs[0][1] != node.angle) {
-				marker.angs.unshift([zoom, node.angle]);
+			if (marker.angles.length == 0 || marker.angles[0][1] != node.angle) {
+				marker.angles.unshift([zoom, node.angle]);
 			}
 		}
 	}
@@ -267,7 +287,7 @@ namespace Nodes {
 			}
 		}
 
-		export function getOverlaping(nodes: Array<Node>): boolean {
+		export function getOverlapingNodes(nodes: Array<Node>): Array<Node> | undefined {
 			for (let i = 0; i < nodes.length; i++) {
 				const node1 = nodes[i];
 				const bounds1 = node1.bounds;
@@ -278,12 +298,10 @@ namespace Nodes {
 					const bounds2 = node2.bounds;
 
 					if (areBoundsOverlaping(bounds2, bounds1)) {
-						return true;
+						return [node1, node2];
 					}
 				}
 			}
-
-			return false;
 		}
 
 		export function getOverlapingIndex(nodes: Array<Node>): number {
@@ -319,12 +337,6 @@ namespace Nodes {
 	}
 
 	export namespace Simulation {
-		let stable = false;
-
-		export function getStable() {
-			return stable;
-		}
-
 		export function getRadius(node: Node, scale: number): number {
 			const proprtion = 2;
 			const radius = Math.min(node.width, node.height) / proprtion / scale;
@@ -339,16 +351,19 @@ namespace Nodes {
 		}
 
 		export function updateAngles(nodes: Array<Node>) {
-			stable = Particles.updatePointIndexes(nodes.map((n) => [n.particle, n.neighbours.map((n) => n.particle)]));
+			const stable = Particles.updatePointIndexes(nodes.map((n) => [n.particle, n.neighbours.map((n) => n.particle)]));
 
 			for (let i = 0; i < nodes.length; i++) {
 				const node = nodes[i];
 				node.angle = Particles.Angles.DEGREES[node.particle.index];
 			}
+
+			return stable;
 		}
 
-		export function recalibrateAngles(nodes: Array<Node>) {
-			Particles.recalibratePointIndexes(nodes.map((n) => [n.particle, n.neighbours.map((n) => n.particle)]));
+		export function initializeAngles(nodes: Array<Node>) {
+			const particles = nodes.map((n) => n.particle);
+			Particles.initializePointIndexes(particles.map((n) => [n, particles]));
 
 			for (let i = 0; i < nodes.length; i++) {
 				const node = nodes[i];
@@ -396,7 +411,7 @@ function getStates(data: Array<Popup.Data>, minZoom: number, maxZoom: number): P
 	Nodes.Zoom.Max = maxZoom;
 
 	// Initialize markers
-	const markers = new Map<string, Nodes.Marker>(data.map((p) => [p.id, { zet: NaN, angs: [] }]));
+	const markers = new Map<string, Nodes.Marker>(data.map((p) => [p.id, new Nodes.Marker()]));
 
 	// Initialze nodes
 	const nodes = Nodes.createNodes(data);
@@ -406,6 +421,8 @@ function getStates(data: Array<Popup.Data>, minZoom: number, maxZoom: number): P
 	const zoomMin = Nodes.Zoom.Min;
 	const zoomMax = Nodes.Zoom.getZoomMax(nodeNeighbourDeltas);
 
+	// Initialize angles
+	Nodes.Simulation.initializeAngles(nodes);
 	// Initially add the last threshold event
 	Nodes.updateMarkers(nodes, markers, Nodes.Zoom.addSteps(maxZoom, 1));
 
@@ -425,30 +442,37 @@ function getStates(data: Array<Popup.Data>, minZoom: number, maxZoom: number): P
 
 			// Update node bounds
 			Nodes.Bounds.updateBounds(graph, zoomScale);
-			// Check if there are overlaping nodes in graph
-			if (Nodes.Bounds.getOverlaping(graph) == false) continue;
-
-			// Initialize the simulation for a given zoom level
+			// Update the simulation for a given zoom level
 			Nodes.Simulation.updateParticles(graph, zoomScale);
 
 			// Remove some overlaping nodes from the array
 			// until there is no overlaping nodes
-			while (true) {
+			loop: while (true) {
+				// Check if there are overlaping nodes in graph
+				const overlaps = Nodes.Bounds.getOverlapingNodes(graph);
+				if (overlaps == undefined) break;
+
 				// Run the simulation loop
 				// to update the angles of the nodes
 				while (true) {
 					// Update node angles in the simulation
-					Nodes.Simulation.updateAngles(graph);
-					// Update node bounds
-					Nodes.Bounds.updateBounds(graph, zoomScale);
+					const simStable = Nodes.Simulation.updateAngles(overlaps);
+					// Update node bounds after angle update
+					Nodes.Bounds.updateBounds(overlaps, zoomScale);
 
-					// Check if the last simulation update was stable
-					if (Nodes.Simulation.getStable()) break;
-					// Or there are overlaping nodes
-					if (Nodes.Bounds.getOverlaping(graph) == false) break;
+					// Check if there are new overlaping nodes, If not break the loop
+					const simOverlaps = Nodes.Bounds.getOverlapingNodes(graph);
+					if (simOverlaps == undefined) break loop;
+
+					// Flag if new overlaping nodes were added
+					let simChanged = Nodes.updateArray(overlaps, simOverlaps);
+
+					// If the simulation was stable and has not changed overlaping nodes,
+					// break and collapse some node
+					if (simStable == true && simChanged == false) break;
 				}
 
-				// Get the index of the overlaping node
+				// Get the index of the worst overlaping node
 				// If there is an no overlaping node break
 				const collapsedNodeIndex = Nodes.Bounds.getOverlapingIndex(graph);
 				if (collapsedNodeIndex == -1) break;
@@ -467,7 +491,7 @@ function getStates(data: Array<Popup.Data>, minZoom: number, maxZoom: number): P
 		Nodes.updateMarkers(nodes, markers, Number(zoom.toFixed(1)));
 	}
 
-	return Array.from(markers.values()).map((s) => [s.zet, s.angs]);
+	return Array.from(markers.values()).map((s) => [s.zoomWhenExpanded, s.angles]);
 }
 
 export { getStates };
