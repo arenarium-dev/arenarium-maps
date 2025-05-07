@@ -85,6 +85,7 @@
 		}
 
 		.button {
+			border-left: 1px solid var(--outline-variant);
 			transition: all 125ms ease-in-out;
 
 			&:hover {

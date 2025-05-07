@@ -232,19 +232,13 @@ namespace Nodes {
 		}
 	}
 
-	export function updateArray(nodes: Array<Node>, newNodes: Array<Node>) {
-		let changed = false;
-
-		for (let i = 0; i < newNodes.length; i++) {
-			const newNode = newNodes[i];
-			const newNodeIndex = nodes.indexOf(newNode);
-			if (newNodeIndex == -1) {
-				nodes.push(newNode);
-				changed = true;
-			}
+	export function updateArray(nodes: Array<Node>, newNode: Node) {
+		if (nodes.indexOf(newNode) == -1) {
+			nodes.push(newNode);
+			return true;
+		} else {
+			return false;
 		}
-
-		return changed;
 	}
 
 	export function updateCollapsed(node: Node) {
@@ -287,7 +281,10 @@ namespace Nodes {
 			}
 		}
 
-		export function getOverlapingNodes(nodes: Array<Node>): Array<Node> | undefined {
+		export function updateOverlapingNodes(overlapingNodes: Array<Node>, nodes: Array<Node>) {
+			// Update the set of overlaping nodes with one new node
+			// with the lowest number of neighbours
+
 			for (let i = 0; i < nodes.length; i++) {
 				const node1 = nodes[i];
 				const bounds1 = node1.bounds;
@@ -298,10 +295,24 @@ namespace Nodes {
 					const bounds2 = node2.bounds;
 
 					if (areBoundsOverlaping(bounds2, bounds1)) {
-						return [node1, node2];
+						if (node1.neighbours.length < node2.neighbours.length) {
+							if (updateArray(overlapingNodes, node1)) {
+								return true;
+							} else {
+								return updateArray(overlapingNodes, node2);
+							}
+						} else {
+							if (updateArray(overlapingNodes, node2)) {
+								return true;
+							} else {
+								return updateArray(overlapingNodes, node1);
+							}
+						}
 					}
 				}
 			}
+
+			return false;
 		}
 
 		export function getOverlapingIndex(nodes: Array<Node>): number {
@@ -447,10 +458,11 @@ function getStates(data: Array<Popup.Data>, minZoom: number, maxZoom: number): P
 
 			// Remove some overlaping nodes from the array
 			// until there is no overlaping nodes
-			loop: while (true) {
+			while (true) {
 				// Check if there are overlaping nodes in graph
-				const overlaps = Nodes.Bounds.getOverlapingNodes(graph);
-				if (overlaps == undefined) break;
+				const overlaps = new Array<Nodes.Node>();
+				const overlapsChanged = Nodes.Bounds.updateOverlapingNodes(overlaps, graph);
+				if (overlapsChanged == false) break;
 
 				// Run the simulation loop
 				// to update the angles of the nodes
@@ -461,12 +473,7 @@ function getStates(data: Array<Popup.Data>, minZoom: number, maxZoom: number): P
 					Nodes.Bounds.updateBounds(overlaps, zoomScale);
 
 					// Check if there are new overlaping nodes, If not break the loop
-					const simOverlaps = Nodes.Bounds.getOverlapingNodes(graph);
-					if (simOverlaps == undefined) break loop;
-
-					// Flag if new overlaping nodes were added
-					let simChanged = Nodes.updateArray(overlaps, simOverlaps);
-
+					const simChanged = Nodes.Bounds.updateOverlapingNodes(overlaps, graph);
 					// If the simulation was stable and has not changed overlaping nodes,
 					// break and collapse some node
 					if (simStable == true && simChanged == false) break;
@@ -474,15 +481,15 @@ function getStates(data: Array<Popup.Data>, minZoom: number, maxZoom: number): P
 
 				// Get the index of the worst overlaping node
 				// If there is an no overlaping node break
-				const collapsedNodeIndex = Nodes.Bounds.getOverlapingIndex(graph);
-				if (collapsedNodeIndex == -1) break;
+				const collapsedIndex = Nodes.Bounds.getOverlapingIndex(graph);
+				if (collapsedIndex == -1) break;
 
 				// Else, collapse it
-				Nodes.updateCollapsed(graph[collapsedNodeIndex]);
+				Nodes.updateCollapsed(graph[collapsedIndex]);
 
 				// And remove it from the array
 				// and try again if there is more than one node
-				graph.splice(collapsedNodeIndex, 1);
+				graph.splice(collapsedIndex, 1);
 				if (graph.length == 1) break;
 			}
 		}
