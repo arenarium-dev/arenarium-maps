@@ -232,15 +232,6 @@ namespace Nodes {
 		}
 	}
 
-	export function updateArray(nodes: Array<Node>, newNode: Node) {
-		if (nodes.indexOf(newNode) == -1) {
-			nodes.push(newNode);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	export function updateCollapsed(node: Node) {
 		// Set node expanded to false
 		node.expanded = false;
@@ -275,6 +266,15 @@ namespace Nodes {
 	}
 
 	export namespace Bounds {
+		function updateArray(nodes: Array<Node>, newNode: Node) {
+			if (nodes.indexOf(newNode) == -1) {
+				nodes.push(newNode);
+				return true;
+			} else {
+				return false;
+			}
+		}
+
 		export function updateBounds(nodes: Array<Node>, scale: number) {
 			for (let i = 0; i < nodes.length; i++) {
 				nodes[i].updateBounds(scale);
@@ -295,19 +295,32 @@ namespace Nodes {
 					const bounds2 = node2.bounds;
 
 					if (areBoundsOverlaping(bounds2, bounds1)) {
-						if (node1.neighbours.length < node2.neighbours.length) {
-							if (updateArray(overlapingNodes, node1)) {
-								return true;
-							} else {
-								return updateArray(overlapingNodes, node2);
-							}
+						if (node1.rank < node2.rank) {
+							if (updateArray(overlapingNodes, node1)) return true;
+							if (updateArray(overlapingNodes, node2)) return true;
 						} else {
-							if (updateArray(overlapingNodes, node2)) {
-								return true;
-							} else {
-								return updateArray(overlapingNodes, node1);
-							}
+							if (updateArray(overlapingNodes, node2)) return true;
+							if (updateArray(overlapingNodes, node1)) return true;
 						}
+					}
+				}
+			}
+
+			return false;
+		}
+
+		export function getAreOverlaping(nodes: Array<Node>): boolean {
+			for (let i = 0; i < nodes.length; i++) {
+				const node1 = nodes[i];
+				const bounds1 = node1.bounds;
+				const neighbours1 = nodes[i].neighbours;
+
+				for (let j = 0; j < neighbours1.length; j++) {
+					const node2 = nodes[j];
+					const bounds2 = node2.bounds;
+
+					if (areBoundsOverlaping(bounds2, bounds1)) {
+						return true;
 					}
 				}
 			}
@@ -458,8 +471,8 @@ function getStates(data: Array<Popup.Data>, minZoom: number, maxZoom: number): P
 
 			// Remove some overlaping nodes from the array
 			// until there is no overlaping nodes
-			while (true) {
-				// Check if there are overlaping nodes in graph
+			loop: while (true) {
+				// If there are no overlaping nodes in graph break the loop
 				const overlaps = new Array<Nodes.Node>();
 				const overlapsChanged = Nodes.Bounds.updateOverlapingNodes(overlaps, graph);
 				if (overlapsChanged == false) break;
@@ -472,11 +485,20 @@ function getStates(data: Array<Popup.Data>, minZoom: number, maxZoom: number): P
 					// Update node bounds after angle update
 					Nodes.Bounds.updateBounds(overlaps, zoomScale);
 
-					// Check if there are new overlaping nodes, If not break the loop
+					// If there are no overlaping nodes after angle update
+					// break to outer loop
+					const simOverlaping = Nodes.Bounds.getAreOverlaping(overlaps);
+					if (simOverlaping == false) break loop;
+
+					// If there are overlaping nodes
+					// but the simulation is not stable, continue simulation loop
+					if (simStable == false) continue;
+
+					// If there are still overlaping nodes and the simulation is stable
+					// check if there are new overlaping nodes
 					const simChanged = Nodes.Bounds.updateOverlapingNodes(overlaps, graph);
-					// If the simulation was stable and has not changed overlaping nodes,
-					// break and collapse some node
-					if (simStable == true && simChanged == false) break;
+					// If there are no new overlaping nodes, break the loop
+					if (simChanged == false) break;
 				}
 
 				// Get the index of the worst overlaping node
