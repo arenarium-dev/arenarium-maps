@@ -362,11 +362,12 @@
 
 			// Set circle scale
 			if (this.zoom <= zoom) {
-				circle.setScale(0);
+				circle.setCollapsed(true);
 			} else {
 				const distance = (this.zoom - zoom) / MAP_VISIBLE_ZOOM_DEPTH;
 				const scale = 1 - distance * 0.5;
 				circle.setScale(scale);
+				circle.setCollapsed(false);
 			}
 		}
 

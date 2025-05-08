@@ -28,31 +28,22 @@
 
 	//#endregion
 
-	//#region Collapse
+	//#region Collapsed
 
-	let scale = 0;
-	let scaleValue = 0;
-	let scaleTween = new Tween(0, { easing: sineInOut });
-
-	$effect(() => {
-		scaleValue = scaleTween.current;
-	});
+	let collapsed = $state<boolean>(true);
 
 	export function setCollapsed(value: boolean) {
-		const scaleSet = value ? 0 : 1;
-		if (scale == scaleSet) return;
-
-		scale = scaleSet;
-		scaleTween.set(scale, { duration: 200 });
-		window.requestAnimationFrame(styleStep);
+		collapsed = value;
 	}
 
 	export function getCollapsed() {
-		return scale == 0;
+		if (!marker) return false;
+		return marker.clientWidth == 0 && marker.clientHeight == 0;
 	}
 
 	export function getExpanded() {
-		return scale > 0;
+		if (!marker) return false;
+		return marker.clientWidth > 0 && marker.clientHeight > 0;
 	}
 
 	//#endregion
@@ -60,18 +51,23 @@
 	//#region Angle
 
 	let angle = MARKER_DEFAULT_ANGLE;
-	let angleValue = MARKER_DEFAULT_ANGLE;
+	let angleDefined = false;
 	let angleTween = new Tween(MARKER_DEFAULT_ANGLE, {
 		easing: sineInOut,
-		interpolate: angleInterpolate
+		interpolate: getAngleInterpolate
 	});
-	let angleDefined = false;
 
 	$effect(() => {
-		angleValue = angleTween.current;
+		updateAngleStyle(angleTween.current);
 	});
 
-	function angleInterpolate(aDeg: number, bDeg: number) {
+	$effect(() => {
+		if (displayed == false) {
+			angleTween.set(angle, { duration: 0 });
+		}
+	});
+
+	function getAngleInterpolate(aDeg: number, bDeg: number) {
 		if (Math.abs(bDeg - aDeg) < 180) {
 			return (t: number) => aDeg + t * (bDeg - aDeg);
 		} else {
@@ -81,46 +77,7 @@
 		}
 	}
 
-	export function setAngle(value: number) {
-		if (value != angle) {
-			angle = value;
-			if (angleDefined) {
-				angleTween.set(value, { duration: 400 });
-				window.requestAnimationFrame(styleStep);
-			} else {
-				angleTween.set(value, { duration: 0 });
-				angleValue = value;
-				styleStep();
-			}
-		}
-
-		angleDefined = true;
-	}
-
-	//#endregion
-
-	//#region Style
-
-	$effect(() => {
-		if (displayed == false) {
-			scaleTween.set(scale, { duration: 0 });
-			scaleValue = scale;
-
-			angleTween.set(angle, { duration: 0 });
-			angleValue = angle;
-
-			updateStyle(angleValue, scaleValue);
-		}
-	});
-
-	function styleStep() {
-		if (angle != angleValue || scale != scaleValue) {
-			updateStyle(angleValue, scaleValue);
-			window.requestAnimationFrame(styleStep);
-		}
-	}
-
-	function updateStyle(angle: number, scale: number) {
+	function updateAngleStyle(angle: number) {
 		if (!anchor || !marker || !pin) return;
 
 		const params = getPositionParams(markerWidth, markerHeight, angle);
@@ -128,17 +85,23 @@
 		const markerOffsetX = Math.round(params.markerOffsetX);
 		const markerOffsetY = Math.round(params.markerOffsetY);
 		marker.style.transform = `translate(${markerOffsetX}px, ${markerOffsetY}px)`;
-		marker.style.scale = `${scale}`;
 
 		const pinAngleDeg = params.pinAngleDeg;
 		const pinSkewDeg = params.pinSkewDeg;
 		pin.style.transform = `rotate(${pinAngleDeg}deg) skew(${pinSkewDeg}deg, ${pinSkewDeg}deg)`;
-		pin.style.scale = `${scale}`;
 
 		const shadowX = -1 - 2 * (markerOffsetX / markerWidth);
 		const shadowY = -1 - 2 * (markerOffsetY / markerHeight);
-		anchor.style.filter = `drop-shadow(0px 0px 4px rgba(0,0,0,0.4)) drop-shadow(${shadowX}px ${shadowY}px 2px rgba(0,0,0,0.4))`;
-		anchor.style.opacity = `${scale}`;
+		anchor.style.filter = `drop-shadow(0px 0px 4px rgba(0,0,0,0.5)) drop-shadow(${shadowX}px ${shadowY}px 2px rgba(0,0,0,0.5))`;
+	}
+
+	export function setAngle(value: number) {
+		if (value != angle) {
+			angle = value;
+			angleTween.set(value, { duration: angleDefined ? 400 : 0 });
+		}
+
+		angleDefined = true;
 	}
 
 	//#endregion
@@ -157,7 +120,7 @@
 
 	$effect(() => {
 		if (markerWidth && markerHeight) {
-			updateStyle(angleValue, scaleValue);
+			updateAngleStyle(angle);
 		}
 	});
 
@@ -167,7 +130,7 @@
 	//#endregion
 </script>
 
-<div class="anchor" class:hidden={!displayed} bind:this={anchor}>
+<div class="anchor" class:collapsed class:hidden={!displayed} bind:this={anchor}>
 	<div class="pin" bind:this={pin}></div>
 	<div class="marker" style:padding={MARKER_PADDING + 'px'} bind:this={marker} bind:clientWidth={markerWidth} bind:clientHeight={markerHeight}>
 		<div class="body" style:width={`${width}px`} style:height={`${height}px`} bind:this={body}></div>
@@ -212,27 +175,63 @@
 		}
 	}
 
-	/* Transition properties */
+	// Transition properties
+
+	@transition-duration: 250ms;
+	@transition-timing-function: cubic-bezier(0.75, 0, 0.25, 1);
+
 	.anchor {
+		transition-duration: @transition-duration;
+		transition-timing-function: @transition-timing-function;
 		transition-property: opacity;
 		will-change: opacity;
-		backface-visibility: hidden;
 
 		.marker {
 			transform-origin: 0% 0%;
 			transform-style: preserve-3d;
+			transition-duration: @transition-duration;
+			transition-timing-function: @transition-timing-function;
 			transition-property: scale;
 			will-change: transform, scale;
 		}
 
 		.pin {
 			transform-origin: 0% 0%;
+			transition-duration: @transition-duration;
+			transition-timing-function: @transition-timing-function;
 			transition-property: scale;
 			will-change: transform, scale;
 		}
 	}
 
-	/* Hidden properties */
+	// Collapsed properties
+
+	.anchor {
+		opacity: 1;
+
+		.marker {
+			scale: 1;
+		}
+
+		.pin {
+			scale: 1;
+		}
+	}
+
+	.anchor.collapsed {
+		opacity: 0;
+
+		.marker {
+			scale: 0;
+		}
+
+		.pin {
+			scale: 0;
+		}
+	}
+
+	// Hidden properties
+
 	.anchor {
 		display: block;
 	}
