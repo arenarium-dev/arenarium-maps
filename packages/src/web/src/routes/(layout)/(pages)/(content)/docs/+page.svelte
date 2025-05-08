@@ -68,7 +68,14 @@ const map = mountMap({
         center: { lat: 51.505, lng: -0.09 },
         zoom: 13
     },
-    // Optional: Define restrictions for map panning and zooming
+    // Map styling options
+    style: {
+        // Name of a predefined theme
+        name: 'light',
+        // Custom colors for popups and other UI elements
+        colors: { primary: 'darkgreen', background: 'white', text: 'black' }
+    },
+	// Optional: Define restrictions for map panning and zooming
     restriction: {
         minZoom: 10,
         maxZoom: 15,
@@ -77,13 +84,6 @@ const map = mountMap({
             ne: { lat: 54.505, lng: 3.09 }
         }
     },
-    // Map styling options
-    style: {
-        // Name of a predefined theme
-        name: 'light',
-        // Custom colors for popups and other UI elements
-        colors: { primary: 'darkgreen', background: 'white', text: 'black' }
-    }
 });`}
 			/>
 		</div>
@@ -186,11 +186,11 @@ for (let i = 0; i < count; i++) {
     popups.push({
         data: popupData[i],
         state: popupStates[i],
-        content: {
-            // Callback function that returns the HTML content for the popup body (required)
-            bodyCallback: ...,
-            // Optional: Callback function that returns the HTML content for a custom pin
-            pinCallback: ...
+        callbacks: {
+            // Callback function that returns the HTMLElement object for the popup body (required)
+            body: async (id) => { ... }
+            // Optional: Callback function that returns the HTMLElement object for a custom pin
+            pin: async (id) => { ... }
         }
     });
 }

@@ -273,9 +273,9 @@
 				const popup: MapPopup = {
 					data: statePopupData[i],
 					state: states[i],
-					content: {
-						bodyCallback: getPopupBody,
-						pinCallback: getPopupPin
+					callbacks: {
+						body: getPopupBody,
+						pin: getPopupPin
 					}
 				};
 				popups.push(popup);
