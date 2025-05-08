@@ -6,11 +6,11 @@
 	<div class="block">
 		<div class="title">Installation</div>
 		<div class="header">NPM</div>
-		<div class="text">Install the package using the following command:</div>
+		<div class="text">To install the <code>@aranarium/maps</code> library using npm, run the following command in your project directory:</div>
 		<div class="highlight">
 			<Highlight language="bash" text={`npm install @arenarium/maps`} />
 		</div>
-		<div class="text">Import the package in your project and mount the map:</div>
+		<div class="text">Import the necessary module and CSS file into your project to begin using the map:</div>
 		<div class="highlight">
 			<Highlight
 				language="javascript"
@@ -18,24 +18,29 @@
 import { mountMap } from '@arenarium/maps';
 import '@arenarium/maps/dist/style.css';
 
+// Initialize and mount the map (further configuration details follow)
 const map = mountMap(...);`}
 			/>
 		</div>
 		<div class="header">CDN</div>
-		<div class="text">Add the following script and stylesheet to your HTML:</div>
+		<div class="text">
+			To include <code>@aranarium/maps</code> directly in your HTML via a Content Delivery Network (CDN), add these script and stylesheet tags to the
+			<code>{'<head>'}</code> or <code>{'<body>'}</code> of your HTML document:
+		</div>
 		<div class="highlight">
 			<Highlight
 				language="xml"
 				text={`
 <script src="https://unpkg.com/@arenarium/maps@latest/dist/index.js"><\/script>
-<link href="https://unpkg.com/@arenarium/maps@latest/dist/style.css" rel="stylesheet" />`}
+<link href="https://unpkg.com/@arenarium/maps@latest/dist/style.css" rel="stylesheet" \/>`}
 			/>
 		</div>
-		<div class="text">Mount the map in your script:</div>
+		<div class="text">Once included, you can access the library's functions through the global <code>arenarium</code> object to mount the map:</div>
 		<div class="highlight">
 			<Highlight
 				language="javascript"
 				text={`
+// Initialize and mount the map (further configuration details follow)
 const map = arenarium.mountMap(...);
 `}
 			/>
@@ -44,44 +49,46 @@ const map = arenarium.mountMap(...);
 	<div class="block">
 		<div class="title">Usage</div>
 		<div class="header">Initialization</div>
-		<div class="text">Add a container div your HTML:</div>
+		<div class="text">To initialize the map, first add a container element to your HTML where the map will be rendered:</div>
 		<div class="highlight">
 			<Highlight language="xml" text={`<div id="map"></div>`} />
 		</div>
-		<div class="text">Initialize the map with options. To get the api key, sign in and create an API key.</div>
+		<div class="text">
+			Next, use the <code>mountMap</code> function with a <code>MapOptions</code> object.
+		</div>
 		<div class="highlight">
 			<Highlight
 				language="javascript"
 				text={`
 const map = mountMap({
-	// The id of the container element
-	container: 'map',
-	// The initial position of the map
-	position: {
-		center: { lat: 51.505, lng: -0.09 },
-		zoom: 13
-	},
-	// The restriction of the map zoom and bounds (optional)
-	restriction: {
-		minZoom: 10,
-		maxZoom: 15,
-		maxBounds: {
-			sw: { lat: 48.505, lng: -3.09 },
-			ne: { lat: 54.505, lng: 3.09 }
-		}
-	},
-	// The style of the map
-	style: {
-		// The name of the theme used for the map
-		name: 'light',
-		// The colors used for the popups and content
-		colors: { primary: 'darkgreen', background: 'white', text: 'black' }
-	}
+    // The ID of the HTML element that will contain the map
+    container: 'map',
+    // Initial map view settings
+    position: {
+        center: { lat: 51.505, lng: -0.09 },
+        zoom: 13
+    },
+    // Optional: Define restrictions for map panning and zooming
+    restriction: {
+        minZoom: 10,
+        maxZoom: 15,
+        maxBounds: {
+            sw: { lat: 48.505, lng: -3.09 },
+            ne: { lat: 54.505, lng: 3.09 }
+        }
+    },
+    // Map styling options
+    style: {
+        // Name of a predefined theme
+        name: 'light',
+        // Custom colors for popups and other UI elements
+        colors: { primary: 'darkgreen', background: 'white', text: 'black' }
+    }
 });`}
 			/>
 		</div>
 		<div class="header">Styles</div>
-		<div class="text">Set the style to a predefined theme:</div>
+		<div class="text">You can dynamically change the map's visual appearance by setting a predefined theme:</div>
 		<div class="highlight">
 			<Highlight
 				language="javascript"
@@ -90,24 +97,23 @@ map.setStyle({ name: 'dark', colors: { primary: 'purple', background: 'darkgray'
 			/>
 		</div>
 		<div class="text">
-			Or set the style to a custom theme with an URL to the style JSON. The JSON must comply with the <a
-				href="https://maplibre.org/maplibre-style-spec/"
-				target="_blank">MapLibre style specification</a
-			>.
+			Alternatively, you can apply a custom map style by providing a URL to a JSON file that adheres to the
+			<a href="https://maplibre.org/maplibre-style-spec/" target="_blank">MapLibre Style Specification</a>. You can also override specific color
+			properties within a custom style.
 		</div>
 		<div class="highlight">
 			<Highlight
 				language="javascript"
 				text={`
-map.setStyle({ 
-	name: 'liberty', 
-	url: 'https://tiles.openfreemap.org/styles/liberty.json', 
-	colors: { primary: 'purple', background: 'white', text: 'black' }
+map.setStyle({
+    name: 'liberty',
+    url: 'https://tiles.openfreemap.org/styles/liberty.json',
+    colors: { primary: 'purple', background: 'white', text: 'black' }
 });`}
 			/>
 		</div>
 		<div class="header">Popups</div>
-		<div class="text">Create the <code>MapPopupData</code> array:</div>
+		<div class="text">To display interactive popups on the map, you first need to define an array of <code>MapPopupData</code> objects:</div>
 		<div class="highlight">
 			<Highlight
 				language="javascript"
@@ -118,24 +124,26 @@ const popupData: MapPopupData[] = [];
 
 for (let i = 0; i < count; i++) {
     popupData.push({
-		// The unique ID of the popup
+        // A unique identifier for the popup
         id: ...,
-		// The rank of the popup used when comparing with other popups
+        // The ranking of the popup, used for visual prioritization
         rank: ..,
-		// The latitude of the popup
+        // The latitude of the popup's location
         lat: ...,
-		// The longitude of the popup
+        // The longitude of the popup's location
         lng: ...,
-		// The height of the popup content body
+        // The desired height of the popup's content area
         height: ...,
-		// The width of the popup content body
+        // The desired width of the popup's content area
         width: ...
     });
 }`}
 			/>
 		</div>
 		<div class="text">
-			Use the api to get the <code>MapPopupState</code> array. To get the api key, sign in and go to the <a href="/keys">keys</a> page.
+			Next, retrieve the dynamic state information for these popups using the API. You will need your API key, which can be found on your <a href="/keys"
+				>API Keys</a
+			> page after signing in.
 		</div>
 		<div class="highlight">
 			<Highlight
@@ -144,19 +152,22 @@ for (let i = 0; i < count; i++) {
 import { type MapPopupState, type MapPopupStatesRequest } from '@arenarium/maps';
 
 const body: MapPopupStatesRequest = {
-	// The API key
-	key: 'YOUR_API_KEY',
-	// The popup data
-	data: popupData,
-	// The minimum zoom level of the map, optional
-	minZoom: ...,
-	// The maximum zoom level of the map, optional
-	maxZoom: ...
+    // Your Arenarium API key
+    key: 'YOUR_API_KEY',
+    // The array of popup data
+    data: popupData,
+    // Optional: The minimum zoom level at which to consider popup states
+    minZoom: ...,
+    // Optional: The maximum zoom level at which to consider popup states
+    maxZoom: ...
 };
 
 const response = await fetch('https://arenarium.dev/api/public/v1/popup/states', {
-	method: 'POST',
-	body: JSON.stringify(body)
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
 });
 
 const popupStates: MapPopupState[] = await response.json();
@@ -164,9 +175,10 @@ const popupStates: MapPopupState[] = await response.json();
 			/>
 		</div>
 		<div class="text">
-			Create the <code>MapPopups</code> array with the <code>MapPopupData</code> and <code>MapPopupState</code> arrays and add the content callbacks for
-			the body and the pin. The callbacks should return a <code>HTMLElement</code> object. Finally update the map with the popups. The function adds new popups
-			and updates existing ones. It does not remove popups not specified in the array. It is designed to continuously update the popups on the map.
+			Finally, combine the <code>MapPopupData</code> and <code>MapPopupState</code> arrays to create an array of <code>MapPopup</code> objects. For each
+			popup, provide content rendering callbacks for the body and optionally for a custom pin. These callbacks should return a <code>HTMLElement</code>.
+			Use the <code>updatePopups</code> method on the map instance to display or update the popups. This method efficiently adds new popups and updates existing
+			ones based on their IDs. Popups not present in the provided array will remain on the map. This approach is designed for continuous updates of map popups.
 		</div>
 		<div class="highlight">
 			<Highlight
@@ -178,12 +190,12 @@ const popups: MapPopup[] = [];
 
 for (let i = 0; i < count; i++) {
     popups.push({
-		data: popupData[i],
+        data: popupData[i],
         state: popupStates[i],
         content: {
-			// The body content callback, required
+            // Callback function that returns the HTML content for the popup body (required)
             bodyCallback: ...,
-			// The pin content callback, optional
+            // Optional: Callback function that returns the HTML content for a custom pin
             pinCallback: ...
         }
     });
@@ -192,7 +204,7 @@ for (let i = 0; i < count; i++) {
 await map.updatePopups(popups);`}
 			/>
 		</div>
-		<div class="text">Remove all popups:</div>
+		<div class="text">To remove all popups from the map, use the <code>removePopups</code> method:</div>
 		<div class="highlight">
 			<Highlight
 				language="javascript"
@@ -202,33 +214,35 @@ await map.removePopups();
 			/>
 		</div>
 		<div class="header">Events</div>
-		<div class="text">Subscribe to map events:</div>
+		<div class="text">You can subscribe to various map events to respond to user interactions and map state changes:</div>
 		<div class="highlight">
 			<Highlight
 				language="javascript"
 				text={`
-map.on('idle', (position) => { ... });
-map.on('move', (position) => { ... });
-map.on('click', (coordinate) => { ... });`}
+map.on('idle', (position) => { /* Called when the map has finished moving and zooming */ });
+map.on('move', (position) => { /* Called while the map is moving */ });
+map.on('click', (coordinate) => { /* Called when the map is clicked */ });`}
 			/>
 		</div>
-		<div class="text">Unsubscribe from events:</div>
+		<div class="text">
+			To unsubscribe from a specific event listener, use the <code>off</code> method, providing the event key and the handler function:
+		</div>
 		<div class="highlight">
-			<Highlight language="javascript" text={`map.off(key, handler);`} />
+			<Highlight language="javascript" text={`map.off('idle', handlerFunction);`} />
 		</div>
 		<div class="header">Position</div>
-		<div class="text">Get the map position:</div>
+		<div class="text">You can programmatically retrieve the current map position, boundaries, and zoom level:</div>
 		<div class="highlight">
 			<Highlight
 				language="javascript"
 				text={`
-const position = map.getPosition();
-const bounds = map.getBounds();
-const zoom = map.getZoom();
+const position = map.getPosition(); // Returns an object containing center coordinates and zoom
+const bounds = map.getBounds();     // Returns the map's current bounding box
+const zoom = map.getZoom();        // Returns the current zoom level
 `}
 			/>
 		</div>
-		<div class="text">Set the map position:</div>
+		<div class="text">To programmatically set the map's center and zoom level:</div>
 		<div class="highlight">
 			<Highlight
 				language="javascript"
@@ -237,7 +251,7 @@ map.setPosition({ center: { lat: 51.505, lng: -0.09 }, zoom: 13 });
 `}
 			/>
 		</div>
-		<div class="text">Set the map restriction:</div>
+		<div class="text">You can also dynamically set restrictions on the map's zoom levels and visible bounds:</div>
 		<div class="highlight">
 			<Highlight
 				language="javascript"
@@ -245,16 +259,17 @@ map.setPosition({ center: { lat: 51.505, lng: -0.09 }, zoom: 13 });
 map.setMinZoom(10);
 map.setMaxZoom(18);
 map.setMaxBounds({
-	sw: { lat: 51.505, lng: -0.09 },
-	ne: { lat: 54.505, lng: 3.09 }
+    sw: { lat: 51.505, lng: -0.09 },
+    ne: { lat: 54.505, lng: 3.09 }
 });
 `}
 			/>
 		</div>
 		<div class="title" id="about">About</div>
 		<div class="text">
-			Use <strong>@arenarium/maps</strong> to effectively visualize large numbers of ranked popups on your maps. This library excels when you need to clearly
-			present many location-based markers ordered according to a specific ranking or priority.
+			<strong>@arenarium/maps</strong> is a library designed for the efficient visualization of a large number of ranked points of interest on your maps. It
+			excels in scenarios where you need to present numerous location-based markers with a clear visual hierarchy based on their importance or ranking. By
+			leveraging optimized rendering techniques and a dedicated API for managing dynamic popup states, this library ensures a smooth and informative user experience.
 		</div>
 	</div>
 </div>
