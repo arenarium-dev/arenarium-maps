@@ -17,9 +17,7 @@ export const POST: RequestHandler = async (event) => {
 
 	const statesResponse = await event.fetch('/api/public/v1/popup/states', {
 		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
+		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(statesBody)
 	});
 

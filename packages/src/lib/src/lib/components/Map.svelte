@@ -322,12 +322,12 @@
 	class MapPopupCircle extends MapPopupComponent<ReturnType<typeof MapMarkerCircle>> {
 		pinLoading = false;
 		pinLoaded = false;
-		pinContentCallback: MapPopupContentCallback | undefined;
+		pinCallback: MapPopupContentCallback | undefined;
 
 		constructor(popup: MapPopup) {
 			super(popup);
 
-			this.pinContentCallback = popup.content.pinCallback;
+			this.pinCallback = popup.callbacks.pin;
 		}
 
 		createElement() {
@@ -372,14 +372,14 @@
 		}
 
 		updatePin() {
-			if (this.pinContentCallback == undefined) return;
+			if (this.pinCallback == undefined) return;
 			if (this.pinLoaded || this.pinLoading) return;
 
 			const pin = this.component?.getPin();
 			if (pin == undefined) return;
 
 			this.pinLoading = true;
-			this.pinContentCallback(this.id).then((content) => {
+			this.pinCallback(this.id).then((content) => {
 				pin.appendChild(content);
 				this.pinLoaded = true;
 				this.pinLoading = false;
@@ -387,7 +387,7 @@
 		}
 
 		isPinLoaded() {
-			return this.pinContentCallback == undefined || this.pinLoaded;
+			return this.pinCallback == undefined || this.pinLoaded;
 		}
 	}
 
@@ -398,7 +398,7 @@
 
 		bodyLoading = false;
 		bodyLoaded = false;
-		bodyContentCallback: MapPopupContentCallback;
+		bodyCallback: MapPopupContentCallback;
 
 		constructor(popup: MapPopup) {
 			super(popup);
@@ -408,7 +408,7 @@
 			this.width = popup.data.width;
 			this.height = popup.data.height;
 
-			this.bodyContentCallback = popup.content.bodyCallback;
+			this.bodyCallback = popup.callbacks.body;
 		}
 
 		createElement() {
@@ -467,7 +467,7 @@
 
 			// Load body callback
 			this.bodyLoading = true;
-			this.bodyContentCallback(this.id).then((content) => {
+			this.bodyCallback(this.id).then((content) => {
 				body.appendChild(content);
 				this.bodyLoading = false;
 				this.bodyLoaded = true;
