@@ -159,7 +159,7 @@ namespace Nodes {
 
 				const zwt = getBoundsZoomWhenTouching(bounds1, bounds2);
 				const zoom = Zoom.getZoomIndex(zwt);
-				if (zoom < Zoom.Min) continue;
+				if (zoom < Zoom.MIN) continue;
 
 				const zoomNeighbourDelta1 = neighboursDeltas1[zoom];
 				const zoomNeighbourDelta2 = neighboursDeltas2[zoom];
@@ -397,8 +397,8 @@ namespace Nodes {
 	}
 
 	export namespace Zoom {
-		export let Min = MAP_MIN_ZOOM;
-		export let Max = MAP_MAX_ZOOM;
+		export const MIN = MAP_MIN_ZOOM;
+		export const MAX = MAP_MAX_ZOOM;
 
 		export const SCALE = MAP_ZOOM_SCALE;
 		export const STEP = 1 / SCALE;
@@ -408,11 +408,11 @@ namespace Nodes {
 		}
 
 		export function getZoomIndex(zwt: number) {
-			return Math.min(Math.ceil(zwt * SCALE), Max * SCALE);
+			return Math.min(Math.ceil(zwt * SCALE), MAX * SCALE);
 		}
 
 		export function getZoomMax(nodesNeighbourDeltas: Nodes.NodeNeighbourDeltas): number {
-			let zoom = Min;
+			let zoom = MIN;
 
 			for (let i = 0; i < nodesNeighbourDeltas.length; i++) {
 				const nodeNeighbourDeltas = nodesNeighbourDeltas[i];
@@ -429,11 +429,7 @@ namespace Nodes {
 	}
 }
 
-function getStates(data: Array<Popup.Data>, minZoom: number, maxZoom: number): Popup.State[] {
-	// Initialize zoom
-	Nodes.Zoom.Min = minZoom;
-	Nodes.Zoom.Max = maxZoom;
-
+function getStates(data: Array<Popup.Data>): Popup.State[] {
 	// Initialize markers
 	const markers = new Map<string, Nodes.Marker>(data.map((p) => [p.id, new Nodes.Marker()]));
 
@@ -442,13 +438,13 @@ function getStates(data: Array<Popup.Data>, minZoom: number, maxZoom: number): P
 	const nodeNeighbourDeltas = Nodes.createNeighbourDeltas(nodes);
 
 	// Initialize zoom
-	const zoomMin = Nodes.Zoom.Min;
+	const zoomMin = Nodes.Zoom.MIN;
 	const zoomMax = Nodes.Zoom.getZoomMax(nodeNeighbourDeltas);
 
 	// Initialize angles
 	Nodes.Simulation.initializeAngles(nodes);
 	// Initially add the last threshold event
-	Nodes.updateMarkers(nodes, markers, Nodes.Zoom.addSteps(maxZoom, 1));
+	Nodes.updateMarkers(nodes, markers, Nodes.Zoom.addSteps(Nodes.Zoom.MAX, 1));
 
 	// Go from last to first zoom
 	for (let zoom = zoomMax; zoom >= zoomMin; zoom = Nodes.Zoom.addSteps(zoom, -1)) {

@@ -156,17 +156,11 @@ const body: MapPopupStatesRequest = {
     key: 'YOUR_API_KEY',
     // The array of popup data
     data: popupData,
-    // Optional: The minimum zoom level at which to consider popup states
-    minZoom: ...,
-    // Optional: The maximum zoom level at which to consider popup states
-    maxZoom: ...
 };
 
 const response = await fetch('https://arenarium.dev/api/public/v1/popup/states', {
     method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
 });
 

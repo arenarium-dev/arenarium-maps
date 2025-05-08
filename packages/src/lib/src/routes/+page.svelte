@@ -115,12 +115,6 @@
 
 	//#region Data
 
-	interface StatesRequest {
-		minZoom: number;
-		maxZoom: number;
-		data: MapPopupData[];
-	}
-
 	let count = 0;
 
 	const total = 1000;
@@ -183,14 +177,8 @@
 			});
 		}
 
-		const getStatesRequest: StatesRequest = {
-			data: data,
-			minZoom: 10,
-			maxZoom: 18
-		};
-
 		const popups = new Array<MapPopup>(data.length);
-		const states = await getPopupStates(getStatesRequest);
+		const states = await getPopupStates(data);
 
 		for (let i = 0; i < data.length; i++) {
 			popups[i] = {
@@ -206,26 +194,26 @@
 		return await new Promise((resolve) => resolve(popups));
 	}
 
-	async function getPopupStates(request: StatesRequest): Promise<MapPopupState[]> {
+	async function getPopupStates(data: MapPopupData[]): Promise<MapPopupState[]> {
 		if (import.meta.env.DEV) {
 			switch (import.meta.env.MODE) {
 				case 'browser': {
 					const statesImport = await import('@workspace/shared/src/marker/compute/states.js');
-					return statesImport.getStates(request.data, request.minZoom, request.maxZoom);
+					return statesImport.getStates(data);
 				}
 				default: {
-					return await getStatesApi(request);
+					return await getStatesApi(data);
 				}
 			}
 		} else {
-			return await getStatesApi(request);
+			return await getStatesApi(data);
 		}
 	}
 
-	async function getStatesApi(request: StatesRequest): Promise<MapPopupState[]> {
+	async function getStatesApi(data: MapPopupData[]): Promise<MapPopupState[]> {
 		const response = await fetch(`/api`, {
 			method: 'POST',
-			body: JSON.stringify(request)
+			body: JSON.stringify(data)
 		});
 
 		if (!response.ok || !response.body) {
