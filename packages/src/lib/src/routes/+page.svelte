@@ -184,9 +184,9 @@
 			popups[i] = {
 				data: data[i],
 				state: states[i],
-				content: {
-					bodyCallback: getPopupBody,
-					pinCallback: getPopupPin
+				callbacks: {
+					body: getPopupBody,
+					pin: getPopupPin
 				}
 			};
 		}
