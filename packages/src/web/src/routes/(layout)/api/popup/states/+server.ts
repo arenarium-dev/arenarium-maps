@@ -11,10 +11,8 @@ export const POST: RequestHandler = async (event) => {
 	if (!requestBody) return error(400, 'Invalid request body');
 
 	const statesBody: Popup.StatesRequest = {
-		apiKey: API_KEY_FREE_KEY,
-		data: requestBody.data,
-		minZoom: requestBody.minZoom,
-		maxZoom: requestBody.maxZoom
+		key: API_KEY_FREE_KEY,
+		data: requestBody.data
 	};
 
 	const statesResponse = await event.fetch('/api/public/v1/popup/states', {

@@ -232,7 +232,7 @@ map.on('click', (coordinate) => { /* Called when the map is clicked */ });`}
 				text={`
 const position = map.getPosition(); // Returns an object containing center coordinates and zoom
 const bounds = map.getBounds();     // Returns the map's current bounding box
-const zoom = map.getZoom();        // Returns the current zoom level
+const zoom = map.getZoom();         // Returns the current zoom level
 `}
 			/>
 		</div>
