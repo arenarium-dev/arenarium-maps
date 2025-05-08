@@ -424,7 +424,7 @@
 			const element = this.element;
 			if (!element) return;
 
-			const zIndex = Math.round((MAP_MAX_ZOOM - this.zoom) * MAP_ZOOM_SCALE) + Number.MAX_SAFE_INTEGER / 2;
+			const zIndex = Math.round((MAP_MAX_ZOOM - this.zoom) * MAP_ZOOM_SCALE) + 1000000;
 			element.style.zIndex = zIndex.toString();
 		}
 
@@ -736,7 +736,7 @@
 				z-index: 0;
 
 				.maplibregl-ctrl-bottom-right {
-					z-index: 10000;
+					z-index: 10000000;
 
 					.maplibregl-ctrl-attrib {
 						background-color: color-mix(in srgb, var(--background) 50%, transparent 50%);

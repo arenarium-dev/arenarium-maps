@@ -37,6 +37,9 @@
 		border-radius: @circle-size * 0.5;
 		box-sizing: border-box;
 		box-shadow: 0 2px 2px rgba(0, 0, 0, 0.5);
+		transform-origin: 0% 0%;
+		transform-style: preserve-3d;
+		transform: translate(-50%, -50%);
 		backface-visibility: hidden;
 
 		.pin {
@@ -52,8 +55,7 @@
 
 	.circle {
 		scale: 1;
-		transform-origin: 0% 0%;
-		transform-style: preserve-3d;
+
 		transition-duration: 125ms;
 		transition-timing-function: ease-in-out;
 		transition-property: scale;
