@@ -47,8 +47,8 @@ namespace Nodes {
 
 		constructor(data: Popup.Data, index: number) {
 			const projection = getPoint(data.lat, data.lng);
-			const width = data.width + 3 * MARKER_PADDING;
-			const height = data.height + 3 * MARKER_PADDING;
+			const width = data.width + 2 * MARKER_PADDING;
+			const height = data.height + 2 * MARKER_PADDING;
 
 			this.index = index;
 			this.id = data.id;

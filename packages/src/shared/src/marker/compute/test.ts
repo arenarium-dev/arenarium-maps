@@ -2,7 +2,7 @@ import { areBoundsOverlaping, Bounds } from './bounds';
 import { getPoint } from '../projection';
 import { getRectangleOffsets } from '../rectangle';
 import { Popup } from '../../types';
-import { MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE } from '../../constants';
+import { MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE, MARKER_PADDING } from '../../constants';
 
 class Popup {
 	x: number;
@@ -20,8 +20,8 @@ class Popup {
 		const point = getPoint(data.lat, data.lng);
 		this.x = point.x;
 		this.y = point.y;
-		this.width = data.width;
-		this.height = data.height;
+		this.width = data.width + 2 * MARKER_PADDING;
+		this.height = data.height + 2 * MARKER_PADDING;
 		this.zoom = state[0];
 		this.angles = state[1];
 
