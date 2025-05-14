@@ -51,8 +51,6 @@ class Popup {
 export function testStates(data: Popup.Data[], states: Popup.State[]) {
 	if (data.length != states.length) throw new Error('Data and states length must be the same');
 
-	const now = performance.now();
-
 	const popups = new Array<Popup>(data.length);
 	for (let i = 0; i < data.length; i++) {
 		const state = states[i];
@@ -111,6 +109,4 @@ export function testStates(data: Popup.Data[], states: Popup.State[]) {
 			}
 		}
 	}
-
-	console.log(`[TEST ${data.length}] ${performance.now() - now}ms`);
 }

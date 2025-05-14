@@ -24,8 +24,8 @@
 				zoom: 4
 			},
 			restriction: {
-				minZoom: 10,
-				maxZoom: 18
+				// minZoom: 10,
+				// maxZoom: 18
 				// maxBounds: {
 				// 	sw: { lat: 51.505, lng: -0.09 },
 				// 	ne: { lat: 54.505, lng: 3.09 }
@@ -97,7 +97,7 @@
 
 		const now = performance.now();
 		await map.updatePopups(popups);
-		console.log(`[SET ${popups.length}] ${performance.now() - now}ms`);
+		console.log(`[UPDATE POPUPS ${popups.length}] ${performance.now() - now}ms`);
 	}
 
 	async function clearData() {
@@ -121,7 +121,7 @@
 	let count = 0;
 
 	const total = 1000;
-	const limit = 100;
+	const limit = 1000;
 
 	let lats = new Array<number>();
 	let lngs = new Array<number>();
@@ -181,9 +181,14 @@
 		}
 
 		const popups = new Array<MapPopup>(data.length);
-		const states = await getPopupStates(data);
 
+		let now = performance.now();
+		const states = await getPopupStates(data);
+		console.log(`[STATES CALCULATION ${data.length}] ${performance.now() - now}ms`);
+
+		now = performance.now();
 		testStates(data, states);
+		console.log(`[STATES TEST ${data.length}] ${performance.now() - now}ms`);
 
 		for (let i = 0; i < data.length; i++) {
 			popups[i] = {
