@@ -52,18 +52,6 @@
 	let palleteMenuComponent = $state<ReturnType<typeof Menu>>();
 	let sourceMenuComponent = $state<ReturnType<typeof Menu>>();
 
-	let style = $state<string>('website');
-
-	$effect(() => {
-		if (app.ready && app.theme.get() && map) {
-			setTimeout(() => {
-				if (style == 'website') {
-					setStyleWebsite();
-				}
-			});
-		}
-	});
-
 	function onPalleteClick(e: Event) {
 		e.stopPropagation();
 		palleteMenuComponent?.show();
@@ -75,6 +63,22 @@
 		palleteMenuComponent?.hide();
 		sourceMenuComponent?.show();
 	}
+
+	//#endregion
+
+	//#region Style
+
+	let style = $state<string>('website');
+
+	$effect(() => {
+		if (app.ready && app.theme.get() && map) {
+			setTimeout(() => {
+				if (style == 'website') {
+					setStyleWebsite();
+				}
+			});
+		}
+	});
 
 	function onStyleWebsiteClick() {
 		setStyleWebsite();
@@ -183,7 +187,7 @@
 			if (dataDelta.length === 0) return;
 
 			if (sourceAutoUpdate || sourcePopupData.size === 0) {
-				await processPopupData(dataDelta);
+				await processPopupDataDelta(dataDelta);
 				return;
 			}
 
@@ -193,7 +197,7 @@
 				callback: {
 					name: 'Yes',
 					function: async () => {
-						await processPopupData(dataDelta);
+						await processPopupDataDelta(dataDelta);
 					}
 				}
 			});
@@ -216,21 +220,7 @@
 	}
 
 	async function getPopupData(bounds: MapBounds): Promise<MapPopupData[]> {
-		let width = 0;
-		let height = 0;
-
-		switch (source) {
-			case 'basic':
-				width = 64;
-				height = 64;
-				break;
-			case 'rentals':
-				width = 150;
-				height = 130;
-				break;
-			default:
-				throw new Error('Invalid source');
-		}
+		const { width, height } = getPopupDimensions();
 
 		const params = new URLSearchParams();
 		params.append('total', '128');
@@ -255,16 +245,19 @@
 		return newPopupData;
 	}
 
-	async function processPopupData(data: MapPopupData[]) {
+	async function processPopupDataDelta(dataDelta: MapPopupData[]) {
 		try {
 			loading = true;
 
 			// Update the loaded data
-			data.forEach((d) => sourcePopupData.set(d.id, d));
+			dataDelta.forEach((d) => sourcePopupData.set(d.id, d));
 
 			// Get the new states
 			const statePopupData = Array.from(sourcePopupData.values());
-			const states = await getPopupStates(statePopupData);
+			const states = await Fetch.that<MapPopupState[]>(`/api/popup/states`, {
+				method: 'POST',
+				body: statePopupData
+			});
 			console.log('Loaded states:', states.length);
 
 			// Create the new popups
@@ -295,17 +288,15 @@
 		}
 	}
 
-	async function getPopupStates(data: MapPopupData[]): Promise<MapPopupState[]> {
-		const request = {
-			data: data,
-			minZoom: 0,
-			maxZoom: 18
-		};
-		const states = await Fetch.that<MapPopupState[]>(`/api/popup/states`, {
-			method: 'POST',
-			body: request
-		});
-		return states;
+	function getPopupDimensions(): { width: number; height: number } {
+		switch (source) {
+			case 'basic':
+				return { width: 48, height: 48 };
+			case 'rentals':
+				return { width: 128, height: 104 };
+			default:
+				throw new Error('Invalid source');
+		}
 	}
 
 	async function getPopupBody(id: string): Promise<HTMLElement> {

@@ -96,8 +96,8 @@
 
 <style lang="less">
 	.popup {
-		width: 150px;
-		height: 150px;
+		width: 128px;
+		height: 104px;
 		display: flex;
 		flex-direction: column;
 		padding: 4px;
@@ -126,26 +126,25 @@
 			.price {
 				display: flex;
 				align-items: center;
-				gap: 4px;
 				color: var(--on-surface);
 				font-weight: 600;
-				font-size: 16px;
+				font-size: 14px;
 			}
 
 			.details {
 				display: flex;
 				flex-direction: row;
 				align-items: start;
-				gap: 4px;
-				font-weight: 400;
-				font-size: 12px;
+				gap: 3px;
+				font-weight: 500;
+				font-size: 11px;
 
 				.beds,
 				.baths,
 				.sqft {
 					display: flex;
 					align-items: center;
-					gap: 4px;
+					gap: 2px;
 				}
 			}
 		}

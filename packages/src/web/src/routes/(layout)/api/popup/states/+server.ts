@@ -7,12 +7,12 @@ import type { Popup } from '@workspace/shared/src/types.js';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async (event) => {
-	const requestBody: { data: Popup.Data[]; minZoom: number; maxZoom: number } = await event.request.json();
-	if (!requestBody) return error(400, 'Invalid request body');
+	const data: Popup.Data[] = await event.request.json();
+	if (!data) return error(400, 'Invalid request body');
 
 	const statesBody: Popup.StatesRequest = {
 		key: API_KEY_FREE_KEY,
-		data: requestBody.data
+		data: data
 	};
 
 	const statesResponse = await event.fetch('/api/public/v1/popup/states', {
