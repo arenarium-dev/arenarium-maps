@@ -5,7 +5,10 @@
 	import Popup from './components/Popup.svelte';
 
 	import { mountMap } from '$lib/index.js';
-	import type { MapBounds, MapPopup, MapPopupData, MapPopupState, MapPopupStatesRequest } from '$lib/map/schemas.js';
+	import type { MapBounds, MapPopup, MapPopupData, MapPopupState } from '$lib/map/schemas.js';
+
+	import { getStates } from '@workspace/shared/src/marker/compute/states.js';
+	import { testStates } from '@workspace/shared/src/marker/compute/test.js';
 
 	let map: ReturnType<typeof mountMap>;
 	let mapPopups = new Map<string, MapPopup>();
@@ -180,6 +183,8 @@
 		const popups = new Array<MapPopup>(data.length);
 		const states = await getPopupStates(data);
 
+		testStates(data, states);
+
 		for (let i = 0; i < data.length; i++) {
 			popups[i] = {
 				data: data[i],
@@ -198,8 +203,7 @@
 		if (import.meta.env.DEV) {
 			switch (import.meta.env.MODE) {
 				case 'browser': {
-					const statesImport = await import('@workspace/shared/src/marker/compute/states.js');
-					return statesImport.getStates(data);
+					return getStates(data);
 				}
 				default: {
 					return await getStatesApi(data);

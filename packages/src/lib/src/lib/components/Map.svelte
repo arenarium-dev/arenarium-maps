@@ -394,7 +394,7 @@
 	class MapPopupMarker extends MapPopupComponent<ReturnType<typeof MapMarker>> {
 		width: number;
 		height: number;
-		angles: [number, number][];
+		states: [number, number][];
 
 		bodyLoading = false;
 		bodyLoaded = false;
@@ -404,7 +404,7 @@
 			super(popup);
 
 			this.id = popup.data.id;
-			this.angles = popup.state[1];
+			this.states = popup.state[1];
 			this.width = popup.data.width;
 			this.height = popup.data.height;
 
@@ -449,7 +449,7 @@
 			if (!marker) throw new Error('Failed to update marker state');
 
 			// Set marker collapse status and angle
-			if (this.zoom <= zoom) {
+			if (this.zoom < zoom) {
 				marker.setCollapsed(false);
 				marker.setAngle(this.getAngle(zoom));
 			} else {
@@ -475,17 +475,9 @@
 		}
 
 		getAngle(zoom: number) {
-			let angles = this.angles;
-			let angle = angles[0];
-			let index = 0;
-
-			while (angle[0] < zoom) {
-				index++;
-				if (index == angles.length) break;
-				angle = angles[index];
-			}
-
-			return angle[1];
+			const state = this.states.findLast((s) => s[0] < zoom);
+			if (!state) throw new Error('Angle not found');
+			return state[1];
 		}
 
 		getExpanded() {
@@ -642,7 +634,7 @@
 				oldData.circle.updateZIndex();
 
 				oldData.marker.zoom = newPopup.state[0];
-				oldData.marker.angles = newPopup.state[1];
+				oldData.marker.states = newPopup.state[1];
 				oldData.marker.updateZIndex();
 			} else {
 				// Create data

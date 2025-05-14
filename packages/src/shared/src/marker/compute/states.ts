@@ -2,17 +2,17 @@ import { getRectangleOffsets } from '../rectangle.js';
 import { Particles } from './particles.js';
 import { getBoundsZoomWhenTouching, areBoundsOverlaping, type Bounds } from './bounds.js';
 import { getPoint } from '../projection.js';
-import { MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE, MARKER_PADDING } from '../../constants.js';
+import { MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE, MARKER_DEFAULT_ANGLE, MARKER_PADDING } from '../../constants.js';
 import { type Popup } from '../../types.js';
 
 namespace Nodes {
 	export class Marker {
-		zoomWhenExpanded: number;
-		angles: [number, number][];
+		zoomAfterExpanded: number;
+		zoomAfterAngles: [number, number][];
 
 		constructor() {
-			this.zoomWhenExpanded = NaN;
-			this.angles = [];
+			this.zoomAfterExpanded = NaN;
+			this.zoomAfterAngles = [];
 		}
 	}
 
@@ -254,13 +254,19 @@ namespace Nodes {
 			if (!marker) throw new Error('Marker not found');
 
 			// Update marker zoom when expanded
-			marker.zoomWhenExpanded = zoom;
+			marker.zoomAfterExpanded = zoom;
 
 			// Update marker angles
 			// If the last angle value is different from the new angle value, add the new angle
 			// (ang[0] = threshold, ang[1] = value)
-			if (marker.angles.length == 0 || marker.angles[0][1] != node.angle) {
-				marker.angles.unshift([zoom, node.angle]);
+			if (marker.zoomAfterAngles.length == 0) {
+				marker.zoomAfterAngles.push([zoom, node.angle]);
+			} else {
+				if (marker.zoomAfterAngles[0][1] != node.angle) {
+					marker.zoomAfterAngles.unshift([zoom, node.angle]);
+				} else {
+					marker.zoomAfterAngles[0][0] = zoom;
+				}
 			}
 		}
 	}
@@ -430,6 +436,9 @@ namespace Nodes {
 }
 
 function getStates(data: Array<Popup.Data>): Popup.State[] {
+	if (data.length == 0) return [];
+	if (data.length == 1) return [[MAP_MIN_ZOOM, [[MAP_MIN_ZOOM, MARKER_DEFAULT_ANGLE]]]];
+
 	// Initialize markers
 	const markers = new Map<string, Nodes.Marker>(data.map((p) => [p.id, new Nodes.Marker()]));
 
@@ -516,7 +525,7 @@ function getStates(data: Array<Popup.Data>): Popup.State[] {
 		Nodes.updateMarkers(nodes, markers, Number(zoom.toFixed(1)));
 	}
 
-	return Array.from(markers.values()).map((s) => [s.zoomWhenExpanded, s.angles]);
+	return Array.from(markers.values()).map((s) => [s.zoomAfterExpanded, s.zoomAfterAngles]);
 }
 
 export { getStates };
