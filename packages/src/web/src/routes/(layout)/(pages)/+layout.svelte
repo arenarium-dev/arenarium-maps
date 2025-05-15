@@ -31,6 +31,7 @@
 		</div>
 		<a class="title" href="/">@arenarium/maps</a>
 		<div class="grow"></div>
+		<a class="title" href="/pricing">Pricing</a>
 		<a class="title" href="/docs">Docs</a>
 		<div class="navigation">
 			<Navigation />
@@ -67,7 +68,7 @@
 			}
 
 			.title {
-				font-size: 18px;
+				font-size: 16px;
 				font-weight: 600;
 				color: var(--on-surface);
 			}
