@@ -21,19 +21,16 @@
 	let formModal = $state<ReturnType<typeof Modal>>();
 	let formId = $state<string>('');
 	let formName = $state<string>('');
-	let formDomains = $state<string[]>([]);
 
 	function createApiKey() {
 		formId = '';
 		formName = '';
-		formDomains = [];
 		formModal?.show();
 	}
 
 	function editApiKey(apiKey: APIKey) {
 		formId = apiKey.id;
 		formName = apiKey.name;
-		formDomains = apiKey.domains;
 		formModal?.show();
 	}
 
@@ -151,7 +148,7 @@
 				<li class="item">
 					<div class="info">
 						<span class="name">{apiKey.name}</span>
-						<span class="domains">{apiKey.domains.join(', ')}</span>
+						<span class="date">{apiKey.date?.toLocaleString()}</span>
 					</div>
 					<input
 						type="text"
@@ -190,7 +187,7 @@
 {/if}
 
 <Modal bind:this={formModal}>
-	<ApiKeyForm success={onFromSuccess} id={formId} name={formName} domains={formDomains} />
+	<ApiKeyForm success={onFromSuccess} id={formId} name={formName} />
 </Modal>
 
 <Toast />
@@ -265,7 +262,7 @@
 					margin-bottom: 4px;
 				}
 
-				.domains {
+				.date {
 					font-size: 14px;
 					opacity: 0.75;
 				}

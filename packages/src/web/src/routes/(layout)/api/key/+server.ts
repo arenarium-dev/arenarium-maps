@@ -4,20 +4,17 @@ import * as schema from '$lib/server/database/schema';
 import { getDb } from '$lib/server/database/client';
 import { getUser } from '$lib/server/auth';
 
-import { domainsSchema, nameSchema } from '$lib/shared/validation';
+import { nameSchema } from '$lib/shared/validation';
 
 import { and, eq } from 'drizzle-orm';
 
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async (event) => {
-	const apiKey = await event.request.json<{ id: string; name: string; domains: string[] }>();
+	const apiKey = await event.request.json<{ id: string; name: string }>();
 
 	const name = apiKey.name;
 	if (!nameSchema.safeParse(name).success) error(400, 'Invalid name');
-
-	const domains = apiKey.domains;
-	if (!domainsSchema.safeParse(domains).success) error(400, 'Invalid domains');
 
 	const user = await getUser(event);
 	if (!user) error(401, 'Not authenticated');
@@ -30,7 +27,6 @@ export const POST: RequestHandler = async (event) => {
 			.update(schema.apiKeys)
 			.set({
 				name: name,
-				domains: domains,
 				updatedAt: new Date()
 			})
 			.where(eq(schema.apiKeys.id, dbId));
@@ -40,8 +36,8 @@ export const POST: RequestHandler = async (event) => {
 			userId: user.id,
 			name: name,
 			key: crypto.randomUUID().replace(/-/g, ''),
-			domains: domains,
 			active: true,
+			unlimited: false,
 			createdAt: new Date(),
 			updatedAt: new Date()
 		});

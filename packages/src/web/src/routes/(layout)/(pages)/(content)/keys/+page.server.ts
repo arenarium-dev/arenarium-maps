@@ -20,7 +20,7 @@ export const load: PageServerLoad = async (event) => {
 		id: dbUserKey.id,
 		key: dbUserKey.key,
 		name: dbUserKey.name,
-		domains: dbUserKey.domains as string[],
+		date: dbUserKey.createdAt,
 		active: dbUserKey.active
 	}));
 

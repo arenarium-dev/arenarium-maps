@@ -82,10 +82,10 @@ export const apiKeys = sqliteTable(
 		userId: text('userId').notNull(),
 		key: text('key').notNull(),
 		name: text('name').notNull(),
-		domains: text('domains', { mode: 'json' }).notNull(),
-		createdAt: integer('createdAt', { mode: 'timestamp' }),
-		updatedAt: integer('updatedAt', { mode: 'timestamp' }),
-		active: integer('active', { mode: 'boolean' }).notNull()
+		createdAt: integer('createdAt', { mode: 'timestamp' }).notNull(),
+		updatedAt: integer('updatedAt', { mode: 'timestamp' }).notNull(),
+		active: integer('active', { mode: 'boolean' }).notNull(),
+		unlimited: integer('unlimited', { mode: 'boolean' }).notNull()
 	},
 	(table) => [
 		index('tableApiKeysIndex').on(table.key),
