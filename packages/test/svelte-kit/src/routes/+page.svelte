@@ -8,7 +8,6 @@
 
 	onMount(() => {
 		map = mountMap({
-			// apiKey: '6bcac3cf6c714c7ca451917be52e810c',
 			container: 'map',
 			position: {
 				center: { lat: 51.505, lng: -0.09 },
@@ -78,14 +77,10 @@
 			});
 		}
 
-		const popupStatesRequest: MapPopupStatesRequest = {
-			apiKey: '6bcac3cf6c714c7ca451917be52e810c',
-			data: popupsData
-		};
-		const popupStatesResponse = await fetch('https://arenarium.dev/api/public/v1/popup/states', {
+		const popupStatesResponse = await fetch('/states', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(popupStatesRequest)
+			body: JSON.stringify(popupsData)
 		});
 		const popupStates: MapPopupState[] = await popupStatesResponse.json();
 
@@ -95,8 +90,8 @@
 			popups.push({
 				data: popupsData[i],
 				state: popupStates[i],
-				content: {
-					bodyCallback: getPopupContent
+				callbacks: {
+					body: getPopupContent
 				}
 			});
 		}
