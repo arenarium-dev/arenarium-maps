@@ -67,6 +67,12 @@
 		}
 	});
 
+	$effect(() => {
+		if (collapsed == true) {
+			angleTween.set(angle, { duration: 200 });
+		}
+	});
+
 	function getAngleInterpolate(aDeg: number, bDeg: number) {
 		if (Math.abs(bDeg - aDeg) < 180) {
 			return (t: number) => aDeg + t * (bDeg - aDeg);
@@ -96,6 +102,11 @@
 	}
 
 	export function setAngle(value: number) {
+		if (displayed == false) {
+			angle = value;
+			updateAngleStyle(angle);
+		}
+
 		if (value != angle) {
 			angle = value;
 			angleTween.set(value, { duration: angleDefined ? 400 : 0 });
@@ -130,7 +141,7 @@
 	//#endregion
 </script>
 
-<div class="anchor" class:collapsed class:hidden={!displayed} bind:this={anchor}>
+<div class="anchor" class:collapsed class:displayed bind:this={anchor}>
 	<div class="pin" bind:this={pin}></div>
 	<div class="marker" style:padding={MARKER_PADDING + 'px'} bind:this={marker} bind:clientWidth={markerWidth} bind:clientHeight={markerHeight}>
 		<div class="body" style:width={`${width}px`} style:height={`${height}px`} bind:this={body}></div>
@@ -184,7 +195,6 @@
 		transition-duration: @transition-duration;
 		transition-timing-function: @transition-timing-function;
 		transition-property: opacity;
-		will-change: opacity;
 
 		.marker {
 			transform-origin: 0% 0%;
@@ -192,7 +202,6 @@
 			transition-duration: @transition-duration;
 			transition-timing-function: @transition-timing-function;
 			transition-property: scale;
-			will-change: transform, scale;
 		}
 
 		.pin {
@@ -200,7 +209,6 @@
 			transition-duration: @transition-duration;
 			transition-timing-function: @transition-timing-function;
 			transition-property: scale;
-			will-change: transform, scale;
 		}
 	}
 
@@ -230,14 +238,15 @@
 		}
 	}
 
-	// Hidden properties
+	// Displayed properties
 
 	.anchor {
-		display: block;
-	}
-
-	.anchor.hidden {
 		display: none;
 		content-visibility: hidden;
+	}
+
+	.anchor.displayed {
+		display: initial;
+		content-visibility: initial;
 	}
 </style>
