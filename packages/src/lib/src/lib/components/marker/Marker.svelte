@@ -12,6 +12,9 @@
 	let pin: HTMLElement;
 	let body: HTMLElement;
 
+	let markerWidth = $state<number>(0);
+	let markerHeight = $state<number>(0);
+
 	export const getBody = () => body;
 
 	//#region Displayed
@@ -37,13 +40,11 @@
 	}
 
 	export function getCollapsed() {
-		if (!marker) return false;
-		return marker.clientWidth == 0 && marker.clientHeight == 0;
+		return markerWidth == 0 && markerHeight == 0;
 	}
 
 	export function getExpanded() {
-		if (!marker) return false;
-		return marker.clientWidth > 0 && marker.clientHeight > 0;
+		return collapsed == false;
 	}
 
 	//#endregion
@@ -88,17 +89,19 @@
 
 		const params = getPositionParams(markerWidth, markerHeight, angle);
 
-		const markerOffsetX = Math.round(params.markerOffsetX);
-		const markerOffsetY = Math.round(params.markerOffsetY);
-		marker.style.transform = `translate(${markerOffsetX}px, ${markerOffsetY}px)`;
+		window.requestAnimationFrame(() => {
+			const markerOffsetX = Math.round(params.markerOffsetX);
+			const markerOffsetY = Math.round(params.markerOffsetY);
+			marker.style.transform = `translate(${markerOffsetX}px, ${markerOffsetY}px)`;
 
-		const pinAngleDeg = params.pinAngleDeg;
-		const pinSkewDeg = params.pinSkewDeg;
-		pin.style.transform = `rotate(${pinAngleDeg}deg) skew(${pinSkewDeg}deg, ${pinSkewDeg}deg)`;
+			const pinAngleDeg = params.pinAngleDeg;
+			const pinSkewDeg = params.pinSkewDeg;
+			pin.style.transform = `rotate(${pinAngleDeg}deg) skew(${pinSkewDeg}deg, ${pinSkewDeg}deg)`;
 
-		const shadowX = -1 - 2 * (markerOffsetX / markerWidth);
-		const shadowY = -1 - 2 * (markerOffsetY / markerHeight);
-		anchor.style.filter = `drop-shadow(0px 0px 4px rgba(0,0,0,0.5)) drop-shadow(${shadowX}px ${shadowY}px 2px rgba(0,0,0,0.5))`;
+			const shadowX = -1 - 2 * (markerOffsetX / markerWidth);
+			const shadowY = -1 - 2 * (markerOffsetY / markerHeight);
+			anchor.style.filter = `drop-shadow(0px 0px 4px rgba(0,0,0,0.5)) drop-shadow(${shadowX}px ${shadowY}px 2px rgba(0,0,0,0.5))`;
+		});
 	}
 
 	export function setAngle(value: number) {
@@ -118,9 +121,6 @@
 	//#endregion
 
 	//#region Position
-
-	let markerWidth = $state<number>(0);
-	let markerHeight = $state<number>(0);
 
 	$effect(() => {
 		if (markerWidth && markerHeight) {

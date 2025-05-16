@@ -348,11 +348,18 @@
 		}
 
 		updateMap(map: maplibregl.Map | null) {
-			if (this.libreMarker == undefined) throw new Error('Failed to update circle map');
+			const libreMarker = this.libreMarker;
+			const component = this.component;
+			if (libreMarker == undefined || component == undefined) throw new Error('Failed to update circle map');
 
-			if (this.libreMarker._map != map) {
-				if (map) this.libreMarker.addTo(map);
-				else this.libreMarker.remove();
+			if (libreMarker._map != map) {
+				if (map) {
+					libreMarker.addTo(map);
+					component.setDisplayed(true);
+				} else {
+					libreMarker.remove();
+					component.setDisplayed(false);
+				}
 			}
 		}
 
@@ -362,12 +369,11 @@
 
 			// Set circle scale
 			if (this.zoom <= zoom) {
-				circle.setCollapsed(true);
+				circle.setScale(0);
 			} else {
 				const distance = (this.zoom - zoom) / MAP_VISIBLE_ZOOM_DEPTH;
-				const scale = 1 - distance * 0.5;
+				const scale = 1 - distance * 0.3;
 				circle.setScale(scale);
-				circle.setCollapsed(false);
 			}
 		}
 
@@ -375,7 +381,7 @@
 			if (this.pinCallback == undefined) return;
 			if (this.pinLoaded || this.pinLoading) return;
 
-			const pin = this.component?.getPin();
+			const pin = this.component?.getBody();
 			if (pin == undefined) return;
 
 			this.pinLoading = true;
@@ -384,6 +390,16 @@
 				this.pinLoaded = true;
 				this.pinLoading = false;
 			});
+		}
+
+		setCollapsed() {
+			if (this.component == undefined) return;
+			this.component.setScale(0);
+		}
+
+		isCollapsed() {
+			if (this.component == undefined) return false;
+			return this.component.getInvisible();
 		}
 
 		isPinLoaded() {
@@ -449,7 +465,7 @@
 			if (!marker) throw new Error('Failed to update marker state');
 
 			// Set marker collapse status and angle
-			if (this.zoom < zoom) {
+			if (this.zoom <= zoom) {
 				marker.setCollapsed(false);
 				marker.setAngle(this.getAngle(zoom));
 			} else {
@@ -475,7 +491,7 @@
 		}
 
 		getAngle(zoom: number) {
-			const state = this.states.findLast((s) => s[0] < zoom);
+			const state = this.states.findLast((s) => s[0] <= zoom);
 			if (!state) throw new Error('Angle not found');
 			return state[1];
 		}
@@ -485,7 +501,7 @@
 			return this.component.getExpanded();
 		}
 
-		getCollapsed() {
+		isCollapsed() {
 			if (!this.component) return false;
 			return this.component.getCollapsed();
 		}
@@ -573,7 +589,12 @@
 			}
 		} else {
 			if (circle.isCreated() == true) {
-				circle.updateMap(null);
+				// Set circle invisible
+				circle.setCollapsed();
+				// Wait until circle is invisible before removing it
+				if (circle.isCollapsed()) {
+					circle.updateMap(null);
+				}
 			}
 		}
 	}
@@ -598,7 +619,7 @@
 			// Check if marker exist on map
 			if (marker.isCreated() == true) {
 				// Wait until marker is collapsed before removing it
-				if (marker.getCollapsed()) {
+				if (marker.isCollapsed()) {
 					marker.updateMap(null);
 				} else {
 					marker.updateState(zoom);

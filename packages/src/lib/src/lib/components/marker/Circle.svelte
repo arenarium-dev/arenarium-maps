@@ -1,27 +1,74 @@
 <script lang="ts">
-	let pin: HTMLElement;
+	import { sineInOut } from 'svelte/easing';
+	import { Tween } from 'svelte/motion';
 
-	let collapsed = $state<boolean>(true);
-	let scale = $state<number>(0);
+	let circle: HTMLElement;
+	let body: HTMLElement;
 
-	let transform = $derived(`translate(-50%, -50%) scale(${scale})`);
-	let filter = $derived(`brightness(${0.4 + 0.6 * scale})`);
+	export function getBody() {
+		return body;
+	}
 
-	export function setCollapsed(value: boolean) {
-		collapsed = value;
+	//#region Displayed
+
+	let displayed = $state<boolean>(false);
+
+	export function setDisplayed(value: boolean) {
+		displayed = value;
+	}
+
+	export function getDisplayed() {
+		return displayed;
+	}
+
+	//#endregion
+
+	//#region Scale
+
+	let scale = 0;
+	let scaleTween = new Tween(0, { easing: sineInOut });
+
+	$effect(() => {
+		updateScaleStyle(scaleTween.current);
+	});
+
+	$effect(() => {
+		if (displayed == false) {
+			scale = 0;
+			scaleTween.set(0, { duration: 0 });
+			updateScaleStyle(0);
+		}
+	});
+
+	function updateScaleStyle(scale: number) {
+		if (!circle) return;
+
+		window.requestAnimationFrame(() => {
+			circle.style.scale = scale.toString();
+			circle.style.filter = `brightness(${0.4 + 0.6 * scale})`;
+		});
 	}
 
 	export function setScale(value: number) {
-		scale = value;
+		if (value != scale) {
+			scale = value;
+			scaleTween.set(value, { duration: 100 });
+		}
 	}
 
-	export function getPin() {
-		return pin;
+	export function getInvisible() {
+		return scaleTween.current == 0;
 	}
+
+	export function getScale() {
+		return scale;
+	}
+
+	//#endregion
 </script>
 
-<div class="circle" class:collapsed style:transform style:filter>
-	<div class="pin" bind:this={pin}></div>
+<div class="circle" class:displayed bind:this={circle}>
+	<div class="body" bind:this={body}></div>
 </div>
 
 <style lang="less">
@@ -42,7 +89,7 @@
 		transform: translate(-50%, -50%);
 		backface-visibility: hidden;
 
-		.pin {
+		.body {
 			min-width: @circle-size - @padding-size * 2;
 			min-height: @circle-size - @padding-size * 2;
 			border-radius: @circle-size * 0.35;
@@ -51,17 +98,13 @@
 		}
 	}
 
-	// Collapsed properties
-
 	.circle {
-		scale: 1;
+		display: none;
+		content-visibility: hidden;
+	}
 
-		transition-duration: 125ms;
-		transition-timing-function: ease-in-out;
-		transition-property: scale;
-
-		&.collapsed {
-			scale: 0;
-		}
+	.circle.displayed {
+		display: initial;
+		content-visibility: initial;
 	}
 </style>
