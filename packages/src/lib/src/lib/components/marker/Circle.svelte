@@ -52,7 +52,7 @@
 	export function setScale(value: number) {
 		if (value != scale) {
 			scale = value;
-			scaleTween.set(value, { duration: 100 });
+			scaleTween.set(value, { duration: 75 });
 		}
 	}
 
@@ -97,6 +97,15 @@
 			overflow: hidden;
 		}
 	}
+
+	// Scale properties
+
+	.circle {
+		scale: 0;
+		filter: brightness(0);
+	}
+
+	// Displayed properties
 
 	.circle {
 		display: none;

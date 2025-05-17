@@ -60,8 +60,8 @@
 		"svelte": "^5.0.0"
 	},
 	"scripts": {
-		"dev": "vite dev",
-		"dev-browser": "vite dev --mode browser",
+		"dev": "vite dev --host",
+		"dev-browser": "vite dev --mode browser --host",
 		"build:vite": "vite build -c vite.build.config.ts",
 		"build:types": "dts-bundle-generator --export-referenced-types --umd-module-name=arenarium -o ./dist/index.d.ts ./src/lib/index.ts",
 		"build": "pnpm run build:vite && pnpm run build:types",

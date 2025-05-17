@@ -49,6 +49,45 @@
 
 	//#endregion
 
+	//#region Scale
+
+	let scale = 0;
+	let scaleTween = new Tween(scale, { easing: sineInOut });
+
+	$effect(() => {
+		updateScaleStyle(scaleTween.current);
+	});
+
+	$effect(() => {
+		if (displayed == false) {
+			scale = 0;
+			scaleTween.set(0, { duration: 0 });
+			updateScaleStyle(0);
+		}
+	});
+
+	$effect(() => {
+		if (collapsed == true && scale != 0) {
+			scale = 0;
+			scaleTween.set(0, { duration: 50 });
+		}
+
+		if (collapsed == false && scale != 1) {
+			scale = 1;
+			scaleTween.set(1, { duration: 150 });
+		}
+	});
+
+	function updateScaleStyle(scale: number) {
+		if (!anchor || !marker || !pin) return;
+
+		window.requestAnimationFrame(() => {
+			anchor.style.opacity = `${scale}`;
+			marker.style.scale = `${scale}`;
+			pin.style.scale = `${scale}`;
+		});
+	}
+
 	//#region Angle
 
 	let angle = MARKER_DEFAULT_ANGLE;
@@ -70,7 +109,7 @@
 
 	$effect(() => {
 		if (collapsed == true) {
-			angleTween.set(angle, { duration: 200 });
+			angleTween.set(angle, { duration: 150 });
 		}
 	});
 
@@ -112,7 +151,7 @@
 
 		if (value != angle) {
 			angle = value;
-			angleTween.set(value, { duration: angleDefined ? 400 : 0 });
+			angleTween.set(value, { duration: angleDefined ? 300 : 0 });
 		}
 
 		angleDefined = true;
@@ -141,7 +180,7 @@
 	//#endregion
 </script>
 
-<div class="anchor" class:collapsed class:displayed bind:this={anchor}>
+<div class="anchor" class:displayed bind:this={anchor}>
 	<div class="pin" bind:this={pin}></div>
 	<div class="marker" style:padding={MARKER_PADDING + 'px'} bind:this={marker} bind:clientWidth={markerWidth} bind:clientHeight={markerHeight}>
 		<div class="body" style:width={`${width}px`} style:height={`${height}px`} bind:this={body}></div>
@@ -188,45 +227,20 @@
 
 	// Transition properties
 
-	@transition-duration: 250ms;
-	@transition-timing-function: cubic-bezier(0.75, 0, 0.25, 1);
-
 	.anchor {
-		transition-duration: @transition-duration;
-		transition-timing-function: @transition-timing-function;
-		transition-property: opacity;
-
 		.marker {
 			transform-origin: 0% 0%;
 			transform-style: preserve-3d;
-			transition-duration: @transition-duration;
-			transition-timing-function: @transition-timing-function;
-			transition-property: scale;
 		}
 
 		.pin {
 			transform-origin: 0% 0%;
-			transition-duration: @transition-duration;
-			transition-timing-function: @transition-timing-function;
-			transition-property: scale;
 		}
 	}
 
 	// Collapsed properties
 
 	.anchor {
-		opacity: 1;
-
-		.marker {
-			scale: 1;
-		}
-
-		.pin {
-			scale: 1;
-		}
-	}
-
-	.anchor.collapsed {
 		opacity: 0;
 
 		.marker {
