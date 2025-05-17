@@ -13,6 +13,7 @@ export const load: PageServerLoad = async (event) => {
 
 	const db = getDb(event.platform?.env.DB);
 	const dbUserApiKeys = await db.query.apiKeys.findMany({
+		with: { apiKeyUsages: true },
 		where: (k, { eq, and }) => and(eq(k.userId, user.id), eq(k.active, true))
 	});
 
@@ -21,6 +22,7 @@ export const load: PageServerLoad = async (event) => {
 		key: dbUserKey.key,
 		name: dbUserKey.name,
 		date: dbUserKey.createdAt,
+		usage: dbUserKey.apiKeyUsages.reduce((acc, usage) => acc + usage.count, 0) ?? 0,
 		active: dbUserKey.active
 	}));
 

@@ -151,7 +151,7 @@
 				<li class="item">
 					<div class="info">
 						<span class="name">{apiKey.name}</span>
-						<span class="date">{apiKey.date?.toLocaleString()}</span>
+						<span class="date">{apiKey.usage} request calculations</span>
 					</div>
 					<input
 						type="text"
