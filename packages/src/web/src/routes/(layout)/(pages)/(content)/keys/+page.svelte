@@ -37,6 +37,7 @@
 	async function onFromSuccess() {
 		// Show success message
 		app.toast.set({
+			path: '/keys',
 			text: `API key ${formId ? 'updated' : 'created'}.`,
 			severity: 'info',
 			seconds: 2
@@ -66,6 +67,7 @@
 
 			// Show success message
 			app.toast.set({
+				path: '/keys',
 				text: 'API key "' + apiKey.name + '" deleted.',
 				severity: 'info'
 			});
@@ -85,6 +87,7 @@
 		try {
 			await navigator.clipboard.writeText(apiKey.key);
 			app.toast.set({
+				path: '/keys',
 				text: 'API key copied to clipboard.',
 				severity: 'info',
 				seconds: 2

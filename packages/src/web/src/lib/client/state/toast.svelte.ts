@@ -1,4 +1,7 @@
+import { page } from '$app/state';
+
 export interface ToastData {
+	path: string;
 	text: string;
 	seconds?: number;
 	severity?: 'info' | 'error';
@@ -9,10 +12,14 @@ export interface ToastData {
 }
 
 export class Toast {
-	state = $state<ToastData | null>();
+	private state = $state<ToastData | null>();
 
 	set(value: ToastData | null): void {
 		this.state = value;
+	}
+
+	valid() {
+		return this.state?.path == page.url.pathname;
 	}
 
 	get() {

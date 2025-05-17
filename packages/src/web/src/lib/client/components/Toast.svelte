@@ -15,7 +15,9 @@
 	let toast = $derived(app.toast.get());
 
 	$effect(() => {
-		if (toast) {
+		let toast = app.toast.get();
+		let toastValid = app.toast.valid();
+		if (toast && toastValid) {
 			showToast(toast);
 		} else {
 			hideToast();

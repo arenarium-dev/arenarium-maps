@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { mount, onDestroy, onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
+	import { page } from '$app/state';
 
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 	import Menu from '$lib/client/components/utils/Menu.svelte';
@@ -16,7 +17,6 @@
 
 	import { mountMap, type MapBounds, type MapPopup, type MapPopupData, type MapPopupState } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
-	import { page } from '$app/state';
 
 	let map: ReturnType<typeof mountMap>;
 	let loading = $state<boolean>(false);
@@ -192,6 +192,7 @@
 			}
 
 			app.toast.set({
+				path: '/',
 				text: `Load ${dataDelta.length} new popups?`,
 				severity: 'info',
 				callback: {
@@ -204,6 +205,7 @@
 		} catch (err) {
 			console.error(err);
 			app.toast.set({
+				path: '/',
 				text: 'Failed to process popups.',
 				severity: 'error',
 				seconds: 2
@@ -279,6 +281,7 @@
 		} catch (err) {
 			console.error(err);
 			app.toast.set({
+				path: '/',
 				text: 'Failed to get popup state.',
 				severity: 'error',
 				seconds: 2
