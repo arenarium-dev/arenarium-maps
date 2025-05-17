@@ -44,8 +44,8 @@ importers:
         specifier: ^10.1.5
         version: 10.1.5(eslint@9.27.0)
       eslint-plugin-svelte:
-        specifier: ^3.8.0
-        version: 3.8.0(eslint@9.27.0)(svelte@5.30.2)
+        specifier: ^3.8.1
+        version: 3.8.1(eslint@9.27.0)(svelte@5.30.2)
       globals:
         specifier: ^16.1.0
         version: 16.1.0
@@ -92,7 +92,7 @@ importers:
     dependencies:
       '@arenarium/maps':
         specifier: latest
-        version: 1.0.79(svelte@5.30.2)
+        version: 1.0.81(svelte@5.30.2)
       '@better-fetch/fetch':
         specifier: ^1.1.18
         version: 1.1.18
@@ -143,8 +143,8 @@ importers:
         specifier: ^10.1.5
         version: 10.1.5(eslint@9.27.0)
       eslint-plugin-svelte:
-        specifier: ^3.8.0
-        version: 3.8.0(eslint@9.27.0)(svelte@5.30.2)
+        specifier: ^3.8.1
+        version: 3.8.1(eslint@9.27.0)(svelte@5.30.2)
       globals:
         specifier: ^16.1.0
         version: 16.1.0
@@ -177,7 +177,7 @@ importers:
     dependencies:
       '@arenarium/maps':
         specifier: latest
-        version: 1.0.79(svelte@5.30.2)
+        version: 1.0.81(svelte@5.30.2)
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^4.0.0
@@ -210,8 +210,8 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@arenarium/maps@1.0.79':
-    resolution: {integrity: sha512-fj0bOPyXhhGf5iOLF0gQZ61FtzxgtnPcqzmflVm9c/DDKZl44NZylUa35NIcus92g//+6A8X9HagfThQMk/9Iw==}
+  '@arenarium/maps@1.0.81':
+    resolution: {integrity: sha512-2hbOSXgwJDuQqAszQcjqzJsVhbr2W7zkBZWrPvVYgAGVACXGxHuYTGxV3+NIPJcABHpCGQO0PDiypvCS4uaGPw==}
     peerDependencies:
       svelte: ^5.0.0
 
@@ -1734,8 +1734,8 @@ packages:
     peerDependencies:
       eslint: '>=7.0.0'
 
-  eslint-plugin-svelte@3.8.0:
-    resolution: {integrity: sha512-pr/1BOlBhDHcZFAyAlOvh3ogMbolFlPd7qy0l+UCF/q6dw5Fm4166uj1UrLXdMYn+8YY+umNyTQhRqb3u0n0cQ==}
+  eslint-plugin-svelte@3.8.1:
+    resolution: {integrity: sha512-w6NQifz1xBIFcs4XMLYT36xukgN1xgzoPGk1nJLC1UeZ8O4CUCCSZx1tgwq3yRNkMSXMUqbMJjslFweWsDlAoA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       eslint: ^8.57.1 || ^9.0.0
@@ -2787,7 +2787,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
 
-  '@arenarium/maps@1.0.79(svelte@5.30.2)':
+  '@arenarium/maps@1.0.81(svelte@5.30.2)':
     dependencies:
       svelte: 5.30.2
 
@@ -4091,7 +4091,7 @@ snapshots:
     dependencies:
       eslint: 9.27.0
 
-  eslint-plugin-svelte@3.8.0(eslint@9.27.0)(svelte@5.30.2):
+  eslint-plugin-svelte@3.8.1(eslint@9.27.0)(svelte@5.30.2):
     dependencies:
       '@eslint-community/eslint-utils': 4.7.0(eslint@9.27.0)
       '@jridgewell/sourcemap-codec': 1.5.0
