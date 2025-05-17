@@ -1,6 +1,6 @@
 ## Usage
 
-https://maps.arenarium.dev
+https://arenarium.dev
 
 ## License
 
