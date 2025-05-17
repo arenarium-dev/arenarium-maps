@@ -72,8 +72,8 @@
 </div>
 
 <style lang="less">
-	@background: var(--background);
-	@base: var(--primary);
+	@background: var(--map-style-background);
+	@base: var(--map-style-primary);
 	@circle-size: 16px;
 	@padding-size: 3px;
 

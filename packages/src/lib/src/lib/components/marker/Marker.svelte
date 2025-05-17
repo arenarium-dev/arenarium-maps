@@ -188,8 +188,8 @@
 </div>
 
 <style lang="less">
-	@background: var(--background);
-	@border: var(--background);
+	@background: var(--map-style-background);
+	@border: var(--map-style-background);
 	@border-width: 0px;
 
 	.anchor {

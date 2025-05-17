@@ -704,7 +704,7 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="container" style="--primary: {style.colors.primary}; --background: {style.colors.background}; --text: {style.colors.text};">
+<div class="container" style="--map-style-primary: {style.colors.primary}; --map-style-background: {style.colors.background}; --map-style-text: {style.colors.text};">
 	<div class="map" bind:this={mapContainer} bind:clientWidth={mapWidth} bind:clientHeight={mapHeight}></div>
 	<div class="logo"><a href="https://arenarium.dev" target="_blank">@arenarium/maps</a></div>
 </div>
@@ -730,15 +730,15 @@
 			position: absolute;
 			bottom: 0px;
 			left: 0px;
-			background-color: color-mix(in srgb, var(--background) 50%, transparent 50%);
-			color: var(--text);
+			background-color: color-mix(in srgb, var(--map-style-background) 50%, transparent 50%);
+			color: var(--map-style-text);
 			font-size: 10px;
 			padding: 2px 5px;
 			border-top-right-radius: 5px;
 			box-shadow: 1px -1px 2px rgba(0, 0, 0, 0.2);
 
 			a {
-				color: var(--text);
+				color: var(--map-style-text);
 				text-decoration: none;
 				font-weight: 600;
 			}
@@ -752,8 +752,8 @@
 					z-index: 10000000;
 
 					.maplibregl-ctrl-attrib {
-						background-color: color-mix(in srgb, var(--background) 50%, transparent 50%);
-						color: var(--text);
+						background-color: color-mix(in srgb, var(--map-style-background) 50%, transparent 50%);
+						color: var(--map-style-text);
 						font-size: 10px;
 						padding: 2px 5px;
 						border-top-left-radius: 5px;
@@ -761,7 +761,7 @@
 
 						.maplibregl-ctrl-attrib-inner {
 							a {
-								color: var(--text);
+								color: var(--map-style-text);
 								font-weight: 600;
 							}
 						}
