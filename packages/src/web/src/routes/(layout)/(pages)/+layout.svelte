@@ -16,7 +16,7 @@
 </script>
 
 <svelte:head>
-	<title>Arenarium Maps</title>
+	<title>@arenarium/maps</title>
 	<meta property="og:title" content="@arenarium/maps" />
 	<meta property="og:type" content="website" />
 	<meta property="og:description" content="Minimalist and performant rendering of popups on a map." />

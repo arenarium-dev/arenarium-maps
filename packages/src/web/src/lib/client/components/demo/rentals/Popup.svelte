@@ -151,8 +151,8 @@
 	}
 
 	.placeholder {
-		width: 150px;
-		height: 150px;
+		width: 128px;
+		height: 104px;
 		display: flex;
 		flex-direction: column;
 		gap: 4px;

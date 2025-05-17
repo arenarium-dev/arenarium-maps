@@ -8,6 +8,9 @@
 		<div class="text">
 			<strong>@arenarium/maps</strong> is free to use for now. It is rate limited to <strong>{USAGE_MAX_ITEMS}</strong> popup states calculations per second.
 		</div>
+		<div class="text">
+			If you need unlimited access, please contact me at <a href="mailto:arenarium.dev@gmail.com">arenarium.dev@gmail.com</a>.
+		</div>
 	</div>
 </div>
 
@@ -45,10 +48,10 @@
 				font-size: 14px;
 			}
 
-			// .text a {
-			// 	color: var(--primary);
-			// 	text-decoration: underline;
-			// }
+			.text a {
+				color: var(--primary);
+				text-decoration: underline;
+			}
 		}
 	}
 </style>
