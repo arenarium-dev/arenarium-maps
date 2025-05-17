@@ -17,6 +17,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
+		background-color: var(--primary);
 		color: var(--secondary);
 		font-weight: 600;
 		font-size: 10px;

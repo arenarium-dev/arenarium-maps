@@ -4,7 +4,7 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev --port 8080",
+		"dev": "vite dev --port 8080 --host",
 		"build": "vite build",
 		"preview": "pnpm run build && wrangler pages dev",
 		"sync": "svelte-kit sync || echo ''",
