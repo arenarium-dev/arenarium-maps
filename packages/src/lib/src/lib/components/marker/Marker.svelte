@@ -69,7 +69,7 @@
 	$effect(() => {
 		if (collapsed == true && scale != 0) {
 			scale = 0;
-			scaleTween.set(0, { duration: 50 });
+			scaleTween.set(0, { duration: 75 });
 		}
 
 		if (collapsed == false && scale != 1) {
@@ -109,7 +109,7 @@
 
 	$effect(() => {
 		if (collapsed == true) {
-			angleTween.set(angle, { duration: 150 });
+			angleTween.set(angle, { duration: 75 });
 		}
 	});
 
@@ -150,8 +150,12 @@
 		}
 
 		if (value != angle) {
+			let angleDistance = Math.abs(value - angleTween.current);
+			let angleSteps = angleDistance < 180 ? angleDistance : 360 - angleDistance;
+			let angleDuration = Math.log(angleSteps) * 75;
+
 			angle = value;
-			angleTween.set(value, { duration: angleDefined ? 300 : 0 });
+			angleTween.set(value, { duration: angleDefined ? angleDuration : 0 });
 		}
 
 		angleDefined = true;
