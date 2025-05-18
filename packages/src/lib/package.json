@@ -1,6 +1,6 @@
 {
 	"name": "@arenarium/maps",
-	"version": "1.0.81",
+	"version": "1.0.82",
 	"license": "MIT",
 	"author": "arenarium.dev",
 	"description": "The best way to visualize ranked data on a map.",
