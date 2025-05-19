@@ -45,7 +45,8 @@
 
 		window.requestAnimationFrame(() => {
 			circle.style.scale = scale.toString();
-			circle.style.filter = `brightness(${0.4 + 0.6 * scale})`;
+			circle.style.filter = `brightness(${0.3 + 0.7 * scale})`;
+			body.style.opacity = scale.toString();
 		});
 	}
 
