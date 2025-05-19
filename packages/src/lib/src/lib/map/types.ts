@@ -5,6 +5,8 @@ export namespace MapComponent {
 }
 
 export interface MapComponent {
+	maplibreglMap: () => maplibregl.Map;
+
 	getCenter: () => MapCoordinate;
 	getZoom: () => number;
 	getBounds: () => MapBounds;
