@@ -11,31 +11,30 @@ import { and, eq } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async (event) => {
-	const apiKey = await event.request.json<{ id: string; name: string }>();
+	const apiKey = await event.request.json<{ key: string; name: string }>();
 
 	const name = apiKey.name;
-	if (!nameSchema.safeParse(name).success) error(400, 'Invalid name');
+	if (!nameSchema.safeParse(name).success) error(400, 'Invalid name!');
 
 	const user = await getUser(event);
-	if (!user) error(401, 'Not authenticated');
+	if (!user) error(401, 'Not authenticated!');
 
 	const db = getDb(event.platform?.env.DB);
-	const dbId = apiKey.id;
+	const dbKey = apiKey.key;
 
-	if (dbId) {
+	if (dbKey) {
 		await db
 			.update(schema.apiKeys)
 			.set({
 				name: name,
 				updatedAt: new Date()
 			})
-			.where(eq(schema.apiKeys.id, dbId));
+			.where(eq(schema.apiKeys.key, dbKey));
 	} else {
 		await db.insert(schema.apiKeys).values({
-			id: crypto.randomUUID(),
+			key: crypto.randomUUID().replace(/-/g, ''),
 			userId: user.id,
 			name: name,
-			key: crypto.randomUUID().replace(/-/g, ''),
 			active: true,
 			unlimited: false,
 			createdAt: new Date(),
@@ -47,19 +46,27 @@ export const POST: RequestHandler = async (event) => {
 };
 
 export const DELETE: RequestHandler = async (event) => {
-	const apiKey = await event.request.json<{ id: string }>();
-
-	const apiKeyId = apiKey.id;
-	if (!apiKeyId) error(400, 'Invalid API key ID');
+	const apiKey = await event.request.json<{ key: string }>();
+	if (!apiKey.key) error(400, 'Invalid API key!');
 
 	const user = await getUser(event);
-	if (!user) error(401, 'Not authenticated');
+	if (!user) error(401, 'Not authenticated!');
 
 	const db = getDb(event.platform?.env.DB);
-	await db
-		.update(schema.apiKeys)
-		.set({ active: false })
-		.where(and(eq(schema.apiKeys.userId, user.id), eq(schema.apiKeys.id, apiKeyId)));
+	const dbApiKey = await db.query.apiKeys.findFirst({
+		where: and(eq(schema.apiKeys.key, apiKey.key), eq(schema.apiKeys.userId, user.id))
+	});
+	if (!dbApiKey) error(404, 'API key not found');
+
+	if (dbApiKey.unlimited == true) {
+		await db
+			.update(schema.apiKeys)
+			.set({ active: false })
+			.where(and(eq(schema.apiKeys.userId, user.id), eq(schema.apiKeys.index, dbApiKey.index)));
+	} else {
+		await db.delete(schema.apiKeyUsages).where(eq(schema.apiKeyUsages.keyIndex, dbApiKey.index));
+		await db.delete(schema.apiKeys).where(eq(schema.apiKeys.key, apiKey.key));
+	}
 
 	return text('OK');
 };

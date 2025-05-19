@@ -78,7 +78,7 @@ export const verification = sqliteTable('tableUserVerifications', {
 export const apiKeys = sqliteTable(
 	'tableApiKeys',
 	{
-		id: text('id').primaryKey(),
+		index: integer().primaryKey({ autoIncrement: true }),
 		userId: text('userId').notNull(),
 		key: text('key').notNull(),
 		name: text('name').notNull(),
@@ -100,19 +100,19 @@ export const apiKeys = sqliteTable(
 export const apiKeyUsages = sqliteTable(
 	'tableApiKeyUsages',
 	{
-		id: text('id').primaryKey(),
-		keyId: text('keyId').notNull(),
+		index: integer().primaryKey({ autoIncrement: true }),
+		keyIndex: integer('keyIndex').notNull(),
 		count: integer('count').notNull(),
 		date: integer('date', { mode: 'timestamp' })
 			.notNull()
 			.default(sql`(unixepoch())`)
 	},
 	(table) => [
-		index('tableApiKeyUsagesIndex').on(table.keyId),
+		index('tableApiKeyUsagesIndex').on(table.keyIndex),
 		foreignKey({
-			name: 'tableApiKeyUsagesKeyIdFk',
-			columns: [table.keyId],
-			foreignColumns: [apiKeys.id]
+			name: 'tableApiKeyUsagesKeyIndexFk',
+			columns: [table.keyIndex],
+			foreignColumns: [apiKeys.index]
 		})
 	]
 );
@@ -127,7 +127,7 @@ export const apiKeyRelations = relations(apiKeys, ({ one, many }) => ({
 }));
 
 export const apiKeyUsageRelations = relations(apiKeyUsages, ({ one }) => ({
-	apiKeyUsageKey: one(apiKeys, { fields: [apiKeyUsages.keyId], references: [apiKeys.id] })
+	apiKeyUsageKey: one(apiKeys, { fields: [apiKeyUsages.keyIndex], references: [apiKeys.key] })
 }));
 
 export type DbUser = typeof users.$inferSelect;

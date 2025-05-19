@@ -2,10 +2,10 @@
 	import { Fetch } from '$lib/client/core/fetch';
 	import { nameSchema } from '$lib/shared/validation';
 
-	let { success, id, name } = $props<{ success: Function; id: string; name: string }>();
+	let { success, key, name } = $props<{ success: Function; key: string; name: string }>();
 
-	let title = $derived(id ? 'Edit API Key' : 'Create API Key');
-	let button = $derived(id ? 'Save' : 'Create');
+	let title = $derived(key ? 'Edit API Key' : 'Create API Key');
+	let button = $derived(key ? 'Save' : 'Create');
 
 	let nameValue = $state<string>(name);
 
@@ -29,7 +29,7 @@
 			await Fetch.that('/api/key', {
 				method: 'POST',
 				body: {
-					id: id,
+					key: key,
 					name: name
 				}
 			});

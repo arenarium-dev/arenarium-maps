@@ -61,7 +61,7 @@ export const POST: RequestHandler = async (event) => {
 				const dbUsageSumResult = await db
 					.select({ sum: sum(schema.apiKeyUsages.count) })
 					.from(schema.apiKeyUsages)
-					.where(and(eq(schema.apiKeyUsages.keyId, dbApiKey.id), gt(schema.apiKeyUsages.date, new Date(Date.now() - USAGE_MAX_TIMESPAN))));
+					.where(and(eq(schema.apiKeyUsages.keyIndex, dbApiKey.index), gt(schema.apiKeyUsages.date, new Date(Date.now() - USAGE_MAX_TIMESPAN))));
 
 				const dbUsageSum = Number.parseInt(dbUsageSumResult.at(0)?.sum ?? '0');
 
@@ -72,8 +72,7 @@ export const POST: RequestHandler = async (event) => {
 
 				// Update usage
 				const dbUsage: schema.DbApiKeyUsageInsert = {
-					id: crypto.randomUUID(),
-					keyId: dbApiKey.id,
+					keyIndex: dbApiKey.index,
 					count: data.length
 				};
 				await db.insert(schema.apiKeyUsages).values([dbUsage]);

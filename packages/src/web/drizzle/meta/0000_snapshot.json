@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "0e69d19b-ac4f-4605-bc7c-2e4e7c6df08b",
+  "id": "d148f849-0df8-49a6-a7a5-7b7637bb21be",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "tableUserAccounts": {
@@ -110,16 +110,16 @@
     "tableApiKeyUsages": {
       "name": "tableApiKeyUsages",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
+        "index": {
+          "name": "index",
+          "type": "integer",
           "primaryKey": true,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": true
         },
-        "keyId": {
-          "name": "keyId",
-          "type": "text",
+        "keyIndex": {
+          "name": "keyIndex",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -144,12 +144,26 @@
         "tableApiKeyUsagesIndex": {
           "name": "tableApiKeyUsagesIndex",
           "columns": [
-            "keyId"
+            "keyIndex"
           ],
           "isUnique": false
         }
       },
-      "foreignKeys": {},
+      "foreignKeys": {
+        "tableApiKeyUsagesKeyIndexFk": {
+          "name": "tableApiKeyUsagesKeyIndexFk",
+          "tableFrom": "tableApiKeyUsages",
+          "tableTo": "tableApiKeys",
+          "columnsFrom": [
+            "keyIndex"
+          ],
+          "columnsTo": [
+            "index"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
@@ -157,12 +171,12 @@
     "tableApiKeys": {
       "name": "tableApiKeys",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
+        "index": {
+          "name": "index",
+          "type": "integer",
           "primaryKey": true,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": true
         },
         "userId": {
           "name": "userId",
@@ -185,29 +199,29 @@
           "notNull": true,
           "autoincrement": false
         },
-        "domains": {
-          "name": "domains",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "createdAt": {
           "name": "createdAt",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "updatedAt": {
           "name": "updatedAt",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "active": {
           "name": "active",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "unlimited": {
+          "name": "unlimited",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -223,7 +237,21 @@
           "isUnique": false
         }
       },
-      "foreignKeys": {},
+      "foreignKeys": {
+        "tableApiKeysUserIdFk": {
+          "name": "tableApiKeysUserIdFk",
+          "tableFrom": "tableApiKeys",
+          "tableTo": "tableUsers",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}

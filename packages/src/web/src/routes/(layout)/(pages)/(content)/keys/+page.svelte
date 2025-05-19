@@ -19,17 +19,17 @@
 	//#region CRUD
 
 	let formModal = $state<ReturnType<typeof Modal>>();
-	let formId = $state<string>('');
+	let formKey = $state<string>('');
 	let formName = $state<string>('');
 
 	function createApiKey() {
-		formId = '';
+		formKey = '';
 		formName = '';
 		formModal?.show();
 	}
 
 	function editApiKey(apiKey: APIKey) {
-		formId = apiKey.id;
+		formKey = apiKey.key;
 		formName = apiKey.name;
 		formModal?.show();
 	}
@@ -38,7 +38,7 @@
 		// Show success message
 		app.toast.set({
 			path: '/keys',
-			text: `API key ${formId ? 'updated' : 'created'}.`,
+			text: `API key ${formKey ? 'updated' : 'created'}.`,
 			severity: 'info',
 			seconds: 2
 		});
@@ -62,7 +62,7 @@
 			await fetch(`/api/key`, {
 				method: 'DELETE',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ id: apiKey.id })
+				body: JSON.stringify({ key: apiKey.key })
 			});
 
 			// Show success message
@@ -105,8 +105,8 @@
 
 	onMount(() => {
 		data.apiKeys.forEach((key) => {
-			if (!visibleKeys.has(key.id)) {
-				visibleKeys.set(key.id, false); // Start hidden
+			if (!visibleKeys.has(key.key)) {
+				visibleKeys.set(key.key, false); // Start hidden
 			}
 		});
 	});
@@ -147,7 +147,7 @@
 {:else}
 	<ul class="keys">
 		{#key page.data}
-			{#each data.apiKeys as apiKey (apiKey.id)}
+			{#each data.apiKeys as apiKey (apiKey.key)}
 				<li class="item">
 					<div class="info">
 						<span class="name">{apiKey.name}</span>
@@ -156,18 +156,18 @@
 					<input
 						type="text"
 						readonly
-						value={visibleKeys.get(apiKey.id) ? apiKey.key : maskApiKey(apiKey.key)}
-						class:monospace={visibleKeys.get(apiKey.id)}
+						value={visibleKeys.get(apiKey.key) ? apiKey.key : maskApiKey(apiKey.key)}
+						class:monospace={visibleKeys.get(apiKey.key)}
 						aria-label="API Key Value"
 					/>
 					<div class="buttons">
 						<button
 							class="button"
-							onclick={() => toggleApiKeyVisibility(apiKey.id)}
-							title={visibleKeys.get(apiKey.id) ? 'Hide key' : 'Show key'}
-							aria-label={visibleKeys.get(apiKey.id) ? 'Hide API key' : 'Show API key'}
+							onclick={() => toggleApiKeyVisibility(apiKey.key)}
+							title={visibleKeys.get(apiKey.key) ? 'Hide key' : 'Show key'}
+							aria-label={visibleKeys.get(apiKey.key) ? 'Hide API key' : 'Show API key'}
 						>
-							{#if visibleKeys.get(apiKey.id)}
+							{#if visibleKeys.get(apiKey.key)}
 								<Icon name={'visibility'} />
 							{:else}
 								<Icon name={'visibility_off'} />
@@ -190,7 +190,7 @@
 {/if}
 
 <Modal bind:this={formModal}>
-	<ApiKeyForm success={onFromSuccess} id={formId} name={formName} />
+	<ApiKeyForm success={onFromSuccess} key={formKey} name={formName} />
 </Modal>
 
 <Toast />

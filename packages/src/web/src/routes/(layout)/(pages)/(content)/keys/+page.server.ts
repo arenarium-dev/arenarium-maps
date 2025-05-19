@@ -18,7 +18,6 @@ export const load: PageServerLoad = async (event) => {
 	});
 
 	const apiKeys = dbUserApiKeys.map((dbUserKey) => ({
-		id: dbUserKey.id,
 		key: dbUserKey.key,
 		name: dbUserKey.name,
 		date: dbUserKey.createdAt,

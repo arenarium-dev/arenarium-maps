@@ -15,22 +15,24 @@ CREATE TABLE `tableUserAccounts` (
 );
 --> statement-breakpoint
 CREATE TABLE `tableApiKeyUsages` (
-	`id` text PRIMARY KEY NOT NULL,
-	`keyId` text NOT NULL,
+	`index` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`keyIndex` integer NOT NULL,
 	`count` integer NOT NULL,
-	`date` integer DEFAULT (unixepoch()) NOT NULL
+	`date` integer DEFAULT (unixepoch()) NOT NULL,
+	FOREIGN KEY (`keyIndex`) REFERENCES `tableApiKeys`(`index`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE INDEX `tableApiKeyUsagesIndex` ON `tableApiKeyUsages` (`keyId`);--> statement-breakpoint
+CREATE INDEX `tableApiKeyUsagesIndex` ON `tableApiKeyUsages` (`keyIndex`);--> statement-breakpoint
 CREATE TABLE `tableApiKeys` (
-	`id` text PRIMARY KEY NOT NULL,
+	`index` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`userId` text NOT NULL,
 	`key` text NOT NULL,
 	`name` text NOT NULL,
-	`domains` text NOT NULL,
-	`createdAt` integer,
-	`updatedAt` integer,
-	`active` integer NOT NULL
+	`createdAt` integer NOT NULL,
+	`updatedAt` integer NOT NULL,
+	`active` integer NOT NULL,
+	`unlimited` integer NOT NULL,
+	FOREIGN KEY (`userId`) REFERENCES `tableUsers`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE INDEX `tableApiKeysIndex` ON `tableApiKeys` (`key`);--> statement-breakpoint
