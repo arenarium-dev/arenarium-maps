@@ -1,5 +1,7 @@
 import type { MapStyle, MapBounds, MapCoordinate, EventId, EventHandler, EventPayloadMap, MapPopup } from './schemas.js';
 
+import maplibregl from 'maplibre-gl';
+
 export namespace MapComponent {
 	export type MapPopupContentCallback = (id: string) => Promise<HTMLElement>;
 }
