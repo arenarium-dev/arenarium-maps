@@ -74,9 +74,7 @@
 		});
 	}
 
-	export function maplibreglMap() {
-		return map;
-	}
+	export const maplibre = () => map;
 
 	//#region Events
 
