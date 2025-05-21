@@ -100,6 +100,8 @@
 
 	function onMapLoaded() {
 		mapLoaded = true;
+
+		emit('load', null);
 	}
 
 	function onMapMove() {
@@ -258,7 +260,7 @@
 	});
 
 	function getMapLibreStyle(style: MapStyle) {
-		if (style.url) return style.url;
+		if (style.name == 'custom') return style.url;
 
 		switch (style.name) {
 			case 'light':

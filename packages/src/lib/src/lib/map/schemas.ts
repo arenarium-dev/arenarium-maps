@@ -19,15 +19,24 @@ export const mapBoundsSchema = z.object({
 	ne: mapCoordinateSchema
 });
 
-export const mapStyleSchema = z.object({
-	name: z.literal('dark').or(z.literal('light')),
-	url: z.string().optional(),
-	colors: z.object({
-		primary: z.string().max(64),
-		background: z.string().max(64),
-		text: z.string().max(64)
-	})
+export const mapStyleColorsSchema = z.object({
+	primary: z.string().max(64),
+	background: z.string().max(64),
+	text: z.string().max(64)
 });
+
+export const mapStyleBasicSchema = z.object({
+	name: z.literal('dark').or(z.literal('light')),
+	colors: mapStyleColorsSchema
+});
+
+export const mapStyleCustomSchema = z.object({
+	name: z.literal('custom'),
+	url: z.string().max(256),
+	colors: mapStyleColorsSchema
+});
+
+export const mapStyleSchema = mapStyleBasicSchema.or(mapStyleCustomSchema);
 
 export const mapOptionsSchema = z.object({
 	container: z.string(),
@@ -57,35 +66,39 @@ export type MapStyle = z.infer<typeof mapStyleSchema>;
 // Events
 
 export const mapEventType = z.enum(['idle', 'move', 'click', 'popup_click']);
+export const mapEventLoadHandlerSchema = z.function().returns(z.void());
 export const mapEventIdleHandlerSchema = z.function().returns(z.void());
 export const mapEventMoveHandlerSchema = z.function().args(mapPositionSchema).returns(z.void());
 export const mapEventClickHandlerSchema = z.function().args(mapCoordinateSchema).returns(z.void());
 
-export interface EventPayloadMap {
-	idle: null;
-	move: MapPosition;
-	click: MapCoordinate;
-}
+export type MapEvent = z.infer<typeof mapEventType>;
+export type MapEventLoadHandler = z.infer<typeof mapEventLoadHandlerSchema>;
+export type MapEventIdleHandler = z.infer<typeof mapEventIdleHandlerSchema>;
+export type MapEventMoveHandler = z.infer<typeof mapEventMoveHandlerSchema>;
+export type MapEventClickHandler = z.infer<typeof mapEventClickHandlerSchema>;
 
 export interface EventHandlerMap {
+	load: MapEventLoadHandler;
 	idle: MapEventIdleHandler;
 	move: MapEventMoveHandler;
 	click: MapEventClickHandler;
+}
+export interface EventPayloadMap {
+	load: null;
+	idle: null;
+	move: MapPosition;
+	click: MapCoordinate;
 }
 
 export type EventId = keyof EventHandlerMap;
 export type EventHandler<E extends EventId> = (payload: EventPayloadMap[E]) => void;
 
 export const eventHandlerSchemas = {
+	load: mapEventLoadHandlerSchema,
 	idle: mapEventIdleHandlerSchema,
 	move: mapEventMoveHandlerSchema,
 	click: mapEventClickHandlerSchema
 } satisfies { [K in EventId]: z.ZodType<EventHandlerMap[K]> };
-
-export type MapEvent = z.infer<typeof mapEventType>;
-export type MapEventIdleHandler = z.infer<typeof mapEventIdleHandlerSchema>;
-export type MapEventMoveHandler = z.infer<typeof mapEventMoveHandlerSchema>;
-export type MapEventClickHandler = z.infer<typeof mapEventClickHandlerSchema>;
 
 // Popups
 
