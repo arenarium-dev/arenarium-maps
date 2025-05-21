@@ -102,12 +102,13 @@
 		display: flex;
 		flex-direction: column;
 		padding: 4px;
+		background-color: white;
 
 		.image {
 			width: 100%;
 			aspect-ratio: 16 / 9;
-			background-color: var(--surface-container);
 			border-radius: 8px;
+			background-color: lightgray;
 			overflow: hidden;
 			cursor: pointer;
 
@@ -128,7 +129,7 @@
 				display: flex;
 				align-items: center;
 				gap: 4px;
-				color: var(--on-surface);
+				color: black;
 				font-size: 12px;
 
 				.amount {
@@ -144,11 +145,12 @@
 				gap: 6px;
 				font-size: 11px;
 				font-weight: 500;
+				color: black;
 
 				.divider {
 					width: 1px;
 					height: 90%;
-					background-color: var(--outline);
+					background-color: gray;
 					opacity: 0.6;
 				}
 
@@ -174,7 +176,7 @@
 		.image {
 			width: 100%;
 			aspect-ratio: 16 / 9;
-			background-color: var(--surface-container);
+			background-color: lightgray;
 			border-radius: 8px;
 			overflow: hidden;
 			cursor: pointer;
@@ -188,14 +190,14 @@
 			.price {
 				height: 18px;
 				width: 100px;
-				background-color: var(--surface-container);
+				background-color: lightgray;
 				border-radius: 8px;
 			}
 
 			.details {
 				height: 16px;
 				width: 100%;
-				background-color: var(--surface-container);
+				background-color: lightgray;
 				border-radius: 8px;
 			}
 		}

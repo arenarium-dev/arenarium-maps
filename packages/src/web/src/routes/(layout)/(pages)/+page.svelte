@@ -16,7 +16,7 @@
 	import { app } from '$lib/client/state/app.svelte';
 	import { Fetch } from '$lib/client/core/fetch';
 
-	import { mountMap, type MapBounds, type MapPopup, type MapPopupData, type MapPopupState } from '@arenarium/maps';
+	import { mountMap, type MapBounds, type MapPopup, type MapPopupData, type MapPopupState, type MapStyle } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
 
 	let map: ReturnType<typeof mountMap>;
@@ -155,20 +155,6 @@
 	let source = $state<Source>(sources.includes(sourceHash) ? sourceHash : 'basic');
 	let sourceAutoUpdate = $state<boolean>(false);
 	let sourcePopupData = new Map<string, MapPopupData>();
-	let sourceName = $derived.by(() => {
-		switch (source) {
-			case 'basic':
-				return 'Basic';
-			case 'rentals':
-				return 'Rentals';
-			case 'srbija-nekretnine':
-				return 'srbija-nekretnine.org';
-			case 'events':
-				return 'Events';
-			case 'news':
-				return 'News';
-		}
-	});
 
 	$effect(() => {
 		if (mapCreated) {
@@ -193,18 +179,11 @@
 
 	async function onSourceSelect(value: Source) {
 		// Update style
-		switch (value) {
-			case 'srbija-nekretnine': {
-				map.setStyle({
-					name: 'light',
-					colors: {
-						background: 'white',
-						primary: 'orange',
-						text: 'black'
-					}
-				});
-				break;
-			}
+		const sourceStyle = getSourceStyle(value);
+		if (sourceStyle) {
+			console.log(sourceStyle);
+			map.setStyle(sourceStyle);
+			style = 'custom';
 		}
 
 		// Update data
@@ -352,6 +331,22 @@
 		}
 	}
 
+	function getSourceStyle(source: Source): MapStyle | undefined {
+		switch (source) {
+			case 'srbija-nekretnine': {
+				return {
+					name: 'custom',
+					url: 'https://tiles.openfreemap.org/styles/liberty',
+					colors: {
+						background: 'white',
+						primary: 'orange',
+						text: 'black'
+					}
+				};
+			}
+		}
+	}
+
 	function getPopupDimensions(): { width: number; height: number } {
 		switch (source) {
 			case 'basic':
@@ -427,7 +422,7 @@
 				<div class="menu shadow-large">
 					<Menu axis={'x'} bind:this={palleteMenuComponent}>
 						{#snippet button()}
-							<button class="item" onclick={onPalleteClick}>
+							<button class="item" onclick={onPalleteClick} disabled={getSourceStyle(source) != undefined}>
 								<Icon name={'palette'} size={22} />
 								<span>Style</span>
 								<Icon name={'arrow_right'} />
