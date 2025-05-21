@@ -18,6 +18,7 @@
 
 	import { mountMap, type MapBounds, type MapPopup, type MapPopupData, type MapPopupState, type MapStyle } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
+	import { tr } from 'zod/v4/locales';
 
 	let map: ReturnType<typeof mountMap>;
 	let mapCreated = $state<boolean>(false);
@@ -148,9 +149,10 @@
 
 	//#region Source
 
-	type Source = 'basic' | 'rentals' | 'srbija-nekretnine' | 'events' | 'news';
+	type Source = 'basic' | 'rentals' | 'events' | 'news' | 'srbija-nekretnine';
 	let sourceHash = page.url.hash.slice(1) as Source;
-	let sources: Source[] = ['basic', 'rentals', 'srbija-nekretnine', 'events', 'news'];
+	let sources: Source[] = ['basic', 'rentals', 'events', 'news', 'srbija-nekretnine'];
+	let sourceDisabled = [false, false, true, true, false];
 
 	let source = $state<Source>(sources.includes(sourceHash) ? sourceHash : 'basic');
 	let sourceAutoUpdate = $state<boolean>(false);
@@ -447,8 +449,8 @@
 						{/snippet}
 						{#snippet menu()}
 							<div class="menu source shadow-large">
-								{#each sources as s}
-									<button class="item" class:selected={source == s} onclick={() => onSourceSelect(s)}>
+								{#each sources as s, i}
+									<button class="item" class:selected={source == s} disabled={sourceDisabled[i]} onclick={() => onSourceSelect(s)}>
 										{getSourceName(s)}
 									</button>
 								{/each}
