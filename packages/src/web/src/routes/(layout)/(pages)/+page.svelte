@@ -20,6 +20,7 @@
 	import '@arenarium/maps/dist/style.css';
 
 	let map: ReturnType<typeof mountMap>;
+	let mapCreated = $state<boolean>(false);
 	let loading = $state<boolean>(false);
 
 	onMount(() => {
@@ -39,9 +40,7 @@
 			}
 		});
 
-		map.on('idle', () => {
-			onMapIdle();
-		});
+		mapCreated = true;
 	});
 
 	onDestroy(() => {
@@ -135,7 +134,7 @@
 
 	function setStyleCustom() {
 		map?.setStyle({
-			name: 'light',
+			name: 'custom',
 			url: 'https://tiles.openfreemap.org/styles/liberty',
 			colors: {
 				background: 'white',
@@ -156,28 +155,51 @@
 	let source = $state<Source>(sources.includes(sourceHash) ? sourceHash : 'basic');
 	let sourceAutoUpdate = $state<boolean>(false);
 	let sourcePopupData = new Map<string, MapPopupData>();
-
-	$effect(() => {
-		console.log(source);
-		onSourceSelect(source);
+	let sourceName = $derived.by(() => {
+		switch (source) {
+			case 'basic':
+				return 'Basic';
+			case 'rentals':
+				return 'Rentals';
+			case 'srbija-nekretnine':
+				return 'srbija-nekretnine.org';
+			case 'events':
+				return 'Events';
+			case 'news':
+				return 'News';
+		}
 	});
 
-	async function onMapIdle() {
+	$effect(() => {
+		if (mapCreated) {
+			map.on('load', () => {
+				onMapLoadSource();
+			});
+
+			map.on('idle', () => {
+				onMapIdleSource();
+			});
+		}
+	});
+
+	async function onMapLoadSource() {
+		onSourceSelect(source);
+	}
+
+	async function onMapIdleSource() {
 		const bounds = map.getBounds();
 		await processBoundsChange(bounds);
 	}
 
 	async function onSourceSelect(value: Source) {
 		// Update style
-
 		switch (value) {
 			case 'srbija-nekretnine': {
 				map.setStyle({
 					name: 'light',
-					url: 'https://tiles.openfreemap.org/styles/liberty',
 					colors: {
 						background: 'white',
-						primary: '#ffb738',
+						primary: 'orange',
 						text: 'black'
 					}
 				});
@@ -315,6 +337,21 @@
 		}
 	}
 
+	function getSourceName(source: Source) {
+		switch (source) {
+			case 'basic':
+				return 'Basic';
+			case 'rentals':
+				return 'Rentals';
+			case 'srbija-nekretnine':
+				return 'srbija-nekretnine.org';
+			case 'events':
+				return 'Events';
+			case 'news':
+				return 'News';
+		}
+	}
+
 	function getPopupDimensions(): { width: number; height: number } {
 		switch (source) {
 			case 'basic':
@@ -383,7 +420,7 @@
 			{#snippet button()}
 				<div class="button shadow-small">
 					<Icon name={'tune'} size={22} />
-					<span>{source.charAt(0).toUpperCase() + source.slice(1)}</span>
+					<span>{getSourceName(source)}</span>
 				</div>
 			{/snippet}
 			{#snippet menu()}
@@ -392,7 +429,7 @@
 						{#snippet button()}
 							<button class="item" onclick={onPalleteClick}>
 								<Icon name={'palette'} size={22} />
-								<span>{style.charAt(0).toUpperCase() + style.slice(1)}</span>
+								<span>Style</span>
 								<Icon name={'arrow_right'} />
 							</button>
 						{/snippet}
@@ -409,19 +446,17 @@
 						{#snippet button()}
 							<button class="item" onclick={onSourceClick}>
 								<Icon name={'database'} size={22} />
-								<span>{source.charAt(0).toUpperCase() + source.slice(1)}</span>
+								<span>Data</span>
 								<Icon name={'arrow_right'} />
 							</button>
 						{/snippet}
 						{#snippet menu()}
 							<div class="menu source shadow-large">
-								<button class="item" class:selected={source == 'basic'} onclick={() => onSourceSelect('basic')}>Basic</button>
-								<button class="item" class:selected={source == 'rentals'} onclick={() => onSourceSelect('rentals')}>Rentals</button>
-								<button class="item" class:selected={source == 'srbija-nekretnine'} onclick={() => onSourceSelect('srbija-nekretnine')}>
-									srbija-nekretnine.org
-								</button>
-								<button class="item" class:selected={source == 'events'} disabled onclick={() => onSourceSelect('events')}>Events</button>
-								<button class="item" class:selected={source == 'news'} disabled onclick={() => onSourceSelect('news')}>News</button>
+								{#each sources as s}
+									<button class="item" class:selected={source == s} onclick={() => onSourceSelect(s)}>
+										{getSourceName(s)}
+									</button>
+								{/each}
 							</div>
 						{/snippet}
 					</Menu>

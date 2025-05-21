@@ -48,7 +48,7 @@
 	let price = Math.min(2000, Math.floor(Number.parseInt(id) / 100) * 100 + 500);
 	let beds = Math.floor(Math.random() * 3) + 1;
 	let baths = Math.floor(Math.random() * 1) + 1;
-	let area = Math.floor(Math.random() * 10) + 20;
+	let area = Math.floor(Math.random() * 100) + 20;
 
 	let mounted = $state<boolean>(false);
 
@@ -65,19 +65,20 @@
 		</div>
 		<div class="text">
 			<div class="price">
-				<span class="amount">{price} €</span>
+				<span class="amount">{price}€ </span>
+				<span> / mesečno</span>
 			</div>
 			<div class="details">
 				<div class="beds">
-					<span class="value">{beds}</span>
 					<Icon name="bed" size={16} />
+					<span class="value">{beds}</span>
 				</div>
-				<div class="divider">|</div>
+				<div class="divider"></div>
 				<div class="baths">
-					<span class="value">{baths}</span>
 					<Icon name="bathtub" size={16} />
+					<span class="value">{baths}</span>
 				</div>
-				<div class="divider">|</div>
+				<div class="divider"></div>
 				<div class="area">
 					<span class="value">{area} m<sup>2</sup></span>
 				</div>
@@ -126,18 +127,30 @@
 			.price {
 				display: flex;
 				align-items: center;
+				gap: 4px;
 				color: var(--on-surface);
-				font-weight: 600;
-				font-size: 14px;
+				font-size: 12px;
+
+				.amount {
+					font-weight: 600;
+					font-size: 14px;
+				}
 			}
 
 			.details {
 				display: flex;
 				flex-direction: row;
 				align-items: end;
-				gap: 3px;
+				gap: 6px;
 				font-size: 11px;
-				line-height: 15px;
+				font-weight: 500;
+
+				.divider {
+					width: 1px;
+					height: 90%;
+					background-color: var(--outline);
+					opacity: 0.6;
+				}
 
 				.beds,
 				.baths,

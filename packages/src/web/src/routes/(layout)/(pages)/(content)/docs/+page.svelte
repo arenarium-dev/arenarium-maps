@@ -106,7 +106,7 @@ map.setStyle({ name: 'dark', colors: { primary: 'purple', background: 'darkgray'
 				language="javascript"
 				text={`
 map.setStyle({
-    name: 'liberty',
+    name: 'custom',
     url: 'https://tiles.openfreemap.org/styles/liberty.json',
     colors: { primary: 'purple', background: 'white', text: 'black' }
 });`}
