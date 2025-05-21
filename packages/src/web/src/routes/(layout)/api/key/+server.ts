@@ -9,6 +9,7 @@ import { nameSchema } from '$lib/shared/validation';
 import { and, eq } from 'drizzle-orm';
 
 import type { RequestHandler } from './$types';
+import { API_KEY_ADMIN_EMAIL } from '$env/static/private';
 
 export const POST: RequestHandler = async (event) => {
 	const apiKey = await event.request.json<{ key: string; name: string }>();
@@ -29,7 +30,7 @@ export const POST: RequestHandler = async (event) => {
 				name: name,
 				updatedAt: new Date()
 			})
-			.where(eq(schema.apiKeys.key, dbKey));
+			.where(and(eq(schema.apiKeys.key, dbKey), user.email != API_KEY_ADMIN_EMAIL ? eq(schema.apiKeys.userId, user.id) : undefined));
 	} else {
 		await db.insert(schema.apiKeys).values({
 			key: crypto.randomUUID().replace(/-/g, ''),
@@ -54,7 +55,7 @@ export const DELETE: RequestHandler = async (event) => {
 
 	const db = getDb(event.platform?.env.DB);
 	const dbApiKey = await db.query.apiKeys.findFirst({
-		where: and(eq(schema.apiKeys.key, apiKey.key), eq(schema.apiKeys.userId, user.id))
+		where: and(eq(schema.apiKeys.key, apiKey.key), user.email != API_KEY_ADMIN_EMAIL ? eq(schema.apiKeys.userId, user.id) : undefined)
 	});
 	if (!dbApiKey) error(404, 'API key not found');
 

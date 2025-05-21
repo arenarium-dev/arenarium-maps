@@ -69,14 +69,18 @@ export const POST: RequestHandler = async (event) => {
 				if (dbUsageSum + data.length > USAGE_MAX_ITEMS) {
 					return new Response(null, { headers, status: 429, statusText: 'Too many large requests!' });
 				}
-
-				// Update usage
-				const dbUsage: schema.DbApiKeyUsageInsert = {
-					keyIndex: dbApiKey.index,
-					count: data.length
-				};
-				await db.insert(schema.apiKeyUsages).values([dbUsage]);
 			}
+
+			// Update usage after the request
+			event.platform?.ctx.waitUntil(
+				new Promise(async () => {
+					const dbUsage: schema.DbApiKeyUsageInsert = {
+						keyIndex: dbApiKey.index,
+						count: data.length
+					};
+					await db.insert(schema.apiKeyUsages).values([dbUsage]);
+				})
+			);
 		}
 
 		// Get the states

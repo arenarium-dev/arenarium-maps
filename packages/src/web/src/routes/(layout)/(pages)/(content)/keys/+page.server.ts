@@ -3,6 +3,8 @@ import { redirect } from '@sveltejs/kit';
 import { getDb } from '$lib/server/database/client';
 import { getUser } from '$lib/server/auth';
 
+import { API_KEY_ADMIN_EMAIL } from '$env/static/private';
+
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {
@@ -14,7 +16,7 @@ export const load: PageServerLoad = async (event) => {
 	const db = getDb(event.platform?.env.DB);
 	const dbUserApiKeys = await db.query.apiKeys.findMany({
 		with: { apiKeyUsages: true },
-		where: (k, { eq, and }) => and(eq(k.userId, user.id), eq(k.active, true))
+		where: user.email != API_KEY_ADMIN_EMAIL ? (k, { eq, and }) => and(eq(k.userId, user.id), eq(k.active, true)) : undefined
 	});
 
 	const apiKeys = dbUserApiKeys.map((dbUserKey) => ({

@@ -83,8 +83,8 @@ importers:
         specifier: ^4.5.4
         version: 4.5.4(@types/node@22.13.16)(rollup@4.41.0)(typescript@5.8.3)(vite@6.3.5(@types/node@22.13.16)(less@4.3.0))
       zod:
-        specifier: ^3.25.16
-        version: 3.25.16
+        specifier: ^3.25.17
+        version: 3.25.17
 
   packages/src/shared: {}
 
@@ -109,8 +109,8 @@ importers:
         specifier: ^11.11.1
         version: 11.11.1
       zod:
-        specifier: ^3.25.16
-        version: 3.25.16
+        specifier: ^3.25.17
+        version: 3.25.17
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20250521.0
@@ -2777,8 +2777,8 @@ packages:
   zod@3.22.3:
     resolution: {integrity: sha512-EjIevzuJRiRPbVH4mGc8nApb/lVLKVpmUhAaR5R5doKGfAnGJ6Gr3CViAVjP+4FWSxCsybeWQdcgCtbX+7oZug==}
 
-  zod@3.25.16:
-    resolution: {integrity: sha512-3lOav31WLa1MstEvkM0QlcsFjKmJ2TI9IFYlIVpLE3upguhaeiRfPOzqqtisS/Hetk4ri2fLLC3OtW15lS5jxQ==}
+  zod@3.25.17:
+    resolution: {integrity: sha512-8hQzQ/kMOIFbwOgPrm9Sf9rtFHpFUMy4HvN0yEB0spw14aYi0uT5xG5CE2DB9cd51GWNsz+DNO7se1kztHMKnw==}
 
 snapshots:
 
@@ -3848,7 +3848,7 @@ snapshots:
       jose: 5.10.0
       kysely: 0.28.2
       nanostores: 0.11.4
-      zod: 3.25.16
+      zod: 3.25.17
 
   better-call@1.0.9:
     dependencies:
@@ -5142,4 +5142,4 @@ snapshots:
 
   zod@3.22.3: {}
 
-  zod@3.25.16: {}
+  zod@3.25.17: {}

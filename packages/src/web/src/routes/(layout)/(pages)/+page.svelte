@@ -18,7 +18,6 @@
 
 	import { mountMap, type MapBounds, type MapPopup, type MapPopupData, type MapPopupState, type MapStyle } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
-	import { tr } from 'zod/v4/locales';
 
 	let map: ReturnType<typeof mountMap>;
 	let mapCreated = $state<boolean>(false);
