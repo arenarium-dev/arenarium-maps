@@ -11,6 +11,7 @@
 	import BasicPopup from '$lib/client/components/demo/basic/Popup.svelte';
 	import RentalPopup from '$lib/client/components/demo/rentals/Popup.svelte';
 	import RentalPin from '$lib/client/components/demo/rentals/Pin.svelte';
+	import SrbijaNekretninePopup from '$lib/client/components/demo/srbija-nekretnine/Popup.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
 	import { Fetch } from '$lib/client/core/fetch';
@@ -148,20 +149,43 @@
 
 	//#region Source
 
-	type Source = 'basic' | 'rentals' | 'events' | 'news';
+	type Source = 'basic' | 'rentals' | 'srbija-nekretnine' | 'events' | 'news';
 	let sourceHash = page.url.hash.slice(1) as Source;
-	let sources: Source[] = ['basic', 'rentals', 'events', 'news'];
+	let sources: Source[] = ['basic', 'rentals', 'srbija-nekretnine', 'events', 'news'];
 
-	let source = $state<'basic' | 'rentals' | 'events' | 'news'>(sources.includes(sourceHash) ? sourceHash : 'basic');
+	let source = $state<Source>(sources.includes(sourceHash) ? sourceHash : 'basic');
 	let sourceAutoUpdate = $state<boolean>(false);
 	let sourcePopupData = new Map<string, MapPopupData>();
 
-	function onMapIdle() {
+	$effect(() => {
+		console.log(source);
+		onSourceSelect(source);
+	});
+
+	async function onMapIdle() {
 		const bounds = map.getBounds();
-		processBoundsChange(bounds);
+		await processBoundsChange(bounds);
 	}
 
 	async function onSourceSelect(value: Source) {
+		// Update style
+
+		switch (value) {
+			case 'srbija-nekretnine': {
+				map.setStyle({
+					name: 'light',
+					url: 'https://tiles.openfreemap.org/styles/liberty',
+					colors: {
+						background: 'white',
+						primary: '#ffb738',
+						text: 'black'
+					}
+				});
+				break;
+			}
+		}
+
+		// Update data
 		source = value;
 		sourcePopupData.clear();
 
@@ -170,7 +194,7 @@
 		await clearData();
 
 		const bounds = map.getBounds();
-		processBoundsChange(bounds);
+		await processBoundsChange(bounds);
 	}
 
 	function onSourceAutoUpdateClick(e: Event) {
@@ -296,6 +320,7 @@
 			case 'basic':
 				return { width: 48, height: 48 };
 			case 'rentals':
+			case 'srbija-nekretnine':
 				return { width: 128, height: 104 };
 			default:
 				throw new Error('Invalid source');
@@ -314,6 +339,9 @@
 					break;
 				case 'rentals':
 					mount(RentalPopup, { target: element, props: { id, lat: popup.lat, lng: popup.lng } });
+					break;
+				case 'srbija-nekretnine':
+					mount(SrbijaNekretninePopup, { target: element, props: { id, lat: popup.lat, lng: popup.lng } });
 					break;
 			}
 			resolve(element);
@@ -389,6 +417,9 @@
 							<div class="menu source shadow-large">
 								<button class="item" class:selected={source == 'basic'} onclick={() => onSourceSelect('basic')}>Basic</button>
 								<button class="item" class:selected={source == 'rentals'} onclick={() => onSourceSelect('rentals')}>Rentals</button>
+								<button class="item" class:selected={source == 'srbija-nekretnine'} onclick={() => onSourceSelect('srbija-nekretnine')}>
+									srbija-nekretnine.org
+								</button>
 								<button class="item" class:selected={source == 'events'} disabled onclick={() => onSourceSelect('events')}>Events</button>
 								<button class="item" class:selected={source == 'news'} disabled onclick={() => onSourceSelect('news')}>News</button>
 							</div>
