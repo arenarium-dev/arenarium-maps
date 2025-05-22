@@ -6,7 +6,7 @@ export default defineConfig({
 	plugins: [sentrySvelteKit({
         sourceMapsUploadOptions: {
             org: "arenariumdev",
-            project: "arenarium-maps"
+            project: "arenarium-maps"            
         }
     }), sveltekit()]
 });
