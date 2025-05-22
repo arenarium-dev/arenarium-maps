@@ -2,16 +2,16 @@ import { dev } from '$app/environment';
 
 import type { ClientInit, HandleClientError } from '@sveltejs/kit';
 
-import { init as SentryInit, replayIntegration as SentryReplayIntegration, handleErrorWithSentry as SentryHandleError } from '@sentry/sveltekit';
+import * as Sentry from '@sentry/sveltekit';
 
 // If you don't want to use Session Replay, remove the `Replay` integration,
 // `replaysSessionSampleRate` and `replaysOnErrorSampleRate` options.
-SentryInit({
+Sentry.init({
 	dsn: 'https://48677200e2fa419798b4623b3ffe6ed4@o4509365658976256.ingest.de.sentry.io/4509365660549200',
 	tracesSampleRate: 1,
 	replaysSessionSampleRate: 0.1,
 	replaysOnErrorSampleRate: 1,
-	integrations: [SentryReplayIntegration()]
+	integrations: [Sentry.replayIntegration()]
 });
 
 export const init: ClientInit = async () => {
@@ -28,7 +28,7 @@ export const init: ClientInit = async () => {
 	window.document.documentElement.className = theme;
 };
 
-export const handleError: HandleClientError = SentryHandleError(async (input) => {
+export const handleError: HandleClientError = Sentry.handleErrorWithSentry(async (input) => {
 	if (dev) {
 		console.error(input.error);
 		return;
