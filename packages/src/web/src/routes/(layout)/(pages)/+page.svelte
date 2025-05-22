@@ -351,7 +351,7 @@
 	function getPopupDimensions(): { width: number; height: number } {
 		switch (source) {
 			case 'basic':
-				return { width: 48, height: 48 };
+				return { width: 64, height: 64 };
 			case 'rentals':
 			case 'srbija-nekretnine':
 				return { width: 128, height: 104 };

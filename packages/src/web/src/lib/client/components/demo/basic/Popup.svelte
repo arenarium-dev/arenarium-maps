@@ -5,20 +5,20 @@
 </script>
 
 <div class="popup">
-	<Icon name="eco" size={30}/>
+	<Icon name="eco" size={40}/>
 	<span>{id}</span>
 </div>
 
 <style lang="less">
 	.popup {
-		width: 48px;
-		height: 48px;
+		width: 64px;
+		height: 64px;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		color: var(--secondary);
 		font-weight: 600;
-		font-size: 10px;
+		font-size: 12px;
 	}
 </style>
