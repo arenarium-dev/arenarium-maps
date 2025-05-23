@@ -15,11 +15,10 @@
 
 	import { app } from '$lib/client/state/app.svelte';
 	import { Fetch } from '$lib/client/core/fetch';
+	import { Demo } from '$lib/shared/demo';
 
 	import { mountMap, type MapBounds, type MapPopup, type MapPopupData, type MapPopupState, type MapPosition, type MapStyle } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
-	import { Demo } from '$lib/shared/demo';
-	import { min } from 'drizzle-orm';
 
 	let map: ReturnType<typeof mountMap>;
 	let mapCreated = $state<boolean>(false);
@@ -338,10 +337,10 @@
 			case 'srbija-nekretnine': {
 				return {
 					name: 'custom',
-					url: 'https://tiles.openfreemap.org/styles/liberty',
+					url: 'https://tiles.openfreemap.org/styles/bright',
 					colors: {
 						background: 'white',
-						primary: 'orange',
+						primary: '#ff4400',
 						text: 'black'
 					}
 				};
