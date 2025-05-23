@@ -16,9 +16,10 @@
 	import { app } from '$lib/client/state/app.svelte';
 	import { Fetch } from '$lib/client/core/fetch';
 
-	import { mountMap, type MapBounds, type MapPopup, type MapPopupData, type MapPopupState, type MapStyle } from '@arenarium/maps';
+	import { mountMap, type MapBounds, type MapPopup, type MapPopupData, type MapPopupState, type MapPosition, type MapStyle } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
 	import { Demo } from '$lib/shared/demo';
+	import { min } from 'drizzle-orm';
 
 	let map: ReturnType<typeof mountMap>;
 	let mapCreated = $state<boolean>(false);
@@ -179,9 +180,14 @@
 		// Update style
 		const demoStyle = getDemoStyle(demo);
 		if (demoStyle) {
-			console.log(demoStyle);
 			map.setStyle(demoStyle);
 			style = 'custom';
+		}
+
+		const demoRestriction = getDemoPosition(demo);
+		if (demoRestriction) {
+			map.setCenter(demoRestriction.center);
+			map.setMinZoom(demoRestriction.zoom);
 		}
 
 		// Update data
@@ -338,6 +344,17 @@
 						primary: 'orange',
 						text: 'black'
 					}
+				};
+			}
+		}
+	}
+
+	function getDemoPosition(demo: Demo): MapPosition | undefined {
+		switch (demo) {
+			case 'srbija-nekretnine': {
+				return {
+					center: { lat: 44.811222, lng: 20.450989 },
+					zoom: 12
 				};
 			}
 		}

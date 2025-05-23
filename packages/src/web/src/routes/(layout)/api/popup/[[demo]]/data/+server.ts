@@ -67,7 +67,7 @@ export const GET: RequestHandler = async (event) => {
 
 				data.push({
 					id: i.toString(),
-					rank: i,
+					rank: object.price ? Number.parseInt(object.price) : 0,
 					lat: lat,
 					lng: lng,
 					height: height,
