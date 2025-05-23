@@ -1,0 +1,4097 @@
+{
+	"allMarkersAvailable": false,
+	"propertiesByLatLon": {
+		"44.811222_20.450989": {
+			"latitude": 44.811222,
+			"longitude": 20.450989,
+			"count": 1,
+			"premium": true,
+			"price": 1000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91501558",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91501558",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/316012673_150x110.jpg?v=20130730",
+					"price": "1.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 60 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.77734_20.475836": {
+			"latitude": 44.77734,
+			"longitude": 20.475836,
+			"count": 1,
+			"premium": true,
+			"price": 600,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91307893",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91307893",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/314160641_150x110.jpg?v=20130730",
+					"price": "600",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 44 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.794453_20.528149": {
+			"latitude": 44.794453,
+			"longitude": 20.528149,
+			"count": 1,
+			"premium": true,
+			"price": 350,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91372267",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91372267",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/314855133_150x110.jpg?v=20130730",
+					"price": "350",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 50 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.800247_20.473492": {
+			"latitude": 44.800247,
+			"longitude": 20.473492,
+			"count": 1,
+			"premium": true,
+			"price": 1000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91501199",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91501199",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/316013459_150x110.jpg?v=20130730",
+					"price": "1.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 56 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.817886_20.461948": {
+			"latitude": 44.817886,
+			"longitude": 20.461948,
+			"count": 1,
+			"premium": true,
+			"price": 450,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91501103",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91501103",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/316013360_150x110.jpg?v=20130730",
+					"price": "450",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 23 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.804371_20.428083": {
+			"latitude": 44.804371,
+			"longitude": 20.428083,
+			"count": 1,
+			"premium": true,
+			"price": 800,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91501563",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91501563",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/316013225_150x110.jpg?v=20130730",
+					"price": "800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 79 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.794964_20.466805": {
+			"latitude": 44.794964,
+			"longitude": 20.466805,
+			"count": 1,
+			"premium": true,
+			"price": 1800,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91462301",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91462301",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/315674692_150x110.jpg?v=20130730",
+					"price": "1.800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 144 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.798138_20.469521": {
+			"latitude": 44.798138,
+			"longitude": 20.469521,
+			"count": 1,
+			"premium": true,
+			"price": 2350,
+			"url": "https:\/\/www.srbija-nekretnine.org\/2319796",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/2319796",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/256993070_150x110.jpg?v=20130730",
+					"price": "2.350",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 209 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.800179_20.452881": {
+			"latitude": 44.800179,
+			"longitude": 20.452881,
+			"count": 1,
+			"premium": true,
+			"price": 2000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/95152253",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95152253",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/302074164_150x110.jpg?v=20130730",
+					"price": "2.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 94 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.801472_20.47583": {
+			"latitude": 44.801472,
+			"longitude": 20.47583,
+			"count": 1,
+			"premium": true,
+			"price": 2900,
+			"url": "https:\/\/www.srbija-nekretnine.org\/97903961",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/97903961",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/226603524_150x110.jpg?v=20130730",
+					"price": "2.900",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 250 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.809307_20.366472": {
+			"latitude": 44.809307,
+			"longitude": 20.366472,
+			"count": 1,
+			"premium": true,
+			"price": 800,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91501520",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91501520",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/316012934_150x110.jpg?v=20130730",
+					"price": "800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 90 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.806713_20.453224": {
+			"latitude": 44.806713,
+			"longitude": 20.453224,
+			"count": 1,
+			"premium": true,
+			"price": 1250,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91501521",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91501521",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/316013084_150x110.jpg?v=20130730",
+					"price": "1.250",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 55 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.816151_20.471098": {
+			"latitude": 44.816151,
+			"longitude": 20.471098,
+			"count": 1,
+			"premium": true,
+			"price": 400,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91598068",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91598068",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/316123641_150x110.jpg?v=20130730",
+					"price": "400",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 32 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.805767_20.406115": {
+			"latitude": 44.805767,
+			"longitude": 20.406115,
+			"count": 1,
+			"premium": true,
+			"price": 850,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91501569",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91501569",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/316013159_150x110.jpg?v=20130730",
+					"price": "850",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 61 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.805294_20.401508": {
+			"latitude": 44.805294,
+			"longitude": 20.401508,
+			"count": 1,
+			"premium": true,
+			"price": 1900,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91501108",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91501108",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/316253129_150x110.jpg?v=20130730",
+					"price": "1.900",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 117 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.824329_20.455729": {
+			"latitude": 44.824329,
+			"longitude": 20.455729,
+			"count": 1,
+			"premium": true,
+			"price": 1200,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91501193",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91501193",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/316253113_150x110.jpg?v=20130730",
+					"price": "1.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 78 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.813087_20.3988": {
+			"latitude": 44.813087,
+			"longitude": 20.3988,
+			"count": 1,
+			"premium": true,
+			"price": 700,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91485864",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91485864",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/311720237_150x110.jpg?v=20130730",
+					"price": "700",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 37 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.796749_20.469751": {
+			"latitude": 44.796749,
+			"longitude": 20.469751,
+			"count": 1,
+			"premium": true,
+			"price": 2000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91501101",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91501101",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/316013397_150x110.jpg?v=20130730",
+					"price": "2.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 120 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.804672_20.471048": {
+			"latitude": 44.804672,
+			"longitude": 20.471048,
+			"count": 1,
+			"premium": true,
+			"price": 1200,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91501109",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91501109",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/316013308_150x110.jpg?v=20130730",
+					"price": "1.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 105 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.797218_20.471544": {
+			"latitude": 44.797218,
+			"longitude": 20.471544,
+			"count": 1,
+			"premium": true,
+			"price": 750,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91501566",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91501566",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/316013283_150x110.jpg?v=20130730",
+					"price": "750",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 52 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.813835_20.477777": {
+			"latitude": 44.813835,
+			"longitude": 20.477777,
+			"count": 1,
+			"premium": true,
+			"price": 550,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91501568",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91501568",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/316013224_150x110.jpg?v=20130730",
+					"price": "550",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 56 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.821133_20.415062": {
+			"latitude": 44.821133,
+			"longitude": 20.415062,
+			"count": 1,
+			"premium": true,
+			"price": 2000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91501526",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91501526",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/316013106_150x110.jpg?v=20130730",
+					"price": "2.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 105 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.801186_20.47666": {
+			"latitude": 44.801186,
+			"longitude": 20.47666,
+			"count": 1,
+			"premium": true,
+			"price": 900,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91501527",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91501527",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/316012989_150x110.jpg?v=20130730",
+					"price": "900",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 60 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.811752_20.424612": {
+			"latitude": 44.811752,
+			"longitude": 20.424612,
+			"count": 1,
+			"premium": true,
+			"price": 1850,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91501516",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91501516",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/316012919_150x110.jpg?v=20130730",
+					"price": "1.850",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 174 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 5,
+					"roomsTitle": "5 Sobe",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.765282_20.479515": {
+			"latitude": 44.765282,
+			"longitude": 20.479515,
+			"count": 1,
+			"premium": true,
+			"price": 1499,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91368658",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91368658",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/315786661_150x110.jpg?v=20130730",
+					"price": "1.499",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 75 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.790485_20.430511": {
+			"latitude": 44.790485,
+			"longitude": 20.430511,
+			"count": 1,
+			"premium": true,
+			"price": 2500,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91366087",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91366087",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/315859952_150x110.jpg?v=20130730",
+					"price": "2.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 118 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.772156_20.475521": {
+			"latitude": 44.772156,
+			"longitude": 20.475521,
+			"count": 1,
+			"premium": true,
+			"price": 1400,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91882858",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91882858",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/313180837_150x110.jpg?v=20130730",
+					"price": "1.400",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 85 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.850914_20.394999": {
+			"latitude": 44.850914,
+			"longitude": 20.394999,
+			"count": 1,
+			"premium": true,
+			"price": 1200,
+			"url": "https:\/\/www.srbija-nekretnine.org\/95308755",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95308755",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/300885675_150x110.jpg?v=20130730",
+					"price": "1.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 75 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.775562_20.487696": {
+			"latitude": 44.775562,
+			"longitude": 20.487696,
+			"count": 1,
+			"premium": true,
+			"price": 700,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91708451",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91708451",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/309311067_150x110.jpg?v=20130730",
+					"price": "700",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 70 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.811619_20.471657": {
+			"latitude": 44.811619,
+			"longitude": 20.471657,
+			"count": 1,
+			"premium": true,
+			"price": 1300,
+			"url": "https:\/\/www.srbija-nekretnine.org\/95398507",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95398507",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/303935943_150x110.jpg?v=20130730",
+					"price": "1.300",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 72 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.804161_20.456766": {
+			"latitude": 44.804161,
+			"longitude": 20.456766,
+			"count": 1,
+			"premium": true,
+			"price": 2200,
+			"url": "https:\/\/www.srbija-nekretnine.org\/95447965",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95447965",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/294613219_150x110.jpg?v=20130730",
+					"price": "2.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 88 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.801498_20.47587": {
+			"latitude": 44.801498,
+			"longitude": 20.47587,
+			"count": 1,
+			"premium": true,
+			"price": 2500,
+			"url": "https:\/\/www.srbija-nekretnine.org\/2319622",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/2319622",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/216412082_150x110.jpg?v=20130730",
+					"price": "2.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 240 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.819321_20.46179": {
+			"latitude": 44.819321,
+			"longitude": 20.46179,
+			"count": 1,
+			"premium": true,
+			"price": 1200,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91301384",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91301384",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/314252527_150x110.jpg?v=20130730",
+					"price": "1.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 68 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.760799_20.453199": {
+			"latitude": 44.760799,
+			"longitude": 20.453199,
+			"count": 1,
+			"premium": true,
+			"price": 1650,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91023001",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91023001",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/307198561_150x110.jpg?v=20130730",
+					"price": "1.650",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 120 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.797871_20.467384": {
+			"latitude": 44.797871,
+			"longitude": 20.467384,
+			"count": 1,
+			"premium": true,
+			"price": 2000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91775123",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91775123",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/309698533_150x110.jpg?v=20130730",
+					"price": "2.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 100 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.804108_20.456289": {
+			"latitude": 44.804108,
+			"longitude": 20.456289,
+			"count": 1,
+			"premium": true,
+			"price": 2500,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91999153",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91999153",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/307693711_150x110.jpg?v=20130730",
+					"price": "2.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 97 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.803978_20.457447": {
+			"latitude": 44.803978,
+			"longitude": 20.457447,
+			"count": 1,
+			"premium": true,
+			"price": 1200,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91023027",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91023027",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/307198976_150x110.jpg?v=20130730",
+					"price": "1.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 75 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.809608_20.450041": {
+			"latitude": 44.809608,
+			"longitude": 20.450041,
+			"count": 24,
+			"premium": true,
+			"price": false,
+			"url": false,
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91777352",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/309625574_150x110.jpg?v=20130730",
+					"price": "1.600",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 74 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94892122",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/247913799_150x110.jpg?v=20130730",
+					"price": "1.600",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 80 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/97892312",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/231478361_150x110.jpg?v=20130730",
+					"price": "1.700",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 83 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94630489",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/256237194_150x110.jpg?v=20130730",
+					"price": "2.100",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 90 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94144102",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/254852140_150x110.jpg?v=20130730",
+					"price": "1.800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 88 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94142024",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/253104339_150x110.jpg?v=20130730",
+					"price": "1.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 90 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/93397395",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/281554144_150x110.jpg?v=20130730",
+					"price": "1.600",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 73 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/97367272",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/234177961_150x110.jpg?v=20130730",
+					"price": "2.100",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 106 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/93044058",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/274752390_150x110.jpg?v=20130730",
+					"price": "2.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 87 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98296106",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/269768733_150x110.jpg?v=20130730",
+					"price": "2.800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 140 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91931023",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/308481653_150x110.jpg?v=20130730",
+					"price": "2.800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 109 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98601093",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/271443166_150x110.jpg?v=20130730",
+					"price": "1.900",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 87 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98771661",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/261628403_150x110.jpg?v=20130730",
+					"price": "1.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 59 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98204068",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/269407996_150x110.jpg?v=20130730",
+					"price": "1.300",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 56 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94696840",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/255334021_150x110.jpg?v=20130730",
+					"price": "1.800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 71 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94698504",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/255273881_150x110.jpg?v=20130730",
+					"price": "2.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 83 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98983769",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/259021676_150x110.jpg?v=20130730",
+					"price": "1.800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 89 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/97188939",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/237981036_150x110.jpg?v=20130730",
+					"price": "1.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 60 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/97244435",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/259780591_150x110.jpg?v=20130730",
+					"price": "2.800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 105 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/93537914",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/283728672_150x110.jpg?v=20130730",
+					"price": "1.600",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 80 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/93645276",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/289287451_150x110.jpg?v=20130730",
+					"price": "1.800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 72 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/97548195",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/235644600_150x110.jpg?v=20130730",
+					"price": "3.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 110 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98771628",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/260985884_150x110.jpg?v=20130730",
+					"price": "3.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 108 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98457897",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/262827316_150x110.jpg?v=20130730",
+					"price": "1.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 82 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.851395_20.394781": {
+			"latitude": 44.851395,
+			"longitude": 20.394781,
+			"count": 1,
+			"premium": true,
+			"price": 600,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91882853",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91882853",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/313180841_150x110.jpg?v=20130730",
+					"price": "600",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 45 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.764843_20.45484": {
+			"latitude": 44.764843,
+			"longitude": 20.45484,
+			"count": 1,
+			"premium": true,
+			"price": 17900,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91961207",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91961207",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/309180649_150x110.jpg?v=20130730",
+					"price": "17.900",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Ku\u0107a 1.400 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 26,
+					"roomsTitle": "26 Sobe",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.80537_20.46998": {
+			"latitude": 44.80537,
+			"longitude": 20.46998,
+			"count": 1,
+			"premium": true,
+			"price": 1700,
+			"url": "https:\/\/www.srbija-nekretnine.org\/94014435",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94014435",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/242404843_150x110.jpg?v=20130730",
+					"price": "1.700",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 72 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.798401_20.469437": {
+			"latitude": 44.798401,
+			"longitude": 20.469437,
+			"count": 1,
+			"premium": true,
+			"price": 3200,
+			"url": "https:\/\/www.srbija-nekretnine.org\/97903996",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/97903996",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/226602469_150x110.jpg?v=20130730",
+					"price": "3.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 150 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.768368_20.456791": {
+			"latitude": 44.768368,
+			"longitude": 20.456791,
+			"count": 1,
+			"premium": false,
+			"price": 2800,
+			"url": "https:\/\/www.srbija-nekretnine.org\/99046330",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99046330",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/216410662_150x110.jpg?v=20130730",
+					"price": "2.800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 235 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.797596_20.474867": {
+			"latitude": 44.797596,
+			"longitude": 20.474867,
+			"count": 1,
+			"premium": false,
+			"price": 3900,
+			"url": "https:\/\/www.srbija-nekretnine.org\/99919748",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99919748",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/216408231_150x110.jpg?v=20130730",
+					"price": "3.900",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 170 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.80611_20.44861": {
+			"latitude": 44.80611,
+			"longitude": 20.44861,
+			"count": 2,
+			"premium": false,
+			"price": false,
+			"url": false,
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/97990656",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/227643952_150x110.jpg?v=20130730",
+					"price": "1.600",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 81 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/97990607",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/227376908_150x110.jpg?v=20130730",
+					"price": "2.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 125 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.80217_20.478649": {
+			"latitude": 44.80217,
+			"longitude": 20.478649,
+			"count": 2,
+			"premium": false,
+			"price": false,
+			"url": false,
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94541785",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/251222160_150x110.jpg?v=20130730",
+					"price": "3.600",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 180 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98336824",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/266036396_150x110.jpg?v=20130730",
+					"price": "3.300",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 184 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.796589_20.4722": {
+			"latitude": 44.796589,
+			"longitude": 20.4722,
+			"count": 4,
+			"premium": false,
+			"price": false,
+			"url": false,
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94442274",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/246507177_150x110.jpg?v=20130730",
+					"price": "2.300",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 125 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95274610",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/302856009_150x110.jpg?v=20130730",
+					"price": "2.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 130 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 4,
+					"roomsTitle": "4 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99798380",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/213684762_150x110.jpg?v=20130730",
+					"price": "1.800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 168 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99685197",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/224321260_150x110.jpg?v=20130730",
+					"price": "2.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 85 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.813229_20.399281": {
+			"latitude": 44.813229,
+			"longitude": 20.399281,
+			"count": 1,
+			"premium": false,
+			"price": 1500,
+			"url": "https:\/\/www.srbija-nekretnine.org\/97816078",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/97816078",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/232395603_150x110.jpg?v=20130730",
+					"price": "1.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 88 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.802441_20.477039": {
+			"latitude": 44.802441,
+			"longitude": 20.477039,
+			"count": 4,
+			"premium": false,
+			"price": false,
+			"url": false,
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99854093",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/217611491_150x110.jpg?v=20130730",
+					"price": "2.450",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 236 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99715404",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/256993502_150x110.jpg?v=20130730",
+					"price": "2.350",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 209 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99854073",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/256994821_150x110.jpg?v=20130730",
+					"price": "2.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 240 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99955900",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/216408153_150x110.jpg?v=20130730",
+					"price": "2.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 240 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.79776_20.469721": {
+			"latitude": 44.79776,
+			"longitude": 20.469721,
+			"count": 1,
+			"premium": false,
+			"price": 1700,
+			"url": "https:\/\/www.srbija-nekretnine.org\/94014776",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94014776",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/243937752_150x110.jpg?v=20130730",
+					"price": "1.700",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 90 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.803741_20.45788": {
+			"latitude": 44.803741,
+			"longitude": 20.45788,
+			"count": 1,
+			"premium": false,
+			"price": 2500,
+			"url": "https:\/\/www.srbija-nekretnine.org\/99333250",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99333250",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/218914123_150x110.jpg?v=20130730",
+					"price": "2.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 118 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.81575_20.429331": {
+			"latitude": 44.81575,
+			"longitude": 20.429331,
+			"count": 2,
+			"premium": false,
+			"price": false,
+			"url": false,
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94877635",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/248155537_150x110.jpg?v=20130730",
+					"price": "2.700",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 197 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94219382",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/254563165_150x110.jpg?v=20130730",
+					"price": "2.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 126 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.798256_20.468882": {
+			"latitude": 44.798256,
+			"longitude": 20.468882,
+			"count": 1,
+			"premium": false,
+			"price": 2800,
+			"url": "https:\/\/www.srbija-nekretnine.org\/94524406",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94524406",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/258343686_150x110.jpg?v=20130730",
+					"price": "2.800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 171 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.797604_20.474707": {
+			"latitude": 44.797604,
+			"longitude": 20.474707,
+			"count": 1,
+			"premium": false,
+			"price": 3000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/99715750",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99715750",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/216409189_150x110.jpg?v=20130730",
+					"price": "3.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 125 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.805382_20.469999": {
+			"latitude": 44.805382,
+			"longitude": 20.469999,
+			"count": 1,
+			"premium": false,
+			"price": 3500,
+			"url": "https:\/\/www.srbija-nekretnine.org\/94348465",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94348465",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/250242630_150x110.jpg?v=20130730",
+					"price": "3.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 125 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.81086_20.403749": {
+			"latitude": 44.81086,
+			"longitude": 20.403749,
+			"count": 3,
+			"premium": false,
+			"price": false,
+			"url": false,
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94085751",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/242025889_150x110.jpg?v=20130730",
+					"price": "3.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 120 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94024377",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/242544253_150x110.jpg?v=20130730",
+					"price": "3.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 103 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/97236375",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/238866560_150x110.jpg?v=20130730",
+					"price": "1.900",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 58 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.79969_20.473772": {
+			"latitude": 44.79969,
+			"longitude": 20.473772,
+			"count": 1,
+			"premium": false,
+			"price": 2100,
+			"url": "https:\/\/www.srbija-nekretnine.org\/99440476",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99440476",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/240919093_150x110.jpg?v=20130730",
+					"price": "2.100",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 128 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.795052_20.468998": {
+			"latitude": 44.795052,
+			"longitude": 20.468998,
+			"count": 1,
+			"premium": false,
+			"price": 3000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/99221886",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99221886",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/227051275_150x110.jpg?v=20130730",
+					"price": "3.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 177 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.801552_20.397551": {
+			"latitude": 44.801552,
+			"longitude": 20.397551,
+			"count": 1,
+			"premium": false,
+			"price": 2700,
+			"url": "https:\/\/www.srbija-nekretnine.org\/97169506",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/97169506",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/239004156_150x110.jpg?v=20130730",
+					"price": "2.700",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 152 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.797981_20.47921": {
+			"latitude": 44.797981,
+			"longitude": 20.47921,
+			"count": 2,
+			"premium": false,
+			"price": false,
+			"url": false,
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98336888",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/266035927_150x110.jpg?v=20130730",
+					"price": "3.900",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 170 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 4,
+					"roomsTitle": "4 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98523452",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/267710105_150x110.jpg?v=20130730",
+					"price": "4.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 200 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 4,
+					"roomsTitle": "4 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.806389_20.40143": {
+			"latitude": 44.806389,
+			"longitude": 20.40143,
+			"count": 1,
+			"premium": false,
+			"price": 1700,
+			"url": "https:\/\/www.srbija-nekretnine.org\/90189779",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/90189779",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/252794965_150x110.jpg?v=20130730",
+					"price": "1.700",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 110 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.7789_20.456873": {
+			"latitude": 44.7789,
+			"longitude": 20.456873,
+			"count": 1,
+			"premium": false,
+			"price": 3500,
+			"url": "https:\/\/www.srbija-nekretnine.org\/97707841",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/97707841",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/229892445_150x110.jpg?v=20130730",
+					"price": "3.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 200 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.798061_20.469269": {
+			"latitude": 44.798061,
+			"longitude": 20.469269,
+			"count": 1,
+			"premium": false,
+			"price": 4700,
+			"url": "https:\/\/www.srbija-nekretnine.org\/90616785",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/90616785",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/253812309_150x110.jpg?v=20130730",
+					"price": "4.700",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 279 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 4,
+					"roomsTitle": "4 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.80933_20.45019": {
+			"latitude": 44.80933,
+			"longitude": 20.45019,
+			"count": 2,
+			"premium": false,
+			"price": false,
+			"url": false,
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99854971",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/217613451_150x110.jpg?v=20130730",
+					"price": "2.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 90 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/90262414",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/251529921_150x110.jpg?v=20130730",
+					"price": "1.300",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 58 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.804562_20.45064": {
+			"latitude": 44.804562,
+			"longitude": 20.45064,
+			"count": 1,
+			"premium": false,
+			"price": 2300,
+			"url": "https:\/\/www.srbija-nekretnine.org\/99068953",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99068953",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/211584973_150x110.jpg?v=20130730",
+					"price": "2.300",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 90 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.797913_20.46911": {
+			"latitude": 44.797913,
+			"longitude": 20.46911,
+			"count": 1,
+			"premium": false,
+			"price": 2000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/99330585",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99330585",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/218836680_150x110.jpg?v=20130730",
+					"price": "2.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 108 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.793369_20.477949": {
+			"latitude": 44.793369,
+			"longitude": 20.477949,
+			"count": 1,
+			"premium": false,
+			"price": 6500,
+			"url": "https:\/\/www.srbija-nekretnine.org\/95177128",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95177128",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/301310617_150x110.jpg?v=20130730",
+					"price": "6.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 350 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 4,
+					"roomsTitle": "4 Sobe",
+					"noOfBathrooms": 4,
+					"noOfBathroomsTitle": "4 Kupatila"
+				}
+			]
+		},
+		"44.807865_20.450117": {
+			"latitude": 44.807865,
+			"longitude": 20.450117,
+			"count": 1,
+			"premium": false,
+			"price": 1300,
+			"url": "https:\/\/www.srbija-nekretnine.org\/99638203",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99638203",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/251723480_150x110.jpg?v=20130730",
+					"price": "1.300",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 56 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.798393_20.469831": {
+			"latitude": 44.798393,
+			"longitude": 20.469831,
+			"count": 1,
+			"premium": false,
+			"price": 1700,
+			"url": "https:\/\/www.srbija-nekretnine.org\/99860337",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99860337",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/228296538_150x110.jpg?v=20130730",
+					"price": "1.700",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 102 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.798248_20.469418": {
+			"latitude": 44.798248,
+			"longitude": 20.469418,
+			"count": 1,
+			"premium": false,
+			"price": 1800,
+			"url": "https:\/\/www.srbija-nekretnine.org\/97543453",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/97543453",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/235865911_150x110.jpg?v=20130730",
+					"price": "1.800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 95 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.796967_20.469374": {
+			"latitude": 44.796967,
+			"longitude": 20.469374,
+			"count": 1,
+			"premium": false,
+			"price": 3500,
+			"url": "https:\/\/www.srbija-nekretnine.org\/99102020",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99102020",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/222469476_150x110.jpg?v=20130730",
+					"price": "3.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 143 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.80217_20.47864": {
+			"latitude": 44.80217,
+			"longitude": 20.47864,
+			"count": 1,
+			"premium": false,
+			"price": 3600,
+			"url": "https:\/\/www.srbija-nekretnine.org\/97347802",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/97347802",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/243192274_150x110.jpg?v=20130730",
+					"price": "3.600",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 180 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.797985_20.469362": {
+			"latitude": 44.797985,
+			"longitude": 20.469362,
+			"count": 1,
+			"premium": false,
+			"price": 3000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/97120128",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/97120128",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/253815394_150x110.jpg?v=20130730",
+					"price": "3.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 167 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.810848_20.40374": {
+			"latitude": 44.810848,
+			"longitude": 20.40374,
+			"count": 3,
+			"premium": false,
+			"price": false,
+			"url": false,
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94360271",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/250455191_150x110.jpg?v=20130730",
+					"price": "1.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 108 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94397179",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/249282009_150x110.jpg?v=20130730",
+					"price": "1.800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 56 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94635458",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/255960992_150x110.jpg?v=20130730",
+					"price": "2.350",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 96 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.798061_20.469439": {
+			"latitude": 44.798061,
+			"longitude": 20.469439,
+			"count": 1,
+			"premium": false,
+			"price": 1600,
+			"url": "https:\/\/www.srbija-nekretnine.org\/99948530",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99948530",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/216409616_150x110.jpg?v=20130730",
+					"price": "1.600",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 91 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.797611_20.47294": {
+			"latitude": 44.797611,
+			"longitude": 20.47294,
+			"count": 1,
+			"premium": false,
+			"price": 1600,
+			"url": "https:\/\/www.srbija-nekretnine.org\/99235403",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99235403",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/223027155_150x110.jpg?v=20130730",
+					"price": "1.600",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 84 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.818771_20.471149": {
+			"latitude": 44.818771,
+			"longitude": 20.471149,
+			"count": 1,
+			"premium": false,
+			"price": 1300,
+			"url": "https:\/\/www.srbija-nekretnine.org\/94892155",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94892155",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/247913195_150x110.jpg?v=20130730",
+					"price": "1.300",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 80 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.766201_20.480909": {
+			"latitude": 44.766201,
+			"longitude": 20.480909,
+			"count": 1,
+			"premium": false,
+			"price": 1200,
+			"url": "https:\/\/www.srbija-nekretnine.org\/99789470",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99789470",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/214138914_150x110.jpg?v=20130730",
+					"price": "1.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 83 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.80307_20.448339": {
+			"latitude": 44.80307,
+			"longitude": 20.448339,
+			"count": 5,
+			"premium": false,
+			"price": false,
+			"url": false,
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94152047",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/253126510_150x110.jpg?v=20130730",
+					"price": "1.850",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 80 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94122273",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/254025810_150x110.jpg?v=20130730",
+					"price": "2.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 117 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/93773356",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/276894031_150x110.jpg?v=20130730",
+					"price": "1.700",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 84 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98006136",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/257362431_150x110.jpg?v=20130730",
+					"price": "2.300",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 110 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98410136",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/263020670_150x110.jpg?v=20130730",
+					"price": "1.800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 83 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.79789_20.469568": {
+			"latitude": 44.79789,
+			"longitude": 20.469568,
+			"count": 1,
+			"premium": false,
+			"price": 3200,
+			"url": "https:\/\/www.srbija-nekretnine.org\/98336813",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98336813",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/266036252_150x110.jpg?v=20130730",
+					"price": "3.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 150 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.819839_20.471239": {
+			"latitude": 44.819839,
+			"longitude": 20.471239,
+			"count": 3,
+			"premium": false,
+			"price": false,
+			"url": false,
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91436190",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/311943371_150x110.jpg?v=20130730",
+					"price": "1.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 55 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95666217",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/305809992_150x110.jpg?v=20130730",
+					"price": "1.450",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 81 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95062516",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/290841035_150x110.jpg?v=20130730",
+					"price": "2.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 92 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.826172_20.455448": {
+			"latitude": 44.826172,
+			"longitude": 20.455448,
+			"count": 1,
+			"premium": false,
+			"price": 4000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/94197218",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94197218",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/252727057_150x110.jpg?v=20130730",
+					"price": "4.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 133 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 4,
+					"roomsTitle": "4 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.797611_20.474796": {
+			"latitude": 44.797611,
+			"longitude": 20.474796,
+			"count": 1,
+			"premium": false,
+			"price": 3300,
+			"url": "https:\/\/www.srbija-nekretnine.org\/98434970",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98434970",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/262636446_150x110.jpg?v=20130730",
+					"price": "3.300",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 140 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.786911_20.43799": {
+			"latitude": 44.786911,
+			"longitude": 20.43799,
+			"count": 1,
+			"premium": false,
+			"price": 3500,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91848546",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91848546",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/313070180_150x110.jpg?v=20130730",
+					"price": "3.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 158 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.82407_20.41828": {
+			"latitude": 44.82407,
+			"longitude": 20.41828,
+			"count": 1,
+			"premium": false,
+			"price": 3000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/94217225",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94217225",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/254584115_150x110.jpg?v=20130730",
+					"price": "3.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 170 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.777409_20.46032": {
+			"latitude": 44.777409,
+			"longitude": 20.46032,
+			"count": 2,
+			"premium": false,
+			"price": false,
+			"url": false,
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91594877",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/316112870_150x110.jpg?v=20130730",
+					"price": "4.300",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 245 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 4,
+					"roomsTitle": "4 Sobe",
+					"noOfBathrooms": 4,
+					"noOfBathroomsTitle": "4 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91373027",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/314643564_150x110.jpg?v=20130730",
+					"price": "2.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 113 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.82365_20.46847": {
+			"latitude": 44.82365,
+			"longitude": 20.46847,
+			"count": 3,
+			"premium": false,
+			"price": false,
+			"url": false,
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94667514",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/256580095_150x110.jpg?v=20130730",
+					"price": "2.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 78 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98367854",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/266513078_150x110.jpg?v=20130730",
+					"price": "1.900",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 85 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98765431",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/261521261_150x110.jpg?v=20130730",
+					"price": "2.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 97 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.800217_20.477741": {
+			"latitude": 44.800217,
+			"longitude": 20.477741,
+			"count": 1,
+			"premium": false,
+			"price": 2500,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91966278",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91966278",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/309218736_150x110.jpg?v=20130730",
+					"price": "2.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 96 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.800968_20.385309": {
+			"latitude": 44.800968,
+			"longitude": 20.385309,
+			"count": 1,
+			"premium": false,
+			"price": 1800,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91013549",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91013549",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/307029231_150x110.jpg?v=20130730",
+					"price": "1.800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 99 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.774899_20.461639": {
+			"latitude": 44.774899,
+			"longitude": 20.461639,
+			"count": 1,
+			"premium": false,
+			"price": 4500,
+			"url": "https:\/\/www.srbija-nekretnine.org\/98220492",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98220492",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/270948507_150x110.jpg?v=20130730",
+					"price": "4.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 213 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.827057_20.450008": {
+			"latitude": 44.827057,
+			"longitude": 20.450008,
+			"count": 1,
+			"premium": false,
+			"price": 3000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/98914294",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98914294",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/259416906_150x110.jpg?v=20130730",
+					"price": "3.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 122 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.807652_20.4328": {
+			"latitude": 44.807652,
+			"longitude": 20.4328,
+			"count": 1,
+			"premium": false,
+			"price": 3000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/98119510",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98119510",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/268956906_150x110.jpg?v=20130730",
+					"price": "3.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 140 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.810211_20.448578": {
+			"latitude": 44.810211,
+			"longitude": 20.448578,
+			"count": 1,
+			"premium": false,
+			"price": 1900,
+			"url": "https:\/\/www.srbija-nekretnine.org\/95992164",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95992164",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/291994109_150x110.jpg?v=20130730",
+					"price": "1.900",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 72 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.811371_20.404221": {
+			"latitude": 44.811371,
+			"longitude": 20.404221,
+			"count": 1,
+			"premium": false,
+			"price": 3000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91712039",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91712039",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/310614240_150x110.jpg?v=20130730",
+					"price": "3.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 110 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.809341_20.45019": {
+			"latitude": 44.809341,
+			"longitude": 20.45019,
+			"count": 1,
+			"premium": false,
+			"price": 1200,
+			"url": "https:\/\/www.srbija-nekretnine.org\/90179458",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/90179458",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/205836330_150x110.jpg?v=20130730",
+					"price": "1.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 56 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.828655_20.45223": {
+			"latitude": 44.828655,
+			"longitude": 20.45223,
+			"count": 1,
+			"premium": false,
+			"price": 1550,
+			"url": "https:\/\/www.srbija-nekretnine.org\/93771464",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/93771464",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/277609536_150x110.jpg?v=20130730",
+					"price": "1.550",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 75 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.805031_20.45083": {
+			"latitude": 44.805031,
+			"longitude": 20.45083,
+			"count": 2,
+			"premium": false,
+			"price": false,
+			"url": false,
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91805368",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/312679147_150x110.jpg?v=20130730",
+					"price": "1.600",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 84 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91805596",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/312680292_150x110.jpg?v=20130730",
+					"price": "1.600",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 72 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.820911_20.410089": {
+			"latitude": 44.820911,
+			"longitude": 20.410089,
+			"count": 1,
+			"premium": false,
+			"price": 1050,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91505480",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91505480",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/315989886_150x110.jpg?v=20130730",
+					"price": "1.050",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 62 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.801701_20.398979": {
+			"latitude": 44.801701,
+			"longitude": 20.398979,
+			"count": 2,
+			"premium": false,
+			"price": false,
+			"url": false,
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98693069",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/271573535_150x110.jpg?v=20130730",
+					"price": "2.400",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 200 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94541404",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/251222759_150x110.jpg?v=20130730",
+					"price": "1.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 64 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.77742_20.46031": {
+			"latitude": 44.77742,
+			"longitude": 20.46031,
+			"count": 1,
+			"premium": false,
+			"price": 2700,
+			"url": "https:\/\/www.srbija-nekretnine.org\/94887789",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94887789",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/248284474_150x110.jpg?v=20130730",
+					"price": "2.700",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 135 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.801891_20.48134": {
+			"latitude": 44.801891,
+			"longitude": 20.48134,
+			"count": 2,
+			"premium": false,
+			"price": false,
+			"url": false,
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95822820",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/297446367_150x110.jpg?v=20130730",
+					"price": "3.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 200 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 4,
+					"roomsTitle": "4 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95994691",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/291074784_150x110.jpg?v=20130730",
+					"price": "720",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 47 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.828732_20.453428": {
+			"latitude": 44.828732,
+			"longitude": 20.453428,
+			"count": 1,
+			"premium": false,
+			"price": 1200,
+			"url": "https:\/\/www.srbija-nekretnine.org\/94274027",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94274027",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/253890840_150x110.jpg?v=20130730",
+					"price": "1.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 59 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.805107_20.399479": {
+			"latitude": 44.805107,
+			"longitude": 20.399479,
+			"count": 1,
+			"premium": false,
+			"price": 1900,
+			"url": "https:\/\/www.srbija-nekretnine.org\/98485019",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98485019",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/262531608_150x110.jpg?v=20130730",
+					"price": "1.900",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 112 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.828789_20.454157": {
+			"latitude": 44.828789,
+			"longitude": 20.454157,
+			"count": 1,
+			"premium": false,
+			"price": 1700,
+			"url": "https:\/\/www.srbija-nekretnine.org\/93166439",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/93166439",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/285970269_150x110.jpg?v=20130730",
+					"price": "1.700",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 97 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.77956_20.47665": {
+			"latitude": 44.77956,
+			"longitude": 20.47665,
+			"count": 1,
+			"premium": false,
+			"price": 1950,
+			"url": "https:\/\/www.srbija-nekretnine.org\/94318023",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94318023",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/250258623_150x110.jpg?v=20130730",
+					"price": "1.950",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 80 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.82663_20.45405": {
+			"latitude": 44.82663,
+			"longitude": 20.45405,
+			"count": 1,
+			"premium": false,
+			"price": 1950,
+			"url": "https:\/\/www.srbija-nekretnine.org\/98100499",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98100499",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/267950054_150x110.jpg?v=20130730",
+					"price": "1.950",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 81 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.820248_20.467953": {
+			"latitude": 44.820248,
+			"longitude": 20.467953,
+			"count": 1,
+			"premium": false,
+			"price": 1250,
+			"url": "https:\/\/www.srbija-nekretnine.org\/94271841",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94271841",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/255265774_150x110.jpg?v=20130730",
+					"price": "1.250",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 55 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.80983_20.448706": {
+			"latitude": 44.80983,
+			"longitude": 20.448706,
+			"count": 1,
+			"premium": false,
+			"price": 2100,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91032669",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91032669",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/306780289_150x110.jpg?v=20130730",
+					"price": "2.100",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 85 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.80357_20.472651": {
+			"latitude": 44.80357,
+			"longitude": 20.472651,
+			"count": 1,
+			"premium": false,
+			"price": 800,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91492104",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91492104",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/311409395_150x110.jpg?v=20130730",
+					"price": "800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 47 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.812752_20.3995": {
+			"latitude": 44.812752,
+			"longitude": 20.3995,
+			"count": 2,
+			"premium": false,
+			"price": false,
+			"url": false,
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91957419",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/308576723_150x110.jpg?v=20130730",
+					"price": "1.300",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 55 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				},
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/93532980",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/283817801_150x110.jpg?v=20130730",
+					"price": "2.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 105 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.79475_20.47187": {
+			"latitude": 44.79475,
+			"longitude": 20.47187,
+			"count": 1,
+			"premium": false,
+			"price": 2500,
+			"url": "https:\/\/www.srbija-nekretnine.org\/95121027",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95121027",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/305546514_150x110.jpg?v=20130730",
+					"price": "2.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 178 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 4,
+					"roomsTitle": "4 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.828781_20.452412": {
+			"latitude": 44.828781,
+			"longitude": 20.452412,
+			"count": 1,
+			"premium": false,
+			"price": 5000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91460604",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91460604",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/312451760_150x110.jpg?v=20130730",
+					"price": "5.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 193 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.814709_20.463329": {
+			"latitude": 44.814709,
+			"longitude": 20.463329,
+			"count": 1,
+			"premium": false,
+			"price": 1500,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91410566",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91410566",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/312129381_150x110.jpg?v=20130730",
+					"price": "1.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 90 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.76366_20.45682": {
+			"latitude": 44.76366,
+			"longitude": 20.45682,
+			"count": 1,
+			"premium": false,
+			"price": 2000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/98996129",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98996129",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/265947089_150x110.jpg?v=20130730",
+					"price": "2.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 148 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.792221_20.46269": {
+			"latitude": 44.792221,
+			"longitude": 20.46269,
+			"count": 1,
+			"premium": false,
+			"price": 1100,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91351074",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91351074",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/315322364_150x110.jpg?v=20130730",
+					"price": "1.100",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 103 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.796059_20.47621": {
+			"latitude": 44.796059,
+			"longitude": 20.47621,
+			"count": 1,
+			"premium": false,
+			"price": 2700,
+			"url": "https:\/\/www.srbija-nekretnine.org\/93109908",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/93109908",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/284457924_150x110.jpg?v=20130730",
+					"price": "2.700",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 130 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.79985_20.48638": {
+			"latitude": 44.79985,
+			"longitude": 20.48638,
+			"count": 1,
+			"premium": false,
+			"price": 1200,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91368062",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91368062",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/315772700_150x110.jpg?v=20130730",
+					"price": "1.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 78 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.775131_20.41259": {
+			"latitude": 44.775131,
+			"longitude": 20.41259,
+			"count": 1,
+			"premium": false,
+			"price": 4000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91493193",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91493193",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/311238217_150x110.jpg?v=20130730",
+					"price": "4.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 232 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 4,
+					"roomsTitle": "4 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.79266_20.50375": {
+			"latitude": 44.79266,
+			"longitude": 20.50375,
+			"count": 1,
+			"premium": false,
+			"price": 800,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91890757",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91890757",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/312739268_150x110.jpg?v=20130730",
+					"price": "800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 50 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.715519_20.49744": {
+			"latitude": 44.715519,
+			"longitude": 20.49744,
+			"count": 1,
+			"premium": false,
+			"price": 3100,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91970966",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91970966",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/312464448_150x110.jpg?v=20130730",
+					"price": "3.100",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Ku\u0107a 230 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.833691_20.40992": {
+			"latitude": 44.833691,
+			"longitude": 20.40992,
+			"count": 1,
+			"premium": false,
+			"price": 1500,
+			"url": "https:\/\/www.srbija-nekretnine.org\/94534363",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94534363",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/251453665_150x110.jpg?v=20130730",
+					"price": "1.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 95 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.804508_20.46983": {
+			"latitude": 44.804508,
+			"longitude": 20.46983,
+			"count": 1,
+			"premium": false,
+			"price": 800,
+			"url": "https:\/\/www.srbija-nekretnine.org\/95156291",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95156291",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/302090348_150x110.jpg?v=20130730",
+					"price": "800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 66 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.809883_20.448706": {
+			"latitude": 44.809883,
+			"longitude": 20.448706,
+			"count": 1,
+			"premium": false,
+			"price": 2000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/94633771",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/94633771",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/255946344_150x110.jpg?v=20130730",
+					"price": "2.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 72 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.796181_20.46781": {
+			"latitude": 44.796181,
+			"longitude": 20.46781,
+			"count": 1,
+			"premium": false,
+			"price": 3000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91757564",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91757564",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/310346497_150x110.jpg?v=20130730",
+					"price": "3.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 132 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.783379_20.46772": {
+			"latitude": 44.783379,
+			"longitude": 20.46772,
+			"count": 1,
+			"premium": false,
+			"price": 3300,
+			"url": "https:\/\/www.srbija-nekretnine.org\/95395769",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95395769",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/297909264_150x110.jpg?v=20130730",
+					"price": "3.300",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 157 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 4,
+					"roomsTitle": "4 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.802338_20.47699": {
+			"latitude": 44.802338,
+			"longitude": 20.47699,
+			"count": 1,
+			"premium": false,
+			"price": 2450,
+			"url": "https:\/\/www.srbija-nekretnine.org\/2319665",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/2319665",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/256993227_150x110.jpg?v=20130730",
+					"price": "2.450",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 200 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.777962_20.41053": {
+			"latitude": 44.777962,
+			"longitude": 20.41053,
+			"count": 1,
+			"premium": false,
+			"price": 700,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91807592",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91807592",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/312645472_150x110.jpg?v=20130730",
+					"price": "700",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 75 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.758099_20.48386": {
+			"latitude": 44.758099,
+			"longitude": 20.48386,
+			"count": 1,
+			"premium": false,
+			"price": 800,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91866268",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91866268",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/314114271_150x110.jpg?v=20130730",
+					"price": "800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 64 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.825699_20.462996": {
+			"latitude": 44.825699,
+			"longitude": 20.462996,
+			"count": 1,
+			"premium": false,
+			"price": 900,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91342365",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91342365",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/314811866_150x110.jpg?v=20130730",
+					"price": "900",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 78 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.809471_20.46596": {
+			"latitude": 44.809471,
+			"longitude": 20.46596,
+			"count": 1,
+			"premium": false,
+			"price": 2800,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91571786",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91571786",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/316334715_150x110.jpg?v=20130730",
+					"price": "2.800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 153 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.806713_20.452763": {
+			"latitude": 44.806713,
+			"longitude": 20.452763,
+			"count": 1,
+			"premium": false,
+			"price": 2000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/99099506",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99099506",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/279881483_150x110.jpg?v=20130730",
+					"price": "2.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 88 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.826729_20.41618": {
+			"latitude": 44.826729,
+			"longitude": 20.41618,
+			"count": 1,
+			"premium": false,
+			"price": 750,
+			"url": "https:\/\/www.srbija-nekretnine.org\/95283935",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95283935",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/303218011_150x110.jpg?v=20130730",
+					"price": "750",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 67 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.827629_20.460899": {
+			"latitude": 44.827629,
+			"longitude": 20.460899,
+			"count": 1,
+			"premium": false,
+			"price": 1600,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91823923",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91823923",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/313840395_150x110.jpg?v=20130730",
+					"price": "1.600",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 89 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.80407_20.37989": {
+			"latitude": 44.80407,
+			"longitude": 20.37989,
+			"count": 1,
+			"premium": false,
+			"price": 1600,
+			"url": "https:\/\/www.srbija-nekretnine.org\/99861307",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99861307",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/218100456_150x110.jpg?v=20130730",
+					"price": "1.600",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 71 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.793678_20.469749": {
+			"latitude": 44.793678,
+			"longitude": 20.469749,
+			"count": 1,
+			"premium": false,
+			"price": 4200,
+			"url": "https:\/\/www.srbija-nekretnine.org\/98165070",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/98165070",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/269303301_150x110.jpg?v=20130730",
+					"price": "4.200",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Ku\u0107a 167 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 6,
+					"roomsTitle": "6 Sobe",
+					"noOfBathrooms": 4,
+					"noOfBathroomsTitle": "4 Kupatila"
+				}
+			]
+		},
+		"44.784222_20.44722": {
+			"latitude": 44.784222,
+			"longitude": 20.44722,
+			"count": 1,
+			"premium": false,
+			"price": 3000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/93282147",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/93282147",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/286841171_150x110.jpg?v=20130730",
+					"price": "3.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 209 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 4,
+					"roomsTitle": "4 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.777416_20.473053": {
+			"latitude": 44.777416,
+			"longitude": 20.473053,
+			"count": 1,
+			"premium": false,
+			"price": 1000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/99157615",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/99157615",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/221719788_150x110.jpg?v=20130730",
+					"price": "1.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 83 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.808372_20.447918": {
+			"latitude": 44.808372,
+			"longitude": 20.447918,
+			"count": 1,
+			"premium": false,
+			"price": 3000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/95838242",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95838242",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/296881757_150x110.jpg?v=20130730",
+					"price": "3.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 105 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.764301_20.480049": {
+			"latitude": 44.764301,
+			"longitude": 20.480049,
+			"count": 1,
+			"premium": false,
+			"price": 750,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91840272",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91840272",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/313015168_150x110.jpg?v=20130730",
+					"price": "750",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 49 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 1,
+					"roomsTitle": "1 Spava\u0107a soba",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.801201_20.48085": {
+			"latitude": 44.801201,
+			"longitude": 20.48085,
+			"count": 1,
+			"premium": false,
+			"price": 2500,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91418867",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91418867",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/312165093_150x110.jpg?v=20130730",
+					"price": "2.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 166 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.789631_20.43329": {
+			"latitude": 44.789631,
+			"longitude": 20.43329,
+			"count": 1,
+			"premium": false,
+			"price": 3500,
+			"url": "https:\/\/www.srbija-nekretnine.org\/93275398",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/93275398",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/286416755_150x110.jpg?v=20130730",
+					"price": "3.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Ku\u0107a 299 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 5,
+					"roomsTitle": "5 Sobe",
+					"noOfBathrooms": 4,
+					"noOfBathroomsTitle": "4 Kupatila"
+				}
+			]
+		},
+		"44.775192_20.460526": {
+			"latitude": 44.775192,
+			"longitude": 20.460526,
+			"count": 1,
+			"premium": false,
+			"price": 6000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/95072799",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95072799",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/289717862_150x110.jpg?v=20130730",
+					"price": "6.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 220 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": false,
+					"noOfBathroomsTitle": false
+				}
+			]
+		},
+		"44.802971_20.451969": {
+			"latitude": 44.802971,
+			"longitude": 20.451969,
+			"count": 1,
+			"premium": false,
+			"price": 1600,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91387427",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91387427",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/314877781_150x110.jpg?v=20130730",
+					"price": "1.600",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 78 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.797695_20.471285": {
+			"latitude": 44.797695,
+			"longitude": 20.471285,
+			"count": 1,
+			"premium": false,
+			"price": 1050,
+			"url": "https:\/\/www.srbija-nekretnine.org\/90632783",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/90632783",
+					"mainImageURL": "https:\/\/m2.spitogatos.gr\/259331056_150x110.jpg?v=20130730",
+					"price": "1.050",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 74 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.79924_20.47121": {
+			"latitude": 44.79924,
+			"longitude": 20.47121,
+			"count": 1,
+			"premium": false,
+			"price": 1950,
+			"url": "https:\/\/www.srbija-nekretnine.org\/95443041",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95443041",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/294665156_150x110.jpg?v=20130730",
+					"price": "1.950",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 67 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 2,
+					"noOfBathroomsTitle": "2 Kupatila"
+				}
+			]
+		},
+		"44.77837_20.457281": {
+			"latitude": 44.77837,
+			"longitude": 20.457281,
+			"count": 1,
+			"premium": false,
+			"price": 5000,
+			"url": "https:\/\/www.srbija-nekretnine.org\/97505190",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/97505190",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/287806290_150x110.jpg?v=20130730",
+					"price": "5.000",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 267 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 4,
+					"roomsTitle": "4 Sobe",
+					"noOfBathrooms": 3,
+					"noOfBathroomsTitle": "3 Kupatila"
+				}
+			]
+		},
+		"44.769581_20.454639": {
+			"latitude": 44.769581,
+			"longitude": 20.454639,
+			"count": 1,
+			"premium": false,
+			"price": 1800,
+			"url": "https:\/\/www.srbija-nekretnine.org\/91832500",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/91832500",
+					"mainImageURL": "https:\/\/m1.spitogatos.gr\/313339449_150x110.jpg?v=20130730",
+					"price": "1.800",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 120 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 3,
+					"roomsTitle": "3 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.774681_20.46776": {
+			"latitude": 44.774681,
+			"longitude": 20.46776,
+			"count": 1,
+			"premium": false,
+			"price": 1100,
+			"url": "https:\/\/www.srbija-nekretnine.org\/95271258",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95271258",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/302925524_150x110.jpg?v=20130730",
+					"price": "1.100",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 76 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		},
+		"44.775108_20.462299": {
+			"latitude": 44.775108,
+			"longitude": 20.462299,
+			"count": 1,
+			"premium": false,
+			"price": 1500,
+			"url": "https:\/\/www.srbija-nekretnine.org\/95539274",
+			"popupProperties": [
+				{
+					"canonicalUrl": "https:\/\/www.srbija-nekretnine.org\/95539274",
+					"mainImageURL": "https:\/\/m3.spitogatos.gr\/300144026_150x110.jpg?v=20130730",
+					"price": "1.500",
+					"currencySymbol": "\u20ac",
+					"perMonth": "mese\u010dno",
+					"basicTitleLabel": "Stan 90 m<sup>2<\/sup> ",
+					"category": "house",
+					"rooms": 2,
+					"roomsTitle": "2 Sobe",
+					"noOfBathrooms": 1,
+					"noOfBathroomsTitle": "1 Kupatilo"
+				}
+			]
+		}
+	},
+	"totalNumberOfResultsInViewport": 3764,
+	"currentNumberOfResultsInViewport": 200
+}

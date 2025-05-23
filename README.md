@@ -7,6 +7,8 @@ Real Estate:
 
     srbija-nekretnine.org
     europolisnekretnine.com
+    4zida.rs
+    nadjidom.com
     nekretnine.rs
     halooglasi.rs
     cityexpert.rs

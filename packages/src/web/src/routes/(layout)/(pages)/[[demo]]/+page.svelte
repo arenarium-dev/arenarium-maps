@@ -18,6 +18,7 @@
 
 	import { mountMap, type MapBounds, type MapPopup, type MapPopupData, type MapPopupState, type MapStyle } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
+	import { Demo } from '$lib/shared/demo';
 
 	let map: ReturnType<typeof mountMap>;
 	let mapCreated = $state<boolean>(false);
@@ -50,18 +51,18 @@
 	//#region Tune
 
 	let palleteMenuComponent = $state<ReturnType<typeof Menu>>();
-	let sourceMenuComponent = $state<ReturnType<typeof Menu>>();
+	let demoMenuComponent = $state<ReturnType<typeof Menu>>();
 
 	function onPalleteClick(e: Event) {
 		e.stopPropagation();
 		palleteMenuComponent?.show();
-		sourceMenuComponent?.hide();
+		demoMenuComponent?.hide();
 	}
 
-	function onSourceClick(e: Event) {
+	function onDemoClick(e: Event) {
 		e.stopPropagation();
 		palleteMenuComponent?.hide();
-		sourceMenuComponent?.show();
+		demoMenuComponent?.show();
 	}
 
 	//#endregion
@@ -146,62 +147,57 @@
 
 	//#endregion
 
-	//#region Source
+	//#region Demo
 
-	type Source = 'basic' | 'rentals' | 'events' | 'news' | 'srbija-nekretnine';
-	let sourceHash = page.url.hash.slice(1) as Source;
-	let sources: Source[] = ['basic', 'rentals', 'events', 'news', 'srbija-nekretnine'];
-	let sourceDisabled = [false, false, true, true, false];
-
-	let source = $state<Source>(sources.includes(sourceHash) ? sourceHash : 'basic');
-	let sourceAutoUpdate = $state<boolean>(false);
-	let sourcePopupData = new Map<string, MapPopupData>();
+	let demo = $state<Demo>(page.params.demo as Demo);
+	let demoAutoUpdate = $state<boolean>(false);
+	let demoPopupData = new Map<string, MapPopupData>();
 
 	$effect(() => {
 		if (mapCreated) {
 			map.on('load', () => {
-				onMapLoadSource();
+				onMapLoadDemo();
 			});
 
 			map.on('idle', () => {
-				onMapIdleSource();
+				onMapIdleDemo();
 			});
 		}
 	});
 
-	async function onMapLoadSource() {
-		onSourceSelect(source);
-	}
+	$effect(() => {
+		if (mapCreated && demo != page.params.demo) {
+			demo = page.params.demo as Demo;
+			setTimeout(async () => {
+				await onMapLoadDemo();
+				await onMapIdleDemo();
+			});
+		}
+	});
 
-	async function onMapIdleSource() {
-		const bounds = map.getBounds();
-		await processBoundsChange(bounds);
-	}
-
-	async function onSourceSelect(value: Source) {
+	async function onMapLoadDemo() {
 		// Update style
-		const sourceStyle = getSourceStyle(value);
-		if (sourceStyle) {
-			console.log(sourceStyle);
-			map.setStyle(sourceStyle);
+		const demoStyle = getDemoStyle(demo);
+		if (demoStyle) {
+			console.log(demoStyle);
+			map.setStyle(demoStyle);
 			style = 'custom';
 		}
 
 		// Update data
-		source = value;
-		sourcePopupData.clear();
-
-		window.location.hash = value.toLowerCase();
+		demoPopupData.clear();
 
 		await clearData();
+	}
 
+	async function onMapIdleDemo() {
 		const bounds = map.getBounds();
 		await processBoundsChange(bounds);
 	}
 
-	function onSourceAutoUpdateClick(e: Event) {
+	function onDemoAutoUpdateClick(e: Event) {
 		e.stopPropagation();
-		sourceAutoUpdate = !sourceAutoUpdate;
+		demoAutoUpdate = !demoAutoUpdate;
 	}
 
 	async function processBoundsChange(bounds: MapBounds) {
@@ -212,13 +208,13 @@
 			const dataDelta = getPopupDataDelta(data);
 			if (dataDelta.length === 0) return;
 
-			if (sourceAutoUpdate || sourcePopupData.size === 0) {
+			if (demoAutoUpdate || demoPopupData.size === 0) {
 				await processPopupDataDelta(dataDelta);
 				return;
 			}
 
 			app.toast.set({
-				path: '/',
+				path: `/${demo}`,
 				text: `Load ${dataDelta.length} new popups?`,
 				severity: 'info',
 				callback: {
@@ -259,14 +255,14 @@
 		params.append('width', width.toString());
 		params.append('height', height.toString());
 
-		const data = await Fetch.that<MapPopupData[]>(`/api/popup/data?${params}`);
+		const data = await Fetch.that<MapPopupData[]>(`/api/popup/${demo}/data?${params}`);
 		return data;
 	}
 
 	function getPopupDataDelta(data: MapPopupData[]) {
 		const newPopupData = new Array<MapPopupData>();
 		for (const d of data) {
-			if (!sourcePopupData.has(d.id)) {
+			if (!demoPopupData.has(d.id)) {
 				newPopupData.push(d);
 			}
 		}
@@ -278,15 +274,14 @@
 			loading = true;
 
 			// Update the loaded data
-			dataDelta.forEach((d) => sourcePopupData.set(d.id, d));
+			dataDelta.forEach((d) => demoPopupData.set(d.id, d));
 
 			// Get the new states
-			const statePopupData = Array.from(sourcePopupData.values());
+			const statePopupData = Array.from(demoPopupData.values());
 			const states = await Fetch.that<MapPopupState[]>(`/api/popup/states`, {
 				method: 'POST',
 				body: statePopupData
 			});
-			console.log('Loaded states:', states.length);
 
 			// Create the new popups
 			const popups = new Array<MapPopup>();
@@ -317,9 +312,9 @@
 		}
 	}
 
-	function getSourceName(source: Source) {
-		switch (source) {
-			case 'basic':
+	function getDemoName(demo: Demo) {
+		switch (demo) {
+			default:
 				return 'Basic';
 			case 'rentals':
 				return 'Rentals';
@@ -332,8 +327,8 @@
 		}
 	}
 
-	function getSourceStyle(source: Source): MapStyle | undefined {
-		switch (source) {
+	function getDemoStyle(demo: Demo): MapStyle | undefined {
+		switch (demo) {
 			case 'srbija-nekretnine': {
 				return {
 					name: 'custom',
@@ -349,32 +344,31 @@
 	}
 
 	function getPopupDimensions(): { width: number; height: number } {
-		switch (source) {
-			case 'basic':
+		switch (demo) {
+			default:
 				return { width: 64, height: 64 };
 			case 'rentals':
-			case 'srbija-nekretnine':
 				return { width: 128, height: 104 };
-			default:
-				throw new Error('Invalid source');
+			case 'srbija-nekretnine':
+				return { width: 156, height: 128 };
 		}
 	}
 
 	async function getPopupBody(id: string): Promise<HTMLElement> {
 		return await new Promise((resolve) => {
-			const popup = sourcePopupData.get(id);
+			const popup = demoPopupData.get(id);
 			if (!popup) throw new Error('Popup not found');
 
 			const element = document.createElement('div');
-			switch (source) {
-				case 'basic':
+			switch (demo) {
+				default:
 					mount(BasicPopup, { target: element, props: { id } });
 					break;
 				case 'rentals':
 					mount(RentalPopup, { target: element, props: { id, lat: popup.lat, lng: popup.lng } });
 					break;
 				case 'srbija-nekretnine':
-					mount(SrbijaNekretninePopup, { target: element, props: { id, lat: popup.lat, lng: popup.lng } });
+					mount(SrbijaNekretninePopup, { target: element, props: { id, width: popup.width, height: popup.height } });
 					break;
 			}
 			resolve(element);
@@ -384,7 +378,7 @@
 	async function getPopupPin(id: string): Promise<HTMLElement> {
 		return await new Promise((resolve) => {
 			const element = document.createElement('div');
-			switch (source) {
+			switch (demo) {
 				case 'rentals':
 					mount(RentalPin, { target: element, props: { id } });
 					break;
@@ -416,14 +410,14 @@
 			{#snippet button()}
 				<div class="button shadow-small">
 					<Icon name={'tune'} size={22} />
-					<span>{getSourceName(source)}</span>
+					<span>{getDemoName(demo)}</span>
 				</div>
 			{/snippet}
 			{#snippet menu()}
 				<div class="menu shadow-large">
 					<Menu axis={'x'} bind:this={palleteMenuComponent}>
 						{#snippet button()}
-							<button class="item" onclick={onPalleteClick} disabled={getSourceStyle(source) != undefined}>
+							<button class="item" onclick={onPalleteClick} disabled={getDemoStyle(demo) != undefined}>
 								<Icon name={'palette'} size={22} />
 								<span>Style</span>
 								<Icon name={'arrow_right'} />
@@ -438,26 +432,25 @@
 							</div>
 						{/snippet}
 					</Menu>
-					<Menu axis={'x'} bind:this={sourceMenuComponent}>
+					<Menu axis={'x'} bind:this={demoMenuComponent}>
 						{#snippet button()}
-							<button class="item" onclick={onSourceClick}>
+							<button class="item" onclick={onDemoClick}>
 								<Icon name={'database'} size={22} />
 								<span>Data</span>
 								<Icon name={'arrow_right'} />
 							</button>
 						{/snippet}
 						{#snippet menu()}
-							<div class="menu source shadow-large">
-								{#each sources as s, i}
-									<button class="item" class:selected={source == s} disabled={sourceDisabled[i]} onclick={() => onSourceSelect(s)}>
-										{getSourceName(s)}
-									</button>
-								{/each}
+							<div class="menu demo shadow-large">
+								<a href="/" class="item" class:selected={page.params.demo == undefined}> Basic </a>
+								<a href="/{Demo.Rentals}" class="item" class:selected={page.params.demo == Demo.Rentals}>{getDemoName(Demo.Rentals)}</a>
+								<a href="/{Demo.News}" class="item" inert>{getDemoName(Demo.News)}</a>
+								<a href="/{Demo.Events}" class="item" inert>{getDemoName(Demo.Events)}</a>
 							</div>
 						{/snippet}
 					</Menu>
-					<button class="item" onclick={onSourceAutoUpdateClick}>
-						<Icon name={sourceAutoUpdate ? 'check_box' : 'check_box_outline_blank'} size={22} />
+					<button class="item" onclick={onDemoAutoUpdateClick}>
+						<Icon name={demoAutoUpdate ? 'check_box' : 'check_box_outline_blank'} size={22} />
 						<span>Auto Load</span>
 					</button>
 				</div>
@@ -559,7 +552,7 @@
 						background-color: var(--surface-container);
 					}
 
-					&:disabled {
+					&[inert] {
 						opacity: 0.5;
 					}
 
@@ -570,7 +563,7 @@
 			}
 
 			.menu.pallete,
-			.menu.source {
+			.menu.demo {
 				margin-top: 0px;
 				margin-left: 20px;
 				gap: 4px;
