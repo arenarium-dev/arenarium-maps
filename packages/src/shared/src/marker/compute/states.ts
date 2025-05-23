@@ -354,8 +354,6 @@ namespace Nodes {
 					}
 				}
 
-				score = score * neighbours1.length;
-
 				if (score > worstScore) {
 					worstScore = score;
 					worstNodeIndex = i;

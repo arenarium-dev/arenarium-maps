@@ -66,7 +66,7 @@
 
 		if (style.name === 'dark') {
 			map.setStyle({
-				name: 'light',
+				name: 'custom',
 				url: 'https://tiles.openfreemap.org/styles/liberty',
 				colors: {
 					background: 'white',
@@ -76,7 +76,7 @@
 			});
 		}
 
-		if (style.url != undefined) {
+		if (style.name === 'custom') {
 			map.setStyle({
 				name: 'light',
 				colors: {
@@ -234,7 +234,6 @@
 	}
 
 	async function getPopupBody(id: string): Promise<HTMLElement> {
-		await new Promise((resolve) => setTimeout(resolve, 1000));
 		return await new Promise((resolve) => {
 			const popup = mapPopups.get(id);
 			if (popup == undefined) throw new Error('Failed to get popup');
@@ -257,17 +256,17 @@
 				const element = document.createElement('div');
 				element.style.display = 'flex';
 				element.style.padding = '2px';
+				element.addEventListener('click', () => map.revealPopup(id));
 				mount(Icon, { target: element, props: { name: 'location_on', size: 16, color: 'white' } });
 
 				resolve(element);
 			} else if (Number.parseInt(id) % 10 <= 6) {
 				const element = document.createElement('div');
-				element.style.color = 'white';
-				element.style.fontSize = '12px';
-				element.style.fontWeight = '600';
-				element.style.padding = '2px 4px';
-				element.innerHTML = '$' + id + '0';
-				element.addEventListener('click', () => map.revealPopup(id));
+				// element.style.color = 'white';
+				// element.style.fontSize = '12px';
+				// element.style.fontWeight = '600';
+				// element.style.padding = '2px 4px';
+				// element.innerHTML = '$' + id + '0';
 				resolve(element);
 			}
 		});
