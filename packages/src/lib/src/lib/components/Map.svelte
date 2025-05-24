@@ -23,11 +23,12 @@
 
 	import {
 		MAP_BASE_SIZE,
-		MAP_DISPLAYED_ZOOM_DEPTH,
 		MAP_MAX_ZOOM,
 		MAP_MIN_ZOOM,
-		MAP_VISIBLE_ZOOM_DEPTH,
-		MAP_ZOOM_SCALE
+		MAP_MARKERS_ZOOM_DEPTH,
+		MAP_ZOOM_SCALE,
+		MAP_CIRCLES_ZOOM_DEPTH_BASE,
+		MAP_CIRCLES_ZOOM_DEPTH_COUNT
 	} from '@workspace/shared/src/constants.js';
 
 	import maplibregl from 'maplibre-gl';
@@ -375,8 +376,7 @@
 			if (this.zoom <= zoom) {
 				circle.setScale(0);
 			} else {
-				const distance = (this.zoom - zoom) / MAP_VISIBLE_ZOOM_DEPTH;
-				const scale = 1 - distance * 0.3;
+				const scale = Math.max(0, 1 - (this.zoom - zoom) * 0.1);
 				circle.setScale(scale);
 			}
 		}
@@ -541,6 +541,7 @@
 
 	let mapPopupDataArray = new Array<MapPopupData>();
 	let mapPopupDataMap = new Map<string, MapPopupData>();
+	let mapPopupDataUpdating = false;
 
 	let offset = MAP_BASE_SIZE;
 	let mapOffsetBounds = $derived(mapBounds ? new MapBoundsPair(map!, -offset, mapHeight + offset, mapWidth + offset, -offset) : undefined);
@@ -562,123 +563,162 @@
 		if (mapWindowBounds == undefined) return;
 		if (mapOffsetBounds == undefined) return;
 		if (mapPopupDataArray.length == 0) return;
+		if (mapPopupDataUpdating) return;
 
 		// Get map zoom
 		const zoom = map.getZoom();
 		if (!zoom) return;
 
+		const circleZoom = zoom + MAP_CIRCLES_ZOOM_DEPTH_BASE / Math.round(Math.log2(mapPopupDataArray.length / MAP_CIRCLES_ZOOM_DEPTH_COUNT));
+		const markerZoom = zoom + MAP_MARKERS_ZOOM_DEPTH;
+
+		console.log(circleZoom - zoom, markerZoom - zoom);
+
 		for (const data of mapPopupDataArray) {
 			// Process popup circle
-			processPopupCircle(data.circle, zoom, mapWindowBounds);
+			if (data.circle.isInBlock(circleZoom, mapWindowBounds)) {
+				upsertPopupCircle(data.circle, zoom);
+			} else {
+				removePopupCircle(data.circle);
+			}
+
 			// Process popup marker
-			processPopupMarker(data.marker, zoom, mapOffsetBounds);
-		}
-	}
-
-	function processPopupCircle(circle: MapPopupCircle, zoom: number, bounds: MapBoundsPair) {
-		// Check if circle is in bounds
-		if (circle.isInBlock(zoom + MAP_VISIBLE_ZOOM_DEPTH, bounds)) {
-			// Check if circle exist on map
-			if (circle.isCreated() == false) {
-				circle.createElement();
-			}
-
-			// Update circle map and state
-			circle.updateMap(map);
-			circle.updateState(zoom);
-
-			// Update circle pin if not loaded
-			if (circle.isPinLoaded() == false) {
-				circle.updatePin();
-			}
-		} else {
-			if (circle.isCreated() == true) {
-				// Set circle invisible
-				circle.setCollapsed();
-				// Wait until circle is invisible before removing it
-				if (circle.isCollapsed()) {
-					circle.updateMap(null);
-				}
+			if (data.marker.isInBlock(markerZoom, mapOffsetBounds)) {
+				upsertPopupMarker(data.marker, zoom);
+			} else {
+				removePopupMarker(data.marker, zoom);
 			}
 		}
 	}
 
-	function processPopupMarker(marker: MapPopupMarker, zoom: number, bounds: MapBoundsPair) {
-		// Check if marker is in bounds
-		if (marker.isInBlock(zoom + MAP_DISPLAYED_ZOOM_DEPTH, bounds)) {
-			// Check if marker exist on map
-			if (marker.isCreated() == false) {
-				marker.createElement();
-			}
+	function upsertPopupCircle(circle: MapPopupCircle, zoom: number) {
+		// Check if circle exist on map
+		if (circle.isCreated() == false) {
+			circle.createElement();
+		}
 
-			// Update marker map and state
-			marker.updateMap(map);
-			marker.updateState(zoom);
+		// Update circle map and state
+		circle.updateMap(map);
+		circle.updateState(zoom);
 
-			// If marker is expanded, update body if not loaded
-			if (marker.getExpanded() && marker.isBodyLoaded() == false) {
-				marker.updateBody();
+		// Update circle pin if not loaded
+		if (circle.isPinLoaded() == false) {
+			circle.updatePin();
+		}
+	}
+
+	function removePopupCircle(circle: MapPopupCircle) {
+		if (circle.isCreated() == true) {
+			// Set circle invisible
+			circle.setCollapsed();
+			// Wait until circle is invisible before removing it
+			if (circle.isCollapsed()) {
+				circle.updateMap(null);
 			}
-		} else {
-			// Check if marker exist on map
-			if (marker.isCreated() == true) {
-				// Wait until marker is collapsed before removing it
-				if (marker.isCollapsed()) {
-					marker.updateMap(null);
-				} else {
-					marker.updateState(zoom);
-				}
+		}
+	}
+
+	function upsertPopupMarker(marker: MapPopupMarker, zoom: number) {
+		// Check if marker exist on map
+		if (marker.isCreated() == false) {
+			marker.createElement();
+		}
+
+		// Update marker map and state
+		marker.updateMap(map);
+		marker.updateState(zoom);
+
+		// If marker is expanded, update body if not loaded
+		if (marker.getExpanded() && marker.isBodyLoaded() == false) {
+			marker.updateBody();
+		}
+	}
+
+	function removePopupMarker(marker: MapPopupMarker, zoom: number) {
+		// Check if marker exist on map
+		if (marker.isCreated() == true) {
+			// Wait until marker is collapsed before removing it
+			if (marker.isCollapsed()) {
+				marker.updateMap(null);
+			} else {
+				marker.updateState(zoom);
 			}
 		}
 	}
 
 	async function updatePopupData(newPopups: MapPopup[]) {
-		const newPopupsMap = new Map(newPopups.map((m) => [m.data.id, new MapPopupData(m)]));
-		const newDataArray = new Array<MapPopupData>();
+		try {
+			mapPopupDataUpdating = true;
 
-		// Remove old data
-		const oldDataArray = Array.from(mapPopupDataArray);
-		for (const oldData of oldDataArray) {
-			if (newPopupsMap.has(oldData.id) == false) {
-				oldData.circle.libreMarker?.remove();
-				oldData.marker.libreMarker?.remove();
+			// Remove old data
+			const newPopupsMap = new Map(newPopups.map((m) => [m.data.id, new MapPopupData(m)]));
+			const oldPopupDataArray = Array.from(mapPopupDataArray);
 
-				mapPopupDataMap.delete(oldData.id);
-				mapPopupDataArray.splice(mapPopupDataArray.indexOf(oldData), 1);
+			for (const oldPopupData of oldPopupDataArray) {
+				if (newPopupsMap.has(oldPopupData.id) == false) {
+					oldPopupData.circle.libreMarker?.remove();
+					oldPopupData.marker.libreMarker?.remove();
+
+					mapPopupDataMap.delete(oldPopupData.id);
+					mapPopupDataArray.splice(mapPopupDataArray.indexOf(oldPopupData), 1);
+				}
 			}
-		}
 
-		// Crate or update new data
-		for (const newPopup of newPopups) {
-			// Check if data already exists
-			const oldData = mapPopupDataMap.get(newPopup.data.id);
+			// Crate or update new data
+			for (const newPopup of newPopups) {
+				// Check if data already exists
+				const oldData = mapPopupDataMap.get(newPopup.data.id);
 
-			if (oldData) {
-				// Update data state
-				oldData.circle.zoom = newPopup.state[0];
-				oldData.circle.updateZIndex();
+				if (oldData) {
+					// Update data state
+					oldData.circle.zoom = newPopup.state[0];
+					oldData.circle.updateZIndex();
 
-				oldData.marker.zoom = newPopup.state[0];
-				oldData.marker.states = newPopup.state[1];
-				oldData.marker.updateZIndex();
-			} else {
-				// Create data
-				const newData = new MapPopupData(newPopup);
-				mapPopupDataMap.set(newPopup.data.id, newData);
-				mapPopupDataArray.push(newData);
-				newDataArray.push(newData);
+					oldData.marker.zoom = newPopup.state[0];
+					oldData.marker.states = newPopup.state[1];
+					oldData.marker.updateZIndex();
+				} else {
+					// Create data
+					const newData = new MapPopupData(newPopup);
+					mapPopupDataMap.set(newPopup.data.id, newData);
+					mapPopupDataArray.push(newData);
+				}
 			}
+
+			mapPopupDataArray.sort((a, b) => a.zoom - b.zoom);
+		} catch (error) {
+			console.error(error);
+
+			mapPopupDataArray.length = 0;
+			mapPopupDataMap.clear();
+
+			throw error;
+		} finally {
+			mapPopupDataUpdating = false;
 		}
 	}
 
 	function removePopupData() {
-		for (const data of mapPopupDataArray) {
-			data.circle.libreMarker?.remove();
-			data.marker.libreMarker?.remove();
-		}
+		try {
+			mapPopupDataUpdating = true;
 
-		mapPopupDataArray.length = 0;
-		mapPopupDataMap.clear();
+			for (const data of mapPopupDataArray) {
+				data.circle.libreMarker?.remove();
+				data.marker.libreMarker?.remove();
+			}
+
+			mapPopupDataArray.length = 0;
+			mapPopupDataMap.clear();
+		} catch (error) {
+			console.error(error);
+
+			mapPopupDataArray.length = 0;
+			mapPopupDataMap.clear();
+
+			throw error;
+		} finally {
+			mapPopupDataUpdating = false;
+		}
 	}
 
 	export async function updatePopups(popups: MapPopup[]) {
