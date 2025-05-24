@@ -569,7 +569,7 @@
 		const zoom = map.getZoom();
 		if (!zoom) return;
 
-		const circleZoom = zoom + MAP_CIRCLES_ZOOM_DEPTH_BASE / Math.round(Math.log2(mapPopupDataArray.length / MAP_CIRCLES_ZOOM_DEPTH_COUNT));
+		const circleZoom = zoom + MAP_CIRCLES_ZOOM_DEPTH_BASE / Math.log2(mapPopupDataArray.length / MAP_CIRCLES_ZOOM_DEPTH_COUNT);
 		const markerZoom = zoom + MAP_MARKERS_ZOOM_DEPTH;
 
 		console.log(circleZoom - zoom, markerZoom - zoom);
