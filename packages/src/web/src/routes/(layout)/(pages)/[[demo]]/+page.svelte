@@ -19,6 +19,7 @@
 
 	import { mountMap, type MapBounds, type MapPopup, type MapPopupData, type MapPopupState, type MapPosition, type MapStyle } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
+	import { ca } from 'zod/v4/locales';
 
 	let map: ReturnType<typeof mountMap>;
 	let mapCreated = $state<boolean>(false);
@@ -150,8 +151,10 @@
 	//#region Demo
 
 	let demo = $state<Demo>(page.params.demo as Demo);
-	let demoAutoUpdate = $state<boolean>(false);
+
 	let demoPopupData = new Map<string, MapPopupData>();
+	let demoPopupDataLoaded = false;
+	let demoAutoUpdate = $state<boolean>(false);
 
 	$effect(() => {
 		if (mapCreated) {
@@ -191,8 +194,9 @@
 
 		// Update data
 		demoPopupData.clear();
+		demoPopupDataLoaded = false;
 
-		await clearData();
+		map.removePopups();
 	}
 
 	async function onMapIdleDemo() {
@@ -209,8 +213,7 @@
 		try {
 			loading = true;
 
-			const data = await getPopupData(bounds);
-			const dataDelta = getPopupDataDelta(data);
+			const dataDelta = await getPopupDataDelta(bounds);
 			if (dataDelta.length === 0) return;
 
 			if (demoAutoUpdate || demoPopupData.size === 0) {
@@ -242,13 +245,16 @@
 		}
 	}
 
-	async function clearData() {
-		if (!map) return;
+	async function getPopupDataDelta(bounds: MapBounds): Promise<MapPopupData[]> {
+		if (demoPopupDataLoaded) return [];
 
-		map.removePopups();
-	}
+		switch (demo) {
+			case Demo.CityExpert: {
+				demoPopupDataLoaded = true;
+				break;
+			}
+		}
 
-	async function getPopupData(bounds: MapBounds): Promise<MapPopupData[]> {
 		const { width, height } = getPopupDimensions();
 
 		const params = new URLSearchParams();
@@ -260,15 +266,11 @@
 		params.append('width', width.toString());
 		params.append('height', height.toString());
 
-		const data = await Fetch.that<MapPopupData[]>(`/api/popup/${demo}/data?${params}`);
-		return data;
-	}
-
-	function getPopupDataDelta(data: MapPopupData[]) {
+		const allPopupData = await Fetch.that<MapPopupData[]>(`/api/popup/${demo}/data?${params}`);
 		const newPopupData = new Array<MapPopupData>();
-		for (const d of data) {
-			if (!demoPopupData.has(d.id)) {
-				newPopupData.push(d);
+		for (const data of allPopupData) {
+			if (!demoPopupData.has(data.id)) {
+				newPopupData.push(data);
 			}
 		}
 		return newPopupData;
@@ -321,20 +323,22 @@
 		switch (demo) {
 			default:
 				return 'Basic';
-			case 'rentals':
+			case Demo.Rentals:
 				return 'Rentals';
-			case 'srbija-nekretnine':
-				return 'srbija-nekretnine.org';
-			case 'events':
+			case Demo.Events:
 				return 'Events';
-			case 'news':
+			case Demo.News:
 				return 'News';
+			case Demo.SrbijaNekretnine:
+				return 'srbija-nekretnine.org';
+			case Demo.CityExpert:
+				return 'cityexpert.rs';
 		}
 	}
 
 	function getDemoStyle(demo: Demo): MapStyle | undefined {
 		switch (demo) {
-			case 'srbija-nekretnine': {
+			case Demo.SrbijaNekretnine: {
 				return {
 					name: 'custom',
 					url: 'https://tiles.openfreemap.org/styles/bright',
@@ -345,15 +349,32 @@
 					}
 				};
 			}
+			case Demo.CityExpert: {
+				return {
+					name: 'custom',
+					url: 'demo/cityexpert.style.json',
+					colors: {
+						background: 'white',
+						primary: 'red',
+						text: 'black'
+					}
+				};
+			}
 		}
 	}
 
 	function getDemoPosition(demo: Demo): MapPosition | undefined {
 		switch (demo) {
-			case 'srbija-nekretnine': {
+			case Demo.SrbijaNekretnine: {
 				return {
 					center: { lat: 44.811222, lng: 20.450989 },
 					zoom: 12
+				};
+			}
+			case Demo.CityExpert: {
+				return {
+					center: { lat: 44.811222, lng: 20.450989 },
+					zoom: 10
 				};
 			}
 		}
@@ -363,9 +384,11 @@
 		switch (demo) {
 			default:
 				return { width: 64, height: 64 };
-			case 'rentals':
+			case Demo.Rentals:
 				return { width: 128, height: 104 };
-			case 'srbija-nekretnine':
+			case Demo.SrbijaNekretnine:
+				return { width: 156, height: 128 };
+			case Demo.CityExpert:
 				return { width: 156, height: 128 };
 		}
 	}
@@ -378,12 +401,12 @@
 			const element = document.createElement('div');
 			switch (demo) {
 				default:
-					mount(BasicPopup, { target: element, props: { id } });
+					mount(BasicPopup, { target: element, props: { id, width: popup.width, height: popup.height } });
 					break;
-				case 'rentals':
+				case Demo.Rentals:
 					mount(RentalPopup, { target: element, props: { id, lat: popup.lat, lng: popup.lng } });
 					break;
-				case 'srbija-nekretnine':
+				case Demo.SrbijaNekretnine:
 					mount(SrbijaNekretninePopup, { target: element, props: { id, width: popup.width, height: popup.height } });
 					break;
 			}
@@ -395,7 +418,7 @@
 		return await new Promise((resolve) => {
 			const element = document.createElement('div');
 			switch (demo) {
-				case 'rentals':
+				case Demo.Rentals:
 					mount(RentalPin, { target: element, props: { id } });
 					break;
 			}

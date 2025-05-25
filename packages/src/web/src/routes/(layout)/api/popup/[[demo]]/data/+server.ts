@@ -74,6 +74,32 @@ export const GET: RequestHandler = async (event) => {
 					width: width
 				});
 			}
+
+			break;
+		}
+		case Demo.CityExpert: {
+			const dataSearchParams = new URLSearchParams();
+			dataSearchParams.set('req', '{"ptId":[1,2,5],"cityId":1,"rentOrSale":"r","searchSource":"regular","sort":"priceasc"}');
+
+			const dataResponse = await event.fetch('https://cityexpert.rs/api/Search/Map?' + dataSearchParams.toString());
+			if (!dataResponse.ok) error(500, 'Failed to get data');
+
+			const dataJson = await dataResponse.json<any[]>();
+
+			for (let i = 0; i < dataJson.length; i++) {
+				const item = dataJson[i];
+
+				data.push({
+					id: item.propId.toString(),
+					rank: dataJson.length - i,
+					lat: item.mapLat,
+					lng: item.mapLng,
+					height: height,
+					width: width
+				});
+			}
+
+			break;
 		}
 	}
 
