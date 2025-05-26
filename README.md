@@ -1,5 +1,7 @@
 TODO:
 
+Add api key to map mount, check if valid on mount, wrap states api call in function
+
 CUSTOMERS:
 
 Real Estate:
