@@ -75,13 +75,16 @@
 	@background: var(--map-style-background);
 	@base: var(--map-style-primary);
 	@circle-size: 16px;
-	@padding-size: 3px;
+	@padding-size: 2px;
+	@max-size: 64px;
 
 	.circle {
+		max-width: @max-size;
+		max-height: @max-size;
 		position: absolute;
 		background-color: @background;
 		padding: @padding-size;
-		border-radius: @circle-size * 0.5;
+		border-radius: @max-size;
 		box-sizing: border-box;
 		box-shadow: 0 2px 2px rgba(0, 0, 0, 0.5);
 		transform-origin: 0% 0%;
@@ -92,7 +95,7 @@
 		.body {
 			min-width: @circle-size - @padding-size * 2;
 			min-height: @circle-size - @padding-size * 2;
-			border-radius: @circle-size * 0.35;
+			border-radius: @max-size;
 			background-color: @base;
 			overflow: hidden;
 		}

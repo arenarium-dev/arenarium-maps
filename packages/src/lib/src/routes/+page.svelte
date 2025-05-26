@@ -263,11 +263,11 @@
 				resolve(element);
 			} else if (Number.parseInt(id) % 10 <= 6) {
 				const element = document.createElement('div');
-				// element.style.color = 'white';
-				// element.style.fontSize = '12px';
-				// element.style.fontWeight = '600';
-				// element.style.padding = '2px 4px';
-				// element.innerHTML = '$' + id + '0';
+				element.style.color = 'white';
+				element.style.fontSize = '12px';
+				element.style.fontWeight = '600';
+				element.style.padding = '2px 6px';
+				element.innerHTML = '$' + id + '0';
 				resolve(element);
 			}
 		});
