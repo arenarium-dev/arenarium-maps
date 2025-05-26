@@ -79,7 +79,7 @@ export const GET: RequestHandler = async (event) => {
 		}
 		case Demo.CityExpert: {
 			const dataSearchParams = new URLSearchParams();
-			dataSearchParams.set('req', '{"ptId":[1,2,5],"cityId":1,"rentOrSale":"r","searchSource":"regular","sort":"priceasc"}');
+			dataSearchParams.set('req', '{"ptId":[1,2,5],"cityId":1,"rentOrSale":"r","searchSource":"regular","sort":"pricedsc","furnished":[1]}');
 
 			const dataResponse = await event.fetch('https://cityexpert.rs/api/Search/Map?' + dataSearchParams.toString());
 			if (!dataResponse.ok) error(500, 'Failed to get data');
@@ -89,14 +89,16 @@ export const GET: RequestHandler = async (event) => {
 			for (let i = 0; i < dataJson.length; i++) {
 				const item = dataJson[i];
 
-				data.push({
+				const any: any = {
 					id: item.propId.toString(),
 					rank: dataJson.length - i,
 					lat: item.mapLat,
 					lng: item.mapLng,
+					type: item.ptId,
 					height: height,
 					width: width
-				});
+				};
+				data.push(any as MapPopupData);
 			}
 
 			break;

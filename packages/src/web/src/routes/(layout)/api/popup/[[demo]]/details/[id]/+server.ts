@@ -28,6 +28,22 @@ export const GET: RequestHandler = async (event) => {
 
 			return json(data);
 		}
+		case Demo.CityExpert: {
+			const dataResponse = await event.fetch(`https://cityexpert.rs/api/propertyView/${event.params.id}/r`);
+			if (!dataResponse.ok) error(500, 'Failed to get data');
+
+			const dataJson = await dataResponse.json<any>();
+			const data = {
+				id: dataJson.propId,
+				price: dataJson.price,
+				type: dataJson.ptId,
+				location: `${dataJson.street}, ${dataJson.municipality}`,
+				size: dataJson.size,
+				structure: dataJson.structure,
+				images: dataJson.onsite?.imgFiles ?? []
+			};
+			return json(data);
+		}
 	}
 
 	return new Response(null);

@@ -12,6 +12,8 @@
 	import RentalPopup from '$lib/client/components/demo/rentals/Popup.svelte';
 	import RentalPin from '$lib/client/components/demo/rentals/Pin.svelte';
 	import SrbijaNekretninePopup from '$lib/client/components/demo/srbija-nekretnine/Popup.svelte';
+	import CityExpertPopup from '$lib/client/components/demo/cityexpert/Popup.svelte';
+	import CityExpertPin from '$lib/client/components/demo/cityexpert/Pin.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
 	import { Fetch } from '$lib/client/core/fetch';
@@ -19,7 +21,6 @@
 
 	import { mountMap, type MapBounds, type MapPopup, type MapPopupData, type MapPopupState, type MapPosition, type MapStyle } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
-	import { ca } from 'zod/v4/locales';
 
 	let map: ReturnType<typeof mountMap>;
 	let mapCreated = $state<boolean>(false);
@@ -355,7 +356,7 @@
 					url: 'demo/cityexpert.style.json',
 					colors: {
 						background: 'white',
-						primary: 'red',
+						primary: 'white',
 						text: 'black'
 					}
 				};
@@ -409,6 +410,9 @@
 				case Demo.SrbijaNekretnine:
 					mount(SrbijaNekretninePopup, { target: element, props: { id, width: popup.width, height: popup.height } });
 					break;
+				case Demo.CityExpert:
+					mount(CityExpertPopup, { target: element, props: { id, width: popup.width, height: popup.height } });
+					break;
 			}
 			resolve(element);
 		});
@@ -416,10 +420,16 @@
 
 	async function getPopupPin(id: string): Promise<HTMLElement> {
 		return await new Promise((resolve) => {
+			const popup = demoPopupData.get(id) as any;
+			if (!popup) throw new Error('Popup not found');
+
 			const element = document.createElement('div');
 			switch (demo) {
 				case Demo.Rentals:
 					mount(RentalPin, { target: element, props: { id } });
+					break;
+				case Demo.CityExpert:
+					mount(CityExpertPin, { target: element, props: { id, type: popup.type } });
 					break;
 			}
 			resolve(element);
