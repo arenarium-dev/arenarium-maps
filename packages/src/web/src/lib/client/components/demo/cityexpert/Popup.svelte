@@ -37,7 +37,7 @@
 	<div class="popup" style:width={width + 'px'} style:height={height + 'px'}>
 		<div class="id">ID {id}</div>
 		<button class="like">
-			<Icon name="favorite" size={12} color="var(--primary)" weight="bold" />
+			<Icon name="favorite" size={14} color="var(--primary)" weight="bold" />
 		</button>
 		<div class="image">
 			<img loading="lazy" src={images[imageIndex]} alt={id} />
@@ -100,10 +100,10 @@
 
 		.like {
 			position: absolute;
-			top: 9px;
-			right: 9px;
-			width: 16px;
-			height: 16px;
+			top: 8px;
+			right: 8px;
+			width: 20px;
+			height: 20px;
 			padding-top: 1px;
 			display: flex;
 			align-items: center;
