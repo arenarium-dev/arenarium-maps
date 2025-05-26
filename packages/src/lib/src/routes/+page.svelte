@@ -101,7 +101,6 @@
 	}
 
 	async function clearData() {
-		count = 0;
 		mapPopups.clear();
 		map.removePopups();
 	}
@@ -118,8 +117,6 @@
 
 	//#region Data
 
-	let count = 0;
-
 	const total = 1000;
 	const limit = 1000;
 
@@ -130,10 +127,10 @@
 	onMount(() => {
 		const radius = 10;
 		const centers = [
-			{ lat: 51.505, lng: -0.09 },
-			{ lat: 45, lng: 22 },
-			{ lat: 52.52, lng: 13.409 },
-			{ lat: 48.8566, lng: 2.3522 }
+			{ lat: 51.505, lng: -0.09 }
+			// { lat: 45, lng: 22 },
+			// { lat: 52.52, lng: 13.409 },
+			// { lat: 48.8566, lng: 2.3522 }
 		];
 
 		let randomPrev = 1;
@@ -162,16 +159,20 @@
 	async function getPopups(bounds: MapBounds): Promise<MapPopup[]> {
 		const data = new Array<MapPopupData>();
 
-		count = Math.min(total, limit + count);
+		let count = 0;
+		let index = 0;
 
-		for (let i = 0; i < count; i++) {
-			const lat = lats[i];
-			const lng = lngs[i];
-			const rank = ranks[i];
+		while (count < limit && index < total) {
+			const lat = lats[index];
+			const lng = lngs[index];
+			const rank = ranks[index];
+			index++;
+
 			if (lat < bounds.sw.lat || bounds.ne.lat < lat || lng < bounds.sw.lng || bounds.ne.lng < lng) continue;
+			count++;
 
 			data.push({
-				id: i.toString(),
+				id: index.toString(),
 				rank: rank,
 				lat: lat,
 				lng: lng,

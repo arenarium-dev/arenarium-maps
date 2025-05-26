@@ -315,6 +315,22 @@
 			this.libreMarker = libreMarker;
 		}
 
+		updateMap(map: maplibregl.Map | null) {
+			const libreMarker = this.libreMarker;
+			const component = this.component;
+			if (libreMarker == undefined || component == undefined) throw new Error('Failed to update popup map');
+
+			if (map) {
+				if (libreMarker._map != map) {
+					libreMarker.addTo(map);
+				}
+			} else {
+				if (libreMarker._map != null) {
+					libreMarker.remove();
+				}
+			}
+		}
+
 		isCreated() {
 			return this.element != undefined;
 		}
@@ -353,19 +369,9 @@
 		}
 
 		updateMap(map: maplibregl.Map | null) {
-			const libreMarker = this.libreMarker;
-			const component = this.component;
-			if (libreMarker == undefined || component == undefined) throw new Error('Failed to update circle map');
+			super.updateMap(map);
 
-			if (libreMarker._map != map) {
-				if (map) {
-					libreMarker.addTo(map);
-					component.setDisplayed(true);
-				} else {
-					libreMarker.remove();
-					component.setDisplayed(false);
-				}
-			}
+			this.component?.setDisplayed(map != null);
 		}
 
 		updateState(zoom: number) {
@@ -373,12 +379,7 @@
 			if (!circle) throw new Error('Failed to update circle state');
 
 			// Set circle scale
-			if (this.zoom <= zoom) {
-				circle.setScale(0);
-			} else {
-				const scale = Math.max(0, 1 - (this.zoom - zoom) * 0.1);
-				circle.setScale(scale);
-			}
+			circle.setScale(this.getScale(zoom));
 		}
 
 		updatePin() {
@@ -396,14 +397,23 @@
 			});
 		}
 
+		setExpanded(zoom: number) {
+			if (this.component == undefined) throw new Error('Failed to set marker expanded');
+			this.component.setScale(this.getScale(zoom));
+		}
+
 		setCollapsed() {
-			if (this.component == undefined) return;
+			if (this.component == undefined) throw new Error('Failed to set marker expanded');
 			this.component.setScale(0);
+		}
+
+		getScale(zoom: number) {
+			return Math.max(0, 1 - (this.zoom - zoom) * 0.1);
 		}
 
 		isCollapsed() {
 			if (this.component == undefined) return false;
-			return this.component.getInvisible();
+			return this.component.getCollapsed();
 		}
 
 		isPinLoaded() {
@@ -449,32 +459,17 @@
 		}
 
 		updateMap(map: maplibregl.Map | null) {
-			const libreMarker = this.libreMarker;
-			const component = this.component;
-			if (libreMarker == undefined || component == undefined) throw new Error('Failed to update marker map');
+			super.updateMap(map);
 
-			if (libreMarker._map != map) {
-				if (map) {
-					libreMarker.addTo(map);
-					component.setDisplayed(true);
-				} else {
-					libreMarker.remove();
-					component.setDisplayed(false);
-				}
-			}
+			this.component?.setDisplayed(map != null);
 		}
 
 		updateState(zoom: number) {
 			const marker = this.component;
 			if (!marker) throw new Error('Failed to update marker state');
 
-			// Set marker collapse status and angle
-			if (this.zoom <= zoom) {
-				marker.setCollapsed(false);
-				marker.setAngle(this.getAngle(zoom));
-			} else {
-				marker.setCollapsed(true);
-			}
+			// Set marker angle
+			marker.setAngle(this.getAngle(zoom));
 		}
 
 		updateBody() {
@@ -500,7 +495,12 @@
 			return state[1];
 		}
 
-		getExpanded() {
+		setCollapsed(value: boolean) {
+			if (this.component == undefined) throw new Error('Failed to set marker collapsed');
+			this.component.setCollapsed(value);
+		}
+
+		isExpanded() {
 			if (!this.component) return false;
 			return this.component.getExpanded();
 		}
@@ -569,79 +569,79 @@
 		const zoom = map.getZoom();
 		if (!zoom) return;
 
-		const circleZoom = zoom + MAP_CIRCLES_ZOOM_DEPTH_BASE / Math.log2(mapPopupDataArray.length / MAP_CIRCLES_ZOOM_DEPTH_COUNT);
-		const markerZoom = zoom + MAP_MARKERS_ZOOM_DEPTH;
-
-		console.log(circleZoom - zoom, markerZoom - zoom);
+		const circleZoom = zoom + MAP_CIRCLES_ZOOM_DEPTH_BASE / Math.max(1, Math.log2(mapPopupDataArray.length / MAP_CIRCLES_ZOOM_DEPTH_COUNT));
+		const markerZoom = zoom;
 
 		for (const data of mapPopupDataArray) {
 			// Process popup circle
-			if (data.circle.isInBlock(circleZoom, mapWindowBounds)) {
-				upsertPopupCircle(data.circle, zoom);
+			const circle = data.circle;
+
+			if (mapWindowBounds.contains(circle.lat, circle.lng)) {
+				if (zoom <= circle.zoom && circle.zoom <= circleZoom) {
+					// Check if circle exist on map
+					if (circle.isCreated() == false) {
+						circle.createElement();
+					}
+
+					// Update circle map and state
+					circle.updateMap(map);
+					circle.updateState(zoom);
+					circle.setExpanded(zoom);
+
+					// Update circle pin if not loaded
+					if (circle.isPinLoaded() == false) {
+						circle.updatePin();
+					}
+				} else {
+					if (circle.isCreated() == true) {
+						circle.setCollapsed();
+						// Wait until circle is invisible before removing it
+						if (circle.isCollapsed()) {
+							circle.updateMap(null);
+						}
+					}
+				}
 			} else {
-				removePopupCircle(data.circle);
+				// If created immediately remove circle
+				if (circle.isCreated() == true) {
+					circle.updateMap(null);
+				}
 			}
 
 			// Process popup marker
-			if (data.marker.isInBlock(markerZoom, mapOffsetBounds)) {
-				upsertPopupMarker(data.marker, zoom);
+			const marker = data.marker;
+
+			if (mapOffsetBounds.contains(marker.lat, marker.lng)) {
+				if (marker.zoom <= markerZoom) {
+					// Check if marker exist on map
+					if (marker.isCreated() == false) {
+						marker.createElement();
+					}
+
+					// Update marker map and state
+					marker.updateMap(map);
+					marker.updateState(zoom);
+					marker.setCollapsed(false);
+
+					// If marker is expanded, update body if not loaded
+					if (marker.isExpanded() && marker.isBodyLoaded() == false) {
+						marker.updateBody();
+					}
+				} else {
+					// Check if marker exist on map
+					if (marker.isCreated() == true) {
+						marker.setCollapsed(true);
+						// Wait until marker is collapsed before removing it
+						if (marker.isCollapsed()) {
+							marker.updateMap(null);
+						}
+					}
+				}
 			} else {
-				removePopupMarker(data.marker, zoom);
-			}
-		}
-	}
-
-	function upsertPopupCircle(circle: MapPopupCircle, zoom: number) {
-		// Check if circle exist on map
-		if (circle.isCreated() == false) {
-			circle.createElement();
-		}
-
-		// Update circle map and state
-		circle.updateMap(map);
-		circle.updateState(zoom);
-
-		// Update circle pin if not loaded
-		if (circle.isPinLoaded() == false) {
-			circle.updatePin();
-		}
-	}
-
-	function removePopupCircle(circle: MapPopupCircle) {
-		if (circle.isCreated() == true) {
-			// Set circle invisible
-			circle.setCollapsed();
-			// Wait until circle is invisible before removing it
-			if (circle.isCollapsed()) {
-				circle.updateMap(null);
-			}
-		}
-	}
-
-	function upsertPopupMarker(marker: MapPopupMarker, zoom: number) {
-		// Check if marker exist on map
-		if (marker.isCreated() == false) {
-			marker.createElement();
-		}
-
-		// Update marker map and state
-		marker.updateMap(map);
-		marker.updateState(zoom);
-
-		// If marker is expanded, update body if not loaded
-		if (marker.getExpanded() && marker.isBodyLoaded() == false) {
-			marker.updateBody();
-		}
-	}
-
-	function removePopupMarker(marker: MapPopupMarker, zoom: number) {
-		// Check if marker exist on map
-		if (marker.isCreated() == true) {
-			// Wait until marker is collapsed before removing it
-			if (marker.isCollapsed()) {
-				marker.updateMap(null);
-			} else {
-				marker.updateState(zoom);
+				// If created immediately remove marker
+				if (marker.isCreated() == true) {
+					marker.updateMap(null);
+				}
 			}
 		}
 	}

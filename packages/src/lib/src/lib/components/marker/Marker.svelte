@@ -40,7 +40,7 @@
 	}
 
 	export function getCollapsed() {
-		return markerWidth == 0 && markerHeight == 0;
+		return scaleTween.current == 0;
 	}
 
 	export function getExpanded() {
@@ -60,9 +60,8 @@
 
 	$effect(() => {
 		if (displayed == false) {
-			scale = 0;
-			scaleTween.set(0, { duration: 0 });
-			updateScaleStyle(0);
+			scaleTween.set(scale, { duration: 0 });
+			updateScaleStyle(scale);
 		}
 	});
 
@@ -139,7 +138,7 @@
 
 			const shadowX = -1 - 2 * (markerOffsetX / markerWidth);
 			const shadowY = -1 - 2 * (markerOffsetY / markerHeight);
-			anchor.style.filter = `drop-shadow(0px 0px 4px rgba(0,0,0,0.5)) drop-shadow(${shadowX}px ${shadowY}px 2px rgba(0,0,0,0.5))`;
+			// anchor.style.filter = `drop-shadow(0px 0px 4px rgba(0,0,0,0.5)) drop-shadow(${shadowX}px ${shadowY}px 2px rgba(0,0,0,0.5))`;
 		});
 	}
 
@@ -201,6 +200,7 @@
 		position: absolute;
 		width: 0px;
 		height: 0px;
+		filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.5));
 
 		.marker {
 			position: absolute;

@@ -34,9 +34,8 @@
 
 	$effect(() => {
 		if (displayed == false) {
-			scale = 0;
-			scaleTween.set(0, { duration: 0 });
-			updateScaleStyle(0);
+			scaleTween.set(scale, { duration: 0 });
+			updateScaleStyle(scale);
 		}
 	});
 
@@ -57,7 +56,7 @@
 		}
 	}
 
-	export function getInvisible() {
+	export function getCollapsed() {
 		return scaleTween.current == 0;
 	}
 
