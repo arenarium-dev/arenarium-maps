@@ -377,6 +377,14 @@
 			this.component?.setDisplayed(map != null);
 		}
 
+		updateState(zoom: number) {
+			const circle = this.component;
+			if (!circle) throw new Error('Failed to update circle state');
+
+			// Set circle scale
+			circle.setScale(this.getScale(zoom));
+		}
+
 		updatePin() {
 			if (this.pinCallback == undefined) return;
 			if (this.pinLoaded || this.pinLoading) return;
@@ -392,9 +400,18 @@
 			});
 		}
 
-		setCollapsed(value: boolean) {
-			if (this.component == undefined) throw new Error('Failed to set marker expanded');
-			this.component.setScale(value ? 0 : 1);
+		setExpanded(zoom: number) {
+			if (this.component == undefined) throw new Error('Failed to set circle expanded');
+			this.component.setScale(this.getScale(zoom));
+		}
+
+		setCollapsed() {
+			if (this.component == undefined) throw new Error('Failed to set circle collapsed');
+			this.component.setScale(0);
+		}
+
+		getScale(zoom: number) {
+			return Math.max(0, 1 - (this.zoom - zoom) * 0.1);
 		}
 
 		isCollapsed() {
@@ -579,7 +596,7 @@
 
 					// Update circle map and state
 					circle.updateMap(map);
-					circle.setCollapsed(false);
+					circle.updateState(zoom);
 
 					// Update circle pin if not loaded
 					if (circle.isPinLoaded() == false) {
@@ -587,7 +604,7 @@
 					}
 				} else {
 					if (circle.isCreated() == true) {
-						circle.setCollapsed(true);
+						circle.setCollapsed();
 						// Wait until circle is invisible before removing it
 						if (circle.isCollapsed()) {
 							circle.updateMap(null);
