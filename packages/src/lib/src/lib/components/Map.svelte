@@ -354,7 +354,10 @@
 		createElement() {
 			this.element = document.createElement('div');
 			this.element.classList.add('circle');
-			this.component = mount(MapMarkerCircle, { target: this.element });
+			this.component = mount(MapMarkerCircle, {
+				target: this.element,
+				props: { id: this.id + '_circle', priority: this.zoom }
+			});
 
 			this.createLibreMarker();
 			this.updateZIndex();
@@ -374,14 +377,6 @@
 			this.component?.setDisplayed(map != null);
 		}
 
-		updateState(zoom: number) {
-			const circle = this.component;
-			if (!circle) throw new Error('Failed to update circle state');
-
-			// Set circle scale
-			circle.setScale(this.getScale(zoom));
-		}
-
 		updatePin() {
 			if (this.pinCallback == undefined) return;
 			if (this.pinLoaded || this.pinLoading) return;
@@ -397,18 +392,9 @@
 			});
 		}
 
-		setExpanded(zoom: number) {
+		setCollapsed(value: boolean) {
 			if (this.component == undefined) throw new Error('Failed to set marker expanded');
-			this.component.setScale(this.getScale(zoom));
-		}
-
-		setCollapsed() {
-			if (this.component == undefined) throw new Error('Failed to set marker expanded');
-			this.component.setScale(0);
-		}
-
-		getScale(zoom: number) {
-			return Math.max(0, 1 - (this.zoom - zoom) * 0.1);
+			this.component.setScale(value ? 0 : 1);
 		}
 
 		isCollapsed() {
@@ -444,7 +430,15 @@
 		createElement() {
 			this.element = document.createElement('div');
 			this.element.classList.add('marker');
-			this.component = mount(MapMarker, { target: this.element, props: { width: this.width, height: this.height } });
+			this.component = mount(MapMarker, {
+				target: this.element,
+				props: {
+					id: this.id + '_marker',
+					priority: this.zoom + MAP_MAX_ZOOM,
+					width: this.width,
+					height: this.height
+				}
+			});
 
 			this.createLibreMarker();
 			this.updateZIndex();
@@ -585,8 +579,7 @@
 
 					// Update circle map and state
 					circle.updateMap(map);
-					circle.updateState(zoom);
-					circle.setExpanded(zoom);
+					circle.setCollapsed(false);
 
 					// Update circle pin if not loaded
 					if (circle.isPinLoaded() == false) {
@@ -594,7 +587,7 @@
 					}
 				} else {
 					if (circle.isCreated() == true) {
-						circle.setCollapsed();
+						circle.setCollapsed(true);
 						// Wait until circle is invisible before removing it
 						if (circle.isCollapsed()) {
 							circle.updateMap(null);

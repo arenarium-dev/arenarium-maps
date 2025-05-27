@@ -2,6 +2,10 @@
 	import { sineInOut } from 'svelte/easing';
 	import { Tween } from 'svelte/motion';
 
+	import { animation } from '../../map/animation.js';
+
+	let { id, priority }: { id: string; priority: number } = $props();
+
 	let circle: HTMLElement;
 	let body: HTMLElement;
 
@@ -42,10 +46,8 @@
 	function updateScaleStyle(scale: number) {
 		if (!circle) return;
 
-		window.requestAnimationFrame(() => {
+		animation.equeue(id, priority, () => {
 			circle.style.scale = scale.toString();
-			circle.style.filter = `brightness(${0.3 + 0.7 * scale})`;
-			body.style.opacity = scale.toString();
 		});
 	}
 
@@ -91,6 +93,7 @@
 		transform-style: preserve-3d;
 		transform: translate(-50%, -50%);
 		backface-visibility: hidden;
+		will-change: scale;
 
 		.body {
 			min-width: @circle-size - @padding-size * 2;
@@ -105,7 +108,7 @@
 
 	.circle {
 		scale: 0;
-		filter: brightness(0);
+		// filter: brightness(0);
 	}
 
 	// Displayed properties

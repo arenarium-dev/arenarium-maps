@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { Tween } from 'svelte/motion';
-	import { sineInOut } from 'svelte/easing';
+	import { sineIn, sineInOut, sineOut } from 'svelte/easing';
+
+	import { animation } from '../../map/animation.js';
 
 	import { getPositionParams } from '@workspace/shared/src/marker/position.js';
 	import { MARKER_DEFAULT_ANGLE, MARKER_PADDING } from '@workspace/shared/src/constants.js';
 
-	let { width, height }: { width: number; height: number } = $props();
+	let { id, priority, width, height }: { id: string; priority: number; width: number; height: number } = $props();
 
 	let anchor: HTMLElement;
 	let marker: HTMLElement;
@@ -16,6 +18,20 @@
 	let markerHeight = $state<number>(0);
 
 	export const getBody = () => body;
+
+	//#region Position
+
+	$effect(() => {
+		if (markerWidth && markerHeight) {
+			pin.style.width = `${Math.min(markerWidth, markerHeight) / 4}px`;
+			pin.style.height = `${Math.min(markerWidth, markerHeight) / 4}px`;
+		}
+	});
+
+	export const getWidth = () => markerWidth;
+	export const getHeight = () => markerHeight;
+
+	//#endregion
 
 	//#region Displayed
 
@@ -52,40 +68,25 @@
 	//#region Scale
 
 	let scale = 0;
-	let scaleTween = new Tween(scale, { easing: sineInOut });
-
-	$effect(() => {
-		updateScaleStyle(scaleTween.current);
-	});
+	let scaleTween = new Tween(scale);
 
 	$effect(() => {
 		if (displayed == false) {
 			scaleTween.set(scale, { duration: 0 });
-			updateScaleStyle(scale);
 		}
 	});
 
 	$effect(() => {
 		if (collapsed == true && scale != 0) {
 			scale = 0;
-			scaleTween.set(0, { duration: 75 });
+			scaleTween.set(0, { duration: 75, easing: sineIn });
 		}
 
 		if (collapsed == false && scale != 1) {
 			scale = 1;
-			scaleTween.set(1, { duration: 150 });
+			scaleTween.set(1, { duration: 150, easing: sineOut });
 		}
 	});
-
-	function updateScaleStyle(scale: number) {
-		if (!anchor || !marker || !pin) return;
-
-		window.requestAnimationFrame(() => {
-			anchor.style.opacity = `${scale}`;
-			marker.style.scale = `${scale}`;
-			pin.style.scale = `${scale}`;
-		});
-	}
 
 	//#region Angle
 
@@ -94,10 +95,6 @@
 	let angleTween = new Tween(MARKER_DEFAULT_ANGLE, {
 		easing: sineInOut,
 		interpolate: getAngleInterpolate
-	});
-
-	$effect(() => {
-		updateAngleStyle(angleTween.current);
 	});
 
 	$effect(() => {
@@ -122,30 +119,10 @@
 		}
 	}
 
-	function updateAngleStyle(angle: number) {
-		if (!anchor || !marker || !pin) return;
-
-		const params = getPositionParams(markerWidth, markerHeight, angle);
-
-		window.requestAnimationFrame(() => {
-			const markerOffsetX = Math.round(params.markerOffsetX);
-			const markerOffsetY = Math.round(params.markerOffsetY);
-			marker.style.transform = `translate(${markerOffsetX}px, ${markerOffsetY}px)`;
-
-			const pinAngleDeg = params.pinAngleDeg;
-			const pinSkewDeg = params.pinSkewDeg;
-			pin.style.transform = `rotate(${pinAngleDeg}deg) skew(${pinSkewDeg}deg, ${pinSkewDeg}deg)`;
-
-			const shadowX = -1 - 2 * (markerOffsetX / markerWidth);
-			const shadowY = -1 - 2 * (markerOffsetY / markerHeight);
-			// anchor.style.filter = `drop-shadow(0px 0px 4px rgba(0,0,0,0.5)) drop-shadow(${shadowX}px ${shadowY}px 2px rgba(0,0,0,0.5))`;
-		});
-	}
-
 	export function setAngle(value: number) {
 		if (displayed == false) {
 			angle = value;
-			updateAngleStyle(angle);
+			updateStyle(markerWidth, markerHeight, scale, angle);
 		}
 
 		if (value != angle) {
@@ -162,23 +139,31 @@
 
 	//#endregion
 
-	//#region Position
+	//#region Style
 
 	$effect(() => {
-		if (markerWidth && markerHeight) {
-			pin.style.width = `${Math.min(markerWidth, markerHeight) / 4}px`;
-			pin.style.height = `${Math.min(markerWidth, markerHeight) / 4}px`;
-		}
+		updateStyle(markerWidth, markerHeight, scaleTween.current, angleTween.current);
 	});
 
-	$effect(() => {
-		if (markerWidth && markerHeight) {
-			updateAngleStyle(angle);
-		}
-	});
+	function updateStyle(width: number, height: number, scale: number, angle: number) {
+		if (!anchor || !marker || !pin) return;
 
-	export const getWidth = () => markerWidth;
-	export const getHeight = () => markerHeight;
+		const params = getPositionParams(width, height, angle);
+
+		animation.equeue(id, priority, () => {
+			anchor.style.opacity = `${scale}`;
+
+			const markerOffsetX = Math.round(params.markerOffsetX);
+			const markerOffsetY = Math.round(params.markerOffsetY);
+			marker.style.transform = `translate(${markerOffsetX}px, ${markerOffsetY}px)`;
+			marker.style.scale = `${scale}`;
+
+			const pinAngleDeg = params.pinAngleDeg;
+			const pinSkewDeg = params.pinSkewDeg;
+			pin.style.transform = `rotate(${pinAngleDeg}deg) skew(${pinSkewDeg}deg, ${pinSkewDeg}deg)`;
+			pin.style.scale = `${scale}`;
+		});
+	}
 
 	//#endregion
 </script>
@@ -232,13 +217,17 @@
 	// Transition properties
 
 	.anchor {
+		will-change: opacity;
+
 		.marker {
 			transform-origin: 0% 0%;
 			transform-style: preserve-3d;
+			will-change: transform, scale;
 		}
 
 		.pin {
 			transform-origin: 0% 0%;
+			will-change: transform, scale;
 		}
 	}
 

@@ -1,5 +1,7 @@
 TODO:
 
+Add global animation bacher, processes priprity animations first, others later (lower framerate in the background)
+
 Add api key to map mount, check if valid on mount, wrap states api call in function
 
 CUSTOMERS:
