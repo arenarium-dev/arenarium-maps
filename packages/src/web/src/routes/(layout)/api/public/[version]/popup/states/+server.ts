@@ -72,7 +72,7 @@ export const POST: RequestHandler = async (event) => {
 			}
 
 			// Update usage after the request
-			event.platform?.ctx.waitUntil(
+			event.platform?.ctx?.waitUntil(
 				new Promise(async () => {
 					const dbUsage: schema.DbApiKeyUsageInsert = {
 						keyIndex: dbApiKey.index,
