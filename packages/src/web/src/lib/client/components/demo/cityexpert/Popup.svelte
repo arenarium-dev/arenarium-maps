@@ -156,6 +156,7 @@
 				padding: 0px;
 				border-radius: 50%;
 				background-color: white;
+				color: black;
 				font-weight: 600;
 				cursor: pointer;
 				transition: opacity ease-in-out 125ms;
