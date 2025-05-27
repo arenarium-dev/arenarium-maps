@@ -1,4 +1,4 @@
-import type { MapStyle, MapBounds, MapCoordinate, EventId, EventHandler, EventPayloadMap, MapPopup } from './schemas.js';
+import type { MapStyle, MapBounds, MapCoordinate, MapPopup, MapConfiguration, EventId, EventHandler, EventPayloadMap } from './schemas.js';
 
 import maplibregl from 'maplibre-gl';
 
@@ -22,6 +22,9 @@ export interface MapComponent {
 
 	getStyle: () => MapStyle;
 	setStyle: (style: MapStyle) => void;
+
+	getConfiguration: () => MapConfiguration;
+	setConfiguration: (configuration: MapConfiguration) => void;
 
 	updatePopups: (popups: MapPopup[]) => Promise<void>;
 	removePopups: () => void;

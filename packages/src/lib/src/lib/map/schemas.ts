@@ -38,6 +38,23 @@ export const mapStyleCustomSchema = z.object({
 
 export const mapStyleSchema = mapStyleBasicSchema.or(mapStyleCustomSchema);
 
+export const mapConfigurationSchema = z.object({
+	pin: z
+		.object({
+			fade: z.boolean().optional()
+		})
+		.optional(),
+	animation: z
+		.object({
+			queue: z
+				.object({
+					limit: z.number().optional()
+				})
+				.optional()
+		})
+		.optional()
+});
+
 export const mapOptionsSchema = z.object({
 	container: z.string(),
 	position: z.object({
@@ -47,6 +64,7 @@ export const mapOptionsSchema = z.object({
 		}),
 		zoom: z.number()
 	}),
+	style: mapStyleSchema,
 	restriction: z
 		.object({
 			minZoom: z.number().min(MAP_MIN_ZOOM).max(MAP_MAX_ZOOM).optional(),
@@ -54,7 +72,7 @@ export const mapOptionsSchema = z.object({
 			maxBounds: mapBoundsSchema.optional()
 		})
 		.optional(),
-	style: mapStyleSchema
+	configuration: mapConfigurationSchema.optional()
 });
 
 export type MapCoordinate = z.infer<typeof mapCoordinateSchema>;
@@ -62,6 +80,7 @@ export type MapPosition = z.infer<typeof mapPositionSchema>;
 export type MapBounds = z.infer<typeof mapBoundsSchema>;
 export type MapOptions = z.infer<typeof mapOptionsSchema>;
 export type MapStyle = z.infer<typeof mapStyleSchema>;
+export type MapConfiguration = z.infer<typeof mapConfigurationSchema>;
 
 // Events
 

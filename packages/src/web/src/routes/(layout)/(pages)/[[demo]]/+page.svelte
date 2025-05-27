@@ -472,7 +472,7 @@
 				<div class="menu shadow-large">
 					<Menu axis={'x'} bind:this={palleteMenuComponent}>
 						{#snippet button()}
-							<button class="item" onclick={onPalleteClick} disabled={getDemoStyle(demo) != undefined}>
+							<button class="item" onclick={onPalleteClick} inert={getDemoStyle(demo) != undefined}>
 								<Icon name={'palette'} size={22} />
 								<span>Style</span>
 								<Icon name={'arrow_right'} />

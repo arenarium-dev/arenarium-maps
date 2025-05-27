@@ -38,7 +38,12 @@
 					primary: 'purple',
 					text: 'black'
 				}
-			}
+			},
+			// configuration: {
+			// 	pin: {
+			// 		fade: false
+			// 	}
+			// }
 		});
 
 		map.on('move', (e) => {

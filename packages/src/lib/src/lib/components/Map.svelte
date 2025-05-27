@@ -6,6 +6,7 @@
 
 	import { MapBoundsPair } from '../map/bounds.js';
 	import { darkStyleSpecification, lightStyleSpecification } from '../map/styles.js';
+	import { animation } from '../map/animation.js';
 	import {
 		mapOptionsSchema,
 		mapPopupsSchema,
@@ -18,14 +19,14 @@
 		eventHandlerSchemas,
 		type EventId,
 		type EventHandler,
-		type EventPayloadMap
+		type EventPayloadMap,
+		type MapConfiguration
 	} from '../map/schemas.js';
 
 	import {
 		MAP_BASE_SIZE,
 		MAP_MAX_ZOOM,
 		MAP_MIN_ZOOM,
-		MAP_MARKERS_ZOOM_DEPTH,
 		MAP_ZOOM_SCALE,
 		MAP_CIRCLES_ZOOM_DEPTH_BASE,
 		MAP_CIRCLES_ZOOM_DEPTH_COUNT
@@ -282,6 +283,26 @@
 
 	//#endregion
 
+	//#region Configuration
+
+	let configuration = $state<MapConfiguration | undefined>(options.configuration);
+
+	$effect(() => {
+		if (configuration?.animation?.queue?.limit) {
+			animation.setLimit(configuration.animation.queue.limit);
+		}
+	});
+
+	export function getConfiguration() {
+		return $state.snapshot(configuration);
+	}
+
+	export function setConfiguration(value: MapConfiguration) {
+		configuration = value;
+	}
+
+	//#endregion
+
 	//#region Data
 
 	class MapPopupComponent<T> {
@@ -400,9 +421,9 @@
 			});
 		}
 
-		setExpanded(zoom: number) {
+		setExpanded() {
 			if (this.component == undefined) throw new Error('Failed to set circle expanded');
-			this.component.setScale(this.getScale(zoom));
+			this.component.setScale(1);
 		}
 
 		setCollapsed() {
@@ -596,7 +617,11 @@
 
 					// Update circle map and state
 					circle.updateMap(map);
-					circle.updateState(zoom);
+					if (configuration?.pin?.fade == true) {
+						circle.updateState(zoom);
+					} else {
+						circle.setExpanded();
+					}
 
 					// Update circle pin if not loaded
 					if (circle.isPinLoaded() == false) {
