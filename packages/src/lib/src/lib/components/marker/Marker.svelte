@@ -214,34 +214,34 @@
 		}
 	}
 
-	// Transition properties
+	// Hover properties
 
-	.anchor {
-		will-change: opacity;
+	.anchor:hover {
+		transform-style: preserve-3d;
+		backface-visibility: hidden;
 
 		.marker {
-			transform-origin: 0% 0%;
 			transform-style: preserve-3d;
-			will-change: transform, scale;
-		}
-
-		.pin {
-			transform-origin: 0% 0%;
-			will-change: transform, scale;
+			backface-visibility: hidden;
 		}
 	}
 
-	// Collapsed properties
+	// Transition properties
 
 	.anchor {
 		opacity: 0;
+		will-change: opacity;
 
 		.marker {
 			scale: 0;
+			transform-origin: 0% 0%;
+			will-change: transform, scale;
 		}
 
 		.pin {
 			scale: 0;
+			transform-origin: 0% 0%;
+			will-change: transform, scale;
 		}
 	}
 
