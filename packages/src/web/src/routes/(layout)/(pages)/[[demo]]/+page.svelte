@@ -19,7 +19,16 @@
 	import { Fetch } from '$lib/client/core/fetch';
 	import { Demo } from '$lib/shared/demo';
 
-	import { mountMap, type MapBounds, type MapPopup, type MapPopupData, type MapPopupState, type MapPosition, type MapStyle } from '@arenarium/maps';
+	import {
+		mountMap,
+		type MapBounds,
+		type MapConfiguration,
+		type MapPopup,
+		type MapPopupData,
+		type MapPopupState,
+		type MapPosition,
+		type MapStyle
+	} from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
 
 	let map: ReturnType<typeof mountMap>;
@@ -198,6 +207,8 @@
 			map.setCenter({ lat: 51.505, lng: -0.09 });
 			map.setMinZoom(0);
 		}
+
+		map.setConfiguration(getDemoConfiguration(demo));
 
 		// Update data
 		demoPopupData.clear();
@@ -382,6 +393,25 @@
 				return {
 					center: { lat: 44.811222, lng: 20.450989 },
 					zoom: 10
+				};
+			}
+		}
+	}
+
+	function getDemoConfiguration(demo: Demo): MapConfiguration {
+		switch (demo) {
+			default: {
+				return {
+					pin: {
+						fade: true
+					}
+				};
+			}
+			case Demo.CityExpert: {
+				return {
+					pin: {
+						fade: false
+					}
 				};
 			}
 		}
