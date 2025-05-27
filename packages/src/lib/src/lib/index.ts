@@ -5,6 +5,7 @@ import type { MapComponent } from './map/types.js';
 import type {
 	MapOptions,
 	MapStyle,
+	MapConfiguration,
 	MapPopup,
 	MapPopupState,
 	MapPopupData,
@@ -15,8 +16,9 @@ import type {
 export { Map };
 export {
 	type MapComponent,
-	type MapStyle,
 	type MapOptions,
+	type MapStyle,
+	type MapConfiguration,
 	type MapPopup,
 	type MapPopupData,
 	type MapPopupState,

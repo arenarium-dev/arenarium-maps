@@ -1,6 +1,6 @@
 {
 	"name": "@arenarium/maps",
-	"version": "1.0.98",
+	"version": "1.0.99",
 	"license": "MIT",
 	"author": "arenarium.dev",
 	"description": "The best way to visualize ranked data on a map.",
@@ -52,7 +52,7 @@
 		"prettier": "^3.5.3",
 		"prettier-plugin-svelte": "^3.4.0",
 		"publint": "^0.3.12",
-		"svelte": "^5.33.3",
+		"svelte": "^5.33.4",
 		"svelte-check": "^4.2.1",
 		"typescript": "^5.8.3",
 		"typescript-eslint": "^8.32.1",
