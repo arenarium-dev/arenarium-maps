@@ -48,6 +48,8 @@
 
 		animation.equeue(id, priority, () => {
 			circle.style.scale = scale.toString();
+			circle.style.filter = `brightness(${0.3 + 0.7 * scale})`;
+			body.style.opacity = scale.toString();
 		});
 	}
 
@@ -93,7 +95,7 @@
 		transform-style: preserve-3d;
 		transform: translate(-50%, -50%);
 		backface-visibility: hidden;
-		will-change: scale;
+		will-change: scale, filter;
 
 		.body {
 			min-width: @circle-size - @padding-size * 2;
@@ -108,7 +110,7 @@
 
 	.circle {
 		scale: 0;
-		// filter: brightness(0);
+		filter: brightness(0);
 	}
 
 	// Displayed properties
