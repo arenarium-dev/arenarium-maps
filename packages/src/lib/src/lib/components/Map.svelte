@@ -411,7 +411,7 @@
 		}
 
 		getScale(zoom: number) {
-			return Math.max(0, 1 - (this.zoom - zoom) * 0.1);
+			return Math.max(0, 1 - (this.zoom - zoom) * 0.125);
 		}
 
 		isCollapsed() {

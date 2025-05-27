@@ -48,7 +48,7 @@
 
 		animation.equeue(id, priority, () => {
 			circle.style.scale = scale.toString();
-			circle.style.filter = `brightness(${0.3 + 0.7 * scale})`;
+			circle.style.filter = `brightness(${0.25 + 0.75 * scale})`;
 			body.style.opacity = scale.toString();
 		});
 	}
@@ -76,8 +76,6 @@
 </div>
 
 <style lang="less">
-	@background: var(--map-style-background);
-	@base: var(--map-style-primary);
 	@circle-size: 16px;
 	@padding-size: 2px;
 	@max-size: 64px;
@@ -86,7 +84,7 @@
 		max-width: @max-size;
 		max-height: @max-size;
 		position: absolute;
-		background-color: @background;
+		background-color: var(--map-style-background);
 		padding: @padding-size;
 		border-radius: @max-size;
 		box-sizing: border-box;
@@ -101,7 +99,7 @@
 			min-width: @circle-size - @padding-size * 2;
 			min-height: @circle-size - @padding-size * 2;
 			border-radius: @max-size;
-			background-color: @base;
+			background-color: var(--map-style-primary);
 			overflow: hidden;
 		}
 	}
