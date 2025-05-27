@@ -185,12 +185,18 @@
 		if (demoStyle) {
 			map.setStyle(demoStyle);
 			style = 'custom';
+		} else {
+			setStyleWebsite();
+			style = 'website';
 		}
 
 		const demoRestriction = getDemoPosition(demo);
 		if (demoRestriction) {
 			map.setCenter(demoRestriction.center);
 			map.setMinZoom(demoRestriction.zoom);
+		} else {
+			map.setCenter({ lat: 51.505, lng: -0.09 });
+			map.setMinZoom(0);
 		}
 
 		// Update data
@@ -223,7 +229,7 @@
 			}
 
 			app.toast.set({
-				path: `/${demo}`,
+				path: page.url.pathname,
 				text: `Load ${dataDelta.length} new popups?`,
 				severity: 'info',
 				callback: {
@@ -236,7 +242,7 @@
 		} catch (err) {
 			console.error(err);
 			app.toast.set({
-				path: '/',
+				path: page.url.pathname,
 				text: 'Failed to process popups.',
 				severity: 'error',
 				seconds: 2
