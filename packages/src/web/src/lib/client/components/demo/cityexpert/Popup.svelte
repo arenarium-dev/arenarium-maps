@@ -31,6 +31,16 @@
 
 		mounted = true;
 	});
+
+	function onImageLeft(e: MouseEvent) {
+		e.stopPropagation();
+		imageIndex = (imageIndex + images.length - 1) % images.length;
+	}
+
+	function onImageRight(e: MouseEvent) {
+		e.stopPropagation();
+		imageIndex = (imageIndex + images.length + 1) % images.length;
+	}
 </script>
 
 {#if mounted}
@@ -41,6 +51,12 @@
 		</button>
 		<div class="image">
 			<img loading="lazy" src={images[imageIndex]} alt={id} />
+			<button class="nav left" onclick={onImageLeft}>
+				<Icon name="chevron_left" size={16} />
+			</button>
+			<button class="nav right" onclick={onImageRight}>
+				<Icon name="chevron_right" size={16} />
+			</button>
 		</div>
 		<div class="title">
 			<span class="amount">{price.toLocaleString().replace(',', '.')} €</span>
@@ -126,6 +142,39 @@
 				width: 100%;
 				height: 100%;
 				object-fit: cover;
+			}
+
+			.nav {
+				opacity: 0;
+				position: absolute;
+				top: 52px;
+				width: 20px;
+				height: 20px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 0px;
+				border-radius: 50%;
+				background-color: white;
+				font-weight: 600;
+				cursor: pointer;
+				transition: opacity ease-in-out 125ms;
+			}
+
+			.nav.left {
+				left: 8px;
+				padding-right: 1px;
+			}
+
+			.nav.right {
+				right: 8px;
+				padding-left: 1px;
+			}
+
+			&:hover {
+				.nav {
+					opacity: 0.5;
+				}
 			}
 		}
 
