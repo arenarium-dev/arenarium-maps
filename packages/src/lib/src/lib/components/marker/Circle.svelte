@@ -48,7 +48,7 @@
 
 		animation.equeue(id, priority, () => {
 			circle.style.scale = scale.toString();
-			circle.style.filter = `brightness(${0.25 + 0.75 * scale})`;
+			// circle.style.filter = `brightness(${0.25 + 0.75 * scale})`;
 			body.style.opacity = scale.toString();
 		});
 	}
@@ -93,7 +93,7 @@
 		transform-style: preserve-3d;
 		transform: translate(-50%, -50%);
 		backface-visibility: hidden;
-		will-change: scale, filter;
+		will-change: scale;
 
 		.body {
 			min-width: @circle-size - @padding-size * 2;
@@ -101,6 +101,7 @@
 			border-radius: @max-size;
 			background-color: var(--map-style-primary);
 			overflow: hidden;
+			will-change: opacity;
 		}
 	}
 
@@ -108,7 +109,7 @@
 
 	.circle {
 		scale: 0;
-		filter: brightness(0);
+		// filter: brightness(0);
 	}
 
 	// Displayed properties

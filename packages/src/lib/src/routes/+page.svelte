@@ -39,11 +39,11 @@
 					text: 'black'
 				}
 			},
-			// configuration: {
-			// 	pin: {
-			// 		fade: false
-			// 	}
-			// }
+			configuration: {
+				pin: {
+					fade: true
+				}
+			}
 		});
 
 		map.on('move', (e) => {
