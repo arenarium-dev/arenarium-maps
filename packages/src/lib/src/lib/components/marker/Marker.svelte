@@ -4,7 +4,7 @@
 
 	import { animation } from '../../map/animation.js';
 
-	import { getPositionParams } from '@workspace/shared/src/marker/position.js';
+	import { getRectangleOffsets } from '@workspace/shared/src/marker/rectangle.js';
 	import { ANIMATION_PRIORITY_LAYER, MARKER_DEFAULT_ANGLE, MARKER_PADDING } from '@workspace/shared/src/constants.js';
 
 	let { id, priority, width, height }: { id: string; priority: number; width: number; height: number } = $props();
@@ -84,7 +84,7 @@
 	$effect(() => {
 		if (collapsed == true && scale != 0) {
 			scale = 0;
-			
+
 			if (animation.stacked()) {
 				scaleTween.set(0, { duration: 0 });
 				updateScaleStyle(0);
@@ -150,15 +150,38 @@
 
 		const width = markerWidth;
 		const height = markerHeight;
-		const params = getPositionParams(width, height, angle);
+
+		// Calculate marker offsets, its values are such that the rectnagle edge always touches the center anchor
+		const markerOffsets = getRectangleOffsets(width, height, angle);
+		const markerOffsetX = markerOffsets.offsetX;
+		const markerOffsetY = markerOffsets.offsetY;
+
+		// Calculate pin angle, it point to the center of the inverse width/height rectangle of the marker
+		const pinRectWidth = height;
+		const pinRectHeight = width;
+
+		const pinRectOffsets = getRectangleOffsets(pinRectWidth, pinRectHeight, angle);
+		const pinCenterX = pinRectWidth / 2 + pinRectOffsets.offsetX;
+		const pinCenterY = pinRectHeight / 2 + pinRectOffsets.offsetY;
+		const pinAngleRad = Math.atan2(pinCenterY, pinCenterX);
+		const pinAngleDeg = (pinAngleRad / Math.PI) * 180 - 45;
+
+		// Calculate pin skew, its is lower (ak. wider) the closer the pin is to the center of the marker
+		const pinMinSkew = 0;
+		const pinMaxSkew = 30;
+
+		const markerCenterX = markerOffsetX + width / 2;
+		const markerCenterY = markerOffsetY + height / 2;
+
+		const pinCenterDistance = Math.sqrt(markerCenterX * markerCenterX + markerCenterY * markerCenterY);
+		const pinCenterMinDistance = Math.min(width, height) / 2;
+		const pinCenterMaxDistance = Math.sqrt(width * width + height * height) / 2;
+
+		const pinSkewRatio = (pinCenterDistance - pinCenterMinDistance) / (pinCenterMaxDistance - pinCenterMinDistance);
+		const pinSkewDeg = pinMinSkew + pinSkewRatio * (pinMaxSkew - pinMinSkew);
 
 		animation.equeue(id + '_angle', priority, () => {
-			const markerOffsetX = Math.round(params.markerOffsetX);
-			const markerOffsetY = Math.round(params.markerOffsetY);
-			marker.style.transform = `translate(${markerOffsetX}px, ${markerOffsetY}px)`;
-
-			const pinAngleDeg = params.pinAngleDeg;
-			const pinSkewDeg = params.pinSkewDeg;
+			marker.style.transform = `translate(${Math.round(markerOffsetX)}px, ${Math.round(markerOffsetY)}px)`;
 			pin.style.transform = `rotate(${pinAngleDeg}deg) skew(${pinSkewDeg}deg, ${pinSkewDeg}deg)`;
 		});
 	}
