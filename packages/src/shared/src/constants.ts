@@ -6,6 +6,9 @@ export const MAP_MARKERS_ZOOM_DEPTH = 0.5;
 export const MAP_CIRCLES_ZOOM_DEPTH_BASE = 6;
 export const MAP_CIRCLES_ZOOM_DEPTH_COUNT = 128;
 
+export const ANIMATION_LIMIT_DEFAULT = 128;
+export const ANIMATION_PRIORITY_LAYER = 24;
+
 export const MARKER_DEFAULT_ANGLE = 270;
 export const MARKER_PADDING = 8;
 

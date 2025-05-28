@@ -48,7 +48,7 @@
 
 		animation.equeue(id, priority, () => {
 			circle.style.scale = scale.toString();
-			// circle.style.filter = `brightness(${0.25 + 0.75 * scale})`;
+			circle.style.filter = `brightness(${0.25 + 0.75 * scale})`;
 			body.style.opacity = scale.toString();
 		});
 	}
@@ -56,7 +56,7 @@
 	export function setScale(value: number) {
 		if (value != scale) {
 			scale = value;
-			scaleTween.set(value, { duration: 75 });
+			scaleTween.set(value, { duration: 75 / animation.speed() });
 		}
 	}
 
@@ -109,7 +109,7 @@
 
 	.circle {
 		scale: 0;
-		// filter: brightness(0);
+		filter: brightness(0);
 	}
 
 	// Displayed properties

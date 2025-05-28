@@ -1,3 +1,5 @@
+import { ANIMATION_LIMIT_DEFAULT } from '@workspace/shared/src/constants.js';
+
 interface AnimationCallback {
 	id: string;
 	priority: number;
@@ -6,7 +8,7 @@ interface AnimationCallback {
 
 class Animation {
 	private animationsRunning = false;
-	private animationsLimit = 128;
+	private animationsLimit = ANIMATION_LIMIT_DEFAULT;
 	private animations = new Map<string, AnimationCallback>();
 
 	private start() {
@@ -40,6 +42,14 @@ class Animation {
 			this.animationsRunning = true;
 			this.start();
 		}
+	}
+
+	public speed() {
+		return Math.pow(2, this.animations.size / this.animationsLimit);
+	}
+
+	public stacked() {
+		return this.animations.size > this.animationsLimit;
 	}
 
 	public setLimit(limit: number) {

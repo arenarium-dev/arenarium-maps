@@ -29,7 +29,8 @@
 		MAP_MIN_ZOOM,
 		MAP_ZOOM_SCALE,
 		MAP_CIRCLES_ZOOM_DEPTH_BASE,
-		MAP_CIRCLES_ZOOM_DEPTH_COUNT
+		MAP_CIRCLES_ZOOM_DEPTH_COUNT,
+		ANIMATION_PRIORITY_LAYER
 	} from '@workspace/shared/src/constants.js';
 
 	import maplibregl from 'maplibre-gl';
@@ -290,6 +291,8 @@
 	$effect(() => {
 		if (configuration?.animation?.queue?.limit) {
 			animation.setLimit(configuration.animation.queue.limit);
+		} else {
+			animation.setLimit(8 * navigator.hardwareConcurrency);
 		}
 	});
 
@@ -472,7 +475,7 @@
 				target: this.element,
 				props: {
 					id: this.id + '_marker',
-					priority: this.zoom + MAP_MAX_ZOOM,
+					priority: this.zoom + ANIMATION_PRIORITY_LAYER,
 					width: this.width,
 					height: this.height
 				}
