@@ -80,7 +80,8 @@
 
 	//#region Style
 
-	let style = $state<string>('website');
+	let style = $state<string>('');
+	let colors = $derived(style && mapCreated ? map!.getStyle().colors : undefined);
 
 	$effect(() => {
 		if (app.ready && app.theme.get() && map) {
@@ -487,7 +488,7 @@
 	//#endregion
 </script>
 
-<div class="container">
+<div class="container" style="--map-style-primary: {colors?.primary}; --map-style-background: {colors?.background}; --map-style-text: {colors?.text};">
 	<div id="map"></div>
 
 	<div class="top">
@@ -581,8 +582,8 @@
 			width: 36px;
 			height: 36px;
 			border-radius: 18px;
-			background-color: var(--surface);
-			color: var(--on-surface);
+			background-color: var(--map-style-background);
+			color: var(--map-style-text);
 			transition: all ease-in-out 125ms;
 		}
 
@@ -614,7 +615,7 @@
 				align-items: stretch;
 				padding: 4px;
 				border-radius: 16px;
-				background-color: var(--surface);
+				background-color: var(--map-style-background);
 
 				.item {
 					width: 100%;
@@ -625,6 +626,7 @@
 					font-weight: 600;
 					font-size: 13px;
 					border-radius: 12px;
+					color: var(--map-style-text);
 					cursor: pointer;
 					transition: all 125ms ease-in-out;
 
@@ -634,7 +636,7 @@
 					}
 
 					&.selected {
-						background-color: var(--surface-container);
+						background-color: color-mix(in srgb, var(--map-style-background) 80%, #888 20%);
 					}
 
 					&[inert] {
@@ -642,7 +644,7 @@
 					}
 
 					&:hover:not(:disabled) {
-						background-color: var(--surface-container-high);
+						background-color: color-mix(in srgb, var(--map-style-background) 70%, #888 30%);
 					}
 				}
 			}
