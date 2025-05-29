@@ -20,7 +20,8 @@
 		type EventId,
 		type EventHandler,
 		type EventPayloadMap,
-		type MapConfiguration
+		type MapConfiguration,
+		type MapPopupState
 	} from '../map/schemas.js';
 
 	import {
@@ -341,6 +342,10 @@
 			this.libreMarker = libreMarker;
 		}
 
+		update(popup: MapPopup) {
+			this.zoom = popup.state[0];
+		}
+
 		updateMap(map: maplibregl.Map | null) {
 			const libreMarker = this.libreMarker;
 			const component = this.component;
@@ -386,6 +391,12 @@
 			});
 
 			this.createLibreMarker();
+			this.updateZIndex();
+		}
+
+		update(popup: MapPopup): void {
+			super.update(popup);
+
 			this.updateZIndex();
 		}
 
@@ -487,6 +498,13 @@
 			this.updateZIndex();
 		}
 
+		update(popup: MapPopup) {
+			super.update(popup);
+			this.states = popup.state[1].map((s) => [s[0], Angles.DEGREES[s[1]]]);
+
+			this.updateZIndex();
+		}
+
 		updateZIndex() {
 			const element = this.element;
 			if (!element) return;
@@ -571,6 +589,11 @@
 
 			this.circle = new MapPopupCircle(popup);
 			this.marker = new MapPopupMarker(popup);
+		}
+
+		update(popup: MapPopup) {
+			this.circle.update(popup);
+			this.marker.update(popup);
 		}
 	}
 
@@ -710,13 +733,8 @@
 				const oldData = mapPopupDataMap.get(newPopup.data.id);
 
 				if (oldData) {
-					// Update data state
-					oldData.circle.zoom = newPopup.state[0];
-					oldData.circle.updateZIndex();
-
-					oldData.marker.zoom = newPopup.state[0];
-					oldData.marker.states = newPopup.state[1];
-					oldData.marker.updateZIndex();
+					// Update data
+					oldData.update(newPopup);
 				} else {
 					// Create data
 					const newData = new MapPopupData(newPopup);
