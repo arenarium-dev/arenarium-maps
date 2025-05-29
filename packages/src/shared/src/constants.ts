@@ -12,6 +12,7 @@ export const ANIMATION_PRIORITY_LAYER = 1000;
 
 export const MARKER_DEFAULT_ANGLE = 270;
 export const MARKER_PADDING = 8;
+export const MARKER_DIMENSION_MAX_RATIO = 1 / 3;
 
 export const FEEDBACK_EMAIL = 'arenarium.dev@gmail.com';
 

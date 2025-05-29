@@ -763,8 +763,7 @@
 
 	export async function updatePopups(popups: MapPopup[]) {
 		// Validate popups
-		const popupsSchemaResult = await mapPopupsSchema.safeParseAsync(popups);
-		if (!popupsSchemaResult.success) throw new Error('Invalid popups');
+		await mapPopupsSchema.parseAsync(popups);
 
 		// Update data
 		await updatePopupData(popups);

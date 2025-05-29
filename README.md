@@ -1,7 +1,5 @@
 TODO:
 
-Add min marker width heiht ratio
-
 CUSTOMERS:
 
 Real Estate:

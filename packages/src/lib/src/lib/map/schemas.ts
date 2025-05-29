@@ -1,4 +1,4 @@
-import { MAP_MAX_ZOOM, MAP_MIN_ZOOM } from '@workspace/shared/src/constants.js';
+import { MAP_MAX_ZOOM, MAP_MIN_ZOOM, MARKER_DIMENSION_MAX_RATIO } from '@workspace/shared/src/constants.js';
 
 import { z } from 'zod';
 
@@ -121,14 +121,26 @@ export const eventHandlerSchemas = {
 
 // Popups
 
-export const mapPopupDataSchema = z.object({
-	id: z.string(),
-	rank: z.number(),
-	lat: z.number(),
-	lng: z.number(),
-	width: z.number(),
-	height: z.number()
-});
+export const mapPopupDataSchema = z
+	.object({
+		id: z.string().min(1),
+		rank: z.number(),
+		lat: z.number().min(-90).max(90),
+		lng: z.number().min(-180).max(180),
+		width: z.number().min(0),
+		height: z.number().min(0)
+	})
+	.refine(
+		(data) => {
+			if (data.width < data.height && data.width / data.height < MARKER_DIMENSION_MAX_RATIO) return false;
+			if (data.height < data.width && data.height / data.width < MARKER_DIMENSION_MAX_RATIO) return false;
+			return true;
+		},
+		{
+			message:
+				'Popup width and height must be greater than 0 and the ratio between width and height must be less than or equal to ' + MARKER_DIMENSION_MAX_RATIO
+		}
+	);
 
 export const mapPopupStateSchema = z.tuple([z.number(), z.array(z.tuple([z.number(), z.number()]))]);
 
