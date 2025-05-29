@@ -4,7 +4,7 @@ import { DISCORD_WEBHOOK_URL, USAGE_MAX_ITEMS, USAGE_MAX_TIMESPAN } from '$lib/s
 
 import { API_KEY_FREE_KEY } from '$env/static/private';
 
-import { getStates } from '@workspace/shared/src/marker/compute/states.js';
+import { getStates } from '@workspace/shared/src/popup/compute/states';
 import type { Popup } from '@workspace/shared/src/types.js';
 
 import { and, eq, gt, sum } from 'drizzle-orm';

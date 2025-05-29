@@ -1,8 +1,10 @@
-import { areBoundsOverlaping, Bounds } from './bounds';
-import { getPoint } from '../projection';
-import { getRectangleOffsets } from '../rectangle';
-import { Popup } from '../../types';
-import { MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE, MARKER_PADDING } from '../../constants';
+import { areBoundsOverlaping, type Bounds } from './bounds.js';
+
+import { getPoint } from '../projection.js';
+import { getRectangleOffsets } from '../rectangle.js';
+
+import { type Popup } from '../../types.js';
+import { MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE, MARKER_PADDING } from '../../constants.js';
 
 class Popup {
 	x: number;

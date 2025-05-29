@@ -7,8 +7,8 @@
 	import { mountMap } from '$lib/index.js';
 	import type { MapBounds, MapPopup, MapPopupData, MapPopupState } from '$lib/map/schemas.js';
 
-	import { getStates } from '@workspace/shared/src/marker/compute/states.js';
-	import { testStates } from '@workspace/shared/src/marker/compute/test.js';
+	import { getStates } from '@workspace/shared/src/popup/compute/states.js';
+	import { testStates } from '@workspace/shared/src/popup/compute/test.js';
 
 	let map: ReturnType<typeof mountMap>;
 	let mapPopups = new Map<string, MapPopup>();
