@@ -6,7 +6,7 @@
 
 	import { MapBoundsPair } from '../map/bounds.js';
 	import { darkStyleSpecification, lightStyleSpecification } from '../map/styles.js';
-	import { animation } from '../map/animation.js';
+	import { animation } from '../map/animation/animation.js';
 	import {
 		mapOptionsSchema,
 		mapPopupsSchema,
@@ -28,6 +28,7 @@
 		MAP_MAX_ZOOM,
 		MAP_MIN_ZOOM,
 		MAP_ZOOM_SCALE,
+		MAP_MARKERS_Z_INDEX_OFFSET,
 		MAP_CIRCLES_ZOOM_DEPTH_BASE,
 		MAP_CIRCLES_ZOOM_DEPTH_COUNT,
 		ANIMATION_PRIORITY_LAYER
@@ -380,7 +381,7 @@
 			this.element.classList.add('circle');
 			this.component = mount(MapMarkerCircle, {
 				target: this.element,
-				props: { id: this.id + '_circle', priority: this.zoom }
+				props: { id: this.id + '_circle', priority: this.zoom * MAP_ZOOM_SCALE + ANIMATION_PRIORITY_LAYER }
 			});
 
 			this.createLibreMarker();
@@ -475,7 +476,7 @@
 				target: this.element,
 				props: {
 					id: this.id + '_marker',
-					priority: this.zoom + ANIMATION_PRIORITY_LAYER,
+					priority: this.zoom * MAP_ZOOM_SCALE,
 					width: this.width,
 					height: this.height
 				}
@@ -489,7 +490,7 @@
 			const element = this.element;
 			if (!element) return;
 
-			const zIndex = Math.round((MAP_MAX_ZOOM - this.zoom) * MAP_ZOOM_SCALE) + 1000000;
+			const zIndex = Math.round((MAP_MAX_ZOOM - this.zoom) * MAP_ZOOM_SCALE) + MAP_MARKERS_Z_INDEX_OFFSET;
 			element.style.zIndex = zIndex.toString();
 		}
 

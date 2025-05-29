@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Tween } from 'svelte/motion';
 	import { sineIn, sineInOut, sineOut } from 'svelte/easing';
 
-	import { animation } from '../../map/animation.js';
+	import { animation } from '../../map/animation/animation.js';
+	import { Transition } from '../../map/animation/transition.js';
 
 	import { getRectangleOffsets } from '@workspace/shared/src/marker/rectangle.js';
 	import { ANIMATION_PRIORITY_LAYER, MARKER_DEFAULT_ANGLE, MARKER_PADDING } from '@workspace/shared/src/constants.js';
@@ -14,22 +14,17 @@
 	let pin: HTMLElement;
 	let body: HTMLElement;
 
-	let markerWidth = $state<number>(0);
-	let markerHeight = $state<number>(0);
+	const markerWidth = width + 2 * MARKER_PADDING;
+	const markerHeight = height + 2 * MARKER_PADDING;
 
 	export const getBody = () => body;
 
 	//#region Position
 
 	$effect(() => {
-		if (markerWidth && markerHeight) {
-			pin.style.width = `${Math.min(markerWidth, markerHeight) / 4}px`;
-			pin.style.height = `${Math.min(markerWidth, markerHeight) / 4}px`;
-		}
+		pin.style.width = `${Math.min(markerWidth, markerHeight) / 4}px`;
+		pin.style.height = `${Math.min(markerWidth, markerHeight) / 4}px`;
 	});
-
-	export const getWidth = () => markerWidth;
-	export const getHeight = () => markerHeight;
 
 	//#endregion
 
@@ -56,7 +51,7 @@
 	}
 
 	export function getCollapsed() {
-		return scaleTween.current == 0;
+		return scaleTransition.motion.current == 0;
 	}
 
 	export function getExpanded() {
@@ -67,42 +62,37 @@
 
 	//#region Scale
 
-	let scale = 0;
-	let scaleTween = new Tween(scale);
+	let scaleTransition = new Transition(0);
 
 	$effect(() => {
-		updateScaleStyle(scaleTween.current);
+		updateScaleStyle(scaleTransition.motion.current);
 	});
 
 	$effect(() => {
 		if (displayed == false) {
-			scaleTween.set(scale, { duration: 0 });
-			updateScaleStyle(scale);
+			scaleTransition.snap();
+			animation.clear(priority, id + '_scale');
 		}
 	});
 
 	$effect(() => {
-		if (collapsed == true && scale != 0) {
-			scale = 0;
-
+		if (collapsed == true && scaleTransition.value != 0) {
 			if (animation.stacked()) {
-				scaleTween.set(0, { duration: 0 });
-				updateScaleStyle(0);
+				scaleTransition.set(0, { duration: 0 });
 			} else {
-				scaleTween.set(0, { duration: 150 / animation.speed(), easing: sineIn });
+				scaleTransition.set(0, { duration: 150, easing: sineIn });
 			}
 		}
 
-		if (collapsed == false && scale != 1) {
-			scale = 1;
-			scaleTween.set(1, { duration: 150, easing: sineOut });
+		if (collapsed == false && scaleTransition.value != 1) {
+			scaleTransition.set(1, { duration: 150, easing: sineOut });
 		}
 	});
 
 	function updateScaleStyle(scale: number) {
 		if (!anchor || !marker || !pin) return;
 
-		animation.equeue(id + '_scale', priority + ANIMATION_PRIORITY_LAYER, () => {
+		animation.equeue(priority, id + '_scale', () => {
 			anchor.style.opacity = `${scale}`;
 			marker.style.scale = `${scale}`;
 			pin.style.scale = `${scale}`;
@@ -112,57 +102,42 @@
 	//#region Angle
 
 	let angle = MARKER_DEFAULT_ANGLE;
-	let angleDefined = false;
-	let angleTween = new Tween(MARKER_DEFAULT_ANGLE, {
-		easing: sineInOut,
-		interpolate: getAngleInterpolate
-	});
+	let angleDefined = $state<boolean>(false);
+
+	let markerOffsetXTransition = new Transition(0, { easing: sineInOut });
+	let markerOffsetYTransition = new Transition(0, { easing: sineInOut });
 
 	$effect(() => {
-		updateAngleStyle(angleTween.current);
+		updateAngleStyle(markerOffsetXTransition.motion.current, markerOffsetYTransition.motion.current);
 	});
 
 	$effect(() => {
 		if (displayed == false) {
-			angleTween.set(angle, { duration: 0 });
-			updateAngleStyle(angle);
+			markerOffsetXTransition.snap();
+			markerOffsetXTransition.snap();
+			animation.clear(0, id + '_angle');
+			animation.clear(priority, id + '_angle');
 		}
 	});
 
 	$effect(() => {
-		if (collapsed == true) {
-			angleTween.set(angle, { duration: 75 });
+		if (collapsed == true && angleDefined) {
+			markerOffsetXTransition.update({ duration: 75 });
+			markerOffsetXTransition.update({ duration: 75 });
 		}
 	});
 
-	function getAngleInterpolate(aDeg: number, bDeg: number) {
-		if (Math.abs(bDeg - aDeg) < 180) {
-			return (t: number) => aDeg + t * (bDeg - aDeg);
-		} else {
-			const distance = 360 - Math.abs(bDeg - aDeg);
-			const direction = aDeg < bDeg ? -1 : 1;
-			return (t: number) => (360 + aDeg + t * distance * direction) % 360;
-		}
-	}
-
-	function updateAngleStyle(angle: number) {
+	function updateAngleStyle(markerOffsetX: number, markerOffsetY: number) {
 		if (!anchor || !marker || !pin) return;
 
-		const width = markerWidth;
-		const height = markerHeight;
+		const markerCenterX = markerOffsetX + markerWidth / 2;
+		const markerCenterY = markerOffsetY + markerHeight / 2;
 
-		// Calculate marker offsets, its values are such that the rectnagle edge always touches the center anchor
-		const markerOffsets = getRectangleOffsets(width, height, angle);
-		const markerOffsetX = markerOffsets.offsetX;
-		const markerOffsetY = markerOffsets.offsetY;
+		// Pin center is the center of the circle in the marker
+		const pinCenterX = markerHeight < markerWidth ? (markerCenterX * markerHeight) / markerWidth : markerCenterX;
+		const pinCenterY = markerHeight > markerWidth ? (markerCenterY * markerWidth) / markerHeight : markerCenterY;
 
 		// Calculate pin angle, it point to the center of the inverse width/height rectangle of the marker
-		const pinRectWidth = height;
-		const pinRectHeight = width;
-
-		const pinRectOffsets = getRectangleOffsets(pinRectWidth, pinRectHeight, angle);
-		const pinCenterX = pinRectWidth / 2 + pinRectOffsets.offsetX;
-		const pinCenterY = pinRectHeight / 2 + pinRectOffsets.offsetY;
 		const pinAngleRad = Math.atan2(pinCenterY, pinCenterX);
 		const pinAngleDeg = (pinAngleRad / Math.PI) * 180 - 45;
 
@@ -170,38 +145,41 @@
 		const pinMinSkew = 0;
 		const pinMaxSkew = 30;
 
-		const markerCenterX = markerOffsetX + width / 2;
-		const markerCenterY = markerOffsetY + height / 2;
-
 		const pinCenterDistance = Math.sqrt(markerCenterX * markerCenterX + markerCenterY * markerCenterY);
-		const pinCenterMinDistance = Math.min(width, height) / 2;
-		const pinCenterMaxDistance = Math.sqrt(width * width + height * height) / 2;
+		const pinCenterMinDistance = Math.min(markerWidth, markerHeight) / 2;
+		const pinCenterMaxDistance = Math.sqrt(markerWidth * markerWidth + markerHeight * markerHeight) / 2;
 
 		const pinSkewRatio = (pinCenterDistance - pinCenterMinDistance) / (pinCenterMaxDistance - pinCenterMinDistance);
 		const pinSkewDeg = pinMinSkew + pinSkewRatio * (pinMaxSkew - pinMinSkew);
+		const pinScale = pinCenterDistance < pinCenterMinDistance ? pinCenterDistance / pinCenterMinDistance : 1;
 
-		animation.equeue(id + '_angle', priority, () => {
+		animation.equeue(angleDefined ? 0 : priority, id + '_angle', () => {
 			marker.style.transform = `translate(${Math.round(markerOffsetX)}px, ${Math.round(markerOffsetY)}px)`;
-			pin.style.transform = `rotate(${pinAngleDeg}deg) skew(${pinSkewDeg}deg, ${pinSkewDeg}deg)`;
+			pin.style.transform = `scale(${pinScale}) rotate(${pinAngleDeg}deg) skew(${pinSkewDeg}deg, ${pinSkewDeg}deg)`;
 		});
 	}
 
 	export function setAngle(value: number) {
-		if (displayed == false) {
-			angle = value;
-			updateAngleStyle(angle);
+		if (angleDefined == false) {
+			let angleOffsets = getRectangleOffsets(markerWidth, markerHeight, value);
+			markerOffsetXTransition.set(Math.round(angleOffsets.offsetX), { duration: 0 });
+			markerOffsetYTransition.set(Math.round(angleOffsets.offsetY), { duration: 0 });
+			updateAngleStyle(markerOffsetXTransition.value, markerOffsetYTransition.value);
+
+			angleDefined = true;
+		} else {
+			if (value != angle) {
+				let angleDistance = Math.abs(value - angle);
+				let angleSteps = angleDistance < 180 ? angleDistance : 360 - angleDistance;
+				let angleDuration = Math.log(angleSteps) * 75;
+
+				angle = value;
+
+				let angleOffsets = getRectangleOffsets(markerWidth, markerHeight, value);
+				markerOffsetXTransition.set(Math.round(angleOffsets.offsetX), { duration: angleDefined ? angleDuration : 0 });
+				markerOffsetYTransition.set(Math.round(angleOffsets.offsetY), { duration: angleDefined ? angleDuration : 0 });
+			}
 		}
-
-		if (value != angle) {
-			let angleDistance = Math.abs(value - angleTween.current);
-			let angleSteps = angleDistance < 180 ? angleDistance : 360 - angleDistance;
-			let angleDuration = Math.log(angleSteps) * 75;
-
-			angle = value;
-			angleTween.set(value, { duration: angleDefined ? angleDuration : 0 });
-		}
-
-		angleDefined = true;
 	}
 
 	//#endregion
@@ -209,7 +187,7 @@
 
 <div class="anchor" class:displayed bind:this={anchor}>
 	<div class="pin" bind:this={pin}></div>
-	<div class="marker" style:padding={MARKER_PADDING + 'px'} bind:this={marker} bind:clientWidth={markerWidth} bind:clientHeight={markerHeight}>
+	<div class="marker" style:padding={MARKER_PADDING + 'px'} bind:this={marker}>
 		<div class="body" style:width={`${width}px`} style:height={`${height}px`} bind:this={body}></div>
 	</div>
 </div>

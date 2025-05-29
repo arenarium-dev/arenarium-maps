@@ -1,5 +1,10 @@
 TODO:
 
+Animation tick can delete wrong new animation from queue
+
+Change state angle value to angle index
+Add min marker width heiht ratio
+
 CUSTOMERS:
 
 Real Estate:

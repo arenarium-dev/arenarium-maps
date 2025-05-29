@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { sineInOut } from 'svelte/easing';
-	import { Tween } from 'svelte/motion';
 
-	import { animation } from '../../map/animation.js';
+	import { animation } from '../../map/animation/animation.js';
+	import { Transition } from '../../map/animation/transition.js';
 
 	let { id, priority }: { id: string; priority: number } = $props();
 
@@ -29,24 +29,22 @@
 
 	//#region Scale
 
-	let scale = 0;
-	let scaleTween = new Tween(0, { easing: sineInOut });
+	let scaleTransition = new Transition(0, { easing: sineInOut });
 
 	$effect(() => {
-		updateScaleStyle(scaleTween.current);
+		updateScaleStyle(scaleTransition.motion.current);
 	});
 
 	$effect(() => {
 		if (displayed == false) {
-			scaleTween.set(scale, { duration: 0 });
-			updateScaleStyle(scale);
+			scaleTransition.snap();
 		}
 	});
 
 	function updateScaleStyle(scale: number) {
 		if (!circle) return;
 
-		animation.equeue(id, priority, () => {
+		animation.equeue(priority, id, () => {
 			circle.style.scale = scale.toString();
 			circle.style.filter = `brightness(${0.25 + 0.75 * scale})`;
 			body.style.opacity = scale.toString();
@@ -54,18 +52,17 @@
 	}
 
 	export function setScale(value: number) {
-		if (value != scale) {
-			scale = value;
-			scaleTween.set(value, { duration: 75 / animation.speed() });
+		if (value != scaleTransition.value) {
+			scaleTransition.set(value, { duration: 75 });
 		}
 	}
 
 	export function getCollapsed() {
-		return scaleTween.current == 0;
+		return scaleTransition.motion.current == 0;
 	}
 
 	export function getScale() {
-		return scale;
+		return scaleTransition.value;
 	}
 
 	//#endregion
