@@ -9,7 +9,7 @@ interface AnimationCallback {
 
 class Animation {
 	private animationsStarted = false;
-
+	private animationsCount = 0;
 	private animationsLimit = ANIMATION_LIMIT_DEFAULT;
 	private animations = new Array<Map<string, AnimationCallback>>();
 
@@ -21,7 +21,7 @@ class Animation {
 		try {
 			// Animate animation up to animation limit, first the highest priority
 			// Lower number = higher priority
-			let animationCount = 0;
+			this.animationsCount = 0;
 
 			for (let i = 0; i < this.animations.length; i++) {
 				const animations = this.animations[i];
@@ -33,8 +33,8 @@ class Animation {
 					animation.executed = true;
 					animation.function();
 
-					animationCount++;
-					if (animationCount == this.animationsLimit) return;
+					this.animationsCount++;
+					if (this.animationsCount == this.animationsLimit) return;
 				}
 			}
 		} finally {
@@ -68,11 +68,11 @@ class Animation {
 	}
 
 	public speed() {
-		return Math.pow(2, this.animations.length / this.animationsLimit);
+		return Math.pow(2, (2 * this.animationsCount) / this.animationsLimit);
 	}
 
 	public stacked() {
-		return this.animations.length > this.animationsLimit;
+		return this.animationsCount == this.animationsLimit;
 	}
 
 	public setLimit(limit: number) {
