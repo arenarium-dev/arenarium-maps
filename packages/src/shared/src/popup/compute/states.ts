@@ -1,18 +1,20 @@
-import { getRectangleOffsets } from '../rectangle.js';
 import { Particles } from './particles.js';
 import { getBoundsZoomWhenTouching, areBoundsOverlaping, type Bounds } from './bounds.js';
+
+import { getRectangleOffsets } from '../rectangle.js';
 import { getPoint } from '../projection.js';
-import { MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE, MARKER_DEFAULT_ANGLE, MARKER_PADDING } from '../../constants.js';
+
 import { type Popup } from '../../types.js';
+import { Angles, MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE, MARKER_PADDING } from '../../constants.js';
 
 namespace Nodes {
 	export class Marker {
 		zoomAfterExpanded: number;
-		zoomAfterAngles: [number, number][];
+		zoomAfterAngleIndexes: [number, number][];
 
 		constructor() {
 			this.zoomAfterExpanded = NaN;
-			this.zoomAfterAngles = [];
+			this.zoomAfterAngleIndexes = [];
 		}
 	}
 
@@ -58,13 +60,13 @@ namespace Nodes {
 			this.width = width;
 			this.height = height;
 			this.expanded = true;
-			this.angle = Particles.Angles.DEFAULT;
+			this.angle = Angles.DEFAULT;
 			this.bounds = this.getBounds(1);
 			this.particle = {
 				center: { x: projection.x, y: projection.y },
 				width: this.getParticleWidth(1),
 				height: this.getParticleHeight(1),
-				index: Particles.Angles.DEGREES.indexOf(Particles.Angles.DEFAULT)
+				index: Angles.DEGREES.indexOf(Angles.DEFAULT)
 			};
 			this.neighbours = new Array<Node>();
 		}
@@ -258,14 +260,16 @@ namespace Nodes {
 
 			// Update marker angles
 			// If the last angle value is different from the new angle value, add the new angle
-			// (ang[0] = threshold, ang[1] = value)
-			if (marker.zoomAfterAngles.length == 0) {
-				marker.zoomAfterAngles.push([zoom, node.angle]);
+			// (ang[0] = threshold, ang[1] = angle index)
+			const angleIndex = Angles.DEGREES.indexOf(node.angle);
+
+			if (marker.zoomAfterAngleIndexes.length == 0) {
+				marker.zoomAfterAngleIndexes.push([zoom, angleIndex]);
 			} else {
-				if (marker.zoomAfterAngles[0][1] != node.angle) {
-					marker.zoomAfterAngles.unshift([zoom, node.angle]);
+				if (marker.zoomAfterAngleIndexes[0][1] != angleIndex) {
+					marker.zoomAfterAngleIndexes.unshift([zoom, angleIndex]);
 				} else {
-					marker.zoomAfterAngles[0][0] = zoom;
+					marker.zoomAfterAngleIndexes[0][0] = zoom;
 				}
 			}
 		}
@@ -385,7 +389,7 @@ namespace Nodes {
 
 			for (let i = 0; i < nodes.length; i++) {
 				const node = nodes[i];
-				node.angle = Particles.Angles.DEGREES[node.particle.index];
+				node.angle = Angles.DEGREES[node.particle.index];
 			}
 
 			return stable;
@@ -397,7 +401,7 @@ namespace Nodes {
 
 			for (let i = 0; i < nodes.length; i++) {
 				const node = nodes[i];
-				node.angle = Particles.Angles.DEGREES[node.particle.index];
+				node.angle = Angles.DEGREES[node.particle.index];
 			}
 		}
 	}
@@ -437,7 +441,7 @@ namespace Nodes {
 
 function getStates(data: Array<Popup.Data>): Popup.State[] {
 	if (data.length == 0) return [];
-	if (data.length == 1) return [[MAP_MIN_ZOOM, [[MAP_MIN_ZOOM, MARKER_DEFAULT_ANGLE]]]];
+	if (data.length == 1) return [[MAP_MIN_ZOOM, [[MAP_MIN_ZOOM, Angles.DEGREES.indexOf(Angles.DEFAULT)]]]];
 
 	// Initialize markers
 	const markers = new Map<string, Nodes.Marker>(data.map((p) => [p.id, new Nodes.Marker()]));
@@ -525,7 +529,7 @@ function getStates(data: Array<Popup.Data>): Popup.State[] {
 		Nodes.updateMarkers(nodes, markers, Number(zoom.toFixed(1)));
 	}
 
-	return Array.from(markers.values()).map((s) => [s.zoomAfterExpanded, s.zoomAfterAngles]);
+	return Array.from(markers.values()).map((s) => [s.zoomAfterExpanded, s.zoomAfterAngleIndexes]);
 }
 
 export { getStates };

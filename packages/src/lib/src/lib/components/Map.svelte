@@ -31,7 +31,8 @@
 		MAP_MARKERS_Z_INDEX_OFFSET,
 		MAP_CIRCLES_ZOOM_DEPTH_BASE,
 		MAP_CIRCLES_ZOOM_DEPTH_COUNT,
-		ANIMATION_PRIORITY_LAYER
+		ANIMATION_PRIORITY_LAYER,
+		Angles
 	} from '@workspace/shared/src/constants.js';
 
 	import maplibregl from 'maplibre-gl';
@@ -462,7 +463,7 @@
 			super(popup);
 
 			this.id = popup.data.id;
-			this.states = popup.state[1];
+			this.states = popup.state[1].map((s) => [s[0], Angles.DEGREES[s[1]]]);
 			this.width = popup.data.width;
 			this.height = popup.data.height;
 

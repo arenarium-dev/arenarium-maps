@@ -1,11 +1,8 @@
-import { MARKER_DEFAULT_ANGLE } from '../../constants.js';
+import { Angles } from '../../constants.js';
 
 export namespace Particles {
-	export namespace Angles {
-		export const COUNT = 12;
-		export const DEFAULT = MARKER_DEFAULT_ANGLE;
-		export const DEGREES = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
-		export const RADIANS = DEGREES.map((d) => (d * Math.PI) / 180);
+	export namespace Angle {
+		export const RADIANS = Angles.DEGREES.map((d) => (d * Math.PI) / 180);
 		export const RADIANS_COS = RADIANS.map((r) => Math.cos(r));
 		export const RADIANS_SIN = RADIANS.map((r) => Math.sin(r));
 
@@ -74,7 +71,7 @@ export namespace Particles {
 
 		constructor(particle: Particle, index: number) {
 			const center = particle.center;
-			const angle = Angles.RADIANS[index];
+			const angle = Angle.RADIANS[index];
 			this.x = center.x + particle.width * Math.cos(angle);
 			this.y = center.y + particle.height * Math.sin(angle);
 		}
@@ -108,12 +105,12 @@ export namespace Particles {
 			const prevIndex = getIndex(index, -1);
 			const nextIndex = getIndex(index, +1);
 
-			const prevPointX = center.x + width * Angles.RADIANS_COS[prevIndex];
-			const prevPointY = center.y + height * Angles.RADIANS_SIN[prevIndex];
-			const currPointX = center.x + width * Angles.RADIANS_COS[index];
-			const currPointY = center.y + height * Angles.RADIANS_SIN[index];
-			const nextPointX = center.x + width * Angles.RADIANS_COS[nextIndex];
-			const nextPointY = center.y + height * Angles.RADIANS_SIN[nextIndex];
+			const prevPointX = center.x + width * Angle.RADIANS_COS[prevIndex];
+			const prevPointY = center.y + height * Angle.RADIANS_SIN[prevIndex];
+			const currPointX = center.x + width * Angle.RADIANS_COS[index];
+			const currPointY = center.y + height * Angle.RADIANS_SIN[index];
+			const nextPointX = center.x + width * Angle.RADIANS_COS[nextIndex];
+			const nextPointY = center.y + height * Angle.RADIANS_SIN[nextIndex];
 
 			let prevPointForce: number = 0;
 			let currPointForce: number = 0;
@@ -126,8 +123,8 @@ export namespace Particles {
 				const fWidth = fParticle.width;
 				const fHeight = fParticle.height;
 
-				const fPointX = fCenter.x + fWidth * Angles.RADIANS_COS[fIndex];
-				const fPointY = fCenter.y + fHeight * Angles.RADIANS_SIN[fIndex];
+				const fPointX = fCenter.x + fWidth * Angle.RADIANS_COS[fIndex];
+				const fPointY = fCenter.y + fHeight * Angle.RADIANS_SIN[fIndex];
 
 				const prevDx = prevPointX - fPointX;
 				const prevDy = prevPointY - fPointY;
@@ -183,7 +180,7 @@ export namespace Particles {
 				forceY += -(force * dy) / distance;
 			}
 
-			particle.index = Angles.getAngleIndex(forceX, forceY);
+			particle.index = Angle.getAngleIndex(forceX, forceY);
 		}
 	}
 }
