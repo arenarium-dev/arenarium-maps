@@ -101,11 +101,11 @@
 
 	//#region Angle
 
-	let angle = MARKER_DEFAULT_ANGLE;
+	let angle = NaN;
 	let angleDefined = $state<boolean>(false);
 
-	let markerOffsetXTransition = new Transition(0, { easing: sineInOut });
-	let markerOffsetYTransition = new Transition(0, { easing: sineInOut });
+	let markerOffsetXTransition = new Transition(-markerWidth / 2, { easing: sineInOut });
+	let markerOffsetYTransition = new Transition(-markerHeight / 2, { easing: sineInOut });
 
 	$effect(() => {
 		updateAngleStyle(markerOffsetXTransition.motion.current, markerOffsetYTransition.motion.current);
@@ -115,7 +115,6 @@
 		if (displayed == false) {
 			markerOffsetXTransition.snap();
 			markerOffsetXTransition.snap();
-			animation.clear(0, id + '_angle');
 			animation.clear(priority, id + '_angle');
 		}
 	});
@@ -153,7 +152,7 @@
 		const pinSkewDeg = pinMinSkew + pinSkewRatio * (pinMaxSkew - pinMinSkew);
 		const pinScale = pinCenterDistance < pinCenterMinDistance ? pinCenterDistance / pinCenterMinDistance : 1;
 
-		animation.equeue(angleDefined ? 0 : priority, id + '_angle', () => {
+		animation.equeue(priority, id + '_angle', () => {
 			marker.style.transform = `translate(${Math.round(markerOffsetX)}px, ${Math.round(markerOffsetY)}px)`;
 			pin.style.transform = `scale(${pinScale}) rotate(${pinAngleDeg}deg) skew(${pinSkewDeg}deg, ${pinSkewDeg}deg)`;
 		});
@@ -166,19 +165,18 @@
 			markerOffsetYTransition.set(Math.round(angleOffsets.offsetY), { duration: 0 });
 			updateAngleStyle(markerOffsetXTransition.value, markerOffsetYTransition.value);
 
+			angle = value;
 			angleDefined = true;
-		} else {
-			if (value != angle) {
-				let angleDistance = Math.abs(value - angle);
-				let angleSteps = angleDistance < 180 ? angleDistance : 360 - angleDistance;
-				let angleDuration = Math.log(angleSteps) * 75;
+		} else if (value != angle) {
+			let angleDistance = Math.abs(value - angle);
+			let angleSteps = angleDistance < 180 ? angleDistance : 360 - angleDistance;
+			let angleDuration = Math.log(angleSteps) * 75;
 
-				angle = value;
+			let angleOffsets = getRectangleOffsets(markerWidth, markerHeight, value);
+			markerOffsetXTransition.set(Math.round(angleOffsets.offsetX), { duration: angleDefined ? angleDuration : 0 });
+			markerOffsetYTransition.set(Math.round(angleOffsets.offsetY), { duration: angleDefined ? angleDuration : 0 });
 
-				let angleOffsets = getRectangleOffsets(markerWidth, markerHeight, value);
-				markerOffsetXTransition.set(Math.round(angleOffsets.offsetX), { duration: angleDefined ? angleDuration : 0 });
-				markerOffsetYTransition.set(Math.round(angleOffsets.offsetY), { duration: angleDefined ? angleDuration : 0 });
-			}
+			angle = value;
 		}
 	}
 
@@ -210,6 +208,7 @@
 			top: 0px;
 
 			.body {
+				position: relative;
 				border-radius: 12px;
 				border-style: solid;
 				border-width: @border-width;

@@ -73,8 +73,8 @@
 </div>
 
 <style lang="less">
-	@circle-size: 16px;
 	@padding-size: 2px;
+	@min-size: 16px;
 	@max-size: 64px;
 
 	.circle {
@@ -93,8 +93,8 @@
 		will-change: scale;
 
 		.body {
-			min-width: @circle-size - @padding-size * 2;
-			min-height: @circle-size - @padding-size * 2;
+			min-width: @min-size - @padding-size * 2;
+			min-height: @min-size - @padding-size * 2;
 			border-radius: @max-size;
 			background-color: var(--map-style-primary);
 			overflow: hidden;

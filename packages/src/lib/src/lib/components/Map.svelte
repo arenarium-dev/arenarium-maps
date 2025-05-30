@@ -20,8 +20,7 @@
 		type EventId,
 		type EventHandler,
 		type EventPayloadMap,
-		type MapConfiguration,
-		type MapPopupState
+		type MapConfiguration
 	} from '../map/schemas.js';
 
 	import {
@@ -30,8 +29,8 @@
 		MAP_MIN_ZOOM,
 		MAP_ZOOM_SCALE,
 		MAP_MARKERS_Z_INDEX_OFFSET,
-		MAP_CIRCLES_ZOOM_DEPTH_BASE,
-		MAP_CIRCLES_ZOOM_DEPTH_COUNT,
+		MAP_CIRCLES_MAX_COUNT,
+		MAP_CIRCLES_MAX_ZOOM,
 		ANIMATION_PRIORITY_LAYER,
 		Angles
 	} from '@workspace/shared/src/constants.js';
@@ -326,10 +325,16 @@
 			this.lat = popup.data.lat;
 			this.lng = popup.data.lng;
 			this.zoom = popup.state[0];
+		}
 
-			this.element = undefined;
-			this.component = undefined;
-			this.libreMarker = undefined;
+		create() {
+			this.createElement();
+			this.createLibreMarker();
+			this.updateZIndex();
+		}
+
+		createElement() {
+			throw new Error('Create element not implemented');
 		}
 
 		createLibreMarker() {
@@ -344,6 +349,12 @@
 
 		update(popup: MapPopup) {
 			this.zoom = popup.state[0];
+
+			this.updateZIndex();
+		}
+
+		updateZIndex() {
+			throw new Error('Update z-index not implemented');
 		}
 
 		updateMap(map: maplibregl.Map | null) {
@@ -362,12 +373,13 @@
 			}
 		}
 
-		isCreated() {
-			return this.element != undefined;
-		}
-
 		isInBlock(zoom: number, bounds: MapBoundsPair) {
 			return this.zoom <= zoom && bounds.contains(this.lat, this.lng);
+		}
+
+		remove() {
+			this.libreMarker?.remove();
+			this.element?.remove();
 		}
 	}
 
@@ -389,15 +401,6 @@
 				target: this.element,
 				props: { id: this.id + '_circle', priority: this.zoom * MAP_ZOOM_SCALE + ANIMATION_PRIORITY_LAYER }
 			});
-
-			this.createLibreMarker();
-			this.updateZIndex();
-		}
-
-		update(popup: MapPopup): void {
-			super.update(popup);
-
-			this.updateZIndex();
 		}
 
 		updateZIndex() {
@@ -493,16 +496,11 @@
 					height: this.height
 				}
 			});
-
-			this.createLibreMarker();
-			this.updateZIndex();
 		}
 
 		update(popup: MapPopup) {
 			super.update(popup);
 			this.states = popup.state[1].map((s) => [s[0], Angles.DEGREES[s[1]]]);
-
-			this.updateZIndex();
 		}
 
 		updateZIndex() {
@@ -591,9 +589,19 @@
 			this.marker = new MapPopupMarker(popup);
 		}
 
+		create() {
+			this.circle.create();
+			this.marker.create();
+		}
+
 		update(popup: MapPopup) {
 			this.circle.update(popup);
 			this.marker.update(popup);
+		}
+
+		remove() {
+			this.circle.remove();
+			this.marker.remove();
 		}
 	}
 
@@ -620,8 +628,10 @@
 	function processPopupData() {
 		// Check if map is loaded or marker data is empty
 		if (mapLoaded == false) return;
+
 		if (mapWindowBounds == undefined) return;
 		if (mapOffsetBounds == undefined) return;
+
 		if (mapPopupDataArray.length == 0) return;
 		if (mapPopupDataUpdating) return;
 
@@ -629,62 +639,58 @@
 		const zoom = map.getZoom();
 		if (!zoom) return;
 
-		const circleZoom = zoom + MAP_CIRCLES_ZOOM_DEPTH_BASE / Math.max(1, Math.log2(mapPopupDataArray.length / MAP_CIRCLES_ZOOM_DEPTH_COUNT));
-		const markerZoom = zoom;
+		let circleCount = 0;
+		let circleCountMax = options.configuration?.pin?.maxCount ?? Math.max(MAP_CIRCLES_MAX_COUNT, 8 * navigator.hardwareConcurrency);
+		let circleZoomMax = options.configuration?.pin?.maxZoom ?? MAP_CIRCLES_MAX_ZOOM;
 
 		for (const data of mapPopupDataArray) {
 			// Process popup circle
 			const circle = data.circle;
 
 			if (mapWindowBounds.contains(circle.lat, circle.lng)) {
-				if (zoom <= circle.zoom && circle.zoom <= circleZoom) {
-					// Check if circle exist on map
-					if (circle.isCreated() == false) {
-						circle.createElement();
-					}
-
-					// Update circle map and state
-					circle.updateMap(map);
-					if (configuration?.pin?.fade == true) {
-						circle.updateState(zoom);
-					} else {
-						circle.setExpanded();
-					}
-
-					// Update circle pin if not loaded
-					if (circle.isPinLoaded() == false) {
-						circle.updatePin();
-					}
-				} else {
-					if (circle.isCreated() == true) {
-						circle.setCollapsed();
-						// Wait until circle is invisible before removing it
-						if (circle.isCollapsed()) {
-							circle.updateMap(null);
+				if (zoom <= circle.zoom && circle.zoom <= zoom + circleZoomMax) {
+					if (circleCount < circleCountMax) {
+						// Update circle state
+						if (configuration?.pin?.fade == true) {
+							circle.updateState(zoom);
+						} else {
+							circle.setExpanded();
 						}
+
+						// Update circle map
+						circle.updateMap(map);
+
+						// Update circle pin if not loaded
+						if (circle.isPinLoaded() == false) {
+							circle.updatePin();
+						}
+					}
+
+					circleCount++;
+				} else {
+					circle.setCollapsed();
+
+					// Wait until circle is invisible before removing it
+					if (circle.isCollapsed()) {
+						circle.updateMap(null);
 					}
 				}
 			} else {
 				// If created immediately remove circle
-				if (circle.isCreated() == true) {
-					circle.updateMap(null);
-				}
+				circle.updateMap(null);
 			}
 
 			// Process popup marker
 			const marker = data.marker;
 
 			if (mapOffsetBounds.contains(marker.lat, marker.lng)) {
-				if (marker.zoom <= markerZoom) {
-					// Check if marker exist on map
-					if (marker.isCreated() == false) {
-						marker.createElement();
-					}
-
-					// Update marker map and state
-					marker.updateMap(map);
+				if (marker.zoom <= zoom) {
+					// Update marker state
 					marker.updateState(zoom);
 					marker.setCollapsed(false);
+
+					// Update marker map
+					marker.updateMap(map);
 
 					// If marker is expanded, update body if not loaded
 					if (marker.isExpanded() && marker.isBodyLoaded() == false) {
@@ -692,19 +698,16 @@
 					}
 				} else {
 					// Check if marker exist on map
-					if (marker.isCreated() == true) {
-						marker.setCollapsed(true);
-						// Wait until marker is collapsed before removing it
-						if (marker.isCollapsed()) {
-							marker.updateMap(null);
-						}
+					marker.setCollapsed(true);
+
+					// Wait until marker is collapsed before removing it
+					if (marker.isCollapsed()) {
+						marker.updateMap(null);
 					}
 				}
 			} else {
 				// If created immediately remove marker
-				if (marker.isCreated() == true) {
-					marker.updateMap(null);
-				}
+				marker.updateMap(null);
 			}
 		}
 	}
@@ -719,8 +722,7 @@
 
 			for (const oldPopupData of oldPopupDataArray) {
 				if (newPopupsMap.has(oldPopupData.id) == false) {
-					oldPopupData.circle.libreMarker?.remove();
-					oldPopupData.marker.libreMarker?.remove();
+					oldPopupData.remove();
 
 					mapPopupDataMap.delete(oldPopupData.id);
 					mapPopupDataArray.splice(mapPopupDataArray.indexOf(oldPopupData), 1);
@@ -738,6 +740,8 @@
 				} else {
 					// Create data
 					const newData = new MapPopupData(newPopup);
+					newData.create();
+
 					mapPopupDataMap.set(newPopup.data.id, newData);
 					mapPopupDataArray.push(newData);
 				}
@@ -760,16 +764,13 @@
 		try {
 			mapPopupDataUpdating = true;
 
-			for (const data of mapPopupDataArray) {
-				data.circle.libreMarker?.remove();
-				data.marker.libreMarker?.remove();
-			}
-
+			mapPopupDataArray.forEach((data) => data.remove());
 			mapPopupDataArray.length = 0;
 			mapPopupDataMap.clear();
 		} catch (error) {
 			console.error(error);
 
+			mapPopupDataArray.forEach((data) => data.remove());
 			mapPopupDataArray.length = 0;
 			mapPopupDataMap.clear();
 
