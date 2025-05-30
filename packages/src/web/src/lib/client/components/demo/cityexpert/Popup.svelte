@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 
@@ -44,7 +45,7 @@
 </script>
 
 {#if mounted}
-	<div class="popup" style:width={width + 'px'} style:height={height + 'px'}>
+	<div class="popup" style:width={width + 'px'} style:height={height + 'px'} transition:fade={{ duration: 250 }}>
 		<div class="id">ID {id}</div>
 		<button class="like">
 			<Icon name="favorite" size={14} color="var(--primary)" weight="bold" />
@@ -76,7 +77,7 @@
 		</div>
 	</div>
 {:else}
-	<div class="placeholder" style:width={width + 'px'} style:height={height + 'px'}>
+	<div class="placeholder" style:width={width + 'px'} style:height={height + 'px'} transition:fade={{ duration: 250 }}>
 		<div class="image"></div>
 		<div class="text">
 			<div class="price"></div>
@@ -97,7 +98,7 @@
 	}
 
 	.popup {
-		position: relative;
+		position: absolute;
 		display: flex;
 		flex-direction: column;
 		gap: 4px;
@@ -224,6 +225,7 @@
 	}
 
 	.placeholder {
+		position: absolute;
 		display: flex;
 		flex-direction: column;
 		gap: 4px;
