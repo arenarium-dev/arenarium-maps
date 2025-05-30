@@ -81,7 +81,7 @@ export const GET: RequestHandler = async (event) => {
 			const dataSearchParams = new URLSearchParams();
 			dataSearchParams.set(
 				'req',
-				'{"ptId":[1,2,5],"cityId":1,"rentOrSale":"r","minPrice":500,"maxPrice":1500,"searchSource":"regular","sort":"pricedsc","furnished":[1]}'
+				'{"ptId":[1,2,5,4],"cityId":1,"rentOrSale":"r","searchSource":"regular","sort":"pricedsc","furnished":[1],"isFeatured":true}'
 			);
 
 			const dataResponse = await event.fetch('https://cityexpert.rs/api/Search/Map?' + dataSearchParams.toString());
