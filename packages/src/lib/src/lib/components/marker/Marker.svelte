@@ -63,6 +63,7 @@
 	//#region Scale
 
 	let scaleTransition = new Transition(0);
+	let scalePriority = ANIMATION_MARKER_LAYER;
 
 	$effect(() => {
 		updateScaleStyle(scaleTransition.motion.current);
@@ -71,12 +72,14 @@
 	$effect(() => {
 		if (displayed == false) {
 			scaleTransition.snap();
-			animation.clear(ANIMATION_PRIORITY_LAYER, priority, id + '_scale');
+			animation.clear(priority, id + '_scale');
 		}
 	});
 
 	$effect(() => {
 		if (collapsed == true && scaleTransition.value != 0) {
+			scalePriority = ANIMATION_PRIORITY_LAYER;
+
 			if (animation.stacked()) {
 				scaleTransition.set(0, { duration: 0 });
 			} else {
@@ -85,6 +88,8 @@
 		}
 
 		if (collapsed == false && scaleTransition.value != 1) {
+			scalePriority = ANIMATION_MARKER_LAYER;
+
 			scaleTransition.set(1, { duration: 150, easing: sineOut });
 		}
 	});
@@ -92,7 +97,7 @@
 	function updateScaleStyle(scale: number) {
 		if (!anchor || !marker || !pin) return;
 
-		animation.equeue(ANIMATION_PRIORITY_LAYER, priority, id + '_scale', () => {
+		animation.equeue(scalePriority, priority, id + '_scale', () => {
 			anchor.style.opacity = `${scale}`;
 			marker.style.scale = `${scale}`;
 			pin.style.scale = `${scale}`;
@@ -115,7 +120,7 @@
 		if (displayed == false) {
 			markerOffsetXTransition.snap();
 			markerOffsetXTransition.snap();
-			animation.clear(ANIMATION_MARKER_LAYER, priority, id + '_angle');
+			animation.clear(priority, id + '_angle');
 		}
 	});
 

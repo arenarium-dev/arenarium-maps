@@ -80,18 +80,20 @@ class Animation {
 		}
 	}
 
-	public clear(sclice: number, priority: number, id: string) {
-		let layer = this.layers[sclice];
-		if (layer == undefined) return;
+	public clear(priority: number, id: string) {
+		for (let i = 0; i < this.layers.length; i++) {
+			let layer = this.layers[i];
+			if (layer == undefined) continue;
 
-		let animations = layer.animations[priority];
-		if (animations == undefined) return;
+			let animations = layer.animations[priority];
+			if (animations == undefined) return;
 
-		let animation = animations.get(id);
-		if (animation == undefined) return;
-		if (animation.executed == false) return;
+			let animation = animations.get(id);
+			if (animation == undefined) return;
+			if (animation.executed == false) return;
 
-		animations.delete(id);
+			animations.delete(id);
+		}
 	}
 
 	public speed() {

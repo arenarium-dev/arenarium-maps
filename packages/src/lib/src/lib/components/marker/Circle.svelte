@@ -38,6 +38,7 @@
 	$effect(() => {
 		if (displayed == false) {
 			scaleTransition.snap();
+			animation.clear(priority, id);
 		}
 	});
 
