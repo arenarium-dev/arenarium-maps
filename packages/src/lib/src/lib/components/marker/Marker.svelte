@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { sineIn, sineInOut, sineOut } from 'svelte/easing';
 
-	import { animation } from '../../map/animation/animation.js';
+	import { animation, ANIMATION_MARKER_LAYER, ANIMATION_PRIORITY_LAYER } from '../../map/animation/animation.js';
 	import { Transition } from '../../map/animation/transition.js';
 
 	import { getRectangleOffsets } from '@workspace/shared/src/popup/rectangle.js';
@@ -71,7 +71,7 @@
 	$effect(() => {
 		if (displayed == false) {
 			scaleTransition.snap();
-			animation.clear(priority, id + '_scale');
+			animation.clear(ANIMATION_PRIORITY_LAYER, priority, id + '_scale');
 		}
 	});
 
@@ -92,7 +92,7 @@
 	function updateScaleStyle(scale: number) {
 		if (!anchor || !marker || !pin) return;
 
-		animation.equeue(priority, id + '_scale', () => {
+		animation.equeue(ANIMATION_PRIORITY_LAYER, priority, id + '_scale', () => {
 			anchor.style.opacity = `${scale}`;
 			marker.style.scale = `${scale}`;
 			pin.style.scale = `${scale}`;
@@ -115,7 +115,7 @@
 		if (displayed == false) {
 			markerOffsetXTransition.snap();
 			markerOffsetXTransition.snap();
-			animation.clear(priority, id + '_angle');
+			animation.clear(ANIMATION_MARKER_LAYER, priority, id + '_angle');
 		}
 	});
 
@@ -152,7 +152,7 @@
 		const pinSkewDeg = pinMinSkew + pinSkewRatio * (pinMaxSkew - pinMinSkew);
 		const pinScale = pinCenterDistance < pinCenterMinDistance ? pinCenterDistance / pinCenterMinDistance : 1;
 
-		animation.equeue(priority, id + '_angle', () => {
+		animation.equeue(ANIMATION_MARKER_LAYER, priority, id + '_angle', () => {
 			marker.style.transform = `translate(${Math.round(markerOffsetX)}px, ${Math.round(markerOffsetY)}px)`;
 			pin.style.transform = `scale(${pinScale}) rotate(${pinAngleDeg}deg) skew(${pinSkewDeg}deg, ${pinSkewDeg}deg)`;
 		});

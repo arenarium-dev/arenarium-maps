@@ -1,17 +1,25 @@
-import { ANIMATION_LIMIT_DEFAULT } from '@workspace/shared/src/constants.js';
+export const ANIMATION_LIMIT_DEFAULT = 128;
+export const ANIMATION_PRIORITY_LAYER = 0;
+export const ANIMATION_MARKER_LAYER = 1;
+export const ANIMATION_CIRCLE_LAYER = 2;
 
-interface AnimationCallback {
+interface AnimationItem {
 	id: string;
 	priority: number;
 	executed: boolean;
 	function: () => void;
 }
 
+interface AnimationLayer {
+	animations: Array<Map<string, AnimationItem>>;
+}
+
 class Animation {
 	private animationsStarted = false;
 	private animationsCount = 0;
 	private animationsLimit = ANIMATION_LIMIT_DEFAULT;
-	private animations = new Array<Map<string, AnimationCallback>>();
+
+	private layers = new Array<AnimationLayer>();
 
 	private start() {
 		window.requestAnimationFrame(this.tick.bind(this));
@@ -19,22 +27,32 @@ class Animation {
 
 	private tick() {
 		try {
-			// Animate animation up to animation limit, first the highest priority
+			// Animate animation up to animation limit,
+			// first the highest layer
+			// first the highest priority
 			// Lower number = higher priority
 			this.animationsCount = 0;
 
-			for (let i = 0; i < this.animations.length; i++) {
-				const animations = this.animations[i];
+			for (let i = 0; i < this.layers.length; i++) {
+				const layer = this.layers[i];
+				if (layer == undefined) continue;
+
+				const animations = layer.animations;
 				if (animations == undefined) continue;
 
-				for (const animation of animations.values()) {
-					if (animation.executed) continue;
+				for (let j = 0; j < animations.length; j++) {
+					const animationMap = animations[j];
+					if (animationMap == undefined) continue;
 
-					animation.executed = true;
-					animation.function();
+					for (const animationItem of animationMap.values()) {
+						if (animationItem.executed) continue;
 
-					this.animationsCount++;
-					if (this.animationsCount == this.animationsLimit) return;
+						animationItem.executed = true;
+						animationItem.function();
+
+						this.animationsCount++;
+						if (this.animationsCount == this.animationsLimit) return;
+					}
 				}
 			}
 		} finally {
@@ -42,13 +60,19 @@ class Animation {
 		}
 	}
 
-	public equeue(priority: number, id: string, callback: () => void) {
-		let animations = this.animations[priority];
-		if (animations == undefined) {
-			animations = this.animations[priority] = new Map();
+	public equeue(slice: number, priority: number, id: string, callback: () => void) {
+		let layer = this.layers[slice];
+		if (layer == undefined) {
+			layer = this.layers[slice] = { animations: new Array<Map<string, AnimationItem>>() };
 		}
 
-		animations.set(id, { id, priority, executed: false, function: callback });
+		let animations = layer.animations[priority];
+		if (animations == undefined) {
+			animations = layer.animations[priority] = new Map<string, AnimationItem>();
+		}
+
+		let animationItem: AnimationItem = { id, priority, executed: false, function: callback };
+		animations.set(id, animationItem);
 
 		if (this.animationsStarted == false) {
 			this.animationsStarted = true;
@@ -56,11 +80,14 @@ class Animation {
 		}
 	}
 
-	public clear(priority: number, id: string) {
-		const animations = this.animations[priority];
+	public clear(sclice: number, priority: number, id: string) {
+		let layer = this.layers[sclice];
+		if (layer == undefined) return;
+
+		let animations = layer.animations[priority];
 		if (animations == undefined) return;
 
-		const animation = animations.get(id);
+		let animation = animations.get(id);
 		if (animation == undefined) return;
 		if (animation.executed == false) return;
 

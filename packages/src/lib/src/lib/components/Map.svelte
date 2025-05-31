@@ -31,7 +31,6 @@
 		MAP_MARKERS_Z_INDEX_OFFSET,
 		MAP_CIRCLES_MAX_COUNT,
 		MAP_CIRCLES_MAX_ZOOM,
-		ANIMATION_PRIORITY_LAYER,
 		Angles
 	} from '@workspace/shared/src/constants.js';
 
@@ -399,7 +398,7 @@
 			this.element.classList.add('circle');
 			this.component = mount(MapMarkerCircle, {
 				target: this.element,
-				props: { id: this.id + '_circle', priority: this.zoom * MAP_ZOOM_SCALE + ANIMATION_PRIORITY_LAYER }
+				props: { id: this.id + '_circle', priority: this.zoom * MAP_ZOOM_SCALE }
 			});
 		}
 

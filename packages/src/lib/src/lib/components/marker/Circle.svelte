@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { sineInOut } from 'svelte/easing';
 
-	import { animation } from '../../map/animation/animation.js';
+	import { animation, ANIMATION_CIRCLE_LAYER } from '../../map/animation/animation.js';
 	import { Transition } from '../../map/animation/transition.js';
 
 	let { id, priority }: { id: string; priority: number } = $props();
@@ -44,7 +44,7 @@
 	function updateScaleStyle(scale: number) {
 		if (!circle) return;
 
-		animation.equeue(priority, id, () => {
+		animation.equeue(ANIMATION_CIRCLE_LAYER, priority, id, () => {
 			circle.style.scale = scale.toString();
 			circle.style.filter = `brightness(${0.25 + 0.75 * scale})`;
 			body.style.opacity = scale.toString();
