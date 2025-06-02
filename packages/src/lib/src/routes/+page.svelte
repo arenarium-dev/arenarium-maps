@@ -181,8 +181,8 @@
 				rank: rank,
 				lat: lat,
 				lng: lng,
-				height: 100,
-				width: 150
+				height: 56,
+				width: 56
 			});
 		}
 

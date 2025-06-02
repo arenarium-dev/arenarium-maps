@@ -128,8 +128,8 @@ export const mapPopupDataSchema = z.object({
 	rank: z.number(),
 	lat: z.number().min(-90).max(90),
 	lng: z.number().min(-180).max(180),
-	width: z.number().min(64),
-	height: z.number().min(64)
+	width: z.number().min(56),
+	height: z.number().min(56)
 });
 
 export const mapPopupStateSchema = z.tuple([z.number(), z.array(z.tuple([z.number(), z.number()]))]);
