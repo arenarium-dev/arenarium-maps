@@ -26,13 +26,13 @@
 
 <div class="body">
 	<div class="bar">
-		<div class="icon">
+		<a class="icon" href="/">
 			<Icon name={'psychiatry'} size={24} />
-		</div>
-		<a class="title" href="/">@arenarium/maps</a>
+		</a>
+		<a class="title text" href="/">@arenarium/maps</a>
 		<div class="grow"></div>
-		<a class="title" href="/pricing">Pricing</a>
-		<a class="title" href="/docs">Docs</a>
+		<a class="text" href="/pricing">Pricing</a>
+		<a class="text" href="/docs">Docs</a>
 		<div class="navigation">
 			<Navigation />
 		</div>
@@ -67,7 +67,7 @@
 				color: #006400;
 			}
 
-			.title {
+			.text {
 				font-size: 16px;
 				font-weight: 600;
 				color: var(--on-surface);
@@ -76,6 +76,20 @@
 
 		a:hover {
 			text-decoration: underline;
+		}
+	}
+
+	@media (max-width: 512px) {
+		.body {
+			.bar {
+				.title {
+					display: none;
+				}
+
+				.text {
+					font-size: 14px;
+				}
+			}
 		}
 	}
 </style>
