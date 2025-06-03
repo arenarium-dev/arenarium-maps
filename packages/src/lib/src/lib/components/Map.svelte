@@ -813,9 +813,6 @@
 	<div class="map" bind:this={mapContainer} bind:clientWidth={mapWidth} bind:clientHeight={mapHeight}></div>
 	<div class="logo">
 		<a href="https://arenarium.dev" target="_blank">
-			<span class="icon">
-				<Icon name={'psychiatry'} size={10} />
-			</span>
 			<span class="text"> @arenarium/maps </span>
 		</a>
 	</div>
@@ -857,11 +854,6 @@
 				color: var(--map-style-text);
 				text-decoration: none;
 				font-weight: 600;
-
-				.icon {
-					height: 10px;
-					color: #006400;
-				}
 			}
 		}
 
