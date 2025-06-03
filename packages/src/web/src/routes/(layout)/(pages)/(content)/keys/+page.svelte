@@ -193,7 +193,7 @@
 	<ApiKeyForm success={onFromSuccess} key={formKey} name={formName} />
 </Modal>
 
-<Toast />
+<Toast path={'/keys'} />
 
 <style lang="less">
 	.button {

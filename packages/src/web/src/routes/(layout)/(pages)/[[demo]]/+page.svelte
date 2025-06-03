@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mount, onDestroy, onMount } from 'svelte';
+	import { mount, onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { page } from '$app/state';
 
@@ -53,9 +53,7 @@
 		});
 
 		mapCreated = true;
-	});
 
-	onDestroy(() => {
 		app.toast.set(null);
 	});
 
@@ -232,6 +230,8 @@
 		try {
 			loading = true;
 
+			app.toast.set(null);
+
 			const dataDelta = await getPopupDataDelta(bounds);
 			if (dataDelta.length === 0) return;
 
@@ -241,7 +241,7 @@
 			}
 
 			app.toast.set({
-				path: page.url.pathname,
+				path: '/',
 				text: `Load ${dataDelta.length} new popups?`,
 				severity: 'info',
 				callback: {
@@ -254,7 +254,7 @@
 		} catch (err) {
 			console.error(err);
 			app.toast.set({
-				path: page.url.pathname,
+				path: '/',
 				text: 'Failed to process popups.',
 				severity: 'error',
 				seconds: 2
@@ -560,7 +560,7 @@
 	{/if}
 </div>
 
-<Toast />
+<Toast path="/" />
 
 <style lang="less">
 	.container {

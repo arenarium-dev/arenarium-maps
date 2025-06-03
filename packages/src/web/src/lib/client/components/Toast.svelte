@@ -5,6 +5,8 @@
 
 	import type { ToastData } from '$lib/client/state/toast.svelte';
 
+	let { path }: { path: string } = $props();
+
 	// Core
 	let isShown = $state<boolean>(false);
 	let text = $state<string>();
@@ -12,12 +14,9 @@
 	let buttonText = $state<string>();
 	let buttonFuction = $state<Function>();
 
-	let toast = $derived(app.toast.get());
-
 	$effect(() => {
 		let toast = app.toast.get();
-		let toastValid = app.toast.valid();
-		if (toast && toastValid) {
+		if (toast && toast.path === path) {
 			showToast(toast);
 		} else {
 			hideToast();

@@ -1,5 +1,3 @@
-import { page } from '$app/state';
-
 export interface ToastData {
 	path: string;
 	text: string;
@@ -16,10 +14,6 @@ export class Toast {
 
 	set(value: ToastData | null): void {
 		this.state = value;
-	}
-
-	valid() {
-		return this.state?.path == page.url.pathname;
 	}
 
 	get() {
