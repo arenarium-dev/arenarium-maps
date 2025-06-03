@@ -22,24 +22,24 @@
 		"cf-typegen": "wrangler types && move worker-configuration.d.ts src/"
 	},
 	"devDependencies": {
-		"@cloudflare/workers-types": "^4.20250531.0",
+		"@cloudflare/workers-types": "^4.20250603.0",
 		"@eslint/compat": "^1.2.9",
 		"@eslint/js": "^9.28.0",
 		"@sveltejs/adapter-auto": "^4.0.0",
 		"@sveltejs/adapter-cloudflare": "^7.0.3",
-		"@sveltejs/kit": "^2.21.1",
-		"@sveltejs/vite-plugin-svelte": "^5.0.3",
+		"@sveltejs/kit": "^2.21.2",
+		"@sveltejs/vite-plugin-svelte": "^5.1.0",
 		"drizzle-kit": "^0.30.6",
 		"eslint": "^9.28.0",
 		"eslint-config-prettier": "^10.1.5",
-		"eslint-plugin-svelte": "^3.9.0",
+		"eslint-plugin-svelte": "^3.9.1",
 		"globals": "^16.2.0",
 		"prettier": "^3.5.3",
 		"prettier-plugin-svelte": "^3.4.0",
-		"svelte": "^5.33.10",
+		"svelte": "^5.33.14",
 		"svelte-check": "^4.2.1",
 		"typescript": "^5.8.3",
-		"typescript-eslint": "^8.33.0",
+		"typescript-eslint": "^8.33.1",
 		"vite": "^6.3.5",
 		"wrangler": "^4.18.0"
 	},
@@ -50,6 +50,6 @@
 		"better-auth": "^1.2.8",
 		"drizzle-orm": "^0.40.1",
 		"highlight.js": "^11.11.1",
-		"zod": "^3.25.42"
+		"zod": "^3.25.49"
 	}
 }
