@@ -295,7 +295,7 @@
 
 		const allPopupData = await Fetch.that<MapPopupData[]>(`/api/popup/${demo}/data?${params}`);
 		const newPopupData = new Array<MapPopupData>();
-		for (const data of allPopupData) {			
+		for (const data of allPopupData) {
 			if (!demoPopupData.has(data.id)) {
 				newPopupData.push(data);
 			}
@@ -446,6 +446,8 @@
 			if (!popup) throw new Error('Popup not found');
 
 			const element = document.createElement('div');
+			element.addEventListener('click', () => onPopupClick(id));
+
 			switch (demo) {
 				default:
 					mount(BasicPopup, { target: element, props: { id, width: popup.width, height: popup.height } });
@@ -470,6 +472,8 @@
 			if (!popup) throw new Error('Popup not found');
 
 			const element = document.createElement('div');
+			element.addEventListener('click', () => onPinClick(id));
+
 			switch (demo) {
 				case Demo.Rentals:
 					mount(RentalPin, { target: element, props: { id } });
@@ -480,6 +484,22 @@
 			}
 			resolve(element);
 		});
+	}
+
+	function onPopupClick(id: string) {
+		switch (demo) {
+			case Demo.Rentals:
+				// map.togglePopups([{ id: id, toggled: false }]);
+				break;
+		}
+	}
+
+	function onPinClick(id: string) {
+		switch (demo) {
+			case Demo.Rentals:
+				// map.togglePopups([{ id: id, toggled: true }]);
+				break;
+		}
 	}
 
 	//#endregion
