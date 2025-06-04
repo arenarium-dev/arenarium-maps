@@ -36,7 +36,6 @@
 
 	import maplibregl from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';
-	import Icon from '../../routes/components/Icon.svelte';
 
 	let { options }: { options: MapOptions } = $props();
 
@@ -451,7 +450,8 @@
 		}
 
 		getScale(zoom: number) {
-			return Math.max(0, 1 - (this.zoom - zoom) * 0.125);
+			if (this.zoom < zoom) return 1;
+			else return Math.max(0, 1 - (this.zoom - zoom) * 0.125);
 		}
 
 		isCollapsed() {
@@ -477,9 +477,9 @@
 			super(popup);
 
 			this.id = popup.data.id;
-			this.states = popup.state[1].map((s) => [s[0], Angles.DEGREES[s[1]]]);
 			this.width = popup.data.width;
 			this.height = popup.data.height;
+			this.states = popup.state[1].map((s) => [s[0], Angles.DEGREES[s[1]]]);
 
 			this.bodyCallback = popup.callbacks.body;
 		}
@@ -574,6 +574,7 @@
 		lat: number;
 		lng: number;
 		zoom: number;
+		supressed: boolean;
 
 		circle: MapPopupCircle;
 		marker: MapPopupMarker;
@@ -584,6 +585,7 @@
 			this.lat = popup.data.lat;
 			this.lng = popup.data.lng;
 			this.zoom = popup.state[0];
+			this.supressed = false;
 
 			this.circle = new MapPopupCircle(popup);
 			this.marker = new MapPopupMarker(popup);
@@ -644,11 +646,13 @@
 		let circleZoomMax = options.configuration?.pin?.maxZoom ?? MAP_CIRCLES_MAX_ZOOM;
 
 		for (const data of mapPopupDataArray) {
+			const zoomThreshold = data.supressed ? -1 : zoom;
+
 			// Process popup circle
 			const circle = data.circle;
 
 			if (mapWindowBounds.contains(circle.lat, circle.lng)) {
-				if (zoom <= circle.zoom && circle.zoom <= zoom + circleZoomMax) {
+				if (zoomThreshold <= circle.zoom && circle.zoom <= zoom + circleZoomMax) {
 					if (circleCount < circleCountMax) {
 						// Update circle state
 						if (configuration?.pin?.fade == true) {
@@ -684,7 +688,7 @@
 			const marker = data.marker;
 
 			if (mapOffsetBounds.contains(marker.lat, marker.lng)) {
-				if (marker.zoom <= zoom) {
+				if (marker.zoom <= zoomThreshold) {
 					// Update marker state
 					marker.updateState(zoom);
 					marker.setCollapsed(false);
@@ -780,6 +784,13 @@
 		}
 	}
 
+	function togglePopupData(states: { id: string; toggled: boolean }[]) {
+		states.forEach((state) => {
+			const data = mapPopupDataMap.get(state.id);
+			if (data) data.supressed = !state.toggled;
+		});
+	}
+
 	export async function updatePopups(popups: MapPopup[]) {
 		// Validate popups
 		await mapPopupsSchema.parseAsync(popups);
@@ -797,6 +808,10 @@
 		if (popup == undefined) return;
 
 		map.flyTo({ center: { lat: popup.lat, lng: popup.lng }, zoom: popup.zoom });
+	}
+
+	export function togglePopups(states: { id: string; toggled: boolean }[]) {
+		togglePopupData(states);
 	}
 
 	//#endregion

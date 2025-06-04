@@ -1,5 +1,7 @@
 TODO:
 
+Not working on ios safari specific, works on ios chrome
+
 CUSTOMERS:
 
 Real Estate:

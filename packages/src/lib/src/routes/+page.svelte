@@ -110,6 +110,14 @@
 		map.removePopups();
 	}
 
+	let toggled = false;
+
+	async function toggleData() {
+		toggled = !toggled;
+		const states = Array.from(mapPopups.values()).map((popup) => ({ id: popup.data.id, toggled: toggled }));
+		map.togglePopups(states);
+	}
+
 	const zoomDelta = 0.05;
 
 	function onZoomIn() {
@@ -181,8 +189,8 @@
 				rank: rank,
 				lat: lat,
 				lng: lng,
-				height: 56,
-				width: 56
+				height: 100,
+				width: 150
 			});
 		}
 
@@ -294,6 +302,7 @@
 	<button class="style" onclick={changeStyle}>Change style</button>
 	<button class="data" onclick={addData}>Add data</button>
 	<button class="data" onclick={clearData}>Clear data</button>
+	<button class="data" onclick={toggleData}>Toggle data</button>
 </div>
 
 <div class="zooms">
