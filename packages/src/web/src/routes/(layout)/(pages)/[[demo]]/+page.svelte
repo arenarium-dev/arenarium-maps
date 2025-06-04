@@ -164,6 +164,7 @@
 	let demoPopupData = new Map<string, MapPopupData>();
 	let demoPopupDataLoaded = false;
 	let demoAutoUpdate = $state<boolean>(false);
+	let demoTogglePopups = $state<boolean>(true);
 
 	$effect(() => {
 		if (mapCreated) {
@@ -224,6 +225,13 @@
 	function onDemoAutoUpdateClick(e: Event) {
 		e.stopPropagation();
 		demoAutoUpdate = !demoAutoUpdate;
+	}
+
+	function onDemoTogglePopupsClick(e: Event) {
+		e.stopPropagation();
+
+		demoTogglePopups = !demoTogglePopups;
+		map.togglePopups(Array.from(demoPopupData.values()).map((p) => ({ id: p.id, toggled: demoTogglePopups })));
 	}
 
 	async function processBoundsChange(bounds: MapBounds) {
@@ -287,7 +295,7 @@
 
 		const allPopupData = await Fetch.that<MapPopupData[]>(`/api/popup/${demo}/data?${params}`);
 		const newPopupData = new Array<MapPopupData>();
-		for (const data of allPopupData) {
+		for (const data of allPopupData) {			
 			if (!demoPopupData.has(data.id)) {
 				newPopupData.push(data);
 			}
@@ -325,6 +333,7 @@
 
 			// Update the popups
 			await map.updatePopups(popups);
+			map.togglePopups(popups.map((p) => ({ id: p.data.id, toggled: demoTogglePopups })));
 		} catch (err) {
 			console.error(err);
 			app.toast.set({
@@ -538,6 +547,10 @@
 					<button class="item" onclick={onDemoAutoUpdateClick}>
 						<Icon name={demoAutoUpdate ? 'check_box' : 'check_box_outline_blank'} size={22} />
 						<span>Auto Load</span>
+					</button>
+					<button class="item" onclick={onDemoTogglePopupsClick}>
+						<Icon name={demoTogglePopups ? 'check_box' : 'check_box_outline_blank'} size={22} />
+						<span>Show Popups</span>
 					</button>
 				</div>
 			{/snippet}
