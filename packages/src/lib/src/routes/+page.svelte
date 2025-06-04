@@ -10,6 +10,8 @@
 	import { getStates } from '@workspace/shared/src/popup/compute/states.js';
 	import { testStates } from '@workspace/shared/src/popup/compute/test.js';
 
+	import { wasm } from '@workspace/shared/wasm/compute/states.js';
+
 	let map: ReturnType<typeof mountMap>;
 	let mapPopups = new Map<string, MapPopup>();
 
@@ -53,6 +55,22 @@
 		map.on('idle', () => {
 			// console.log('idle');
 		});
+
+		const wasmBinaryString = atob(wasm);
+		const wasmBytes = new Uint8Array(wasmBinaryString.length);
+		for (let i = 0; i < wasmBinaryString.length; i++) {
+			wasmBytes[i] = wasmBinaryString.charCodeAt(i);
+		}
+
+		const wasmImportObject = {};
+		// create a wasm module
+		const wasmModule = new WebAssembly.Module(wasmBytes);
+		// create a new instance of our wasm module
+		const wasmInstance = new WebAssembly.Instance(wasmModule, wasmImportObject);
+		// store the exported functions that are in our wasm instance
+		const exports = wasmInstance.exports as { add: (a: number, b: number) => number };
+
+		console.log(exports.add(1, 1)); // displays both all our exported functions and our wasm memory
 	});
 
 	function changeStyle() {
