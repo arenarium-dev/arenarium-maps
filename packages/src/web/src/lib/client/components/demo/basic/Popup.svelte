@@ -15,7 +15,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		color: var(--secondary);
+		color: color-mix(in srgb, var(--map-style-primary) 40%, #888 60%);
 		font-weight: 600;
 		font-size: 12px;
 	}

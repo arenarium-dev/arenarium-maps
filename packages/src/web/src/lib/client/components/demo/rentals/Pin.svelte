@@ -27,7 +27,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: var(--surface);
+		color: var(--map-style-background);
 
 		.icon {
 			display: flex;

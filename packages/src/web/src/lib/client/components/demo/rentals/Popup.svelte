@@ -95,6 +95,8 @@
 {/if}
 
 <style lang="less">
+	@gray: color-mix(in srgb, var(--map-style-background) 50%, #888 50%);
+
 	.popup {
 		width: 128px;
 		height: 104px;
@@ -105,7 +107,7 @@
 		.image {
 			width: 100%;
 			aspect-ratio: 16 / 9;
-			background-color: var(--surface-container);
+			background-color: @gray;
 			border-radius: 8px;
 			overflow: hidden;
 			cursor: pointer;
@@ -122,11 +124,11 @@
 			flex-direction: column;
 			gap: 0px;
 			padding: 2px 2px;
+			color: var(--map-style-text);
 
 			.price {
 				display: flex;
 				align-items: center;
-				color: var(--on-surface);
 				font-weight: 600;
 				font-size: 14px;
 			}
@@ -161,7 +163,7 @@
 		.image {
 			width: 100%;
 			aspect-ratio: 16 / 9;
-			background-color: var(--surface-container);
+			background-color: @gray;
 			border-radius: 8px;
 			overflow: hidden;
 			cursor: pointer;
@@ -175,14 +177,14 @@
 			.price {
 				height: 18px;
 				width: 100px;
-				background-color: var(--surface-container);
+				background-color: @gray;
 				border-radius: 8px;
 			}
 
 			.details {
 				height: 16px;
 				width: 100%;
-				background-color: var(--surface-container);
+				background-color: @gray;
 				border-radius: 8px;
 			}
 		}
