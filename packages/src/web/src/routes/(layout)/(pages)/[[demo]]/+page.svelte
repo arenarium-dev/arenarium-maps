@@ -36,25 +36,35 @@
 	let loading = $state<boolean>(false);
 
 	onMount(() => {
-		map = mountMap({
-			container: 'map',
-			position: {
-				center: { lat: 51.505, lng: -0.09 },
-				zoom: 4
-			},
-			style: {
-				name: 'light',
-				colors: {
-					background: 'white',
-					primary: 'darkgreen',
-					text: 'black'
+		try {
+			map = mountMap({
+				container: 'map',
+				position: {
+					center: { lat: 51.505, lng: -0.09 },
+					zoom: 4
+				},
+				style: {
+					name: 'light',
+					colors: {
+						background: 'white',
+						primary: 'darkgreen',
+						text: 'black'
+					}
 				}
-			}
-		});
+			});
 
-		mapCreated = true;
+			mapCreated = true;
+		} catch (e) {
+			console.error(e);
 
-		app.toast.set(null);
+			app.toast.set({
+				path: '/',
+				text: 'Failed to initialize map.',
+				severity: 'error'
+			});
+		} finally {
+			app.toast.set(null);
+		}
 	});
 
 	//#region Tune
