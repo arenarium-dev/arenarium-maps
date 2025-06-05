@@ -95,7 +95,6 @@
 
 	$effect(() => {
 		if (mapStyle && mapLoaded) {
-			console.log(mapStyle);
 			map.setStyle(mapStyle);
 		}
 	});
