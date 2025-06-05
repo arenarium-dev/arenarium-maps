@@ -1,8 +1,7 @@
-import { dev } from '$app/environment';
 import type { Log } from '@workspace/shared/src/types.js';
 
 export async function log(title: string, content: any) {
-	// if (dev) return;
+	if (import.meta.env.DEV) return;
 
 	try {
 		const log: Log = {
