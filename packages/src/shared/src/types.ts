@@ -15,3 +15,8 @@ export namespace Popup {
 		data: Data[];
 	}
 }
+
+export interface Log {
+	title: string;
+	content: any;
+}

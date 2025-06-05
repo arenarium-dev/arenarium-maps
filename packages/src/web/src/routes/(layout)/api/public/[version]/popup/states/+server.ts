@@ -1,11 +1,11 @@
 import * as schema from '$lib/server/database/schema';
 import { getDb } from '$lib/server/database/client';
-import { DISCORD_WEBHOOK_URL, USAGE_MAX_ITEMS, USAGE_MAX_TIMESPAN } from '$lib/shared/constants';
+import { USAGE_MAX_ITEMS, USAGE_MAX_TIMESPAN } from '$lib/shared/constants';
 
 import { API_KEY_FREE_KEY } from '$env/static/private';
 
 import { getStates } from '@workspace/shared/src/popup/compute/states';
-import type { Popup } from '@workspace/shared/src/types.js';
+import type { Log, Popup } from '@workspace/shared/src/types.js';
 
 import { and, eq, gt, sum } from 'drizzle-orm';
 
@@ -91,14 +91,12 @@ export const POST: RequestHandler = async (event) => {
 	} catch (error: any) {
 		console.error(error);
 
-		// Log to discord
-		await event.fetch(DISCORD_WEBHOOK_URL, {
+		await event.fetch(`/api/public/${event.params.version}/log`, {
 			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
-				username: `[Error] ${error.message}`,
+				title: `[Error] ${error.message}`,
 				content: '```' + `${JSON.stringify(error, null, 2)}` + '```'
-			})
+			} as Log)
 		});
 
 		return response(500, 'Internal server error');
