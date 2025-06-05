@@ -91,13 +91,11 @@ export const POST: RequestHandler = async (event) => {
 	} catch (error: any) {
 		console.error(error);
 
-		await event.fetch(`/api/public/${event.params.version}/log`, {
-			method: 'POST',
-			body: JSON.stringify({
-				title: `[Error] ${error.message}`,
-				content: '```' + `${JSON.stringify(error, null, 2)}` + '```'
-			} as Log)
-		});
+		const log: Log = {
+			title: `[Error] ${error.message}`,
+			content: error
+		};
+		await event.fetch(`/api/public/${event.params.version}/log?log=${encodeURIComponent(JSON.stringify(log))}`);
 
 		return response(500, 'Internal server error');
 	}
