@@ -4,9 +4,10 @@
 	import MapMarker from './marker/Marker.svelte';
 	import MapMarkerCircle from './marker/Circle.svelte';
 
+	import { log } from '../map/log.js';
+	import { animation } from '../map/animation/animation.js';
 	import { MapBoundsPair } from '../map/bounds.js';
 	import { darkStyleSpecification, lightStyleSpecification } from '../map/styles.js';
-	import { animation } from '../map/animation/animation.js';
 	import {
 		mapOptionsSchema,
 		mapPopupsSchema,
@@ -279,8 +280,15 @@
 	}
 
 	export function setStyle(value: MapStyle) {
-		style = value;
-		map.setStyle(getMapLibreStyle(style), { diff: true });
+		try {
+			map.setStyle(getMapLibreStyle(style), { diff: true });
+			style = value;
+		} catch (error) {
+			console.error(error);
+			log('[Error] Failed to set style', error);
+
+			throw error;
+		}
 	}
 
 	//#endregion
@@ -619,8 +627,13 @@
 
 	onMount(() => {
 		const loop = () => {
-			processPopupData();
-			mapPopupsIntervalId = window.setTimeout(loop, 25);
+			try {
+				processPopupData();
+				mapPopupsIntervalId = window.setTimeout(loop, 25);
+			} catch (error) {
+				console.error(error);
+				log('[Error] Failed to process popups', error);
+			}
 		};
 
 		loop();
@@ -792,26 +805,54 @@
 	}
 
 	export async function updatePopups(popups: MapPopup[]) {
-		// Validate popups
-		await mapPopupsSchema.parseAsync(popups);
+		try {
+			// Validate popups
+			await mapPopupsSchema.parseAsync(popups);
 
-		// Update data
-		await updatePopupData(popups);
+			// Update data
+			await updatePopupData(popups);
+		} catch (error) {
+			console.error(error);
+			log('[Error] Failed to update popups', error);
+
+			throw error;
+		}
 	}
 
 	export function removePopups() {
-		removePopupData();
+		try {
+			removePopupData();
+		} catch (error) {
+			console.error(error);
+			log('[Error] Failed to remove popups', error);
+
+			throw error;
+		}
 	}
 
 	export function revealPopup(id: string) {
-		const popup = mapPopupDataMap.get(id);
-		if (popup == undefined) return;
+		try {
+			const popup = mapPopupDataMap.get(id);
+			if (popup == undefined) return;
 
-		map.flyTo({ center: { lat: popup.lat, lng: popup.lng }, zoom: popup.zoom });
+			map.flyTo({ center: { lat: popup.lat, lng: popup.lng }, zoom: popup.zoom });
+		} catch (error) {
+			console.error(error);
+			log('[Error] Failed to reveal popup', error);
+
+			throw error;
+		}
 	}
 
 	export function togglePopups(states: { id: string; toggled: boolean }[]) {
-		togglePopupData(states);
+		try {
+			togglePopupData(states);
+		} catch (error) {
+			console.error(error);
+			log('[Error] Failed to toggle popups', error);
+
+			throw error;
+		}
 	}
 
 	//#endregion

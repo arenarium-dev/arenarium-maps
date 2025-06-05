@@ -49,7 +49,7 @@ export namespace Particles {
 
 	export class Particle {
 		/** The center of the particle. */
-		center: Point;
+		center: { x: number; y: number };
 		/** The width of the rectangle of possible positions of the particle. */
 		width: number;
 		/** The width of the rectangle of possible positions of the particle. */
@@ -57,29 +57,12 @@ export namespace Particles {
 		/** The index of the particle position in the points array. */
 		index: number;
 
-		constructor(center: Point, width: number, height: number, index: number) {
+		constructor(center: { x: number; y: number }, width: number, height: number, index: number) {
 			this.center = center;
 			this.width = width;
 			this.height = height;
 			this.index = index;
 		}
-	}
-
-	export class Point {
-		x: number;
-		y: number;
-
-		constructor(particle: Particle, index: number) {
-			const center = particle.center;
-			const angle = Angle.RADIANS[index];
-			this.x = center.x + particle.width * Math.cos(angle);
-			this.y = center.y + particle.height * Math.sin(angle);
-		}
-	}
-
-	export function getIndex(index: number, direction: number): number {
-		if (direction == 0) return index;
-		return (((index + direction) % Angles.COUNT) + Angles.COUNT) % Angles.COUNT;
 	}
 
 	/**
@@ -182,5 +165,10 @@ export namespace Particles {
 
 			particle.index = Angle.getAngleIndex(forceX, forceY);
 		}
+	}
+
+	function getIndex(index: number, direction: number): number {
+		if (direction == 0) return index;
+		return (((index + direction) % Angles.COUNT) + Angles.COUNT) % Angles.COUNT;
 	}
 }

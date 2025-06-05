@@ -5,6 +5,6 @@
 	"type": "module",
 	"scripts": {
 		"build:wasm": "zig build-lib wasm/states.zig -O ReleaseSmall -target wasm32-freestanding -dynamic -rdynamic -femit-bin=./wasm/output/states.wasm",
-		"build:wasm:js": "zig run wasm/js.zig"
+		"build:wasm:js": "zig run wasm/build/js.zig"
 	}
 }

@@ -5,8 +5,6 @@ import type { Log } from '@workspace/shared/src/types.js';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event) => {
-	console.log('EEE');
-
 	const logString = event.url.searchParams.get('log');
 	if (!logString) return new Response(null, { status: 400 });
 
@@ -23,5 +21,10 @@ export const GET: RequestHandler = async (event) => {
 		})
 	});
 
-	return new Response('OK');
+	return new Response('OK', {
+		headers: {
+			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Methods': 'GET'
+		}
+	});
 };
