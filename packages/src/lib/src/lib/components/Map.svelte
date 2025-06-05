@@ -281,11 +281,11 @@
 
 	export function setStyle(value: MapStyle) {
 		try {
-			map.setStyle(getMapLibreStyle(style), { diff: true });
+			map.setStyle(getMapLibreStyle(style));
 			style = value;
-		} catch (error) {
+		} catch (error: any) {
 			console.error(error);
-			log('[Error] Failed to set style', error);
+			log('[Error] Failed to set style', { message: error.message, stack: error.stack });
 
 			throw error;
 		}
@@ -630,9 +630,9 @@
 			try {
 				processPopupData();
 				mapPopupsIntervalId = window.setTimeout(loop, 25);
-			} catch (error) {
+			} catch (error: any) {
 				console.error(error);
-				log('[Error] Failed to process popups', error);
+				log('[Error] Failed to process popups', { message: error.message, stack: error.stack });
 			}
 		};
 
@@ -811,9 +811,9 @@
 
 			// Update data
 			await updatePopupData(popups);
-		} catch (error) {
+		} catch (error: any) {
 			console.error(error);
-			log('[Error] Failed to update popups', error);
+			log('[Error] Failed to update popups', { message: error.message, stack: error.stack });
 
 			throw error;
 		}
@@ -822,9 +822,9 @@
 	export function removePopups() {
 		try {
 			removePopupData();
-		} catch (error) {
+		} catch (error: any) {
 			console.error(error);
-			log('[Error] Failed to remove popups', error);
+			log('[Error] Failed to remove popups', { message: error.message, stack: error.stack });
 
 			throw error;
 		}
@@ -836,9 +836,9 @@
 			if (popup == undefined) return;
 
 			map.flyTo({ center: { lat: popup.lat, lng: popup.lng }, zoom: popup.zoom });
-		} catch (error) {
+		} catch (error: any) {
 			console.error(error);
-			log('[Error] Failed to reveal popup', error);
+			log('[Error] Failed to reveal popup', { message: error.message, stack: error.stack });
 
 			throw error;
 		}
@@ -847,9 +847,9 @@
 	export function togglePopups(states: { id: string; toggled: boolean }[]) {
 		try {
 			togglePopupData(states);
-		} catch (error) {
+		} catch (error: any) {
 			console.error(error);
-			log('[Error] Failed to toggle popups', error);
+			log('[Error] Failed to toggle popups', { message: error.message, stack: error.stack });
 
 			throw error;
 		}
