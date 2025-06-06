@@ -68,9 +68,21 @@
 		// create a new instance of our wasm module
 		const wasmInstance = new WebAssembly.Instance(wasmModule, wasmImportObject);
 		// store the exported functions that are in our wasm instance
-		const exports = wasmInstance.exports as { add: (a: number, b: number) => number };
+		const exports = wasmInstance.exports as {
+			createPopupsArray: (length: number) => void;
+			deletePopupsArray: () => void;
+			addPopup: (index: number, rank: number, lat: number, lng: number, width: number, height: number) => void;
+			runPopupSimulation: () => void;
+		};
 
-		console.log(exports.add(1, 1)); // displays both all our exported functions and our wasm memory
+		try {
+			exports.createPopupsArray(1);
+			exports.addPopup(1, 1, 1, 1, 1, 1);
+			exports.runPopupSimulation();
+			exports.deletePopupsArray();
+		} catch (error) {
+			console.error(error);
+		}
 	});
 
 	function changeStyle() {

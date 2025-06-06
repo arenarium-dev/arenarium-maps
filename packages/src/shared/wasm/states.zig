@@ -4,6 +4,7 @@ const std = @import("std");
 // manages memory on the WebAssembly linear memory.
 const allocator = std.heap.wasm_allocator;
 
+const PI: f32 = std.math.pi;
 const MAP_BASE_SIZE: u32 = 512;
 const MAP_POPUP_BOUNDS_PADDING: u32 = 16;
 
@@ -14,62 +15,60 @@ const Point = struct {
 
 pub const Projection = struct {
     pub fn getPoint(lat: f32, lng: f32) Point {
-        var siny = std.math.sin((lat * std.math.pi) / 180);
+        var siny = std.math.sin((lat * PI) / 180);
 
         // Truncating to 0.9999 effectively limits latitude to 89.189. This is
         // about a third of a tile past the edge of the world tile.
-        siny = std.math.min(std.math.max(siny, -0.9999), 0.9999);
+        siny = @min(@max(siny, -0.9999), 0.9999);
 
         return Point{
             .x = MAP_BASE_SIZE * (0.5 + lng / 360),
-            .y = MAP_BASE_SIZE * (0.5 - std.math.log((1 + siny) / (1 - siny)) / (4 * std.math.pi)),
+            .y = MAP_BASE_SIZE * (0.5 - std.math.log(f32, 2, (1 + siny) / (1 - siny)) / (4 * std.math.pi)),
         };
     }
 };
 
 pub const Rectangle = struct {
     pub fn getOffsets(width: f32, height: f32, angleDeg: f32) Point {
-        const angleRad = angleDeg * (std.math.pi / 180);
+        const angleRad: f32 = angleDeg * (PI / 180);
 
-        const widthHalf = width / 2;
-        const heightHalf = height / 2;
-        const diagonalHalf = std.math.sqrt(widthHalf * widthHalf + heightHalf * heightHalf);
-        const aspectDeg = std.math.atan(heightHalf / widthHalf) * (180 / std.math.pi);
+        const widthHalf: f32 = width / 2;
+        const heightHalf: f32 = height / 2;
+        const diagonalHalf: f32 = std.math.sqrt(widthHalf * widthHalf + heightHalf * heightHalf);
+        const aspectDeg: f32 = std.math.atan(heightHalf / widthHalf) * (180 / PI);
 
-        const brDeg = aspectDeg;
-        const blDeg = 180 - aspectDeg;
-        const trDeg = 180 + aspectDeg;
-        const tlDeg = 360 - aspectDeg;
+        const brDeg: f32 = aspectDeg;
+        const blDeg: f32 = 180 - aspectDeg;
+        const trDeg: f32 = 180 + aspectDeg;
+        const tlDeg: f32 = 360 - aspectDeg;
 
-        switch (true) {
-            // Quadrant bottom
-            brDeg <= angleDeg and angleDeg <= blDeg => {
-                return Point{
-                    .x = diagonalHalf * std.math.cos(angleRad) - widthHalf,
-                    .y = 0,
-                };
-            },
-            // Quadrant left
-            blDeg <= angleDeg and angleDeg <= trDeg => {
-                return Point{
-                    .x = -width,
-                    .y = diagonalHalf * std.math.sin(angleRad) - heightHalf,
-                };
-            },
-            // Quadrant top
-            trDeg <= angleDeg and angleDeg <= tlDeg => {
-                return Point{
-                    .x = diagonalHalf * std.math.cos(angleRad) - widthHalf,
-                    .y = -height,
-                };
-            },
-            // Quadrant right
-            else => {
-                return Point{
-                    .x = 0,
-                    .y = diagonalHalf * std.math.sin(angleRad) - heightHalf,
-                };
-            },
+        // Quadrant bottom
+        if (brDeg <= angleDeg and angleDeg <= blDeg) {
+            return Point{
+                .x = diagonalHalf * std.math.cos(angleRad) - widthHalf,
+                .y = 0,
+            };
+        }
+        // Quadrant left
+        else if (blDeg <= angleDeg and angleDeg <= trDeg) {
+            return Point{
+                .x = -width,
+                .y = diagonalHalf * std.math.sin(angleRad) - heightHalf,
+            };
+        }
+        // Quadrant top
+        else if (trDeg <= angleDeg and angleDeg <= tlDeg) {
+            return Point{
+                .x = diagonalHalf * std.math.cos(angleRad) - widthHalf,
+                .y = -height,
+            };
+        }
+        // Quadrant right
+        else {
+            return Point{
+                .x = 0,
+                .y = diagonalHalf * std.math.sin(angleRad) - heightHalf,
+            };
         }
     }
 };
@@ -109,7 +108,8 @@ pub const Bounds = struct {
 
 pub const Angles = struct {
     pub const LENGTH: u16 = 12;
-    pub const DEGREES: []u16 = [_]u16{ 0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330 };
+    pub const DEFAULT: f32 = 270;
+    pub const DEGREES = [_]f32{ 0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330 };
 
     pub const RADIANS_COS = blk: {
         var cos_vals: [LENGTH]f32 = undefined;
@@ -279,8 +279,8 @@ pub const Simulation = struct {
 pub const Nodes = struct {
     pub const Popup = struct {
         pub const Data = struct {
-            id: [32]u8,
-            rank: u16,
+            index: u32,
+            rank: u32,
             lat: f32,
             lng: f32,
             width: f32,
@@ -296,11 +296,9 @@ pub const Nodes = struct {
     pub const Node = struct {
         // PROPERTIES
         /// The index of the node in the nodes array.
-        index: u16,
-        /// The id of the marker that this node represents.
-        id: [32]u8,
+        index: u32,
         /// The rank of the marker node.
-        rank: u16,
+        rank: u32,
         /// The x coordinate of the marker node.
         x: f32,
         /// The y coordinate of the marker node.
@@ -314,7 +312,7 @@ pub const Nodes = struct {
         /// State of the marker expanded or not.
         expanded: bool,
         /// The angle of the marker node.
-        angle: u16,
+        angle: f32,
         /// The bounds of the marker node.
         bounds: Bounds,
         /// A marker node has a particle whose position is used to calculate the angle
@@ -327,9 +325,8 @@ pub const Nodes = struct {
             const width = data.width + MAP_POPUP_BOUNDS_PADDING;
             const height = data.height + MAP_POPUP_BOUNDS_PADDING;
 
-            const node = Node{
-                .index = Angles.DEGREES.len,
-                .id = data.id,
+            var node = Node{
+                .index = data.index,
                 .rank = data.rank,
                 .x = point.x,
                 .y = point.y,
@@ -337,8 +334,11 @@ pub const Nodes = struct {
                 .height = height,
                 .expanded = true,
                 .angle = Angles.DEFAULT,
+                .bounds = undefined,
                 .particle = Simulation.Particle{
                     .center = point,
+                    .width = undefined,
+                    .height = undefined,
                     .index = 0,
                 },
                 .neighbours = std.ArrayList(Node).init(std.heap.page_allocator),
@@ -387,39 +387,33 @@ pub const Nodes = struct {
     };
 };
 
-// var nodesLenght: u32 = 0;
-// var nodes: []Nodes.Node = undefined;
+var nodesLenght: u32 = 0;
+var nodes: []Nodes.Node = undefined;
 
-// export fn setPopupsLength(length: u32) void {
-//     if (nodes != undefined) allocator.free(nodes);
+export fn createPopupsArray(length: u32) void {
+    nodesLenght = length;
+    nodes = allocator.alloc(Nodes.Node, length) catch @panic("OOM: Failed to allocate memory");
+}
 
-//     nodesLenght = length;
-//     if (length == 0) return;
+export fn deletePopupsArray() void {
+    allocator.free(nodes);
+    nodes = undefined;
+    nodesLenght = 0;
+}
 
-//     nodes = try allocator.alloc(Nodes.Node, length);
-// }
+export fn addPopup(index: u32, rank: u32, lat: f32, lng: f32, width: f32, height: f32) void {
+    const data = Nodes.Popup.Data{
+        .index = index,
+        .rank = rank,
+        .lat = lat,
+        .lng = lng,
+        .width = width,
+        .height = height,
+    };
 
-// export fn addPopup(index: u32, id: [32]u8, rank: u16, lat: f32, lng: f32, width: f32, height: f32) void {
-//     const data = Nodes.Popup.Data{
-//         .id = id,
-//         .rank = rank,
-//         .lat = lat,
-//         .lng = lng,
-//         .width = width,
-//         .height = height,
-//     };
+    nodes[index] = Nodes.Node.create(data);
+}
 
-//     nodes[index] = Nodes.Node.create(data);
-// }
-
-// export fn runPopupSimulation() void {}
+export fn runPopupSimulation() void {}
 
 // export fn getPopupState() void {}
-
-export fn add(a: i32, b: i32) ![]const u8 {
-    const result = a + b;
-    var buffer: [32]u8 = undefined;
-    const count = try std.fmt.format(buffer[0..], "Result: {d}", .{result});
-    const string = buffer[0..count];
-    return string;
-}
