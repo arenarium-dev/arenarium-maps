@@ -1,8 +1,5 @@
 TODO:
 
-Not working on ios safari specific, works on ios chrome
-Work on safari incognito, reverse on chrome????
-
 WASM:
 
 https://vexcess.github.io/blog/zig-for-webassembly-guide.html
