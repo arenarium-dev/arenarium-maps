@@ -1,9 +1,9 @@
 const std = @import("std");
 
-export const ANGLE_LENGTH = 12;
-export const DEGREES = [_]u16{ 0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330 };
-export const RADIANS_SIN = getSins();
-export const RADIANS_COS = getCoss();
+pub const LENGTH = 12;
+pub const DEGREES = [_]u16{ 0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330 };
+pub const RADIANS_SIN = getSins();
+pub const RADIANS_COS = getCoss();
 
 fn getSins() []f32 {
     var allocator = std.heap.page_allocator;
@@ -49,7 +49,7 @@ fn getQuadrantIndex(forceX: f32, forceY: f32) u16 {
     }
 }
 
-export fn getAngleIndex(forceX: f32, forceY: f32) u16 {
+pub fn getAngleIndex(forceX: f32, forceY: f32) u16 {
     const index = getQuadrantIndex(forceX, forceY);
 
     if (forceX > 0) {

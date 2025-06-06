@@ -14,5 +14,5 @@ const Particle = struct {
 
 fn getIndex(index: u16, direction: i16) u16 {
     if (direction == 0) return index;
-    return (((index + direction) % angles.ANGLE_LENGTH) + angles.ANGLE_LENGTH) % angles.ANGLE_LENGTH;
+    return (((index + direction) % angles.LENGTH) + angles.LENGTH) % angles.LENGTH;
 }
