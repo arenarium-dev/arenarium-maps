@@ -282,42 +282,7 @@ namespace Nodes {
 			}
 		}
 
-		export function updateOverlaps(overlaps: Set<Node>, nodes: Array<Node>) {
-			for (let i = 0; i < nodes.length; i++) {
-				const node1 = nodes[i];
-				const bounds1 = node1.bounds;
-				const neighbours1 = nodes[i].neighbours;
-
-				for (let j = 0; j < neighbours1.length; j++) {
-					const node2 = neighbours1[j];
-					const bounds2 = node2.bounds;
-
-					if (areBoundsOverlaping(bounds2, bounds1)) {
-						if (node1.rank < node2.rank) {
-							if (!overlaps.has(node1)) {
-								overlaps.add(node1);
-								continue;
-							}
-							if (!overlaps.has(node2)) {
-								overlaps.add(node2);
-								continue;
-							}
-						} else {
-							if (!overlaps.has(node2)) {
-								overlaps.add(node2);
-								continue;
-							}
-							if (!overlaps.has(node1)) {
-								overlaps.add(node1);
-								continue;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		export function getAreOverlaping(nodes: Array<Node>): boolean {
+		export function areOverlaping(nodes: Array<Node>): boolean {
 			for (let i = 0; i < nodes.length; i++) {
 				const node1 = nodes[i];
 				const bounds1 = node1.bounds;
@@ -336,7 +301,29 @@ namespace Nodes {
 			return false;
 		}
 
-		export function getOverlapingIndex(nodes: Array<Node>): number {
+		export function getOverlaps(nodes: Array<Node>): Array<Node> {
+			const overlapsSet = new Set<Node>();
+
+			for (let i = 0; i < nodes.length; i++) {
+				const node1 = nodes[i];
+				const bounds1 = node1.bounds;
+				const neighbours1 = nodes[i].neighbours;
+
+				for (let j = 0; j < neighbours1.length; j++) {
+					const node2 = neighbours1[j];
+					const bounds2 = node2.bounds;
+
+					if (areBoundsOverlaping(bounds2, bounds1)) {
+						overlapsSet.add(node1);
+						overlapsSet.add(node2);
+					}
+				}
+			}
+
+			return Array.from(overlapsSet);
+		}
+
+		export function getOverlapsWorstIndex(nodes: Array<Node>): number {
 			let worstNodeIndex = -1;
 			let worstScore = 0;
 
@@ -369,16 +356,13 @@ namespace Nodes {
 	}
 
 	export namespace Simulation {
-		export function getRadius(node: Node, scale: number): number {
-			const proprtion = 2;
-			const radius = Math.min(node.width, node.height) / proprtion / scale;
-			return radius;
-		}
+		export function initializeAngles(nodes: Array<Node>) {
+			const particles = nodes.map((n) => n.particle);
+			Particles.initializePointIndexes(particles.map((n) => [n, particles]));
 
-		export function updateParticles(nodes: Array<Node>, scale: number) {
 			for (let i = 0; i < nodes.length; i++) {
 				const node = nodes[i];
-				node.updateParticle(scale);
+				node.angle = Angles.DEGREES[node.particle.index];
 			}
 		}
 
@@ -393,13 +377,10 @@ namespace Nodes {
 			return stable;
 		}
 
-		export function initializeAngles(nodes: Array<Node>) {
-			const particles = nodes.map((n) => n.particle);
-			Particles.initializePointIndexes(particles.map((n) => [n, particles]));
-
+		export function updateParticles(nodes: Array<Node>, scale: number) {
 			for (let i = 0; i < nodes.length; i++) {
 				const node = nodes[i];
-				node.angle = Angles.DEGREES[node.particle.index];
+				node.updateParticle(scale);
 			}
 		}
 	}
@@ -478,42 +459,32 @@ function getStates(data: Array<Popup.Data>): Popup.State[] {
 
 			// Remove some overlaping nodes from the array
 			// until there is no overlaping nodes
-			loop: while (true) {
+			overlaps: while (true) {
 				// Get graph overlaps
-				const overlapsSet = new Set<Nodes.Node>();
-				Nodes.Bounds.updateOverlaps(overlapsSet, graph);
+				const overlaps = Nodes.Bounds.getOverlaps(graph);
 				// If there are no overlaping nodes in graph break the loop
-				if (overlapsSet.size == 0) break;
+				if (overlaps.length == 0) break;
 
 				// Run the simulation loop
 				// to update the angles of the nodes
 				while (true) {
-					const overlapsArray = Array.from(overlapsSet);
-
 					// Update node angles in the simulation
-					const simStable = Nodes.Simulation.updateAngles(overlapsArray);
+					const simStable = Nodes.Simulation.updateAngles(overlaps);
 					// Update node bounds after angle update
-					Nodes.Bounds.updateBounds(overlapsArray, zoomScale);
+					Nodes.Bounds.updateBounds(overlaps, zoomScale);
 
 					// If there are no overlaping nodes after angle update
 					// break to outer loop
-					const simOverlaping = Nodes.Bounds.getAreOverlaping(overlapsArray);
-					if (simOverlaping == false) break loop;
+					const simOverlaping = Nodes.Bounds.areOverlaping(overlaps);
+					if (simOverlaping == false) break overlaps;
 
-					// If there are overlaping nodes
-					// but the simulation is not stable, continue simulation loop
-					if (simStable == false) continue;
-
-					// If there are still overlaping nodes and the simulation is stable
-					// check if there are new overlaping nodes
-					Nodes.Bounds.updateOverlaps(overlapsSet, overlapsArray);
-					// If there are no new overlaping nodes, break the loop
-					if (overlapsSet.size == overlapsArray.length) break;
+					// If the simulation is stable break the loop
+					if (simStable == true) break;
 				}
 
 				// Get the index of the worst overlaping node
 				// If there is an no overlaping node break
-				const collapsedIndex = Nodes.Bounds.getOverlapingIndex(graph);
+				const collapsedIndex = Nodes.Bounds.getOverlapsWorstIndex(graph);
 				if (collapsedIndex == -1) break;
 
 				// Else, collapse it
