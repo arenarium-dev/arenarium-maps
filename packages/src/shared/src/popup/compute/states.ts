@@ -103,7 +103,6 @@ namespace Nodes {
 		public updateParticle(scale: number) {
 			this.particle.width = this.getParticleWidth(scale);
 			this.particle.height = this.getParticleHeight(scale);
-			this.particle.addEnergy();
 		}
 	}
 
