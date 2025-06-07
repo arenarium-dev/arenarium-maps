@@ -487,7 +487,7 @@ function getStates(data: Array<Popup.Data>): Popup.State[] {
 
 			// Remove overlaping nodes from the set
 			// until there is no overlaping nodes
-			while (overlaps.size > 0) {
+			while (overlaps.size > 1) {
 				// Run the simulation loop
 				// to update the angles of the nodes
 				const overlapsArray = Array.from(overlaps);
