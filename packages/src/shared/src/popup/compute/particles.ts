@@ -48,6 +48,8 @@ export namespace Particles {
 	}
 
 	export class Particle {
+		static ENERGY_MAX = 3;
+
 		/** The center of the particle. */
 		center: { x: number; y: number };
 		/** The width of the rectangle of possible positions of the particle. */
@@ -56,12 +58,19 @@ export namespace Particles {
 		height: number;
 		/** The index of the particle position in the points array. */
 		index: number;
+		/** The energy of the particle. */
+		energy: number;
 
 		constructor(center: { x: number; y: number }, width: number, height: number, index: number) {
 			this.center = center;
 			this.width = width;
 			this.height = height;
 			this.index = index;
+			this.energy = Particle.ENERGY_MAX;
+		}
+
+		addEnergy() {
+			if (this.energy < Particle.ENERGY_MAX) this.energy++;
 		}
 	}
 
@@ -80,6 +89,10 @@ export namespace Particles {
 
 		for (let i = 0; i < data.length; i++) {
 			const [particle, particleForces] = data[i];
+
+			if (particle.energy == 0) continue;
+			particle.energy--;
+
 			const index = particle.index;
 			const center = particle.center;
 			const width = particle.width;

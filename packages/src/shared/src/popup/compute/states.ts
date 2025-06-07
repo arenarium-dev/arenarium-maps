@@ -62,12 +62,12 @@ namespace Nodes {
 			this.expanded = true;
 			this.angle = Angles.DEFAULT;
 			this.bounds = this.getBounds(1);
-			this.particle = {
-				center: { x: projection.x, y: projection.y },
-				width: this.getParticleWidth(1),
-				height: this.getParticleHeight(1),
-				index: Angles.DEGREES.indexOf(Angles.DEFAULT)
-			};
+			this.particle = new Particles.Particle(
+				{ x: projection.x, y: projection.y },
+				this.getParticleWidth(1),
+				this.getParticleHeight(1),
+				Angles.DEGREES.indexOf(Angles.DEFAULT)
+			);
 			this.neighbours = new Array<Node>();
 		}
 
@@ -103,6 +103,7 @@ namespace Nodes {
 		public updateParticle(scale: number) {
 			this.particle.width = this.getParticleWidth(scale);
 			this.particle.height = this.getParticleHeight(scale);
+			this.particle.addEnergy();
 		}
 	}
 
