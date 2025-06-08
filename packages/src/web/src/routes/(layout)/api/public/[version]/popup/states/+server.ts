@@ -32,71 +32,59 @@ export const POST: RequestHandler = async (event) => {
 	const response = (status: number, message: string) => new Response(null, { headers, status, statusText: message });
 	const result = (data: any) => new Response(JSON.stringify(data), { headers, status: 200 });
 
-	try {
-		const request: Popup.StatesRequest = await event.request.json();
-		if (!request) return response(400, 'Missing request');
+	const request: Popup.StatesRequest = await event.request.json();
+	if (!request) return response(400, 'Missing request');
 
-		const data = request.data;
-		if (!data) return response(400, 'Missing data');
+	const data = request.data;
+	if (!data) return response(400, 'Missing data');
 
-		const key = request.key;
-		if (!key) return response(400, 'Missing API key');
+	const key = request.key;
+	if (!key) return response(400, 'Missing API key');
 
-		// Check if the API key is free
-		if (key != API_KEY_FREE_KEY) {
-			const db = getDb(event.platform?.env.DB);
-			const dbApiKey = await db.query.apiKeys.findFirst({
-				where: (k, { and, eq }) => and(eq(k.key, key), eq(k.active, true))
-			});
-			if (!dbApiKey) return response(404, 'API key not found');
+	// Check if the API key is free
+	if (key != API_KEY_FREE_KEY) {
+		const db = getDb(event.platform?.env.DB);
+		const dbApiKey = await db.query.apiKeys.findFirst({
+			where: (k, { and, eq }) => and(eq(k.key, key), eq(k.active, true))
+		});
+		if (!dbApiKey) return response(404, 'API key not found');
 
-			// Chech the api key rate limit
-			if (dbApiKey.unlimited != true) {
-				// Check is the request itself is larger than the limit
-				if (data.length > USAGE_MAX_ITEMS) {
-					return new Response(null, { headers, status: 429, statusText: 'Request too large!' });
-				}
-
-				// Get the total usage from the last second
-				const dbUsageSumResult = await db
-					.select({ sum: sum(schema.apiKeyUsages.count) })
-					.from(schema.apiKeyUsages)
-					.where(and(eq(schema.apiKeyUsages.keyIndex, dbApiKey.index), gt(schema.apiKeyUsages.date, new Date(Date.now() - USAGE_MAX_TIMESPAN))));
-
-				const dbUsageSum = Number.parseInt(dbUsageSumResult.at(0)?.sum ?? '0');
-
-				// Check if the total sum of request is larger than the limit
-				if (dbUsageSum + data.length > USAGE_MAX_ITEMS) {
-					return new Response(null, { headers, status: 429, statusText: 'Too many large requests!' });
-				}
+		// Chech the api key rate limit
+		if (dbApiKey.unlimited != true) {
+			// Check is the request itself is larger than the limit
+			if (data.length > USAGE_MAX_ITEMS) {
+				return new Response(null, { headers, status: 429, statusText: 'Request too large!' });
 			}
 
-			// Update usage after the request
-			event.platform?.ctx?.waitUntil(
-				new Promise(async () => {
-					const dbUsage: schema.DbApiKeyUsageInsert = {
-						keyIndex: dbApiKey.index,
-						count: data.length
-					};
-					await db.insert(schema.apiKeyUsages).values([dbUsage]);
-				})
-			);
+			// Get the total usage from the last second
+			const dbUsageSumResult = await db
+				.select({ sum: sum(schema.apiKeyUsages.count) })
+				.from(schema.apiKeyUsages)
+				.where(and(eq(schema.apiKeyUsages.keyIndex, dbApiKey.index), gt(schema.apiKeyUsages.date, new Date(Date.now() - USAGE_MAX_TIMESPAN))));
+
+			const dbUsageSum = Number.parseInt(dbUsageSumResult.at(0)?.sum ?? '0');
+
+			// Check if the total sum of request is larger than the limit
+			if (dbUsageSum + data.length > USAGE_MAX_ITEMS) {
+				return new Response(null, { headers, status: 429, statusText: 'Too many large requests!' });
+			}
 		}
 
-		// Get the states
-		const states = getStates(data);
-
-		// Return the response
-		return result(states);
-	} catch (error: any) {
-		console.error(error);
-
-		const log: Log = {
-			title: `[Error] ${error.message}`,
-			content: error
-		};
-		await event.fetch(`/api/public/${event.params.version}/log?log=${encodeURIComponent(JSON.stringify(log))}`);
-
-		return response(500, 'Internal server error');
+		// Update usage after the request
+		event.platform?.ctx?.waitUntil(
+			new Promise(async () => {
+				const dbUsage: schema.DbApiKeyUsageInsert = {
+					keyIndex: dbApiKey.index,
+					count: data.length
+				};
+				await db.insert(schema.apiKeyUsages).values([dbUsage]);
+			})
+		);
 	}
+
+	// Get the states
+	const states = getStates(data);
+
+	// Return the response
+	return result(states);
 };
