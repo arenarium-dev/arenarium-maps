@@ -1,12 +1,17 @@
 TODO:
 
+Migrate to workers and configure logs
+
+Make popups smaller for mobile
+Add booking/airbnb demo
+
 WASM:
 
 https://vexcess.github.io/blog/zig-for-webassembly-guide.html
 
 CUSTOMERS:
 
-Real Estate:
+Real Estate Rent/Sale:
 start local, expand to eu etc
 
     Low priority:
@@ -24,5 +29,10 @@ start local, expand to eu etc
         nekretnine.rs - 400.5K
         4zida.rs - 606.2K
 
+Apartments booking:
+
+    booking.com
+    airbnb.com
+
 News:
-ground news
+    ground.news
