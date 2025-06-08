@@ -8,7 +8,7 @@ export const POST: RequestHandler = async (event) => {
 	const data: MapPopupData[] = await event.request.json();
 
 	const statesRequest: MapPopupStatesRequest = {
-		key: 'd915900e3bed477080b3af9c5cf32b5d',
+		key: '5b2a06ecfa734dccaa0e7488aaceb487',
 		data: data
 	};
 	const statesResponse = await fetch('https://arenarium.dev/api/public/v1/popup/states', {
