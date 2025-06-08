@@ -6,7 +6,6 @@
 	"scripts": {
 		"dev": "vite dev --port 8080 --host",
 		"build": "vite build",
-		"preview": "pnpm run build && wrangler pages dev",
 		"sync": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -18,11 +17,11 @@
 		"db:generate": "drizzle-kit generate",
 		"db:cf-migrate-dev": "wrangler d1 migrations apply arenarium-maps-db --local",
 		"db:cf-migrate-production": "wrangler d1 migrations apply arenarium-maps-db --remote",
-		"deploy": "pnpm run build && wrangler pages deploy",
-		"cf-typegen": "wrangler types && move worker-configuration.d.ts src/"
+		"cf:preview": "pnpm run build && wrangler pages dev",
+		"cf:deploy": "pnpm run build && wrangler pages deploy",
+		"cf:typegen": "wrangler types ./src/worker-configuration.d.ts"
 	},
 	"devDependencies": {
-		"@cloudflare/workers-types": "^4.20250607.0",
 		"@eslint/compat": "^1.2.9",
 		"@eslint/js": "^9.28.0",
 		"@sveltejs/adapter-auto": "^6.0.1",

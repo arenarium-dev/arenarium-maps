@@ -112,9 +112,6 @@ importers:
         specifier: ^3.25.56
         version: 3.25.56
     devDependencies:
-      '@cloudflare/workers-types':
-        specifier: ^4.20250607.0
-        version: 4.20250607.0
       '@eslint/compat':
         specifier: ^1.2.9
         version: 1.2.9(eslint@9.28.0)

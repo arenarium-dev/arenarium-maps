@@ -24,8 +24,8 @@ export function getBetterAuth(event: RequestEvent) {
 			}),
 			socialProviders: {
 				github: {
-					clientId: event.platform?.env.AUTH_GITHUB_ID,
-					clientSecret: event.platform?.env.AUTH_GITHUB_SECRET
+					clientId: event.platform?.env.AUTH_GITHUB_ID!,
+					clientSecret: event.platform?.env.AUTH_GITHUB_SECRET!
 				}
 			}
 		});

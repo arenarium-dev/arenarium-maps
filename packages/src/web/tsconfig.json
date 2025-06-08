@@ -11,7 +11,7 @@
 		"strict": true,
 		"moduleResolution": "bundler",
 		"types": [
-			"@cloudflare/workers-types/2023-07-01"
+			"./src/worker-configuration.d.ts"
 		]
 	}
 	// Path aliases are handled by https://svelte.dev/docs/kit/configuration#alias
