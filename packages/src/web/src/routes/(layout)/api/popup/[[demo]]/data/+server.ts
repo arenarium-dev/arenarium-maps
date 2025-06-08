@@ -1,9 +1,10 @@
 import { error, json } from '@sveltejs/kit';
 
+import { Demo } from '$lib/shared/demo';
+
 import { type MapPopupData } from '@arenarium/maps';
 
 import type { RequestHandler } from '../$types';
-import { Demo } from '$lib/shared/demo';
 
 export const GET: RequestHandler = async (event) => {
 	const total = Number(event.url.searchParams.get('total'));
@@ -22,8 +23,8 @@ export const GET: RequestHandler = async (event) => {
 
 	switch (event.params.demo) {
 		default: {
-			const coordinatesResponse = await event.fetch('/demo/basic.json');
-			if (!coordinatesResponse.ok) error(500, 'Failed to get coordinates');
+			const coordinatesResponse = await event.platform?.env.ASSETS.fetch(event.url.origin + '/demo/coordinates.json');
+			if (!coordinatesResponse?.ok) error(500, 'Failed to get coordinates');
 
 			const coordinatesJson = await coordinatesResponse.json<any>();
 			const coordinates = coordinatesJson.coordinates;
@@ -50,8 +51,8 @@ export const GET: RequestHandler = async (event) => {
 			break;
 		}
 		case Demo.SrbijaNekretnine: {
-			const dataResponse = await event.fetch('/demo/srbija-nekretnine.json');
-			if (!dataResponse.ok) error(500, 'Failed to get data');
+			const dataResponse = await event.platform?.env.ASSETS.fetch(event.url.origin + '/demo/srbija-nekretnine.json');
+			if (!dataResponse?.ok) error(500, 'Failed to get data');
 
 			const dataJson = await dataResponse.json<any>();
 			const dataEntires = Object.entries(dataJson.propertiesByLatLon);
@@ -84,7 +85,7 @@ export const GET: RequestHandler = async (event) => {
 				'{"ptId":[1,2,5,4],"cityId":1,"rentOrSale":"r","searchSource":"regular","sort":"pricedsc","furnished":[1],"isFeatured":true}'
 			);
 
-			const dataResponse = await event.fetch('https://cityexpert.rs/api/Search/Map?' + dataSearchParams.toString());
+			const dataResponse = await fetch('https://cityexpert.rs/api/Search/Map?' + dataSearchParams.toString());
 			if (!dataResponse.ok) error(500, 'Failed to get data');
 
 			const dataJson = await dataResponse.json<any[]>();
