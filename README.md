@@ -1,13 +1,9 @@
 TODO:
 
-Migrate to workers and configure logs
+Remove styles and events from library, use base map libre
 
 Make popups smaller for mobile
 Add booking/airbnb demo
-
-WASM:
-
-https://vexcess.github.io/blog/zig-for-webassembly-guide.html
 
 CUSTOMERS:
 
@@ -31,8 +27,16 @@ start local, expand to eu etc
 
 Apartments booking:
 
+    aparmani-u-beogradu.com
+    stannadan.com
+
     booking.com
     airbnb.com
 
 News:
+
     ground.news
+
+WASM:
+
+https://vexcess.github.io/blog/zig-for-webassembly-guide.html

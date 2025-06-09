@@ -1,6 +1,4 @@
-import type { StyleSpecification } from 'maplibre-gl';
-
-export const darkStyleSpecification: StyleSpecification = {
+export const MapDarkStyle: maplibregl.StyleSpecification = {
 	version: 8,
 	sources: {
 		openmaptiles: {
@@ -28,11 +26,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			type: 'fill',
 			source: 'openmaptiles',
 			'source-layer': 'water',
-			filter: [
-				'all',
-				['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]],
-				['!=', ['get', 'brunnel'], 'tunnel']
-			],
+			filter: ['all', ['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]], ['!=', ['get', 'brunnel'], 'tunnel']],
 			paint: { 'fill-antialias': true, 'fill-color': 'rgba(56, 56, 56, 1)' }
 		},
 		{
@@ -41,11 +35,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'landcover',
 			maxzoom: 8,
-			filter: [
-				'all',
-				['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]],
-				['==', ['get', 'subclass'], 'ice_shelf']
-			],
+			filter: ['all', ['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]], ['==', ['get', 'subclass'], 'ice_shelf']],
 			paint: { 'fill-color': 'rgba(128, 128, 128, 1)', 'fill-opacity': 0.7 }
 		},
 		{
@@ -54,11 +44,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'landcover',
 			maxzoom: 8,
-			filter: [
-				'all',
-				['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]],
-				['==', ['get', 'subclass'], 'glacier']
-			],
+			filter: ['all', ['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]], ['==', ['get', 'subclass'], 'glacier']],
 			paint: {
 				'fill-color': 'rgba(153, 153, 153, 1)',
 				'fill-opacity': ['interpolate', ['linear'], ['zoom'], 0, 1, 8, 0.5]
@@ -70,11 +56,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'landuse',
 			maxzoom: 16,
-			filter: [
-				'all',
-				['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]],
-				['==', ['get', 'class'], 'residential']
-			],
+			filter: ['all', ['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]], ['==', ['get', 'class'], 'residential']],
 			paint: {
 				'fill-color': 'rgba(104, 104, 104, 1)',
 				'fill-opacity': ['interpolate', ['exponential', 0.6], ['zoom'], 8, 0.8, 9, 0.6]
@@ -118,11 +100,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 6,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['all', ['==', ['get', 'brunnel'], 'tunnel'], ['==', ['get', 'class'], 'motorway']]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['all', ['==', ['get', 'brunnel'], 'tunnel'], ['==', ['get', 'class'], 'motorway']]],
 			layout: { 'line-cap': 'butt', 'line-join': 'miter' },
 			paint: {
 				'line-color': 'rgba(68, 68, 68, 1)',
@@ -136,11 +114,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 6,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['all', ['==', ['get', 'brunnel'], 'tunnel'], ['==', ['get', 'class'], 'motorway']]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['all', ['==', ['get', 'brunnel'], 'tunnel'], ['==', ['get', 'class'], 'motorway']]],
 			layout: { 'line-cap': 'round', 'line-join': 'round' },
 			paint: {
 				'line-color': 'rgba(85, 85, 85, 1)',
@@ -244,11 +218,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 8,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['match', ['get', 'class'], ['minor', 'service', 'track'], true, false]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['match', ['get', 'class'], ['minor', 'service', 'track'], true, false]],
 			layout: { 'line-cap': 'round', 'line-join': 'round' },
 			paint: {
 				'line-opacity': 0.9,
@@ -262,11 +232,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 11,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['match', ['get', 'class'], ['primary', 'secondary', 'tertiary', 'trunk'], true, false]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['match', ['get', 'class'], ['primary', 'secondary', 'tertiary', 'trunk'], true, false]],
 			layout: { 'line-cap': 'butt', 'line-join': 'miter' },
 			paint: {
 				'line-dasharray': [12, 0],
@@ -280,11 +246,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 11,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['match', ['get', 'class'], ['primary', 'secondary', 'tertiary', 'trunk'], true, false]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['match', ['get', 'class'], ['primary', 'secondary', 'tertiary', 'trunk'], true, false]],
 			layout: { 'line-cap': 'round', 'line-join': 'round' },
 			paint: {
 				'line-color': 'rgba(102, 102, 102, 1)',
@@ -297,11 +259,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			maxzoom: 11,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['match', ['get', 'class'], ['primary', 'secondary', 'tertiary', 'trunk'], true, false]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['match', ['get', 'class'], ['primary', 'secondary', 'tertiary', 'trunk'], true, false]],
 			layout: { 'line-cap': 'round', 'line-join': 'round' },
 			paint: { 'line-width': 2, 'line-color': 'rgba(85, 85, 85, 1)' }
 		},
@@ -416,11 +374,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 13,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['all', ['!', ['has', 'service']], ['==', ['get', 'class'], 'rail']]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['all', ['!', ['has', 'service']], ['==', ['get', 'class'], 'rail']]],
 			layout: { 'line-join': 'round' },
 			paint: {
 				'line-color': 'rgba(85, 85, 85, 1)',
@@ -433,11 +387,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 13,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['all', ['!', ['has', 'service']], ['==', ['get', 'class'], 'rail']]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['all', ['!', ['has', 'service']], ['==', ['get', 'class'], 'rail']]],
 			layout: { 'line-join': 'round' },
 			paint: {
 				'line-color': 'rgba(68, 68, 68, 1)',
@@ -451,11 +401,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 6,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['all', ['==', ['get', 'brunnel'], 'bridge'], ['==', ['get', 'class'], 'motorway']]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['all', ['==', ['get', 'brunnel'], 'bridge'], ['==', ['get', 'class'], 'motorway']]],
 			layout: { 'line-cap': 'butt', 'line-join': 'miter' },
 			paint: {
 				'line-color': 'rgba(68, 68, 68, 1)',
@@ -470,11 +416,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 6,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['all', ['==', ['get', 'brunnel'], 'bridge'], ['==', ['get', 'class'], 'motorway']]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['all', ['==', ['get', 'brunnel'], 'bridge'], ['==', ['get', 'class'], 'motorway']]],
 			layout: { 'line-cap': 'round', 'line-join': 'round' },
 			paint: {
 				'line-color': ['interpolate', ['linear'], ['zoom'], 5.8, 'rgba(102, 102, 102, 1)', 6, 'rgba(85, 85, 85, 1)'],
@@ -506,13 +448,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			type: 'line',
 			source: 'openmaptiles',
 			'source-layer': 'boundary',
-			filter: [
-				'all',
-				['==', ['get', 'admin_level'], 2],
-				['!=', ['get', 'maritime'], 1],
-				['!=', ['get', 'disputed'], 1],
-				['!', ['has', 'claimed_by']]
-			],
+			filter: ['all', ['==', ['get', 'admin_level'], 2], ['!=', ['get', 'maritime'], 1], ['!=', ['get', 'disputed'], 1], ['!', ['has', 'claimed_by']]],
 			layout: { 'line-cap': 'round', 'line-join': 'round' },
 			paint: {
 				'line-color': 'rgba(51, 51, 51, 1)',
@@ -597,11 +533,7 @@ export const darkStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation_name',
 			minzoom: 15,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['match', ['get', 'class'], ['minor', 'service', 'track'], true, false]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['match', ['get', 'class'], ['minor', 'service', 'track'], true, false]],
 			layout: {
 				'symbol-placement': 'line',
 				'text-field': ['get', 'name:latin'],
@@ -930,7 +862,7 @@ export const darkStyleSpecification: StyleSpecification = {
 	]
 };
 
-export const lightStyleSpecification: StyleSpecification = {
+export const MapStyleLight: maplibregl.StyleSpecification = {
 	version: 8,
 	sources: {
 		openmaptiles: {
@@ -958,11 +890,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			type: 'fill',
 			source: 'openmaptiles',
 			'source-layer': 'water',
-			filter: [
-				'all',
-				['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]],
-				['!=', ['get', 'brunnel'], 'tunnel']
-			],
+			filter: ['all', ['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]], ['!=', ['get', 'brunnel'], 'tunnel']],
 			paint: { 'fill-antialias': true, 'fill-color': 'rgba(156, 156, 156, 1)' }
 		},
 		{
@@ -971,11 +899,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'landcover',
 			maxzoom: 8,
-			filter: [
-				'all',
-				['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]],
-				['==', ['get', 'subclass'], 'ice_shelf']
-			],
+			filter: ['all', ['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]], ['==', ['get', 'subclass'], 'ice_shelf']],
 			paint: { 'fill-color': 'rgba(228, 228, 228, 1)', 'fill-opacity': 0.7 }
 		},
 		{
@@ -984,11 +908,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'landcover',
 			maxzoom: 8,
-			filter: [
-				'all',
-				['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]],
-				['==', ['get', 'subclass'], 'glacier']
-			],
+			filter: ['all', ['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]], ['==', ['get', 'subclass'], 'glacier']],
 			paint: {
 				'fill-color': 'rgba(253, 253, 253, 1)',
 				'fill-opacity': ['interpolate', ['linear'], ['zoom'], 0, 1, 8, 0.5]
@@ -1000,11 +920,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'landuse',
 			maxzoom: 16,
-			filter: [
-				'all',
-				['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]],
-				['==', ['get', 'class'], 'residential']
-			],
+			filter: ['all', ['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]], ['==', ['get', 'class'], 'residential']],
 			paint: {
 				'fill-color': 'rgba(204, 204, 204, 1)',
 				'fill-opacity': ['interpolate', ['exponential', 0.6], ['zoom'], 8, 0.8, 9, 0.6]
@@ -1048,11 +964,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 6,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['all', ['==', ['get', 'brunnel'], 'tunnel'], ['==', ['get', 'class'], 'motorway']]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['all', ['==', ['get', 'brunnel'], 'tunnel'], ['==', ['get', 'class'], 'motorway']]],
 			layout: { 'line-cap': 'butt', 'line-join': 'miter' },
 			paint: {
 				'line-color': 'rgb(168, 168, 168)',
@@ -1066,11 +978,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 6,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['all', ['==', ['get', 'brunnel'], 'tunnel'], ['==', ['get', 'class'], 'motorway']]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['all', ['==', ['get', 'brunnel'], 'tunnel'], ['==', ['get', 'class'], 'motorway']]],
 			layout: { 'line-cap': 'round', 'line-join': 'round' },
 			paint: {
 				'line-color': 'rgb(185, 185, 185)',
@@ -1174,11 +1082,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 8,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['match', ['get', 'class'], ['minor', 'service', 'track'], true, false]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['match', ['get', 'class'], ['minor', 'service', 'track'], true, false]],
 			layout: { 'line-cap': 'round', 'line-join': 'round' },
 			paint: {
 				'line-color': 'rgba(202, 202, 202, 1)',
@@ -1192,11 +1096,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 11,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['match', ['get', 'class'], ['primary', 'secondary', 'tertiary', 'trunk'], true, false]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['match', ['get', 'class'], ['primary', 'secondary', 'tertiary', 'trunk'], true, false]],
 			layout: { 'line-cap': 'butt', 'line-join': 'miter' },
 			paint: {
 				'line-color': 'rgb(185, 185, 185)',
@@ -1210,11 +1110,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 11,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['match', ['get', 'class'], ['primary', 'secondary', 'tertiary', 'trunk'], true, false]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['match', ['get', 'class'], ['primary', 'secondary', 'tertiary', 'trunk'], true, false]],
 			layout: { 'line-cap': 'round', 'line-join': 'round' },
 			paint: {
 				'line-color': 'rgba(202, 202, 202, 1)',
@@ -1227,11 +1123,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			maxzoom: 11,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['match', ['get', 'class'], ['primary', 'secondary', 'tertiary', 'trunk'], true, false]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['match', ['get', 'class'], ['primary', 'secondary', 'tertiary', 'trunk'], true, false]],
 			layout: { 'line-cap': 'round', 'line-join': 'round' },
 			paint: { 'line-color': 'rgba(185, 185, 185, 1)', 'line-width': 2 }
 		},
@@ -1346,11 +1238,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 13,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['all', ['!', ['has', 'service']], ['==', ['get', 'class'], 'rail']]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['all', ['!', ['has', 'service']], ['==', ['get', 'class'], 'rail']]],
 			layout: { 'line-join': 'round' },
 			paint: {
 				'line-color': 'rgba(185, 185, 185, 1)',
@@ -1363,11 +1251,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 13,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['all', ['!', ['has', 'service']], ['==', ['get', 'class'], 'rail']]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['all', ['!', ['has', 'service']], ['==', ['get', 'class'], 'rail']]],
 			layout: { 'line-join': 'round' },
 			paint: {
 				'line-color': 'rgba(168, 168, 168, 1)',
@@ -1381,11 +1265,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 6,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['all', ['==', ['get', 'brunnel'], 'bridge'], ['==', ['get', 'class'], 'motorway']]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['all', ['==', ['get', 'brunnel'], 'bridge'], ['==', ['get', 'class'], 'motorway']]],
 			layout: { 'line-cap': 'butt', 'line-join': 'miter' },
 			paint: {
 				'line-color': 'rgb(168, 168, 168)',
@@ -1400,11 +1280,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation',
 			minzoom: 6,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['all', ['==', ['get', 'brunnel'], 'bridge'], ['==', ['get', 'class'], 'motorway']]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['all', ['==', ['get', 'brunnel'], 'bridge'], ['==', ['get', 'class'], 'motorway']]],
 			layout: { 'line-cap': 'round', 'line-join': 'round' },
 			paint: {
 				'line-color': ['interpolate', ['linear'], ['zoom'], 5.8, 'rgba(202, 202, 202, 1)', 6, 'rgba(185, 185, 185, 1)'],
@@ -1436,13 +1312,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			type: 'line',
 			source: 'openmaptiles',
 			'source-layer': 'boundary',
-			filter: [
-				'all',
-				['==', ['get', 'admin_level'], 2],
-				['!=', ['get', 'maritime'], 1],
-				['!=', ['get', 'disputed'], 1],
-				['!', ['has', 'claimed_by']]
-			],
+			filter: ['all', ['==', ['get', 'admin_level'], 2], ['!=', ['get', 'maritime'], 1], ['!=', ['get', 'disputed'], 1], ['!', ['has', 'claimed_by']]],
 			layout: { 'line-cap': 'round', 'line-join': 'round' },
 			paint: {
 				'line-color': 'rgba(151, 151, 151, 1)',
@@ -1527,11 +1397,7 @@ export const lightStyleSpecification: StyleSpecification = {
 			source: 'openmaptiles',
 			'source-layer': 'transportation_name',
 			minzoom: 15,
-			filter: [
-				'all',
-				['==', ['geometry-type'], 'LineString'],
-				['match', ['get', 'class'], ['minor', 'service', 'track'], true, false]
-			],
+			filter: ['all', ['==', ['geometry-type'], 'LineString'], ['match', ['get', 'class'], ['minor', 'service', 'track'], true, false]],
 			layout: {
 				'symbol-placement': 'line',
 				'text-field': ['get', 'name:latin'],

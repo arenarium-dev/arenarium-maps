@@ -4,56 +4,49 @@
 	import Icon from './components/Icon.svelte';
 	import Popup from './components/Popup.svelte';
 
-	import { mountMap } from '$lib/index.js';
-	import type { MapBounds, MapPopup, MapPopupData, MapPopupState } from '$lib/map/schemas.js';
+	import type { MapPopup, MapPopupData, MapPopupState } from '$lib/map/schemas.js';
+	import { MapPopupManager } from '$lib/index.js';
+	import { MapDarkStyle } from '$lib/map/styles.js';
 
 	import { getStates } from '@workspace/shared/src/popup/compute/states.js';
 	import { testStates } from '@workspace/shared/src/popup/compute/test.js';
 
 	import { wasm } from '@workspace/shared/wasm/compute/states.js';
 
-	let map: ReturnType<typeof mountMap>;
+	import maplibregl from 'maplibre-gl';
+	import 'maplibre-gl/dist/maplibre-gl.css';
+
+	let map: maplibregl.Map;
+	let mapContainer: HTMLElement;
+	let mapPopupManager: MapPopupManager;
+
 	let mapPopups = new Map<string, MapPopup>();
 
 	let loading = $state<boolean>(false);
 	let zoom = $state<number>(0);
 
 	onMount(() => {
-		map = mountMap({
-			container: 'map',
-			position: {
-				center: { lat: 51.505, lng: -0.09 },
-				zoom: 4
-			},
-			restriction: {
-				// minZoom: 10,
-				// maxZoom: 18
-				// maxBounds: {
-				// 	sw: { lat: 51.505, lng: -0.09 },
-				// 	ne: { lat: 54.505, lng: 3.09 }
-				// }
-			},
-			style: {
-				name: 'light',
-				colors: {
-					background: 'white',
-					primary: 'purple',
-					text: 'black'
-				}
-			},
-			configuration: {
-				pin: {
-					fade: true
-				}
+		map = new maplibregl.Map({
+			style: MapDarkStyle,
+			center: { lat: 51.505, lng: -0.09 },
+			zoom: 4,
+			container: mapContainer,
+			pitchWithRotate: false,
+			attributionControl: {
+				compact: false
+			}
+		});
+
+		mapPopupManager = new MapPopupManager(map, (o) => new maplibregl.Marker(o));
+		mapPopupManager.setColors('purple', 'white', 'black');
+		mapPopupManager.setConfiguration({
+			pin: {
+				fade: true
 			}
 		});
 
 		map.on('move', (e) => {
-			zoom = e.zoom;
-		});
-
-		map.on('idle', () => {
-			// console.log('idle');
+			zoom = map.getZoom();
 		});
 
 		const wasmBinaryString = atob(wasm);
@@ -85,44 +78,6 @@
 		}
 	});
 
-	function changeStyle() {
-		const style = map.getStyle();
-
-		if (style.name === 'light') {
-			map.setStyle({
-				name: 'dark',
-				colors: {
-					background: 'lightgray',
-					primary: 'violet',
-					text: 'black'
-				}
-			});
-		}
-
-		if (style.name === 'dark') {
-			map.setStyle({
-				name: 'custom',
-				url: 'https://tiles.openfreemap.org/styles/liberty',
-				colors: {
-					background: 'white',
-					primary: 'red',
-					text: 'black'
-				}
-			});
-		}
-
-		if (style.name === 'custom') {
-			map.setStyle({
-				name: 'light',
-				colors: {
-					background: 'white',
-					primary: 'violet',
-					text: 'black'
-				}
-			});
-		}
-	}
-
 	async function addData() {
 		const bounds = map.getBounds();
 		const popups = await getPopups(bounds);
@@ -131,13 +86,13 @@
 		await tick();
 
 		const now = performance.now();
-		await map.updatePopups(popups);
+		await mapPopupManager.updatePopups(popups);
 		console.log(`[UPDATE POPUPS ${popups.length}] ${performance.now() - now}ms`);
 	}
 
 	async function clearData() {
 		mapPopups.clear();
-		map.removePopups();
+		mapPopupManager.removePopups();
 	}
 
 	let toggled = false;
@@ -145,7 +100,7 @@
 	async function toggleData() {
 		toggled = !toggled;
 		const states = Array.from(mapPopups.values()).map((popup) => ({ id: popup.data.id, toggled: toggled }));
-		map.togglePopups(states);
+		mapPopupManager.togglePopups(states);
 	}
 
 	const zoomDelta = 0.05;
@@ -199,7 +154,7 @@
 		}
 	});
 
-	async function getPopups(bounds: MapBounds): Promise<MapPopup[]> {
+	async function getPopups(bounds: maplibregl.LngLatBounds): Promise<MapPopup[]> {
 		const data = new Array<MapPopupData>();
 
 		let count = 0;
@@ -211,7 +166,7 @@
 			const rank = ranks[index];
 			index++;
 
-			if (lat < bounds.sw.lat || bounds.ne.lat < lat || lng < bounds.sw.lng || bounds.ne.lng < lng) continue;
+			if (lat < bounds._sw.lat || bounds._ne.lat < lat || lng < bounds._sw.lng || bounds._ne.lng < lng) continue;
 			count++;
 
 			data.push({
@@ -300,7 +255,6 @@
 				const element = document.createElement('div');
 				element.style.display = 'flex';
 				element.style.padding = '2px';
-				element.addEventListener('click', () => map.revealPopup(id));
 				mount(Icon, { target: element, props: { name: 'location_on', size: 16, color: 'white' } });
 
 				resolve(element);
@@ -326,10 +280,9 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
 </svelte:head>
 
-<div id="map"></div>
+<div id="map" bind:this={mapContainer}></div>
 
 <div class="buttons">
-	<button class="style" onclick={changeStyle}>Change style</button>
 	<button class="data" onclick={addData}>Add data</button>
 	<button class="data" onclick={clearData}>Clear data</button>
 	<button class="data" onclick={toggleData}>Toggle data</button>

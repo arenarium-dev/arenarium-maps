@@ -1,43 +1,7 @@
-import { mount, unmount } from 'svelte';
+import { MapPopupManager } from './manager.js';
+import { MapDarkStyle, MapStyleLight } from './map/styles.js';
+import type { MapConfiguration, MapPopup, MapPopupState, MapPopupData, MapPopupStatesRequest, MapPopupContentCallback } from './map/schemas.js';
 
-import Map from './components/Map.svelte';
-import type { MapComponent } from './map/types.js';
-import type {
-	MapOptions,
-	MapStyle,
-	MapConfiguration,
-	MapPopup,
-	MapPopupState,
-	MapPopupData,
-	MapPopupStatesRequest,
-	MapPopupContentCallback
-} from './map/schemas.js';
-
-export { Map };
-export {
-	type MapComponent,
-	type MapOptions,
-	type MapStyle,
-	type MapConfiguration,
-	type MapPopup,
-	type MapPopupData,
-	type MapPopupState,
-	type MapPopupStatesRequest,
-	type MapPopupContentCallback
-};
-
-export function mountMap(options: MapOptions) {
-	const target = document.getElementById(options.container);
-	if (!target) throw new Error(`Container not found: ${options.container}`);
-
-	return mount(Map, {
-		target: target,
-		props: {
-			options: options
-		}
-	}) as MapComponent;
-}
-
-export function unmountMap(map: ReturnType<typeof mountMap>) {
-	unmount(map);
-}
+export { MapPopupManager };
+export { MapDarkStyle, MapStyleLight };
+export { type MapConfiguration, type MapPopup, type MapPopupData, type MapPopupState, type MapPopupStatesRequest, type MapPopupContentCallback };
