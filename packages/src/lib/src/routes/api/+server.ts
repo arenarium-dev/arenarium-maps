@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 
-import { type MapPopupData } from '@arenarium/maps';
+import type { MapPopupData } from '$lib/map/schemas.js';
 
 import { getStates } from '@workspace/shared/src/popup/compute/states.js';
 

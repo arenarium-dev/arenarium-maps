@@ -10,6 +10,7 @@
 		"sourceMap": true,
 		"strict": true,
 		"module": "NodeNext",
-		"moduleResolution": "NodeNext"
+		"moduleResolution": "NodeNext",
+		"types": ["vite/client", "./node_modules/maplibre-gl/dist/maplibre-gl.d.ts"]
 	}
 }

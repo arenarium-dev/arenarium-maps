@@ -4,9 +4,9 @@
 	import Icon from './components/Icon.svelte';
 	import Popup from './components/Popup.svelte';
 
-	import type { MapPopup, MapPopupData, MapPopupState } from '$lib/map/schemas.js';
 	import { MapPopupManager } from '$lib/index.js';
 	import { MapDarkStyle } from '$lib/map/styles.js';
+	import type { MapPopup, MapPopupData, MapPopupState } from '$lib/map/schemas.js';
 
 	import { getStates } from '@workspace/shared/src/popup/compute/states.js';
 	import { testStates } from '@workspace/shared/src/popup/compute/test.js';
