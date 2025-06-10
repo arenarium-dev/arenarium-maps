@@ -19,24 +19,38 @@
 	import { Fetch } from '$lib/client/core/fetch';
 	import { Demo } from '$lib/shared/demo';
 
-	import { mountMap, MapStyleLight, type MapConfiguration, type MapPopup, type MapPopupData, type MapPopupState } from '@arenarium/maps';
+	import {
+		mountMap,
+		MapManager,
+		MapStyleLight,
+		type MapConfiguration,
+		type MapPopup,
+		type MapPopupData,
+		type MapPopupState,
+		MapDarkStyle
+	} from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
+	import { de } from 'zod/v4/locales';
 
-	let map: ReturnType<typeof mountMap>;
+	let map: maplibregl.Map;
+	let mapManager: MapManager;
+
 	let mapLoaded = $state<boolean>(false);
 	let loading = $state<boolean>(false);
 
 	onMount(() => {
 		try {
-			map = mountMap({
-				container: 'map',
-				center: { lat: 51.505, lng: -0.09 }
+			const { maplibregl, manager } = mountMap({
+				container: 'map'
 			});
 
-			map.manager().setColors('darkgreen', 'white', 'black');
+			map = maplibregl;
+			mapManager = manager;
 
-			map.libre().setStyle(MapStyleLight);
-			map.libre().on('load', () => {
+			mapManager.setColors('darkgreen', 'white', 'black');
+
+			map.setStyle(MapStyleLight);
+			map.on('load', () => {
 				mapLoaded = true;
 			});
 		} catch (e) {
@@ -71,125 +85,11 @@
 
 	//#endregion
 
-	//#region Style
-
-	let styleKey = $state<'website' | 'light' | 'dark' | 'liberty' | 'demo'>('website');
-	let mapStyle = $derived<MapStyle>(getStyle(styleKey));
-
-	$effect(() => {
-		if (mapStyle && mapLoaded) {
-			map.setStyle(mapStyle);
-		}
-	});
-
-	function onStyleWebsiteClick() {
-		styleKey = 'website';
-	}
-
-	function onStyleLightClick() {
-		styleKey = 'light';
-	}
-
-	function onStyleDarkClick() {
-		styleKey = 'dark';
-	}
-
-	function onStyleLibertyClick() {
-		styleKey = 'liberty';
-	}
-
-	function getStyle(key: 'website' | 'light' | 'dark' | 'liberty' | 'demo'): MapStyle {
-		switch (key) {
-			case 'website':
-				return getStyleWebsite();
-			case 'light':
-				return getStyleLight();
-			case 'dark':
-				return getStyleDark();
-			case 'liberty':
-				return getStyleLiberty();
-			case 'demo':
-				return getStyleDemo();
-		}
-	}
-
-	function getStyleWebsite(): MapStyle {
-		const theme = app.theme.get();
-		switch (theme) {
-			case 'dark':
-				return getStyleDark();
-			case 'light':
-				return getStyleLight();
-		}
-	}
-
-	function getStyleLight(): MapStyle {
-		return {
-			name: 'light',
-			colors: {
-				background: 'white',
-				primary: 'darkgreen',
-				text: 'black'
-			}
-		};
-	}
-
-	function getStyleDark(): MapStyle {
-		return {
-			name: 'dark',
-			colors: {
-				background: 'var(--surface)',
-				primary: 'lightgreen',
-				text: 'var(--on-surface)'
-			}
-		};
-	}
-
-	function getStyleLiberty(): MapStyle {
-		return {
-			name: 'custom',
-			url: 'https://tiles.openfreemap.org/styles/liberty',
-			colors: {
-				background: 'white',
-				primary: 'blue',
-				text: 'black'
-			}
-		};
-	}
-
-	function getStyleDemo(): MapStyle {
-		switch (demo) {
-			case Demo.SrbijaNekretnine: {
-				return {
-					name: 'custom',
-					url: 'https://tiles.openfreemap.org/styles/bright',
-					colors: {
-						background: 'white',
-						primary: '#ff4400',
-						text: 'black'
-					}
-				};
-			}
-			case Demo.CityExpert: {
-				return {
-					name: 'custom',
-					url: 'demo/cityexpert.style.json',
-					colors: {
-						background: 'white',
-						primary: 'white',
-						text: 'black'
-					}
-				};
-			}
-			default:
-				return getStyleWebsite();
-		}
-	}
-
-	//#endregion
-
 	//#region Demo
 
+	type DemoStyle = 'website' | 'light' | 'dark' | 'liberty';
+
+	let style = $state<DemoStyle>('website');
 	let demo = $state<Demo>(page.params.demo as Demo);
 
 	let demoPopupData = new Map<string, MapPopupData>();
@@ -199,18 +99,32 @@
 
 	$effect(() => {
 		if (mapLoaded) {
-			onMapLoad();
-			onMapIdle();
+			setTimeout(async () => {
+				await onMapLoad();
+				await onMapIdle();
 
-			map.on('idle', () => {
-				onMapIdle();
+				map.on('idle', async () => {
+					await onMapIdle();
+				});
 			});
+		}
+	});
+
+	$effect(() => {
+		if (mapLoaded) {
+			// Update style
+			map.setStyle(getDemoStyle(demo, style));
+
+			// Update colors
+			const demoColors = getDemoColors(demo, style);
+			mapManager.setColors(demoColors.primary, demoColors.background, demoColors.text);
 		}
 	});
 
 	$effect(() => {
 		if (mapLoaded && demo != page.params.demo) {
 			demo = page.params.demo as Demo;
+
 			setTimeout(async () => {
 				await onMapLoad();
 				await onMapIdle();
@@ -219,30 +133,19 @@
 	});
 
 	async function onMapLoad() {
-		// Update style
-		const demoStyle = getDemoStyle(demo);
-		if (demoStyle) {
-			styleKey = 'demo';
-		} else {
-			styleKey = 'website';
-		}
-
+		// Update position
 		const demoRestriction = getDemoPosition(demo);
-		if (demoRestriction) {
-			map.setCenter(demoRestriction.center);
-			map.setMinZoom(demoRestriction.zoom);
-		} else {
-			map.setCenter({ lat: 51.505, lng: -0.09 });
-			map.setMinZoom(0);
-		}
+		map.setMinZoom(demoRestriction.zoom);
+		map.setCenter([demoRestriction.lng, demoRestriction.lat]);
 
-		map.setConfiguration(getDemoConfiguration(demo));
+		// Update configuration
+		mapManager.setConfiguration(getDemoConfiguration(demo));
 
 		// Update data
 		demoPopupData.clear();
 		demoPopupDataLoaded = false;
 
-		map.removePopups();
+		mapManager.removePopups();
 	}
 
 	async function onMapIdle() {
@@ -259,10 +162,10 @@
 		e.stopPropagation();
 
 		demoTogglePopups = !demoTogglePopups;
-		map.togglePopups(Array.from(demoPopupData.values()).map((p) => ({ id: p.id, toggled: demoTogglePopups })));
+		mapManager.togglePopups(Array.from(demoPopupData.values()).map((p) => ({ id: p.id, toggled: demoTogglePopups })));
 	}
 
-	async function processBoundsChange(bounds: MapBounds) {
+	async function processBoundsChange(bounds: maplibregl.LngLatBounds) {
 		if (demoPopupDataLoaded) return;
 
 		try {
@@ -281,10 +184,10 @@
 
 			const params = new URLSearchParams();
 			params.append('total', '128');
-			params.append('swlat', bounds.sw.lat.toString());
-			params.append('swlng', bounds.sw.lng.toString());
-			params.append('nelat', bounds.ne.lat.toString());
-			params.append('nelng', bounds.ne.lng.toString());
+			params.append('swlat', bounds.getSouthWest().lat.toString());
+			params.append('swlng', bounds.getSouthWest().lng.toString());
+			params.append('nelat', bounds.getNorthEast().lat.toString());
+			params.append('nelng', bounds.getNorthEast().lng.toString());
 			params.append('width', width.toString());
 			params.append('height', height.toString());
 
@@ -356,8 +259,8 @@
 			}
 
 			// Update the popups
-			await map.updatePopups(popups);
-			map.togglePopups(popups.map((p) => ({ id: p.data.id, toggled: demoTogglePopups })));
+			await mapManager.updatePopups(popups);
+			mapManager.togglePopups(popups.map((p) => ({ id: p.data.id, toggled: demoTogglePopups })));
 		} catch (err) {
 			console.error(err);
 			app.toast.set({
@@ -388,45 +291,91 @@
 		}
 	}
 
-	function getDemoStyle(demo: Demo): MapStyle | undefined {
+	function getDemoStyle(demo: Demo, style: DemoStyle): string | maplibregl.StyleSpecification {
 		switch (demo) {
 			case Demo.SrbijaNekretnine: {
-				return {
-					name: 'custom',
-					url: 'https://tiles.openfreemap.org/styles/bright',
-					colors: {
-						background: 'white',
-						primary: '#ff4400',
-						text: 'black'
-					}
-				};
+				return 'https://tiles.openfreemap.org/styles/bright';
 			}
 			case Demo.CityExpert: {
-				return {
-					name: 'custom',
-					url: 'demo/cityexpert.style.json',
-					colors: {
-						background: 'white',
-						primary: 'white',
-						text: 'black'
+				return 'demo/cityexpert.style.json';
+			}
+			default: {
+				switch (style) {
+					case 'website': {
+						return app.theme.get() == 'dark' ? MapDarkStyle : MapStyleLight;
 					}
-				};
+					case 'light': {
+						return MapStyleLight;
+					}
+					case 'dark': {
+						return MapDarkStyle;
+					}
+					case 'liberty': {
+						return 'https://tiles.openfreemap.org/styles/liberty';
+					}
+				}
 			}
 		}
 	}
 
-	function getDemoPosition(demo: Demo): MapPosition | undefined {
+	function getDemoColors(demo: Demo, style: DemoStyle): { background: string; primary: string; text: string } {
 		switch (demo) {
 			case Demo.SrbijaNekretnine: {
 				return {
-					center: { lat: 44.811222, lng: 20.450989 },
+					background: 'white',
+					primary: '#ff4400',
+					text: 'black'
+				};
+			}
+			case Demo.CityExpert: {
+				return {
+					background: 'white',
+					primary: 'white',
+					text: 'black'
+				};
+			}
+			default: {
+				switch (style) {
+					case 'website': {
+						return app.theme.get() == 'dark'
+							? { background: 'var(--surface)', primary: 'lightgreen', text: 'var(--on-surface)' }
+							: { background: 'white', primary: 'darkgreen', text: 'black' };
+					}
+					case 'light': {
+						return { background: 'white', primary: 'darkgreen', text: 'black' };
+					}
+					case 'dark': {
+						return { background: 'var(--surface)', primary: 'lightgreen', text: 'var(--on-surface)' };
+					}
+					case 'liberty': {
+						return { background: 'white', primary: 'blue', text: 'black' };
+					}
+				}
+			}
+		}
+	}
+
+	function getDemoPosition(demo: Demo): { lat: number; lng: number; zoom: number } {
+		switch (demo) {
+			case Demo.SrbijaNekretnine: {
+				return {
+					lat: 44.811222,
+					lng: 20.450989,
 					zoom: 12
 				};
 			}
 			case Demo.CityExpert: {
 				return {
-					center: { lat: 44.811222, lng: 20.450989 },
+					lat: 44.811222,
+					lng: 20.450989,
 					zoom: 10
+				};
+			}
+			default: {
+				return {
+					lat: 51.505,
+					lng: -0.09,
+					zoom: 4
 				};
 			}
 		}
@@ -541,85 +490,82 @@
 	//#endregion
 </script>
 
-<div
-	class="container"
-	style="--map-style-primary: {mapStyle.colors.primary}; --map-style-background: {mapStyle.colors.background}; --map-style-text: {mapStyle.colors.text};"
->
-	<div id="map"></div>
-
-	{#if mapLoaded}
-		<div class="top">
-			<Menu>
-				{#snippet button()}
-					<div class="button shadow-small">
-						<Icon name={'tune'} size={22} />
-						<span>{getDemoName(demo)}</span>
-					</div>
-				{/snippet}
-				{#snippet menu()}
-					<div class="menu shadow-large">
-						<Menu axis={'x'} bind:this={palleteMenuComponent}>
-							{#snippet button()}
-								<button class="item" onclick={onPalleteClick} inert={getDemoStyle(demo) != undefined}>
-									<Icon name={'palette'} size={22} />
-									<span>Style</span>
-									<Icon name={'arrow_right'} />
-								</button>
-							{/snippet}
-							{#snippet menu()}
-								<div class="menu pallete shadow-large">
-									<button class="item" class:selected={styleKey == 'website'} onclick={onStyleWebsiteClick}>Website</button>
-									<button class="item" class:selected={styleKey == 'light'} onclick={onStyleLightClick}>Light</button>
-									<button class="item" class:selected={styleKey == 'dark'} onclick={onStyleDarkClick}>Dark</button>
-									<button class="item" class:selected={styleKey == 'liberty'} onclick={onStyleLibertyClick}>Liberty</button>
-								</div>
-							{/snippet}
-						</Menu>
-						<Menu axis={'x'} bind:this={demoMenuComponent}>
-							{#snippet button()}
-								<button class="item" onclick={onDemoClick}>
-									<Icon name={'database'} size={22} />
-									<span>Data</span>
-									<Icon name={'arrow_right'} />
-								</button>
-							{/snippet}
-							{#snippet menu()}
-								<div class="menu demo shadow-large">
-									<a href="/" class="item" class:selected={page.params.demo == undefined}> Basic </a>
-									<a href="/{Demo.Rentals}" class="item" class:selected={page.params.demo == Demo.Rentals}>{getDemoName(Demo.Rentals)}</a>
-									<a href="/{Demo.News}" class="item" inert>{getDemoName(Demo.News)}</a>
-									<a href="/{Demo.Events}" class="item" inert>{getDemoName(Demo.Events)}</a>
-								</div>
-							{/snippet}
-						</Menu>
-						<button class="item" onclick={onDemoAutoUpdateClick}>
-							<Icon name={demoAutoUpdate ? 'check_box' : 'check_box_outline_blank'} size={22} />
-							<span>Auto Load</span>
-						</button>
-						<button class="item" onclick={onDemoTogglePopupsClick}>
-							<Icon name={demoTogglePopups ? 'check_box' : 'check_box_outline_blank'} size={22} />
-							<span>Show Popups</span>
-						</button>
-					</div>
-				{/snippet}
-			</Menu>
-		</div>
-
-		<div class="side">
-			<button class="button shadow-small" onmousedown={onZoomIn}>
-				<Icon name={'add'} size={22} />
-			</button>
-			<button class="button shadow-small" onmousedown={onZoomOut}>
-				<Icon name={'remove'} size={22} />
-			</button>
-		</div>
-
-		{#if loading}
-			<div class="progess" transition:fade={{ duration: 125, delay: 50 }}>
-				<Progress />
+<div class="container">
+	<div id="map">
+		{#if mapLoaded}
+			<div class="top">
+				<Menu>
+					{#snippet button()}
+						<div class="button shadow-small">
+							<Icon name={'tune'} size={22} />
+							<span>{getDemoName(demo)}</span>
+						</div>
+					{/snippet}
+					{#snippet menu()}
+						<div class="menu shadow-large">
+							<Menu axis={'x'} bind:this={palleteMenuComponent}>
+								{#snippet button()}
+									<button class="item" onclick={onPalleteClick}>
+										<Icon name={'palette'} size={22} />
+										<span>Style</span>
+										<Icon name={'arrow_right'} />
+									</button>
+								{/snippet}
+								{#snippet menu()}
+									<div class="menu pallete shadow-large">
+										<button class="item" class:selected={style == 'website'} onclick={() => (style = 'website')}>Website</button>
+										<button class="item" class:selected={style == 'light'} onclick={() => (style = 'light')}>Light</button>
+										<button class="item" class:selected={style == 'dark'} onclick={() => (style = 'dark')}>Dark</button>
+										<button class="item" class:selected={style == 'liberty'} onclick={() => (style = 'liberty')}>Liberty</button>
+									</div>
+								{/snippet}
+							</Menu>
+							<Menu axis={'x'} bind:this={demoMenuComponent}>
+								{#snippet button()}
+									<button class="item" onclick={onDemoClick}>
+										<Icon name={'database'} size={22} />
+										<span>Data</span>
+										<Icon name={'arrow_right'} />
+									</button>
+								{/snippet}
+								{#snippet menu()}
+									<div class="menu demo shadow-large">
+										<a href="/" class="item" class:selected={page.params.demo == undefined}> Basic </a>
+										<a href="/{Demo.Rentals}" class="item" class:selected={page.params.demo == Demo.Rentals}>{getDemoName(Demo.Rentals)}</a>
+										<a href="/{Demo.News}" class="item" inert>{getDemoName(Demo.News)}</a>
+										<a href="/{Demo.Events}" class="item" inert>{getDemoName(Demo.Events)}</a>
+									</div>
+								{/snippet}
+							</Menu>
+							<button class="item" onclick={onDemoAutoUpdateClick}>
+								<Icon name={demoAutoUpdate ? 'check_box' : 'check_box_outline_blank'} size={22} />
+								<span>Auto Load</span>
+							</button>
+							<button class="item" onclick={onDemoTogglePopupsClick}>
+								<Icon name={demoTogglePopups ? 'check_box' : 'check_box_outline_blank'} size={22} />
+								<span>Show Popups</span>
+							</button>
+						</div>
+					{/snippet}
+				</Menu>
 			</div>
+
+			<div class="side">
+				<button class="button shadow-small" onmousedown={onZoomIn}>
+					<Icon name={'add'} size={22} />
+				</button>
+				<button class="button shadow-small" onmousedown={onZoomOut}>
+					<Icon name={'remove'} size={22} />
+				</button>
+			</div>
+
+			{#if loading}
+				<div class="progess" transition:fade={{ duration: 125, delay: 50 }}>
+					<Progress />
+				</div>
+			{/if}
 		{/if}
-	{/if}
+	</div>
 </div>
 
 <Toast path="/" />
@@ -657,6 +603,7 @@
 			flex-direction: column;
 			align-items: start;
 			gap: 12px;
+			z-index: 10000000;
 
 			.button {
 				width: auto;
@@ -727,6 +674,7 @@
 			flex-direction: column;
 			align-items: center;
 			gap: 12px;
+			z-index: 10000000;
 		}
 
 		.progess {
@@ -736,6 +684,36 @@
 			width: 100%;
 			height: 4px;
 			overflow: hidden;
+			z-index: 10000000;
+		}
+	}
+
+	:global {
+		.maplibregl-map {
+			z-index: 0;
+
+			.maplibregl-ctrl-bottom-right {
+				z-index: 10000000;
+
+				.maplibregl-ctrl-attrib {
+					background-color: color-mix(in srgb, var(--map-style-background) 50%, transparent 50%);
+					color: var(--map-style-text);
+					font-size: 10px;
+					font-family: 'Roboto';
+					font-weight: 500;
+					line-height: normal;
+					padding: 2px 5px;
+					border-top-left-radius: 5px;
+					box-shadow: -1px -1px 2px rgba(0, 0, 0, 0.2);
+
+					.maplibregl-ctrl-attrib-inner {
+						a {
+							color: var(--map-style-text);
+							font-weight: 600;
+						}
+					}
+				}
+			}
 		}
 	}
 </style>
