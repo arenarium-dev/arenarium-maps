@@ -1,7 +1,5 @@
 import MapMarker from './components/marker/Marker.svelte';
 import MapMarkerCircle from './components/marker/Circle.svelte';
-import MapLogo from './components/map/Logo.svelte';
-import MapStyle from './components/map/Style.svelte';
 
 import { log } from './map/log.js';
 import { animation } from './map/animation/animation.js';
@@ -36,23 +34,7 @@ class MapPopupManager {
 		this.map = map;
 		this.map.on('load', this.onMapLoad.bind(this));
 
-		mount(MapLogo, { target: this.map.getContainer() });
-		mount(MapStyle, { target: this.map.getContainer() });
-
-		this.setRestrictions();
 		this.setConfiguration(null);
-	}
-
-	private setRestrictions() {
-		console.warn('Disabling map rotation, pitch and keyboard to ensure popups are shown correctly');
-		// Disable map rotation using right click + drag
-		this.map.dragRotate.disable();
-		// Disable map rotation using keyboard
-		this.map.keyboard.disable();
-		// Disable map rotation using touch rotation gesture
-		this.map.touchZoomRotate.disableRotation();
-		// Disable map pitch using touch pitch gesture
-		this.map.touchPitch.disable();
 	}
 
 	public setConfiguration(configuration: MapConfiguration | null) {
