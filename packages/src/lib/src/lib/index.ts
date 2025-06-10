@@ -9,8 +9,8 @@ import type { MapComponent } from './map/types.js';
 
 import type { MapOptions } from 'maplibre-gl';
 
-export function mountMap(container: string, options: MapOptions): MapComponent {
-	const target = document.getElementById(container);
+export function mountMap(options: MapOptions): MapComponent {
+	const target = typeof options.container === 'string' ? document.getElementById(options.container) : options.container;
 	if (!target) throw new Error(`Container not found: ${options.container}`);
 
 	return mount(Map, {
