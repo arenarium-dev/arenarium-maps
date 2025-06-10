@@ -18,11 +18,26 @@ import {
 	MAP_ZOOM_SCALE
 } from '@workspace/shared/src/constants.js';
 
-type LibreMarkerCallback = (markerOptions: maplibregl.MarkerOptions) => maplibregl.Marker;
+import {
+	type Map as MapLibre,
+	type MapOptions as MapLibreOptions,
+	type Marker as MapLibreMarker,
+	type MarkerOptions as MapLibreMarkerOptions
+} from 'maplibre-gl';
+
+interface MapLibreClass {
+	new (options: MapLibreOptions): MapLibre;
+}
+
+interface MapLibreMarkerClass {
+	new (options: MapLibreMarkerOptions): MapLibreMarker;
+}
 
 class MapManager {
-	private mapMarkerCallback: LibreMarkerCallback;
-	private map: maplibregl.Map;
+	private MapClass: MapLibreClass;
+	private MapMarkerClass: MapLibreMarkerClass;
+
+	private map: MapLibre;
 
 	private mapConfiguration: MapConfiguration | null = null;
 
@@ -30,12 +45,31 @@ class MapManager {
 	private mapPopupDataMap = new Map<string, MapPopupData>();
 	private mapPopupDataUpdating = false;
 
-	constructor(map: maplibregl.Map, mapMarkerCallback: LibreMarkerCallback) {
-		this.mapMarkerCallback = mapMarkerCallback;
-		this.map = map;
+	constructor(mapClass: MapLibreClass, mapMarkerClass: MapLibreMarkerClass, options: MapLibreOptions) {
+		this.MapClass = mapClass;
+		this.MapMarkerClass = mapMarkerClass;
+
+		this.map = new this.MapClass({
+			...options,
+			pitchWithRotate: false,
+			attributionControl: { customAttribution: '@arenarium/maps' }
+		});
+		// Disable map rotation using right click + drag
+		this.map.dragRotate.disable();
+		// Disable map rotation using keyboard
+		this.map.keyboard.disable();
+		// Disable map rotation using touch rotation gesture
+		this.map.touchZoomRotate.disableRotation();
+		// Disable map pitch using touch pitch gesture
+		this.map.touchPitch.disable();
+		// On load event
 		this.map.on('load', this.onMapLoad.bind(this));
 
 		this.setConfiguration(null);
+	}
+
+	get maplibre() {
+		return this.map;
 	}
 
 	public setConfiguration(configuration: MapConfiguration | null) {
@@ -227,7 +261,7 @@ class MapManager {
 				} else {
 					// Create data
 					const newData = new MapPopupData(newPopup);
-					newData.create(this.mapMarkerCallback);
+					newData.create(this.MapMarkerClass);
 
 					this.mapPopupDataMap.set(newPopup.data.id, newData);
 					this.mapPopupDataArray.push(newData);
@@ -292,9 +326,9 @@ class MapPopupComponent<T> {
 		this.zoom = popup.state[0];
 	}
 
-	create(libreMarkerCallback: LibreMarkerCallback) {
+	create(libreMarkerClass: MapLibreMarkerClass) {
 		this.createElement();
-		this.createLibreMarker(libreMarkerCallback);
+		this.createLibreMarker(libreMarkerClass);
 		this.updateZIndex();
 	}
 
@@ -302,12 +336,12 @@ class MapPopupComponent<T> {
 		throw new Error('Create element not implemented');
 	}
 
-	createLibreMarker(libreMarkerCallback: LibreMarkerCallback) {
+	createLibreMarker(libreMarkerClass: MapLibreMarkerClass) {
 		const element = this.element;
 		if (!element) throw new Error('Failed to create libre marker');
 
 		// Create new libre marker
-		const libreMarker = libreMarkerCallback({ element: element });
+		const libreMarker = new libreMarkerClass({ element: element });
 		libreMarker.setLngLat([this.lng, this.lat]);
 		this.libreMarker = libreMarker;
 	}
@@ -557,9 +591,9 @@ class MapPopupData {
 		this.marker = new MapPopupMarker(popup);
 	}
 
-	create(libreMarkerCallback: LibreMarkerCallback) {
-		this.circle.create(libreMarkerCallback);
-		this.marker.create(libreMarkerCallback);
+	create(libreMarkerClass: MapLibreMarkerClass) {
+		this.circle.create(libreMarkerClass);
+		this.marker.create(libreMarkerClass);
 	}
 
 	update(popup: MapPopup) {

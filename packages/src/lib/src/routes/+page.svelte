@@ -4,9 +4,8 @@
 	import Icon from './components/Icon.svelte';
 	import Popup from './components/Popup.svelte';
 
-	import { mountMap } from '$lib/index.js';
+	import { MapManager } from '$lib/map/manager.js';
 	import { MapDarkStyle } from '$lib/map/styles.js';
-	import { type MapManager } from '$lib/map/manager.js';
 	import type { MapPopup, MapPopupData, MapPopupState } from '$lib/map/schemas.js';
 
 	import { getStates } from '@workspace/shared/src/popup/compute/states.js';
@@ -14,7 +13,10 @@
 
 	import { wasm } from '@workspace/shared/wasm/compute/states.js';
 
-	let map: maplibregl.Map;
+	import maplibregl from 'maplibre-gl';
+	import 'maplibre-gl/dist/maplibre-gl.css';
+
+	let mapLibre: maplibregl.Map;
 	let mapManager: MapManager;
 	let mapContainer: HTMLElement;
 
@@ -24,15 +26,14 @@
 	let zoom = $state<number>(0);
 
 	onMount(() => {
-		const result = mountMap({
+		mapManager = new MapManager(maplibregl.Map, maplibregl.Marker, {
 			container: mapContainer,
 			style: MapDarkStyle,
 			center: { lat: 51.505, lng: -0.09 },
 			zoom: 4
 		});
 
-		map = result.map;
-		mapManager = result.manager;
+		mapLibre = mapManager.maplibre;
 
 		mapManager.setColors('purple', 'white', 'black');
 		mapManager.setConfiguration({
@@ -41,8 +42,8 @@
 			}
 		});
 
-		map.on('move', (e) => {
-			zoom = map.getZoom();
+		mapLibre.on('move', (e) => {
+			zoom = mapLibre.getZoom();
 		});
 
 		const wasmBinaryString = atob(wasm);
@@ -75,7 +76,7 @@
 	});
 
 	async function addData() {
-		const bounds = map.getBounds();
+		const bounds = mapLibre.getBounds();
 		const popups = await getPopups(bounds);
 
 		popups.forEach((popup) => mapPopups.set(popup.data.id, popup));
@@ -102,11 +103,11 @@
 	const zoomDelta = 0.05;
 
 	function onZoomIn() {
-		map.setZoom(map.getZoom() + zoomDelta);
+		mapLibre.setZoom(mapLibre.getZoom() + zoomDelta);
 	}
 
 	function onZoomOut() {
-		map.setZoom(map.getZoom() - zoomDelta);
+		mapLibre.setZoom(mapLibre.getZoom() - zoomDelta);
 	}
 
 	//#region Data

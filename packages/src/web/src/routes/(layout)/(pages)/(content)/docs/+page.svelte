@@ -19,7 +19,7 @@ import { mountMap } from '@arenarium/maps';
 import '@arenarium/maps/dist/style.css';
 
 // Initialize and mount the map (further configuration details follow)
-const map = mountMap(...);`}
+const mountResult = mountMap(...);`}
 			/>
 		</div>
 		<div class="header">CDN</div>
@@ -41,7 +41,7 @@ const map = mountMap(...);`}
 				language="javascript"
 				text={`
 // Initialize and mount the map (further configuration details follow)
-const map = arenarium.mountMap(...);
+const mountResult = arenarium.mountMap(...);
 `}
 			/>
 		</div>
@@ -204,58 +204,6 @@ await map.updatePopups(popups);`}
 				language="javascript"
 				text={`
 await map.removePopups();
-`}
-			/>
-		</div>
-		<div class="header">Events</div>
-		<div class="text">You can subscribe to various map events to respond to user interactions and map state changes:</div>
-		<div class="highlight">
-			<Highlight
-				language="javascript"
-				text={`
-map.on('idle', (position) => { /* Called when the map has finished moving and zooming */ });
-map.on('move', (position) => { /* Called while the map is moving */ });
-map.on('click', (coordinate) => { /* Called when the map is clicked */ });`}
-			/>
-		</div>
-		<div class="text">
-			To unsubscribe from a specific event listener, use the <code>off</code> method, providing the event key and the handler function:
-		</div>
-		<div class="highlight">
-			<Highlight language="javascript" text={`map.off('idle', handlerFunction);`} />
-		</div>
-		<div class="header">Position</div>
-		<div class="text">You can programmatically retrieve the current map position, boundaries, and zoom level:</div>
-		<div class="highlight">
-			<Highlight
-				language="javascript"
-				text={`
-const position = map.getPosition(); // Returns an object containing center coordinates and zoom
-const bounds = map.getBounds();     // Returns the map's current bounding box
-const zoom = map.getZoom();         // Returns the current zoom level
-`}
-			/>
-		</div>
-		<div class="text">To programmatically set the map's center and zoom level:</div>
-		<div class="highlight">
-			<Highlight
-				language="javascript"
-				text={`
-map.setPosition({ center: { lat: 51.505, lng: -0.09 }, zoom: 13 });
-`}
-			/>
-		</div>
-		<div class="text">You can also dynamically set restrictions on the map's zoom levels and visible bounds:</div>
-		<div class="highlight">
-			<Highlight
-				language="javascript"
-				text={`
-map.setMinZoom(10);
-map.setMaxZoom(18);
-map.setMaxBounds({
-    sw: { lat: 51.505, lng: -0.09 },
-    ne: { lat: 54.505, lng: 3.09 }
-});
 `}
 			/>
 		</div>
