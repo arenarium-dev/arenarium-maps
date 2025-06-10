@@ -1,10 +1,10 @@
-import MapMarker from './components/marker/Marker.svelte';
-import MapMarkerCircle from './components/marker/Circle.svelte';
+import MapMarker from '../components/marker/Marker.svelte';
+import MapMarkerCircle from '../components/marker/Circle.svelte';
 
-import { log } from './map/log.js';
-import { animation } from './map/animation/animation.js';
-import { MapBoundsPair } from './map/bounds.js';
-import { mapPopupsSchema, type MapConfiguration, type MapPopup, type MapPopupContentCallback } from './map/schemas.js';
+import { log } from './log.js';
+import { animation } from './animation/animation.js';
+import { MapBoundsPair } from './bounds.js';
+import { mapPopupsSchema, type MapConfiguration, type MapPopup, type MapPopupContentCallback } from './schemas.js';
 
 import {
 	Angles,

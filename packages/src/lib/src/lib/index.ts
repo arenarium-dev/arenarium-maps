@@ -2,11 +2,11 @@ import { mount, unmount } from 'svelte';
 
 import Map from './components/Map.svelte';
 
-import { MapManager } from './manager.js';
+import { MapManager } from './map/manager.js';
 import { MapDarkStyle, MapStyleLight } from './map/styles.js';
 import type { MapConfiguration, MapPopup, MapPopupState, MapPopupData, MapPopupStatesRequest, MapPopupContentCallback } from './map/schemas.js';
 
-import type { MapOptions } from 'maplibre-gl';
+import type { MapOptions, Map as MapLibre } from 'maplibre-gl';
 
 export function mountMap(options: MapOptions) {
 	const target = typeof options.container === 'string' ? document.getElementById(options.container) : options.container;
@@ -18,10 +18,10 @@ export function mountMap(options: MapOptions) {
 	});
 
 	return {
-		maplibregl: component.libre() as maplibregl.Map,
+		map: component.map() as MapLibre,
 		manager: component.manager() as MapManager,
 		unmount: () => unmount(component)
-	}
+	};
 }
 
 export { MapManager };

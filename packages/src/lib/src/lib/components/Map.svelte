@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { MapManager } from '../manager.js';
+	import { MapManager } from '../map/manager.js';
 
 	import { MAP_BASE_SIZE, MAP_MAX_ZOOM, MAP_MIN_ZOOM } from '@workspace/shared/src/constants.js';
 
@@ -14,7 +14,7 @@
 	let mapWidth = $state<number>(0);
 	let mapHeight = $state<number>(0);
 
-	let map = new maplibregl.Map({
+	let maplibre = new maplibregl.Map({
 		...options,
 		container: 'map',
 		minZoom: getViewportMinZoom(mapMinZoom),
@@ -23,15 +23,15 @@
 		attributionControl: { customAttribution: '@arenarium/maps' }
 	});
 	// Disable map rotation using right click + drag
-	map.dragRotate.disable();
+	maplibre.dragRotate.disable();
 	// Disable map rotation using keyboard
-	map.keyboard.disable();
+	maplibre.keyboard.disable();
 	// Disable map rotation using touch rotation gesture
-	map.touchZoomRotate.disableRotation();
+	maplibre.touchZoomRotate.disableRotation();
 	// Disable map pitch using touch pitch gesture
-	map.touchPitch.disable();
+	maplibre.touchPitch.disable();
 
-	let mapPopupManager = new MapManager(map, (o) => new maplibregl.Marker(o));
+	let mapPopupManager = new MapManager(maplibre, (o) => new maplibregl.Marker(o));
 
 	function getViewportMinZoom(minZoom: number) {
 		// Zoom =+ 1 doubles the width of the map
@@ -41,11 +41,11 @@
 		return Math.max(minZoom, mapWidthMinZoom);
 	}
 
-	export const libre = () => map;
+	export const map = () => maplibre;
 	export const manager = () => mapPopupManager;
 </script>
 
-<svelte:window onresize={() => map.setMinZoom(getViewportMinZoom(mapMinZoom))} />
+<svelte:window onresize={() => maplibre.setMinZoom(getViewportMinZoom(mapMinZoom))} />
 
 <div id="map" bind:clientWidth={mapWidth} bind:clientHeight={mapHeight}></div>
 
