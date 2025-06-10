@@ -19,16 +19,7 @@
 	import { Fetch } from '$lib/client/core/fetch';
 	import { Demo } from '$lib/shared/demo';
 
-	import {
-		mountMap,
-		type MapBounds,
-		type MapConfiguration,
-		type MapPopup,
-		type MapPopupData,
-		type MapPopupState,
-		type MapPosition,
-		type MapStyle
-	} from '@arenarium/maps';
+	import { mountMap, MapStyleLight, type MapConfiguration, type MapPopup, type MapPopupData, type MapPopupState } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
 
 	let map: ReturnType<typeof mountMap>;
@@ -37,23 +28,15 @@
 
 	onMount(() => {
 		try {
-			map = mountMap({
+			map = mountMap('map', {
 				container: 'map',
-				position: {
-					center: { lat: 51.505, lng: -0.09 },
-					zoom: 4
-				},
-				style: {
-					name: 'light',
-					colors: {
-						background: 'white',
-						primary: 'darkgreen',
-						text: 'black'
-					}
-				}
+				center: { lat: 51.505, lng: -0.09 }
 			});
 
-			map.on('load', () => {
+			map.manager().setColors('darkgreen', 'white', 'black');
+
+			map.maplibre().style = MapStyleLight;
+			map.maplibre().on('load', () => {
 				mapLoaded = true;
 			});
 		} catch (e) {
