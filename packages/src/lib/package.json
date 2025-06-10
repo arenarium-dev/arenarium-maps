@@ -38,7 +38,7 @@
 		"@eslint/js": "^9.28.0",
 		"@rollup/plugin-typescript": "^12.1.2",
 		"@sveltejs/adapter-auto": "^6.0.1",
-		"@sveltejs/kit": "^2.21.3",
+		"@sveltejs/kit": "^2.21.4",
 		"@sveltejs/package": "^2.3.11",
 		"@sveltejs/vite-plugin-svelte": "^5.1.0",
 		"@workspace/shared": "workspace:*",
