@@ -6,7 +6,7 @@
 
 	import { mountMap } from '$lib/index.js';
 	import { MapDarkStyle } from '$lib/map/styles.js';
-	import { type MapManager } from '$lib/manager.js';
+	import { type MapManager } from '$lib/map/manager.js';
 	import type { MapPopup, MapPopupData, MapPopupState } from '$lib/map/schemas.js';
 
 	import { getStates } from '@workspace/shared/src/popup/compute/states.js';
@@ -24,15 +24,15 @@
 	let zoom = $state<number>(0);
 
 	onMount(() => {
-		const { maplibregl, manager } = mountMap({
+		const result = mountMap({
 			container: mapContainer,
 			style: MapDarkStyle,
 			center: { lat: 51.505, lng: -0.09 },
 			zoom: 4
 		});
 
-		map = maplibregl;
-		mapManager = manager;
+		map = result.map;
+		mapManager = result.manager;
 
 		mapManager.setColors('purple', 'white', 'black');
 		mapManager.setConfiguration({

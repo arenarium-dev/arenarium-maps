@@ -20,11 +20,17 @@ export const GET: RequestHandler = async (event) => {
 	}
 
 	const data = new Array<MapPopupData>();
-	const dataAssetsFetch = event.platform?.env?.ASSETS?.fetch ?? event.fetch;
+	const dataAssetsFetch = (url: string) => {
+		if (event.platform?.env?.ASSETS?.fetch) {
+			return event.platform.env.ASSETS.fetch(event.url.origin + url);
+		} else {
+			return event.fetch(url);
+		}
+	};
 
 	switch (event.params.demo) {
 		default: {
-			const coordinatesResponse = await dataAssetsFetch(event.url.origin + '/demo/coordinates.json');
+			const coordinatesResponse = await dataAssetsFetch('/demo/coordinates.json');
 			if (!coordinatesResponse?.ok) error(500, 'Failed to get coordinates');
 
 			const coordinatesJson = await coordinatesResponse.json<any>();
@@ -52,7 +58,7 @@ export const GET: RequestHandler = async (event) => {
 			break;
 		}
 		case Demo.SrbijaNekretnine: {
-			const dataResponse = await dataAssetsFetch(event.url.origin + '/demo/srbija-nekretnine.json');
+			const dataResponse = await dataAssetsFetch('/demo/srbija-nekretnine.json');
 			if (!dataResponse?.ok) error(500, 'Failed to get data');
 
 			const dataJson = await dataResponse.json<any>();

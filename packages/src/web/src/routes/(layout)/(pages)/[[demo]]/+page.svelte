@@ -30,7 +30,6 @@
 		MapDarkStyle
 	} from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
-	import { de } from 'zod/v4/locales';
 
 	let map: maplibregl.Map;
 	let mapManager: MapManager;
