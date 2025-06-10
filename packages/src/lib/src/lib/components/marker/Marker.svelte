@@ -5,7 +5,7 @@
 	import { Transition } from '../../map/animation/transition.js';
 
 	import { getRectangleOffsets } from '@workspace/shared/src/popup/rectangle.js';
-	import { MARKER_DEFAULT_ANGLE, MARKER_PADDING } from '@workspace/shared/src/constants.js';
+	import { MARKER_PADDING } from '@workspace/shared/src/constants.js';
 
 	let { id, priority, width, height }: { id: string; priority: number; width: number; height: number } = $props();
 

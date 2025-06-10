@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// Options
+// Configuration
 
 export const mapConfigurationSchema = z.object({
 	pin: z

@@ -12,7 +12,6 @@
 	let mapMaxZoom = options?.maxZoom ?? MAP_MAX_ZOOM;
 
 	let mapWidth = $state<number>(0);
-	let mapHeight = $state<number>(0);
 
 	let maplibre = new maplibregl.Map({
 		...options,
@@ -47,7 +46,7 @@
 
 <svelte:window onresize={() => maplibre.setMinZoom(getViewportMinZoom(mapMinZoom))} />
 
-<div id="map" bind:clientWidth={mapWidth} bind:clientHeight={mapHeight}></div>
+<div id="map" bind:clientWidth={mapWidth}></div>
 
 <style lang="less">
 	#map {

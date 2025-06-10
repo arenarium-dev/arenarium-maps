@@ -26,4 +26,12 @@ export function mountMap(options: MapOptions) {
 
 export { MapManager };
 export { MapDarkStyle, MapStyleLight };
-export { type MapConfiguration, type MapPopup, type MapPopupData, type MapPopupState, type MapPopupStatesRequest, type MapPopupContentCallback };
+export {
+	type MapLibre,
+	type MapConfiguration,
+	type MapPopup,
+	type MapPopupData,
+	type MapPopupState,
+	type MapPopupStatesRequest,
+	type MapPopupContentCallback
+};

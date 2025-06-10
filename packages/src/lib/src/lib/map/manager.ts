@@ -1,3 +1,5 @@
+import { mount } from 'svelte';
+
 import MapMarker from '../components/marker/Marker.svelte';
 import MapMarkerCircle from '../components/marker/Circle.svelte';
 
@@ -15,7 +17,6 @@ import {
 	MAP_MAX_ZOOM,
 	MAP_ZOOM_SCALE
 } from '@workspace/shared/src/constants.js';
-import { mount } from 'svelte';
 
 type LibreMarkerCallback = (markerOptions: maplibregl.MarkerOptions) => maplibregl.Marker;
 
