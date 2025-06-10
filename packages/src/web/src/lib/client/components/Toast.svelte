@@ -68,7 +68,7 @@
 		position: fixed;
 		width: max-content;
 		max-width: calc(100% - 64px);
-		bottom: 24px;
+		bottom: 40px;
 		left: 50%;
 		transform: translateX(-50%);
 		border-radius: 16px;

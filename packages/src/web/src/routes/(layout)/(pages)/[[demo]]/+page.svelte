@@ -39,15 +39,14 @@
 
 	onMount(() => {
 		try {
-			const { maplibregl, manager } = mountMap({
+			const result = mountMap({
 				container: 'map'
 			});
 
-			map = maplibregl;
-			mapManager = manager;
-
+			mapManager = result.manager;
 			mapManager.setColors('darkgreen', 'white', 'black');
 
+			map = result.map;
 			map.setStyle(MapStyleLight);
 			map.on('load', () => {
 				mapLoaded = true;
@@ -580,6 +579,7 @@
 			left: 0px;
 			width: 100%;
 			height: 100%;
+			font-family: 'Noto Sans';
 		}
 
 		.button {
@@ -687,6 +687,14 @@
 		}
 	}
 
+	@media (max-width: 640px) {
+		.container {
+			.side {
+				display: none;
+			}
+		}
+	}
+
 	:global {
 		.maplibregl-map {
 			z-index: 0;
@@ -695,10 +703,18 @@
 				z-index: 10000000;
 
 				.maplibregl-ctrl-attrib {
+					font-family: 'Noto Sans';
 					background-color: color-mix(in srgb, var(--map-style-background) 50%, transparent 50%);
 					color: var(--map-style-text);
+
+					a {
+						color: var(--map-style-text);
+						font-weight: 600;
+					}
+				}
+
+				.maplibregl-ctrl-attrib:not(.maplibregl-compact) {
 					font-size: 10px;
-					font-family: 'Roboto';
 					font-weight: 500;
 					line-height: normal;
 					padding: 2px 5px;
