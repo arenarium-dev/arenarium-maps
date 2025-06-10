@@ -1,6 +1,6 @@
 {
 	"name": "@arenarium/maps",
-	"version": "1.0.119",
+	"version": "1.0.120",
 	"license": "MIT",
 	"author": "arenarium.dev",
 	"description": "The best way to visualize ranked popups on a map.",
