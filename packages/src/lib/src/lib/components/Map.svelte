@@ -53,8 +53,7 @@
 		return Math.max(minZoom, mapWidthMinZoom);
 	}
 
-	export const maplibre = () => map;
-
+	export const libre = () => map;
 	export const manager = () => mapPopupManager;
 </script>
 
