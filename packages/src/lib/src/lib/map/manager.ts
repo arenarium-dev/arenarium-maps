@@ -18,26 +18,19 @@ import {
 	MAP_ZOOM_SCALE
 } from '@workspace/shared/src/constants.js';
 
-import {
-	type Map as MapLibre,
-	type MapOptions as MapLibreOptions,
-	type Marker as MapLibreMarker,
-	type MarkerOptions as MapLibreMarkerOptions
-} from 'maplibre-gl';
-
 interface MapLibreClass {
-	new (options: MapLibreOptions): MapLibre;
+	new (options: maplibregl.MapOptions): maplibregl.Map;
 }
 
 interface MapLibreMarkerClass {
-	new (options: MapLibreMarkerOptions): MapLibreMarker;
+	new (options: maplibregl.MarkerOptions): maplibregl.Marker;
 }
 
 class MapManager {
 	private MapClass: MapLibreClass;
 	private MapMarkerClass: MapLibreMarkerClass;
 
-	private map: MapLibre;
+	private map: maplibregl.Map;
 
 	private mapConfiguration: MapConfiguration | null = null;
 
@@ -45,7 +38,7 @@ class MapManager {
 	private mapPopupDataMap = new Map<string, MapPopupData>();
 	private mapPopupDataUpdating = false;
 
-	constructor(mapClass: MapLibreClass, mapMarkerClass: MapLibreMarkerClass, options: MapLibreOptions) {
+	constructor(mapClass: MapLibreClass, mapMarkerClass: MapLibreMarkerClass, options: maplibregl.MapOptions) {
 		this.MapClass = mapClass;
 		this.MapMarkerClass = mapMarkerClass;
 
