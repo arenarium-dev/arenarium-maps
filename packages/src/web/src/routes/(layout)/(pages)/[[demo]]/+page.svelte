@@ -19,35 +19,27 @@
 	import { Fetch } from '$lib/client/core/fetch';
 	import { Demo } from '$lib/shared/demo';
 
-	import {
-		mountMap,
-		MapManager,
-		MapStyleLight,
-		type MapConfiguration,
-		type MapPopup,
-		type MapPopupData,
-		type MapPopupState,
-		MapDarkStyle
-	} from '@arenarium/maps';
+	import maplibregl from 'maplibre-gl';
+	import 'maplibre-gl/dist/maplibre-gl.css';
+
+	import * as arenarium from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
 
 	let map: maplibregl.Map;
-	let mapManager: MapManager;
+	let mapManager: arenarium.MapManager;
 
 	let mapLoaded = $state<boolean>(false);
 	let loading = $state<boolean>(false);
 
 	onMount(() => {
 		try {
-			const result = mountMap({
+			mapManager = new arenarium.MapManager(maplibregl.Map, maplibregl.Marker, {
 				container: 'map'
 			});
-
-			mapManager = result.manager;
 			mapManager.setColors('darkgreen', 'white', 'black');
 
-			map = result.map;
-			map.setStyle(MapStyleLight);
+			map = mapManager.maplibre;
+			map.setStyle(app.theme.get() == 'dark' ? arenarium.MapDarkStyle : arenarium.MapStyleLight);
 			map.on('load', () => {
 				mapLoaded = true;
 			});
@@ -90,7 +82,7 @@
 	let style = $state<DemoStyle>('website');
 	let demo = $state<Demo>(page.params.demo as Demo);
 
-	let demoPopupData = new Map<string, MapPopupData>();
+	let demoPopupData = new Map<string, arenarium.MapPopupData>();
 	let demoPopupDataLoaded = false;
 	let demoAutoUpdate = $state<boolean>(false);
 	let demoTogglePopups = $state<boolean>(true);
@@ -189,8 +181,8 @@
 			params.append('width', width.toString());
 			params.append('height', height.toString());
 
-			const allPopupData = await Fetch.that<MapPopupData[]>(`/api/popup/${demo}/data?${params}`);
-			const newPopupData = new Array<MapPopupData>();
+			const allPopupData = await Fetch.that<arenarium.MapPopupData[]>(`/api/popup/${demo}/data?${params}`);
+			const newPopupData = new Array<arenarium.MapPopupData>();
 			for (const data of allPopupData) {
 				if (!demoPopupData.has(data.id)) {
 					newPopupData.push(data);
@@ -228,7 +220,7 @@
 		}
 	}
 
-	async function processPopupDataDelta(dataDelta: MapPopupData[]) {
+	async function processPopupDataDelta(dataDelta: arenarium.MapPopupData[]) {
 		try {
 			loading = true;
 
@@ -237,15 +229,15 @@
 
 			// Get the new states
 			const statePopupData = Array.from(demoPopupData.values());
-			const states = await Fetch.that<MapPopupState[]>(`/api/popup/states`, {
+			const states = await Fetch.that<arenarium.MapPopupState[]>(`/api/popup/states`, {
 				method: 'POST',
 				body: statePopupData
 			});
 
 			// Create the new popups
-			const popups = new Array<MapPopup>();
+			const popups = new Array<arenarium.MapPopup>();
 			for (let i = 0; i < states.length; i++) {
-				const popup: MapPopup = {
+				const popup: arenarium.MapPopup = {
 					data: statePopupData[i],
 					state: states[i],
 					callbacks: {
@@ -300,13 +292,13 @@
 			default: {
 				switch (style) {
 					case 'website': {
-						return app.theme.get() == 'dark' ? MapDarkStyle : MapStyleLight;
+						return app.theme.get() == 'dark' ? arenarium.MapDarkStyle : arenarium.MapStyleLight;
 					}
 					case 'light': {
-						return MapStyleLight;
+						return arenarium.MapStyleLight;
 					}
 					case 'dark': {
-						return MapDarkStyle;
+						return arenarium.MapDarkStyle;
 					}
 					case 'liberty': {
 						return 'https://tiles.openfreemap.org/styles/liberty';
@@ -379,7 +371,7 @@
 		}
 	}
 
-	function getDemoConfiguration(demo: Demo): MapConfiguration {
+	function getDemoConfiguration(demo: Demo): arenarium.MapConfiguration {
 		switch (demo) {
 			default: {
 				return {
