@@ -28,15 +28,15 @@
 
 	onMount(() => {
 		try {
-			map = mountMap('map', {
+			map = mountMap({
 				container: 'map',
 				center: { lat: 51.505, lng: -0.09 }
 			});
 
 			map.manager().setColors('darkgreen', 'white', 'black');
 
-			map.maplibre().style = MapStyleLight;
-			map.maplibre().on('load', () => {
+			map.libre().setStyle(MapStyleLight);
+			map.libre().on('load', () => {
 				mapLoaded = true;
 			});
 		} catch (e) {
