@@ -8,18 +8,21 @@
 		<div class="header">NPM</div>
 		<div class="text">To install the <code>@aranarium/maps</code> library using npm, run the following command in your project directory:</div>
 		<div class="highlight">
-			<Highlight language="bash" text={`npm install @arenarium/maps`} />
+			<Highlight language="bash" text={`npm install maplibre-gl @arenarium/maps`} />
 		</div>
 		<div class="text">Import the necessary module and CSS file into your project to begin using the map:</div>
 		<div class="highlight">
 			<Highlight
 				language="javascript"
 				text={`
-import { mountMap } from '@arenarium/maps';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+
+import * as arenarium from '@arenarium/maps';
 import '@arenarium/maps/dist/style.css';
 
-// Initialize and mount the map (further configuration details follow)
-const mountResult = mountMap(...);`}
+// Initialize and mount the map manager (further configuration details follow)
+const mapManager = new arenarium.MapManager(...);`}
 			/>
 		</div>
 		<div class="header">CDN</div>
@@ -31,8 +34,11 @@ const mountResult = mountMap(...);`}
 			<Highlight
 				language="xml"
 				text={`
-<script src="https://unpkg.com/@arenarium/maps@latest/dist/index.js"><\/script>
-<link href="https://unpkg.com/@arenarium/maps@latest/dist/style.css" rel="stylesheet" \/>`}
+<script src="https://unpkg.com/maplibre-gl@^5.6.0/dist/maplibre-gl.js"><\/script>
+<link href="https://unpkg.com/maplibre-gl@^5.6.0/dist/maplibre-gl.css" rel="stylesheet" \/>
+
+<script src="https://unpkg.com/@arenarium/maps@^1.0.124/dist/index.js"><\/script>
+<link href="https://unpkg.com/@arenarium/maps@^1.0.124/dist/style.css" rel="stylesheet" \/>`}
 			/>
 		</div>
 		<div class="text">Once included, you can access the library's functions through the global <code>arenarium</code> object to mount the map:</div>
@@ -40,8 +46,8 @@ const mountResult = mountMap(...);`}
 			<Highlight
 				language="javascript"
 				text={`
-// Initialize and mount the map (further configuration details follow)
-const mountResult = arenarium.mountMap(...);
+// Initialize and mount the map manager (further configuration details follow)
+const mapManager = new arenarium.MapManager(...);
 `}
 			/>
 		</div>
@@ -54,47 +60,42 @@ const mountResult = arenarium.mountMap(...);
 			<Highlight language="xml" text={`<div id="map"></div>`} />
 		</div>
 		<div class="text">
-			Next, use the <code>mountMap</code> function with a <code>MapOptions</code> object.
+			Next, use the <code>MapManager</code> class which requires a <code>maplibre.Map</code> class, a <code>maplibre.Marker</code> class and a
+			<code>MapOptions</code> object.
 		</div>
 		<div class="highlight">
 			<Highlight
 				language="javascript"
 				text={`
-const map = mountMap({
-    // The ID of the HTML element that will contain the map
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+
+import { MapManager } from '@arenarium/maps';
+import '@arenarium/maps/dist/style.css';
+
+// The map manager used for managing the map popups
+const mapManager = new MapManager(maplibregl.Map, maplibregl.Marker, {
     container: 'map',
-    // Initial map view settings
-    position: {
-        center: { lat: 51.505, lng: -0.09 },
-        zoom: 13
-    },
-    // Map styling options
-    style: {
-        // Name of a predefined theme
-        name: 'light',
-        // Custom colors for popups and other UI elements
-        colors: { primary: 'darkgreen', background: 'white', text: 'black' }
-    },
-	// Optional: Define restrictions for map panning and zooming
-    restriction: {
-        minZoom: 10,
-        maxZoom: 15,
-        maxBounds: {
-            sw: { lat: 48.505, lng: -3.09 },
-            ne: { lat: 54.505, lng: 3.09 }
-        }
-    },
-});`}
+    center: { lat: 51.505, lng: -0.09 },
+    zoom: 13,
+	...
+});
+
+// The maplibre instance used for interacting with the map
+const mapLibre = mapManager.maplibre;`}
 			/>
 		</div>
 		<div class="header">Styles</div>
-		<div class="text">You can dynamically change the map's visual appearance by setting a predefined theme:</div>
+		<div class="text">
+			To set the colors used by the map and popups, use the <code>setColors</code> method. The first argument is the primary color, the second is the background,
+			and the third is the text color.
+		</div>
 		<div class="highlight">
-			<Highlight
-				language="javascript"
-				text={`
-map.setStyle({ name: 'dark', colors: { primary: 'purple', background: 'darkgray', text: 'black' } });`}
-			/>
+			<Highlight language="javascript" text={`mapManager.setColors('darkgreen', 'white', 'black');`} />
+		</div>
+		<div class="text">You can change the map's visual appearance by setting a predefined dark or light theme:</div>
+		<div class="highlight">
+			<Highlight language="javascript" text={`mapLibre.setStyle(arenarium.MapDarkStyle);`} />
 		</div>
 		<div class="text">
 			Alternatively, you can apply a custom map style by providing a URL to a JSON file that adheres to the
@@ -102,16 +103,9 @@ map.setStyle({ name: 'dark', colors: { primary: 'purple', background: 'darkgray'
 			properties within a custom style.
 		</div>
 		<div class="highlight">
-			<Highlight
-				language="javascript"
-				text={`
-map.setStyle({
-    name: 'custom',
-    url: 'https://tiles.openfreemap.org/styles/liberty.json',
-    colors: { primary: 'purple', background: 'white', text: 'black' }
-});`}
-			/>
+			<Highlight language="javascript" text={`mapLibre.setStyle('https://tiles.openfreemap.org/styles/liberty.json');`} />
 		</div>
+
 		<div class="header">Popups</div>
 		<div class="text">To display interactive popups on the map, you first need to define an array of <code>MapPopupData</code> objects:</div>
 		<div class="highlight">
@@ -195,17 +189,16 @@ for (let i = 0; i < count; i++) {
     });
 }
 
-await map.updatePopups(popups);`}
+await mapManager.updatePopups(popups);`}
 			/>
 		</div>
 		<div class="text">To remove all popups from the map, use the <code>removePopups</code> method:</div>
 		<div class="highlight">
-			<Highlight
-				language="javascript"
-				text={`
-await map.removePopups();
-`}
-			/>
+			<Highlight language="javascript" text={`await mapManager.removePopups();`} />
+		</div>
+		<div class="text">To toggle the display of popups, use the <code>togglePopups</code> method:</div>
+		<div class="highlight">
+			<Highlight language="javascript" text={`await mapManager.togglePopups([{ id: 'id', toggled: true }]);`} />
 		</div>
 		<div class="title" id="about">About</div>
 		<div class="text">

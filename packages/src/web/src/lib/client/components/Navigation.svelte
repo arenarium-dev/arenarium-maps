@@ -107,7 +107,7 @@
 				<div class="divider"></div>
 				<div class="group">
 					<div class="item">
-						<a href="/#about" class="content">
+						<a href="/docs/#about" class="content">
 							<Icon name={'info'} />
 							<div class="text">About</div>
 						</a>
