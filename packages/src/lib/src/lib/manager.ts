@@ -19,7 +19,7 @@ import { mount } from 'svelte';
 
 type LibreMarkerCallback = (markerOptions: maplibregl.MarkerOptions) => maplibregl.Marker;
 
-class MapPopupManager {
+class MapManager {
 	private mapMarkerCallback: LibreMarkerCallback;
 	private map: maplibregl.Map;
 
@@ -572,4 +572,4 @@ class MapPopupData {
 	}
 }
 
-export { MapPopupManager };
+export { MapManager };

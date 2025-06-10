@@ -4,8 +4,9 @@
 	import Icon from './components/Icon.svelte';
 	import Popup from './components/Popup.svelte';
 
-	import { MapPopupManager } from '$lib/index.js';
+	import { mountMap } from '$lib/index.js';
 	import { MapDarkStyle } from '$lib/map/styles.js';
+	import { type MapManager } from '$lib/manager.js';
 	import type { MapPopup, MapPopupData, MapPopupState } from '$lib/map/schemas.js';
 
 	import { getStates } from '@workspace/shared/src/popup/compute/states.js';
@@ -13,12 +14,9 @@
 
 	import { wasm } from '@workspace/shared/wasm/compute/states.js';
 
-	import maplibregl from 'maplibre-gl';
-	import 'maplibre-gl/dist/maplibre-gl.css';
-
 	let map: maplibregl.Map;
+	let mapManager: MapManager;
 	let mapContainer: HTMLElement;
-	let mapPopupManager: MapPopupManager;
 
 	let mapPopups = new Map<string, MapPopup>();
 
@@ -26,20 +24,18 @@
 	let zoom = $state<number>(0);
 
 	onMount(() => {
-		map = new maplibregl.Map({
+		const { maplibregl, manager } = mountMap({
+			container: mapContainer,
 			style: MapDarkStyle,
 			center: { lat: 51.505, lng: -0.09 },
-			zoom: 4,
-			container: mapContainer,
-			pitchWithRotate: false,
-			attributionControl: {
-				compact: false
-			}
+			zoom: 4
 		});
 
-		mapPopupManager = new MapPopupManager(map, (o) => new maplibregl.Marker(o));
-		mapPopupManager.setColors('purple', 'white', 'black');
-		mapPopupManager.setConfiguration({
+		map = maplibregl;
+		mapManager = manager;
+
+		mapManager.setColors('purple', 'white', 'black');
+		mapManager.setConfiguration({
 			pin: {
 				fade: true
 			}
@@ -86,13 +82,13 @@
 		await tick();
 
 		const now = performance.now();
-		await mapPopupManager.updatePopups(popups);
+		await mapManager.updatePopups(popups);
 		console.log(`[UPDATE POPUPS ${popups.length}] ${performance.now() - now}ms`);
 	}
 
 	async function clearData() {
 		mapPopups.clear();
-		mapPopupManager.removePopups();
+		mapManager.removePopups();
 	}
 
 	let toggled = false;
@@ -100,7 +96,7 @@
 	async function toggleData() {
 		toggled = !toggled;
 		const states = Array.from(mapPopups.values()).map((popup) => ({ id: popup.data.id, toggled: toggled }));
-		mapPopupManager.togglePopups(states);
+		mapManager.togglePopups(states);
 	}
 
 	const zoomDelta = 0.05;
@@ -368,5 +364,34 @@
 		justify-content: center;
 		font-size: 24px;
 		font-weight: 500;
+	}
+
+	:global {
+		.maplibregl-map {
+			z-index: 0;
+
+			.maplibregl-ctrl-bottom-right {
+				z-index: 10000000;
+
+				.maplibregl-ctrl-attrib {
+					background-color: color-mix(in srgb, var(--map-style-background) 50%, transparent 50%);
+					color: var(--map-style-text);
+					font-size: 10px;
+					font-family: 'Roboto';
+					font-weight: 500;
+					line-height: normal;
+					padding: 2px 5px;
+					border-top-left-radius: 5px;
+					box-shadow: -1px -1px 2px rgba(0, 0, 0, 0.2);
+
+					.maplibregl-ctrl-attrib-inner {
+						a {
+							color: var(--map-style-text);
+							font-weight: 600;
+						}
+					}
+				}
+			}
+		}
 	}
 </style>
