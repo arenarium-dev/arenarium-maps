@@ -2,10 +2,13 @@
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 
 	let { id, width, height }: { id: string; width: number; height: number } = $props();
+
+	let iconSize = Math.min(width, height) / 1.6;
+	let fontSize = Math.min(width, height) / 5;
 </script>
 
-<div class="popup" style:width={width + 'px'} style:height={height + 'px'}>
-	<Icon name="eco" size={40} />
+<div class="popup" style:width={width + 'px'} style:height={height + 'px'} style:font-size={fontSize + 'px'}>
+	<Icon name="eco" size={iconSize} />
 	<span>{id}</span>
 </div>
 

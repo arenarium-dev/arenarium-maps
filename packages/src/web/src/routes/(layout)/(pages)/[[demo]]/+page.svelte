@@ -398,10 +398,19 @@
 	function getPopupDimensions(): { width: number; height: number; padding: number } {
 		switch (demo) {
 			default:
-				if (size == 'large') return { width: 64, height: 64, padding: 6 };
-				else return { width: 56, height: 56, padding: 4 };
+				switch (size) {
+					case 'large':
+						return { width: 64, height: 64, padding: 6 };
+					case 'small':
+						return { width: 48, height: 48, padding: 4 };
+				}
 			case Demo.Rentals:
-				return { width: 128, height: 104, padding: 8 };
+				switch (size) {
+					case 'large':
+						return { width: 128, height: 104, padding: 8 };
+					case 'small':
+						return { width: 96, height: 80, padding: 6 };
+				}
 			case Demo.SrbijaNekretnine:
 				return { width: 156, height: 128, padding: 8 };
 			case Demo.CityExpert:
@@ -422,7 +431,7 @@
 					mount(BasicPopup, { target: element, props: { id, width: popup.width, height: popup.height } });
 					break;
 				case Demo.Rentals:
-					mount(RentalPopup, { target: element, props: { id, lat: popup.lat, lng: popup.lng } });
+					mount(RentalPopup, { target: element, props: { id, width: popup.width, height: popup.height } });
 					break;
 				case Demo.SrbijaNekretnine:
 					mount(SrbijaNekretninePopup, { target: element, props: { id, width: popup.width, height: popup.height } });

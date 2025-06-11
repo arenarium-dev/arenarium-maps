@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	let { id, lat, lng }: { id: string; lat: number; lng: number } = $props();
+	let { id, width, height }: { id: string; width: number; height: number } = $props();
+
+	let fontSize = 2 + Math.min(width, height) / 10;
 
 	let images = [
 		'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=200&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
@@ -58,7 +60,7 @@
 </script>
 
 {#if mounted}
-	<button class="popup">
+	<button class="popup" style:width={width + 'px'} style:height={height + 'px'} style:font-size={fontSize + 'px'}>
 		<div class="image">
 			<img loading="lazy" src={images[imageIndex]} alt={id} />
 		</div>
@@ -85,7 +87,7 @@
 		</div>
 	</button>
 {:else}
-	<div class="placeholder">
+	<div class="placeholder" style:width={width + 'px'} style:height={height + 'px'} style:font-size={fontSize + 'px'}>
 		<div class="image"></div>
 		<div class="text">
 			<div class="price"></div>
@@ -98,8 +100,6 @@
 	@gray: color-mix(in srgb, var(--map-style-background) 50%, #888 50%);
 
 	.popup {
-		width: 128px;
-		height: 104px;
 		display: flex;
 		flex-direction: column;
 		padding: 4px;
@@ -130,7 +130,7 @@
 				display: flex;
 				align-items: center;
 				font-weight: 600;
-				font-size: 14px;
+				font-size: 1.1em;
 			}
 
 			.details {
@@ -139,7 +139,7 @@
 				align-items: start;
 				gap: 3px;
 				font-weight: 500;
-				font-size: 11px;
+				font-size: 0.8em;
 
 				.beds,
 				.baths,
@@ -153,8 +153,6 @@
 	}
 
 	.placeholder {
-		width: 128px;
-		height: 104px;
 		display: flex;
 		flex-direction: column;
 		gap: 4px;
@@ -175,14 +173,14 @@
 			gap: 4px;
 
 			.price {
-				height: 18px;
+				height: 1.3em;
 				width: 100px;
 				background-color: @gray;
 				border-radius: 8px;
 			}
 
 			.details {
-				height: 16px;
+				height: 1em;
 				width: 100%;
 				background-color: @gray;
 				border-radius: 8px;
