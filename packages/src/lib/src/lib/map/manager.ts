@@ -460,6 +460,7 @@ class MapPopupCircle extends MapPopupComponent<ReturnType<typeof MapMarkerCircle
 class MapPopupMarker extends MapPopupComponent<ReturnType<typeof MapMarker>> {
 	width: number;
 	height: number;
+	padding: number;
 	states: [number, number][];
 
 	bodyLoading = false;
@@ -472,6 +473,7 @@ class MapPopupMarker extends MapPopupComponent<ReturnType<typeof MapMarker>> {
 		this.id = popup.data.id;
 		this.width = popup.data.width;
 		this.height = popup.data.height;
+		this.padding = popup.data.padding;
 		this.states = popup.state[1].map((s) => [s[0], Angles.DEGREES[s[1]]]);
 
 		this.bodyCallback = popup.callbacks.body;
@@ -486,7 +488,8 @@ class MapPopupMarker extends MapPopupComponent<ReturnType<typeof MapMarker>> {
 				id: this.id + '_marker',
 				priority: this.zoom * MAP_ZOOM_SCALE,
 				width: this.width,
-				height: this.height
+				height: this.height,
+				padding: this.padding
 			}
 		});
 	}

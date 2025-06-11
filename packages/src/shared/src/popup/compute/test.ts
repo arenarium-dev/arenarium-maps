@@ -4,7 +4,7 @@ import { getPoint } from '../projection.js';
 import { getRectangleOffsets } from '../rectangle.js';
 
 import { type Popup } from '../../types.js';
-import { Angles, MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE, MARKER_PADDING } from '../../constants.js';
+import { Angles, MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE } from '../../constants.js';
 
 class Popup {
 	x: number;
@@ -22,8 +22,8 @@ class Popup {
 		const point = getPoint(data.lat, data.lng);
 		this.x = point.x;
 		this.y = point.y;
-		this.width = data.width + 2 * MARKER_PADDING;
-		this.height = data.height + 2 * MARKER_PADDING;
+		this.width = data.width + 2 * data.padding;
+		this.height = data.height + 2 * data.padding;
 		this.zoom = state[0];
 		this.angles = state[1].map((s) => [s[0], Angles.DEGREES[s[1]]]);
 

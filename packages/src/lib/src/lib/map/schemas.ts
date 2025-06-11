@@ -25,14 +25,17 @@ export type MapConfiguration = z.infer<typeof mapConfigurationSchema>;
 
 // Popups
 
-export const mapPopupDataSchema = z.object({
-	id: z.string().min(1),
-	rank: z.number(),
-	lat: z.number().min(-90).max(90),
-	lng: z.number().min(-180).max(180),
-	width: z.number().min(56),
-	height: z.number().min(56)
-});
+export const mapPopupDataSchema = z
+	.object({
+		id: z.string().min(1),
+		rank: z.number(),
+		lat: z.number().min(-90).max(90),
+		lng: z.number().min(-180).max(180),
+		width: z.number().min(56),
+		height: z.number().min(56),
+		padding: z.number().min(2).max(16)
+	})
+	.refine((data) => Math.min(data.width, data.height) / data.padding >= 4, 'Popup width and height must be at least 4 times the padding');
 
 export const mapPopupStateSchema = z.tuple([z.number(), z.array(z.tuple([z.number(), z.number()]))]);
 

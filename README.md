@@ -1,7 +1,5 @@
 TODO:
 
-Remove styles and events from library, use base map libre
-
 Make popups smaller for mobile
 Add booking/airbnb demo
 

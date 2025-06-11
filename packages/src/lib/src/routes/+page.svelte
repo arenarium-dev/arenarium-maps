@@ -172,7 +172,8 @@
 				lat: lat,
 				lng: lng,
 				height: 100,
-				width: 150
+				width: 150,
+				padding: 8
 			});
 		}
 

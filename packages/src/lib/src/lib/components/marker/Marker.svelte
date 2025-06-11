@@ -5,17 +5,16 @@
 	import { Transition } from '../../map/animation/transition.js';
 
 	import { getRectangleOffsets } from '@workspace/shared/src/popup/rectangle.js';
-	import { MARKER_PADDING } from '@workspace/shared/src/constants.js';
 
-	let { id, priority, width, height }: { id: string; priority: number; width: number; height: number } = $props();
+	let { id, priority, width, height, padding }: { id: string; priority: number; width: number; height: number; padding: number } = $props();
 
 	let anchor: HTMLElement;
 	let marker: HTMLElement;
 	let pin: HTMLElement;
 	let body: HTMLElement;
 
-	const markerWidth = width + 2 * MARKER_PADDING;
-	const markerHeight = height + 2 * MARKER_PADDING;
+	const markerWidth = width + 2 * padding;
+	const markerHeight = height + 2 * padding;
 
 	export const getBody = () => body;
 
@@ -190,7 +189,7 @@
 
 <div class="anchor" class:displayed bind:this={anchor}>
 	<div class="pin" bind:this={pin}></div>
-	<div class="marker" style:padding={MARKER_PADDING + 'px'} bind:this={marker}>
+	<div class="marker" style:padding={padding + 'px'} bind:this={marker}>
 		<div class="body" style:width={`${width}px`} style:height={`${height}px`} bind:this={body}></div>
 	</div>
 </div>
@@ -198,7 +197,6 @@
 <style lang="less">
 	@background: var(--map-style-background);
 	@border: var(--map-style-background);
-	@border-width: 0px;
 
 	.anchor {
 		display: block;
@@ -215,9 +213,6 @@
 			.body {
 				position: relative;
 				border-radius: 12px;
-				border-style: solid;
-				border-width: @border-width;
-				border-color: @border;
 				background-color: @background;
 				overflow: hidden;
 				cursor: pointer;

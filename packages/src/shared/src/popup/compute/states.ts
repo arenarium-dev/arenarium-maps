@@ -5,7 +5,7 @@ import { getRectangleOffsets } from '../rectangle.js';
 import { getPoint } from '../projection.js';
 
 import { type Popup } from '../../types.js';
-import { Angles, MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE, MARKER_PADDING } from '../../constants.js';
+import { Angles, MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE } from '../../constants.js';
 
 namespace Nodes {
 	export class Marker {
@@ -49,8 +49,8 @@ namespace Nodes {
 
 		constructor(data: Popup.Data, index: number) {
 			const projection = getPoint(data.lat, data.lng);
-			const width = data.width + 2 * MARKER_PADDING;
-			const height = data.height + 2 * MARKER_PADDING;
+			const width = data.width + 2 * data.padding;
+			const height = data.height + 2 * data.padding;
 
 			this.index = index;
 			this.id = data.id;

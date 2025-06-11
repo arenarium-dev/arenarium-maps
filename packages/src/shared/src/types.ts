@@ -8,6 +8,7 @@ export namespace Popup {
 		lng: number;
 		width: number;
 		height: number;
+		padding: number;
 	}
 
 	export interface StatesRequest {
