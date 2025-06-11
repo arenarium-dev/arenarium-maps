@@ -31,9 +31,9 @@ export const mapPopupDataSchema = z
 		rank: z.number(),
 		lat: z.number().min(-90).max(90),
 		lng: z.number().min(-180).max(180),
-		width: z.number().min(56),
-		height: z.number().min(56),
-		padding: z.number().min(2).max(16)
+		width: z.number(),
+		height: z.number(),
+		padding: z.number()
 	})
 	.refine((data) => Math.min(data.width, data.height) / data.padding >= 4, 'Popup width and height must be at least 4 times the padding');
 
