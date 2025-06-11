@@ -10,6 +10,8 @@ export const GET: RequestHandler = async (event) => {
 	const total = Number(event.url.searchParams.get('total'));
 	const width = Number(event.url.searchParams.get('width'));
 	const height = Number(event.url.searchParams.get('height'));
+	const padding = Number(event.url.searchParams.get('padding'));
+
 	const swlat = Number(event.url.searchParams.get('swlat'));
 	const swlng = Number(event.url.searchParams.get('swlng'));
 	const nelat = Number(event.url.searchParams.get('nelat'));
@@ -51,7 +53,8 @@ export const GET: RequestHandler = async (event) => {
 					lat: lat,
 					lng: lng,
 					height: height,
-					width: width
+					width: width,
+					padding: padding
 				});
 			}
 
@@ -79,7 +82,8 @@ export const GET: RequestHandler = async (event) => {
 					lat: lat,
 					lng: lng,
 					height: height,
-					width: width
+					width: width,
+					padding: padding
 				});
 			}
 
@@ -107,7 +111,8 @@ export const GET: RequestHandler = async (event) => {
 					lng: item.mapLng,
 					type: item.ptId,
 					height: height,
-					width: width
+					width: width,
+					padding: padding
 				};
 				data.push(any as MapPopupData);
 			}

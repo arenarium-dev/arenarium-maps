@@ -77,8 +77,10 @@
 
 	//#region Demo
 
+	type DemoSize = 'small' | 'large';
 	type DemoStyle = 'website' | 'light' | 'dark' | 'liberty';
 
+	let size: DemoSize = 'large';
 	let style = $state<DemoStyle>('website');
 	let demo = $state<Demo>(page.params.demo as Demo);
 
@@ -89,6 +91,8 @@
 
 	$effect(() => {
 		if (mapLoaded) {
+			size = window.innerWidth < 640 ? 'small' : 'large';
+
 			setTimeout(async () => {
 				await onMapLoad();
 				await onMapIdle();
@@ -170,16 +174,17 @@
 				}
 			}
 
-			const { width, height } = getPopupDimensions();
+			const { width, height, padding } = getPopupDimensions();
 
 			const params = new URLSearchParams();
 			params.append('total', '128');
+			params.append('width', width.toString());
+			params.append('height', height.toString());
+			params.append('padding', padding.toString());
 			params.append('swlat', bounds.getSouthWest().lat.toString());
 			params.append('swlng', bounds.getSouthWest().lng.toString());
 			params.append('nelat', bounds.getNorthEast().lat.toString());
 			params.append('nelng', bounds.getNorthEast().lng.toString());
-			params.append('width', width.toString());
-			params.append('height', height.toString());
 
 			const allPopupData = await Fetch.that<arenarium.MapPopupData[]>(`/api/popup/${demo}/data?${params}`);
 			const newPopupData = new Array<arenarium.MapPopupData>();
@@ -390,16 +395,17 @@
 		}
 	}
 
-	function getPopupDimensions(): { width: number; height: number } {
+	function getPopupDimensions(): { width: number; height: number; padding: number } {
 		switch (demo) {
 			default:
-				return { width: 64, height: 64 };
+				if (size == 'large') return { width: 64, height: 64, padding: 6 };
+				else return { width: 56, height: 56, padding: 4 };
 			case Demo.Rentals:
-				return { width: 128, height: 104 };
+				return { width: 128, height: 104, padding: 8 };
 			case Demo.SrbijaNekretnine:
-				return { width: 156, height: 128 };
+				return { width: 156, height: 128, padding: 8 };
 			case Demo.CityExpert:
-				return { width: 156, height: 128 };
+				return { width: 156, height: 128, padding: 8 };
 		}
 	}
 
