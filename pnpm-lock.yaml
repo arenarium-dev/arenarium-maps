@@ -92,7 +92,7 @@ importers:
     dependencies:
       '@arenarium/maps':
         specifier: latest
-        version: 1.0.125(svelte@5.33.19)
+        version: 1.0.126(svelte@5.33.19)
       '@better-fetch/fetch':
         specifier: ^1.1.18
         version: 1.1.18
@@ -177,7 +177,7 @@ importers:
     dependencies:
       '@arenarium/maps':
         specifier: latest
-        version: 1.0.125(svelte@5.33.19)
+        version: 1.0.126(svelte@5.33.19)
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^6.0.1
@@ -210,8 +210,8 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@arenarium/maps@1.0.125':
-    resolution: {integrity: sha512-AZIN5qUm70LCazQKIIwiogyc+w5B61KFjYKJXp97qlGMK/iyf/6XvGjeU0MPEOn59GY65Cz9v5hyUVPkom5SfA==}
+  '@arenarium/maps@1.0.126':
+    resolution: {integrity: sha512-EBtJ5hKGcRMvUEM6c2VpWj4TdIm319nDOPq1zjCdR2CkNhWWctcjPTWuw3c3rJorXLWCUkIJr0Akd1GMvOT0gQ==}
     peerDependencies:
       svelte: ^5.0.0
 
@@ -2852,7 +2852,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
 
-  '@arenarium/maps@1.0.125(svelte@5.33.19)':
+  '@arenarium/maps@1.0.126(svelte@5.33.19)':
     dependencies:
       svelte: 5.33.19
 
