@@ -1,6 +1,6 @@
 {
 	"name": "@arenarium/maps",
-	"version": "1.0.127",
+	"version": "1.0.128",
 	"license": "MIT",
 	"author": "arenarium.dev",
 	"description": "The best way to visualize ranked popups on a map.",
@@ -19,15 +19,15 @@
 	"jsdelivr": "./dist/index.js",
 	"exports": {
 		".": {
-			"import": "./dist/main.es.js",
-			"require": "./dist/main.cjs.js",
+			"types": "./dist/index.d.ts",
 			"svelte": "./dist/main.es.js",
-			"types": "./dist/index.d.ts"
+			"import": "./dist/main.es.js",
+			"require": "./dist/main.cjs.js"
 		},
 		"./maplibre": {
+			"svelte": "./dist/maplibre.es.js",
 			"import": "./dist/maplibre.es.js",
-			"require": "./dist/maplibre.cjs.js",
-			"svelte": "./dist/maplibre.es.js"
+			"require": "./dist/maplibre.cjs.js"
 		},
 		"./dist/style.css": {
 			"import": "./dist/style.css",
