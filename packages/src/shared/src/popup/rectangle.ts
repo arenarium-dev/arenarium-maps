@@ -4,46 +4,77 @@
  * The angle is the direction from the achor to the center of the rectangle, to which the rectangle is pointed
  * */
 export function getRectangleOffsets(width: number, height: number, angleDeg: number) {
-	const angleRad = angleDeg * (Math.PI / 180);
-
 	const widthHalf = width / 2;
 	const heightHalf = height / 2;
 	const diagonalHalf = Math.sqrt(widthHalf * widthHalf + heightHalf * heightHalf);
+
 	const aspectDeg = Math.atan(heightHalf / widthHalf) * (180 / Math.PI);
+	const angleRad = angleDeg * (Math.PI / 180);
 
-	const brDeg = aspectDeg;
-	const blDeg = 180 - aspectDeg;
-	const trDeg = 180 + aspectDeg;
-	const tlDeg = 360 - aspectDeg;
+	// \Q4/
+	// Q\/Q
+	// 3/\1
+	// /Q2\
 
-	switch (true) {
-		// Quadrant bottom
-		case brDeg <= angleDeg && angleDeg <= blDeg: {
-			return {
-				offsetX: diagonalHalf * Math.cos(angleRad) - widthHalf,
-				offsetY: 0
-			};
+	if (angleDeg < 180) {
+		if (angleDeg < 90) {
+			if (angleDeg < aspectDeg) {
+				// Q1
+				return {
+					offsetX: 0,
+					offsetY: diagonalHalf * Math.sin(angleRad) - heightHalf
+				};
+			} else {
+				// Q2
+				return {
+					offsetX: diagonalHalf * Math.cos(angleRad) - widthHalf,
+					offsetY: 0
+				};
+			}
+		} else {
+			if (angleDeg < 180 - aspectDeg) {
+				// Q2
+				return {
+					offsetX: diagonalHalf * Math.cos(angleRad) - widthHalf,
+					offsetY: 0
+				};
+			} else {
+				//Q3
+				return {
+					offsetX: -width,
+					offsetY: diagonalHalf * Math.sin(angleRad) - heightHalf
+				};
+			}
 		}
-		// Quadrant left
-		case blDeg <= angleDeg && angleDeg <= trDeg: {
-			return {
-				offsetX: -width,
-				offsetY: diagonalHalf * Math.sin(angleRad) - heightHalf
-			};
-		}
-		// Quadrant top
-		case trDeg <= angleDeg && angleDeg <= tlDeg: {
-			return {
-				offsetX: diagonalHalf * Math.cos(angleRad) - widthHalf,
-				offsetY: -height
-			};
-		}
-		// Quadrant right
-		default: {
-			return {
-				offsetX: 0,
-				offsetY: diagonalHalf * Math.sin(angleRad) - heightHalf
-			};
+	} else {
+		if (angleDeg < 270) {
+			if (angleDeg < 180 + aspectDeg) {
+				// Q3
+				return {
+					offsetX: -width,
+					offsetY: diagonalHalf * Math.sin(angleRad) - heightHalf
+				};
+			} else {
+				// Q4
+				return {
+					offsetX: diagonalHalf * Math.cos(angleRad) - widthHalf,
+					offsetY: -height
+				};
+			}
+		} else {
+			if (angleDeg < 360 - aspectDeg) {
+				// Q4
+				return {
+					offsetX: diagonalHalf * Math.cos(angleRad) - widthHalf,
+					offsetY: -height
+				};
+			} else {
+				//Q1
+				return {
+					offsetX: 0,
+					offsetY: diagonalHalf * Math.sin(angleRad) - heightHalf
+				};
+			}
 		}
 	}
 }
