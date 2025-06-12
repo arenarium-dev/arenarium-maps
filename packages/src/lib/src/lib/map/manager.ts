@@ -6,8 +6,17 @@ import MapMarkerCircle from '../components/marker/Circle.svelte';
 import { log } from './log.js';
 import { animation } from './animation/animation.js';
 import { MapBoundsPair } from './bounds.js';
-import { mapPopupsSchema, type MapConfiguration, type MapPopup, type MapPopupContentCallback } from './schemas.js';
+import {
+	mapPopupsSchema,
+	mapProviderSchema,
+	type MapConfiguration,
+	type MapPopup,
+	type MapPopupContentCallback,
+	type MapProvider,
+	type MapProviderMarker
+} from './schemas.js';
 
+import { unproject } from '@workspace/shared/src/popup/projection.js';
 import {
 	Angles,
 	MAP_BASE_SIZE,
@@ -18,54 +27,22 @@ import {
 	MAP_ZOOM_SCALE
 } from '@workspace/shared/src/constants.js';
 
-interface MapLibreClass {
-	new (options: maplibregl.MapOptions): maplibregl.Map;
-}
-
-interface MapLibreMarkerClass {
-	new (options: maplibregl.MarkerOptions): maplibregl.Marker;
-}
-
 class MapManager {
-	private MapClass: MapLibreClass;
-	private MapMarkerClass: MapLibreMarkerClass;
-
-	private map: maplibregl.Map;
-
-	private mapConfiguration: MapConfiguration | null = null;
+	private mapProvider: MapProvider;
+	private mapConfiguration: MapConfiguration | undefined;
 
 	private mapPopupDataArray = new Array<MapPopupData>();
 	private mapPopupDataMap = new Map<string, MapPopupData>();
 	private mapPopupDataUpdating = false;
 
-	constructor(mapClass: MapLibreClass, mapMarkerClass: MapLibreMarkerClass, options: maplibregl.MapOptions) {
-		this.MapClass = mapClass;
-		this.MapMarkerClass = mapMarkerClass;
+	constructor(mapProvider: MapProvider, mapConfiguration?: MapConfiguration) {
+		mapProviderSchema.parse(mapProvider);
 
-		this.map = new this.MapClass({
-			...options,
-			pitchWithRotate: false,
-			attributionControl: { customAttribution: '@arenarium/maps' }
-		});
-		// Disable map rotation using right click + drag
-		this.map.dragRotate.disable();
-		// Disable map rotation using keyboard
-		this.map.keyboard.disable();
-		// Disable map rotation using touch rotation gesture
-		this.map.touchZoomRotate.disableRotation();
-		// Disable map pitch using touch pitch gesture
-		this.map.touchPitch.disable();
-		// On load event
-		this.map.on('load', this.onMapLoad.bind(this));
-
-		this.setConfiguration(null);
+		this.mapProvider = mapProvider;
+		this.setConfiguration(mapConfiguration);
 	}
 
-	get maplibre() {
-		return this.map;
-	}
-
-	public setConfiguration(configuration: MapConfiguration | null) {
+	public setConfiguration(configuration: MapConfiguration | undefined) {
 		this.mapConfiguration = configuration;
 
 		if (configuration?.animation?.queue?.limit) {
@@ -76,7 +53,7 @@ class MapManager {
 	}
 
 	public setColors(primary: string, background: string, text: string) {
-		const container = this.map.getContainer();
+		const container = this.mapProvider.getContainer();
 		container.style.setProperty('--map-style-primary', primary);
 		container.style.setProperty('--map-style-background', background);
 		container.style.setProperty('--map-style-text', text);
@@ -89,6 +66,9 @@ class MapManager {
 
 			// Update data
 			await this.updatePopupData(popups);
+
+			// Process popup data
+			this.processPopupDataCallback();
 		} catch (error: any) {
 			console.error(error);
 			log('[Error] Failed to update popups', { message: error.message, stack: error.stack });
@@ -119,12 +99,9 @@ class MapManager {
 		}
 	}
 
-	private onMapLoad() {
-		this.processPopupDataCallback();
-	}
-
 	private processPopupDataCallback() {
-		if (this.map._removed) return;
+		// Check if map is loaded or marker data is empty
+		if (this.mapPopupDataArray.length == 0) return;
 
 		try {
 			this.processPopupData();
@@ -136,20 +113,19 @@ class MapManager {
 	}
 
 	private processPopupData() {
-		// Check if map is loaded or marker data is empty
-		if (this.mapPopupDataArray.length == 0) return;
+		// Check if map popup data is updating
 		if (this.mapPopupDataUpdating) return;
 
 		// Get map zoom
-		const zoom = this.map.getZoom();
+		const zoom = this.mapProvider.getZoom();
 		if (!zoom) return;
 
 		// Get bounds
-		const mapWidth = this.map.getCanvas().width;
-		const mapHeight = this.map.getCanvas().height;
+		const mapWidth = this.mapProvider.getWidth();
+		const mapHeight = this.mapProvider.getHeight();
 		const mapOffset = MAP_BASE_SIZE;
-		const mapOffsetBounds = new MapBoundsPair(this.map, -mapOffset, mapHeight + mapOffset, mapWidth + mapOffset, -mapOffset);
-		const mapWindowBounds = new MapBoundsPair(this.map, 0, mapHeight, mapWidth, 0);
+		const mapOffsetBounds = new MapBounds(-mapOffset, mapHeight + mapOffset, mapWidth + mapOffset, -mapOffset);
+		const mapWindowBounds = new MapBounds(0, mapHeight, mapWidth, 0);
 
 		let circleCount = 0;
 		let circleCountMax = this.mapConfiguration?.pin?.maxCount ?? Math.max(MAP_CIRCLES_MAX_COUNT, 8 * navigator.hardwareConcurrency);
@@ -172,7 +148,7 @@ class MapManager {
 						}
 
 						// Update circle map
-						circle.updateMap(this.map);
+						circle.updateMap(true);
 
 						// Update circle pin if not loaded
 						if (circle.isPinLoaded() == false) {
@@ -186,12 +162,12 @@ class MapManager {
 
 					// Wait until circle is invisible before removing it
 					if (circle.isCollapsed()) {
-						circle.updateMap(null);
+						circle.updateMap(false);
 					}
 				}
 			} else {
 				// If created immediately remove circle
-				circle.updateMap(null);
+				circle.updateMap(false);
 			}
 
 			// Process popup marker
@@ -204,7 +180,7 @@ class MapManager {
 					marker.setCollapsed(false);
 
 					// Update marker map
-					marker.updateMap(this.map);
+					marker.updateMap(true);
 
 					// If marker is expanded, update body if not loaded
 					if (marker.isExpanded() && marker.isBodyLoaded() == false) {
@@ -216,12 +192,12 @@ class MapManager {
 
 					// Wait until marker is collapsed before removing it
 					if (marker.isCollapsed()) {
-						marker.updateMap(null);
+						marker.updateMap(false);
 					}
 				}
 			} else {
 				// If created immediately remove marker
-				marker.updateMap(null);
+				marker.updateMap(false);
 			}
 		}
 	}
@@ -254,7 +230,7 @@ class MapManager {
 				} else {
 					// Create data
 					const newData = new MapPopupData(newPopup);
-					newData.create(this.MapMarkerClass);
+					newData.create(this.mapProvider);
 
 					this.mapPopupDataMap.set(newPopup.data.id, newData);
 					this.mapPopupDataArray.push(newData);
@@ -310,7 +286,7 @@ class MapPopupComponent<T> {
 
 	element: HTMLElement | undefined;
 	component: T | undefined;
-	libreMarker: maplibregl.Marker | undefined;
+	marker: MapProviderMarker | undefined;
 
 	constructor(popup: MapPopup) {
 		this.id = popup.data.id;
@@ -319,9 +295,9 @@ class MapPopupComponent<T> {
 		this.zoom = popup.state[0];
 	}
 
-	create(libreMarkerClass: MapLibreMarkerClass) {
+	create(provider: MapProvider) {
 		this.createElement();
-		this.createLibreMarker(libreMarkerClass);
+		this.createMarker(provider);
 		this.updateZIndex();
 	}
 
@@ -329,14 +305,12 @@ class MapPopupComponent<T> {
 		throw new Error('Create element not implemented');
 	}
 
-	createLibreMarker(libreMarkerClass: MapLibreMarkerClass) {
+	createMarker(provider: MapProvider) {
 		const element = this.element;
-		if (!element) throw new Error('Failed to create libre marker');
+		if (!element) throw new Error('Failed to create marker');
 
-		// Create new libre marker
-		const libreMarker = new libreMarkerClass({ element: element });
-		libreMarker.setLngLat([this.lng, this.lat]);
-		this.libreMarker = libreMarker;
+		// Create new marker
+		this.marker = provider.createMarker(this.lat, this.lng, element);
 	}
 
 	update(popup: MapPopup) {
@@ -349,18 +323,18 @@ class MapPopupComponent<T> {
 		throw new Error('Update z-index not implemented');
 	}
 
-	updateMap(map: maplibregl.Map | null) {
-		const libreMarker = this.libreMarker;
+	updateMap(contains: boolean) {
+		const marker = this.marker;
 		const component = this.component;
-		if (libreMarker == undefined || component == undefined) throw new Error('Failed to update popup map');
+		if (marker == undefined || component == undefined) throw new Error('Failed to update popup map');
 
-		if (map) {
-			if (libreMarker._map != map) {
-				libreMarker.addTo(map);
+		if (contains) {
+			if (marker.inserted() == false) {
+				marker.insert();
 			}
 		} else {
-			if (libreMarker._map != null) {
-				libreMarker.remove();
+			if (marker.inserted() == true) {
+				marker.remove();
 			}
 		}
 	}
@@ -370,7 +344,7 @@ class MapPopupComponent<T> {
 	}
 
 	remove() {
-		this.libreMarker?.remove();
+		this.marker?.remove();
 		this.element?.remove();
 	}
 }
@@ -403,10 +377,10 @@ class MapPopupCircle extends MapPopupComponent<ReturnType<typeof MapMarkerCircle
 		element.style.zIndex = zIndex.toString();
 	}
 
-	updateMap(map: maplibregl.Map | null) {
-		super.updateMap(map);
+	updateMap(contains: boolean) {
+		super.updateMap(contains);
 
-		this.component?.setDisplayed(map != null);
+		this.component?.setDisplayed(contains);
 	}
 
 	updateState(zoom: number) {
@@ -507,10 +481,10 @@ class MapPopupMarker extends MapPopupComponent<ReturnType<typeof MapMarker>> {
 		element.style.zIndex = zIndex.toString();
 	}
 
-	updateMap(map: maplibregl.Map | null) {
-		super.updateMap(map);
+	updateMap(contains: boolean) {
+		super.updateMap(contains);
 
-		this.component?.setDisplayed(map != null);
+		this.component?.setDisplayed(contains);
 	}
 
 	updateState(zoom: number) {
@@ -587,9 +561,9 @@ class MapPopupData {
 		this.marker = new MapPopupMarker(popup);
 	}
 
-	create(libreMarkerClass: MapLibreMarkerClass) {
-		this.circle.create(libreMarkerClass);
-		this.marker.create(libreMarkerClass);
+	create(provider: MapProvider) {
+		this.circle.create(provider);
+		this.marker.create(provider);
 	}
 
 	update(popup: MapPopup) {
@@ -601,6 +575,34 @@ class MapPopupData {
 		this.circle.remove();
 		this.marker.remove();
 	}
+}
+
+class MapBounds {
+	swLat: number;
+	swLng: number;
+	neLat: number;
+	neLng: number;
+
+	constructor(swX: number, swY: number, neX: number, neY: number) {
+		const sw = unproject(swX, swY);
+		const ne = unproject(neX, neY);
+		this.swLat = sw.lat;
+		this.swLng = sw.lng;
+		this.neLat = ne.lat;
+		this.neLng = ne.lng;
+	}
+
+	public contains = (lat: number, lng: number) => {
+		if (this.swLat <= lat && lat <= this.neLat) {
+			if (this.swLng < this.neLng) {
+				return this.swLng <= lng && lng <= this.neLng;
+			} else {
+				return lng <= this.neLng || this.swLng <= lng;
+			}
+		} else {
+			return false;
+		}
+	};
 }
 
 export { MapManager };

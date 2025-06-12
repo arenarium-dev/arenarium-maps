@@ -1,16 +1,33 @@
 import { MAP_BASE_SIZE } from '../constants.js';
 
-// The mapping between latitude, longitude and pixels is defined by the web
-// mercator projection.
-export function getPoint(lat: number, lng: number) {
-	let siny = Math.sin((lat * Math.PI) / 180);
+// https://en.wikipedia.org/wiki/Web_Mercator_projection
 
-	// Truncating to 0.9999 effectively limits latitude to 89.189. This is
-	// about a third of a tile past the edge of the world tile.
-	siny = Math.min(Math.max(siny, -0.9999), 0.9999);
-
+export function project(lat: number, lng: number) {
 	return {
-		x: MAP_BASE_SIZE * (0.5 + lng / 360),
-		y: MAP_BASE_SIZE * (0.5 - Math.log((1 + siny) / (1 - siny)) / (4 * Math.PI))
+		x: mercatorXfromLng(lng) * MAP_BASE_SIZE,
+		y: mercatorYfromLat(lat) * MAP_BASE_SIZE
 	};
+}
+
+export function unproject(x: number, y: number) {
+	return {
+		lat: latFromMercatorY(y / MAP_BASE_SIZE),
+		lng: lngFromMercatorX(x / MAP_BASE_SIZE)
+	};
+}
+
+function mercatorXfromLng(lng: number) {
+	return (180 + lng) / 360;
+}
+
+function mercatorYfromLat(lat: number) {
+	return (180 - (180 / Math.PI) * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360))) / 360;
+}
+
+function lngFromMercatorX(x: number) {
+	return x * 360 - 180;
+}
+
+function latFromMercatorY(y: number) {
+	return (360 / Math.PI) * Math.atan(Math.exp(((180 - y * 360) * Math.PI) / 180)) - 90;
 }

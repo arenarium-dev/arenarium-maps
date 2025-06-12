@@ -6,6 +6,7 @@
 
 	import { MapManager } from '$lib/map/manager.js';
 	import { MapDarkStyle } from '$lib/map/styles.js';
+	import { MapProviders } from '$lib/map/providers/maplibre.js';
 	import type { MapPopup, MapPopupData, MapPopupState } from '$lib/map/schemas.js';
 
 	import { getStates } from '@workspace/shared/src/popup/compute/states.js';
@@ -26,15 +27,16 @@
 	let zoom = $state<number>(0);
 
 	onMount(() => {
-		mapManager = new MapManager(maplibregl.Map, maplibregl.Marker, {
+		const mapProvider = new MapProviders.MapLibre(maplibregl.Map, maplibregl.Marker, {
 			container: mapContainer,
 			style: MapDarkStyle,
 			center: { lat: 51.505, lng: -0.09 },
 			zoom: 4
 		});
 
-		mapLibre = mapManager.maplibre;
+		mapLibre = mapProvider.getMap();
 
+		mapManager = new MapManager(mapProvider);
 		mapManager.setColors('purple', 'white', 'black');
 		mapManager.setConfiguration({
 			pin: {

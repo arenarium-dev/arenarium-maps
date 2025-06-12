@@ -23,6 +23,36 @@ export const mapConfigurationSchema = z.object({
 
 export type MapConfiguration = z.infer<typeof mapConfigurationSchema>;
 
+// Map
+
+export const mapProviderNameSchema = z.enum(['maplibre', 'google']);
+export const mapLatitudeSchema = z.number().min(-90).max(90);
+export const mapLongitudeSchema = z.number().min(-180).max(180);
+export const mapHtmlElementSchema = z.any().refine((element) => element instanceof HTMLElement, 'Must be an HTMLElement');
+
+export const mapProviderMarkerSchema = z.object({
+	instance: z.any(),
+	inserted: z.function().args().returns(z.boolean()),
+	insert: z.function().args().returns(z.void()),
+	remove: z.function().args().returns(z.void())
+});
+
+export const mapProviderSchema = z.object({
+	name: mapProviderNameSchema,
+	getContainer: z.function().args().returns(mapHtmlElementSchema),
+	getZoom: z.function().args().returns(z.number()),
+	getWidth: z.function().args().returns(z.number()),
+	getHeight: z.function().args().returns(z.number()),
+	createMarker: z.function().args(mapLatitudeSchema, mapLongitudeSchema, mapHtmlElementSchema).returns(mapProviderMarkerSchema),
+});
+
+export type MapProviderName = z.infer<typeof mapProviderNameSchema>;
+export type MapLatitude = z.infer<typeof mapLatitudeSchema>;
+export type MapLongitude = z.infer<typeof mapLongitudeSchema>;
+export type MapHtmlElement = z.infer<typeof mapHtmlElementSchema>;
+export type MapProvider = z.infer<typeof mapProviderSchema>;
+export type MapProviderMarker = z.infer<typeof mapProviderMarkerSchema>;
+
 // Popups
 
 export const mapPopupDataSchema = z

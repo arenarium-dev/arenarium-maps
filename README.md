@@ -1,5 +1,6 @@
 TODO:
 
+Replace shared types with schema
 Make popups smaller for mobile
 Add booking/airbnb demo
 

@@ -2,7 +2,7 @@ import { Particles } from './particles.js';
 import { getBoundsZoomWhenTouching, areBoundsOverlaping, type Bounds } from './bounds.js';
 
 import { getRectangleOffsets } from '../rectangle.js';
-import { getPoint } from '../projection.js';
+import { project } from '../projection.js';
 
 import { type Popup } from '../../types.js';
 import { Angles, MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE } from '../../constants.js';
@@ -48,7 +48,7 @@ namespace Nodes {
 		neighbours: Array<Node>;
 
 		constructor(data: Popup.Data, index: number) {
-			const projection = getPoint(data.lat, data.lng);
+			const projection = project(data.lat, data.lng);
 			const width = data.width + 2 * data.padding;
 			const height = data.height + 2 * data.padding;
 

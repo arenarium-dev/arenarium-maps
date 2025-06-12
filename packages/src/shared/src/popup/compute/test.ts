@@ -1,10 +1,10 @@
 import { areBoundsOverlaping, type Bounds } from './bounds.js';
 
-import { getPoint } from '../projection.js';
+import { project } from '../projection.js';
 import { getRectangleOffsets } from '../rectangle.js';
 
-import { type Popup } from '../../types.js';
 import { Angles, MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE } from '../../constants.js';
+import { type Popup } from '../../types.js';
 
 class Popup {
 	x: number;
@@ -19,7 +19,7 @@ class Popup {
 	bounds: Bounds | undefined;
 
 	constructor(data: Popup.Data, state: Popup.State) {
-		const point = getPoint(data.lat, data.lng);
+		const point = project(data.lat, data.lng);
 		this.x = point.x;
 		this.y = point.y;
 		this.width = data.width + 2 * data.padding;
