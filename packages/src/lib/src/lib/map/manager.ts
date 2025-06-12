@@ -17,43 +17,43 @@ import {
 } from './schemas.js';
 
 import { unproject } from '@workspace/shared/src/popup/projection.js';
-import {
-	Angles,
-	MAP_BASE_SIZE,
-	MAP_CIRCLES_MAX_COUNT,
-	MAP_CIRCLES_MAX_ZOOM,
-	MAP_MARKERS_Z_INDEX_OFFSET,
-	MAP_MAX_ZOOM,
-	MAP_ZOOM_SCALE
-} from '@workspace/shared/src/constants.js';
+import { Angles, MAP_MAX_ZOOM, MAP_ZOOM_SCALE } from '@workspace/shared/src/constants.js';
+
+const MAP_MARKERS_Z_INDEX_OFFSET = 1000000;
+const MAP_CIRCLES_MAX_ZOOM = 2;
+const MAP_CIRCLES_MAX_COUNT = 128;
 
 class MapManager {
-	private mapProvider: MapProvider;
-	private mapConfiguration: MapConfiguration | undefined;
+	private provider: MapProvider;
 
-	private mapPopupDataArray = new Array<MapPopupData>();
-	private mapPopupDataMap = new Map<string, MapPopupData>();
-	private mapPopupDataUpdating = false;
+	private popupDataArray = new Array<MapPopupData>();
+	private popupDataMap = new Map<string, MapPopupData>();
+	private popupDataUpdating = false;
+
+	private popupMaxWidth = 0;
+	private popupMaxHeight = 0;
+
+	private configurationPinFade = false;
+	private configurationPinMaxCount = 0;
+	private configurationPinMaxZoomDelta = 0;
 
 	constructor(mapProvider: MapProvider, mapConfiguration?: MapConfiguration) {
 		mapProviderSchema.parse(mapProvider);
 
-		this.mapProvider = mapProvider;
-		this.setConfiguration(mapConfiguration);
+		this.provider = mapProvider;
+		this.configuration = mapConfiguration;
 	}
 
-	public setConfiguration(configuration: MapConfiguration | undefined) {
-		this.mapConfiguration = configuration;
+	public set configuration(configuration: MapConfiguration | undefined) {
+		this.configurationPinFade = configuration?.pin?.fade ?? true;
+		this.configurationPinMaxCount = configuration?.pin?.maxCount ?? Math.max(MAP_CIRCLES_MAX_COUNT, 8 * navigator.hardwareConcurrency);
+		this.configurationPinMaxZoomDelta = configuration?.pin?.maxZoom ?? MAP_CIRCLES_MAX_ZOOM;
 
-		if (configuration?.animation?.queue?.limit) {
-			animation.setLimit(configuration.animation.queue.limit);
-		} else {
-			animation.setLimit(8 * navigator.hardwareConcurrency);
-		}
+		animation.setLimit(configuration?.animation?.queue?.limit ?? 8 * navigator.hardwareConcurrency);
 	}
 
 	public setColors(primary: string, background: string, text: string) {
-		const container = this.mapProvider.getContainer();
+		const container = this.provider.getContainer();
 		container.style.setProperty('--map-style-primary', primary);
 		container.style.setProperty('--map-style-background', background);
 		container.style.setProperty('--map-style-text', text);
@@ -66,6 +66,10 @@ class MapManager {
 
 			// Update data
 			await this.updatePopupData(popups);
+
+			// Update max width and height
+			this.popupMaxWidth = this.popupDataArray.reduce((a, b) => Math.max(a, b.marker.width), 0);
+			this.popupMaxHeight = this.popupDataArray.reduce((a, b) => Math.max(a, b.marker.height), 0);
 
 			// Process popup data
 			this.processPopupDataCallback();
@@ -101,7 +105,7 @@ class MapManager {
 
 	private processPopupDataCallback() {
 		// Check if map is loaded or marker data is empty
-		if (this.mapPopupDataArray.length == 0) return;
+		if (this.popupDataArray.length == 0) return;
 
 		try {
 			this.processPopupData();
@@ -114,34 +118,34 @@ class MapManager {
 
 	private processPopupData() {
 		// Check if map popup data is updating
-		if (this.mapPopupDataUpdating) return;
+		if (this.popupDataUpdating) return;
 
 		// Get map zoom
-		const zoom = this.mapProvider.getZoom();
+		const zoom = this.provider.getZoom();
 		if (!zoom) return;
 
 		// Get bounds
-		const mapWidth = this.mapProvider.getWidth();
-		const mapHeight = this.mapProvider.getHeight();
-		const mapOffset = MAP_BASE_SIZE;
-		const mapOffsetBounds = new MapBounds(-mapOffset, mapHeight + mapOffset, mapWidth + mapOffset, -mapOffset);
+		const mapWidth = this.provider.getWidth();
+		const mapHeight = this.provider.getHeight();
+		const mapOffsetX = this.popupMaxWidth * 2;
+		const mapOffsetY = this.popupMaxHeight * 2;
+		const mapOffsetBounds = new MapBounds(-mapOffsetX, mapHeight + mapOffsetY, mapWidth + mapOffsetX, -mapOffsetY);
 		const mapWindowBounds = new MapBounds(0, mapHeight, mapWidth, 0);
 
+		// Track circle count
 		let circleCount = 0;
-		let circleCountMax = this.mapConfiguration?.pin?.maxCount ?? Math.max(MAP_CIRCLES_MAX_COUNT, 8 * navigator.hardwareConcurrency);
-		let circleZoomMax = this.mapConfiguration?.pin?.maxZoom ?? MAP_CIRCLES_MAX_ZOOM;
 
-		for (const data of this.mapPopupDataArray) {
+		for (const data of this.popupDataArray) {
 			const zoomThreshold = data.supressed ? -1 : zoom;
 
 			// Process popup circle
 			const circle = data.circle;
 
 			if (mapWindowBounds.contains(circle.lat, circle.lng)) {
-				if (zoomThreshold <= circle.zoom && circle.zoom <= zoom + circleZoomMax) {
-					if (circleCount < circleCountMax) {
+				if (zoomThreshold <= circle.zoom && circle.zoom <= zoom + this.configurationPinMaxZoomDelta) {
+					if (circleCount < this.configurationPinMaxCount) {
 						// Update circle state
-						if (this.mapConfiguration?.pin?.fade == true) {
+						if (this.configurationPinFade == true) {
 							circle.updateState(zoom);
 						} else {
 							circle.setExpanded();
@@ -204,25 +208,25 @@ class MapManager {
 
 	private async updatePopupData(newPopups: MapPopup[]) {
 		try {
-			this.mapPopupDataUpdating = true;
+			this.popupDataUpdating = true;
 
 			// Remove old data
 			const newPopupsMap = new Map(newPopups.map((m) => [m.data.id, new MapPopupData(m)]));
-			const oldPopupDataArray = Array.from(this.mapPopupDataArray);
+			const oldPopupDataArray = Array.from(this.popupDataArray);
 
 			for (const oldPopupData of oldPopupDataArray) {
 				if (newPopupsMap.has(oldPopupData.id) == false) {
 					oldPopupData.remove();
 
-					this.mapPopupDataMap.delete(oldPopupData.id);
-					this.mapPopupDataArray.splice(this.mapPopupDataArray.indexOf(oldPopupData), 1);
+					this.popupDataMap.delete(oldPopupData.id);
+					this.popupDataArray.splice(this.popupDataArray.indexOf(oldPopupData), 1);
 				}
 			}
 
 			// Crate or update new data
 			for (const newPopup of newPopups) {
 				// Check if data already exists
-				const oldData = this.mapPopupDataMap.get(newPopup.data.id);
+				const oldData = this.popupDataMap.get(newPopup.data.id);
 
 				if (oldData) {
 					// Update data
@@ -230,49 +234,49 @@ class MapManager {
 				} else {
 					// Create data
 					const newData = new MapPopupData(newPopup);
-					newData.create(this.mapProvider);
+					newData.create(this.provider);
 
-					this.mapPopupDataMap.set(newPopup.data.id, newData);
-					this.mapPopupDataArray.push(newData);
+					this.popupDataMap.set(newPopup.data.id, newData);
+					this.popupDataArray.push(newData);
 				}
 			}
 
-			this.mapPopupDataArray.sort((a, b) => a.zoom - b.zoom);
+			this.popupDataArray.sort((a, b) => a.zoom - b.zoom);
 		} catch (error) {
 			console.error(error);
 
-			this.mapPopupDataArray.length = 0;
-			this.mapPopupDataMap.clear();
+			this.popupDataArray.length = 0;
+			this.popupDataMap.clear();
 
 			throw error;
 		} finally {
-			this.mapPopupDataUpdating = false;
+			this.popupDataUpdating = false;
 		}
 	}
 
 	private removePopupData() {
 		try {
-			this.mapPopupDataUpdating = true;
+			this.popupDataUpdating = true;
 
-			this.mapPopupDataArray.forEach((data) => data.remove());
-			this.mapPopupDataArray.length = 0;
-			this.mapPopupDataMap.clear();
+			this.popupDataArray.forEach((data) => data.remove());
+			this.popupDataArray.length = 0;
+			this.popupDataMap.clear();
 		} catch (error) {
 			console.error(error);
 
-			this.mapPopupDataArray.forEach((data) => data.remove());
-			this.mapPopupDataArray.length = 0;
-			this.mapPopupDataMap.clear();
+			this.popupDataArray.forEach((data) => data.remove());
+			this.popupDataArray.length = 0;
+			this.popupDataMap.clear();
 
 			throw error;
 		} finally {
-			this.mapPopupDataUpdating = false;
+			this.popupDataUpdating = false;
 		}
 	}
 
 	private togglePopupData(states: { id: string; toggled: boolean }[]) {
 		states.forEach((state) => {
-			const data = this.mapPopupDataMap.get(state.id);
+			const data = this.popupDataMap.get(state.id);
 			if (data) data.supressed = !state.toggled;
 		});
 	}

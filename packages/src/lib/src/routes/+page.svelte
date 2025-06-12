@@ -35,18 +35,12 @@
 		});
 
 		mapLibre = mapProvider.getMap();
-
-		mapManager = new MapManager(mapProvider);
-		mapManager.setColors('purple', 'white', 'black');
-		mapManager.setConfiguration({
-			pin: {
-				fade: true
-			}
-		});
-
 		mapLibre.on('move', (e) => {
 			zoom = mapLibre.getZoom();
 		});
+
+		mapManager = new MapManager(mapProvider);
+		mapManager.setColors('purple', 'white', 'black');
 
 		const wasmBinaryString = atob(wasm);
 		const wasmBytes = new Uint8Array(wasmBinaryString.length);
