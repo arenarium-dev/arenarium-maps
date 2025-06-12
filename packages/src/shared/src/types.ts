@@ -1,5 +1,10 @@
 export namespace Popup {
-	export type State = [number, [number, number][]];
+	export interface Pramaters {
+		mapSize: number;
+		zoomMin: number;
+		zoomMax: number;
+		zoomScale: number;
+	}
 
 	export interface Data {
 		id: string;
@@ -15,6 +20,8 @@ export namespace Popup {
 		key: string;
 		data: Data[];
 	}
+
+	export type State = [number, [number, number][]];
 }
 
 export interface Log {

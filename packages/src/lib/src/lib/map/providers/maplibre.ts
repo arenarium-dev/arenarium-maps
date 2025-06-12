@@ -1,3 +1,4 @@
+import type { Popup } from '@workspace/shared/src/types.js';
 import type { MapProvider, MapProviderMarker, MapProviderName } from '../schemas.js';
 
 interface MapLibreClass {
@@ -10,7 +11,15 @@ interface MapLibreMarkerClass {
 
 export namespace MapProviders {
 	export class MapLibre implements MapProvider {
+		public static Parameters: Popup.Pramaters = {
+			mapSize: 512,
+			zoomMin: 0,
+			zoomMax: 24,
+			zoomScale: 10
+		};
+
 		public name: MapProviderName = 'maplibre';
+		public parameters: Popup.Pramaters = MapLibre.Parameters;
 
 		private MapClass: MapLibreClass;
 		private MapMarkerClass: MapLibreMarkerClass;

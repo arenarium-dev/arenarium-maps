@@ -2,7 +2,7 @@
 	import { mount, onMount, tick } from 'svelte';
 
 	import Icon from './components/Icon.svelte';
-	import Popup from './components/Popup.svelte';
+	import PopupComponent from './components/Popup.svelte';
 
 	import { MapManager } from '$lib/map/manager.js';
 	import { MapDarkStyle } from '$lib/map/styles.js';
@@ -17,9 +17,10 @@
 	import maplibregl from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 
+	let mapContainer: HTMLElement;
+	let mapProvider: MapProviders.MapLibre;
 	let mapLibre: maplibregl.Map;
 	let mapManager: MapManager;
-	let mapContainer: HTMLElement;
 
 	let mapPopups = new Map<string, MapPopup>();
 
@@ -27,7 +28,7 @@
 	let zoom = $state<number>(0);
 
 	onMount(() => {
-		const mapProvider = new MapProviders.MapLibre(maplibregl.Map, maplibregl.Marker, {
+		mapProvider = new MapProviders.MapLibre(maplibregl.Map, maplibregl.Marker, {
 			container: mapContainer,
 			style: MapDarkStyle,
 			center: { lat: 51.505, lng: -0.09 },
@@ -180,7 +181,7 @@
 		console.log(`[STATES CALCULATION ${data.length}] ${performance.now() - now}ms`);
 
 		now = performance.now();
-		testStates(data, states);
+		testStates(mapProvider.parameters, data, states);
 		console.log(`[STATES TEST ${data.length}] ${performance.now() - now}ms`);
 
 		for (let i = 0; i < data.length; i++) {
@@ -201,7 +202,7 @@
 		if (import.meta.env.DEV) {
 			switch (import.meta.env.MODE) {
 				case 'browser': {
-					return getStates(data);
+					return getStates(mapProvider.parameters, data);
 				}
 				default: {
 					return await getStatesApi(data);
@@ -215,7 +216,10 @@
 	async function getStatesApi(data: MapPopupData[]): Promise<MapPopupState[]> {
 		const response = await fetch(`/api`, {
 			method: 'POST',
-			body: JSON.stringify(data)
+			body: JSON.stringify({
+				parameters: mapProvider.parameters,
+				data: data
+			})
 		});
 
 		if (!response.ok || !response.body) {
@@ -232,7 +236,7 @@
 			if (popup == undefined) throw new Error('Failed to get popup');
 
 			const element = document.createElement('div');
-			mount(Popup, { target: element, props: { id: id, popup: popup } });
+			mount(PopupComponent, { target: element, props: { id: id, popup: popup } });
 
 			element.style.width = popup.data.width + 'px';
 			element.style.height = popup.data.height + 'px';

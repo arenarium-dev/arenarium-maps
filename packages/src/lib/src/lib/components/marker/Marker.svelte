@@ -4,7 +4,7 @@
 	import { animation, ANIMATION_MARKER_LAYER, ANIMATION_PRIORITY_LAYER } from '../../map/animation/animation.js';
 	import { Transition } from '../../map/animation/transition.js';
 
-	import { getRectangleOffsets } from '@workspace/shared/src/popup/rectangle.js';
+	import { Rectangle } from '@workspace/shared/src/popup/rectangle.js';
 
 	let { id, priority, width, height, padding }: { id: string; priority: number; width: number; height: number; padding: number } = $props();
 
@@ -164,7 +164,7 @@
 
 	export function setAngle(value: number) {
 		if (angleDefined == false) {
-			let angleOffsets = getRectangleOffsets(markerWidth, markerHeight, value);
+			let angleOffsets = Rectangle.getOffsets(markerWidth, markerHeight, value);
 			markerOffsetXTransition.set(Math.round(angleOffsets.offsetX), { duration: 0 });
 			markerOffsetYTransition.set(Math.round(angleOffsets.offsetY), { duration: 0 });
 			updateAngleStyle(markerOffsetXTransition.value, markerOffsetYTransition.value);
@@ -176,9 +176,9 @@
 			let angleSteps = angleDistance < 180 ? angleDistance : 360 - angleDistance;
 			let angleDuration = Math.log(angleSteps) * 75;
 
-			let angleOffsets = getRectangleOffsets(markerWidth, markerHeight, value);
-			markerOffsetXTransition.set(Math.round(angleOffsets.offsetX), { duration: angleDefined ? angleDuration : 0 });
-			markerOffsetYTransition.set(Math.round(angleOffsets.offsetY), { duration: angleDefined ? angleDuration : 0 });
+			let angleOffsets = Rectangle.getOffsets(markerWidth, markerHeight, value);
+			markerOffsetXTransition.set(Math.round(angleOffsets.offsetX), { duration: angleDuration });
+			markerOffsetYTransition.set(Math.round(angleOffsets.offsetY), { duration: angleDuration });
 
 			angle = value;
 		}

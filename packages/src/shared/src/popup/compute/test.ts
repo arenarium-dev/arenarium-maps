@@ -1,9 +1,9 @@
-import { areBoundsOverlaping, type Bounds } from './bounds.js';
+import { Bounds } from './bounds.js';
 
-import { project } from '../projection.js';
-import { getRectangleOffsets } from '../rectangle.js';
+import { Mercator } from '../mercator.js';
+import { Rectangle } from '../rectangle.js';
 
-import { Angles, MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE } from '../../constants.js';
+import { Angles } from '../../constants.js';
 import { type Popup } from '../../types.js';
 
 class Popup {
@@ -18,8 +18,8 @@ class Popup {
 	angle: number;
 	bounds: Bounds | undefined;
 
-	constructor(data: Popup.Data, state: Popup.State) {
-		const point = project(data.lat, data.lng);
+	constructor(parameters: Popup.Pramaters, data: Popup.Data, state: Popup.State) {
+		const point = Mercator.project(data.lat, data.lng, parameters.mapSize);
 		this.x = point.x;
 		this.y = point.y;
 		this.width = data.width + 2 * data.padding;
@@ -33,7 +33,7 @@ class Popup {
 	}
 
 	getBounds(scale: number, angle: number): Bounds {
-		let { offsetX, offsetY } = getRectangleOffsets(this.width, this.height, angle);
+		let { offsetX, offsetY } = Rectangle.getOffsets(this.width, this.height, angle);
 		let left = -offsetX;
 		let right = this.width - left;
 		let top = -offsetY;
@@ -50,7 +50,7 @@ class Popup {
 	}
 }
 
-export function testStates(data: Popup.Data[], states: Popup.State[]) {
+export function testStates(parameters: Popup.Pramaters, data: Popup.Data[], states: Popup.State[]) {
 	if (data.length != states.length) throw new Error('Data and states length must be the same');
 
 	const popups = new Array<Popup>(data.length);
@@ -60,13 +60,13 @@ export function testStates(data: Popup.Data[], states: Popup.State[]) {
 		if (state[1] == undefined || state[1].length == 0) throw new Error('State angles is empty');
 		if (state[0] != state[1][0][0]) throw new Error('State expand zoom and start angles zoom are not the same');
 
-		const popup = new Popup(data[i], states[i]);
+		const popup = new Popup(parameters, data[i], states[i]);
 		popups[i] = popup;
 	}
 
-	const zoomStart = MAP_MIN_ZOOM;
-	const zoomEnd = MAP_MAX_ZOOM;
-	const zoomStep = 1 / MAP_ZOOM_SCALE;
+	const zoomStart = parameters.zoomMin;
+	const zoomEnd = parameters.zoomMax;
+	const zoomStep = 1 / parameters.zoomScale;
 
 	for (let zoom = zoomStart; zoom <= zoomEnd; zoom += zoomStep) {
 		const scale = Math.pow(2, zoom);
@@ -91,7 +91,7 @@ export function testStates(data: Popup.Data[], states: Popup.State[]) {
 				const popup2 = popups[j];
 				if (popup2.bounds == undefined) continue;
 
-				if (areBoundsOverlaping(popup1.bounds, popup2.bounds)) {
+				if (Bounds.areOverlaping(popup1.bounds, popup2.bounds)) {
 					console.log('OVERLAP', zoom, data[i], data[j], popup1.angle, popup2.angle);
 
 					const x11 = popup1.bounds.x - popup1.bounds.left;

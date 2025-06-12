@@ -1,11 +1,11 @@
 import { Particles } from './particles.js';
-import { getBoundsZoomWhenTouching, areBoundsOverlaping, type Bounds } from './bounds.js';
+import { Bounds } from './bounds.js';
 
-import { getRectangleOffsets } from '../rectangle.js';
-import { project } from '../projection.js';
+import { Rectangle } from '../rectangle.js';
+import { Mercator } from '../mercator.js';
 
+import { Angles } from '../../constants.js';
 import { type Popup } from '../../types.js';
-import { Angles, MAP_MAX_ZOOM, MAP_MIN_ZOOM, MAP_ZOOM_SCALE } from '../../constants.js';
 
 namespace Nodes {
 	export class Marker {
@@ -47,8 +47,8 @@ namespace Nodes {
 		/** The neighbours of the marker node. */
 		neighbours: Array<Node>;
 
-		constructor(data: Popup.Data, index: number) {
-			const projection = project(data.lat, data.lng);
+		constructor(parameters: Popup.Pramaters, data: Popup.Data, index: number) {
+			const projection = Mercator.project(data.lat, data.lng, parameters.mapSize);
 			const width = data.width + 2 * data.padding;
 			const height = data.height + 2 * data.padding;
 
@@ -72,7 +72,7 @@ namespace Nodes {
 		}
 
 		private getBounds(scale: number): Bounds {
-			let { offsetX, offsetY } = getRectangleOffsets(this.width, this.height, this.angle);
+			let { offsetX, offsetY } = Rectangle.getOffsets(this.width, this.height, this.angle);
 			let left = -offsetX;
 			let right = this.width - left;
 			let top = -offsetY;
@@ -108,19 +108,58 @@ namespace Nodes {
 
 	export type NodeNeighbourDeltas = Array<Array<Array<Node>>>;
 
-	export function createNodes(data: Array<Popup.Data>): Array<Node> {
+	export class Zoom {
+		public min: number;
+		public max: number;
+		public scale: number;
+		public step: number;
+
+		constructor(parameters: Popup.Pramaters) {
+			this.min = parameters.zoomMin;
+			this.max = parameters.zoomMax;
+			this.scale = parameters.zoomScale;
+			this.step = 1 / this.scale;
+		}
+
+		public addSteps(zoom: number, count: number) {
+			return Math.round((zoom + count * this.step) * this.scale) / this.scale;
+		}
+
+		public getIndex(zwt: number) {
+			if (zwt < this.min) return;
+			return Math.min(Math.ceil(zwt * this.scale), this.max * this.scale);
+		}
+
+		public getMax(nodesNeighbourDeltas: Nodes.NodeNeighbourDeltas): number {
+			let zoom = this.min;
+
+			for (let i = 0; i < nodesNeighbourDeltas.length; i++) {
+				const nodeNeighbourDeltas = nodesNeighbourDeltas[i];
+				const nodeNeighbourDeltasZoomKeys = nodeNeighbourDeltas.keys();
+
+				for (const zoomKey of nodeNeighbourDeltasZoomKeys) {
+					const zoomValue = Number(zoomKey) / this.scale;
+					if (zoomValue > zoom) zoom = zoomValue;
+				}
+			}
+
+			return zoom;
+		}
+	}
+
+	export function createNodes(parameters: Popup.Pramaters, data: Array<Popup.Data>): Array<Node> {
 		let nodes = new Array<Node>(data.length);
 
 		// Create marker nodes
 		for (let i = 0; i < data.length; i++) {
 			const popup = data[i];
-			nodes[i] = new Node(popup, i);
+			nodes[i] = new Node(parameters, popup, i);
 		}
 
 		return nodes;
 	}
 
-	export function createNeighbourDeltas(nodes: Array<Node>): NodeNeighbourDeltas {
+	export function createNeighbourDeltas(zoom: Zoom, nodes: Array<Node>): NodeNeighbourDeltas {
 		// Create array of neighbours deltas for each node
 		// at each zoom level
 		const nodesNeighbourDeltas = new Array<Array<Array<Node>>>();
@@ -159,18 +198,18 @@ namespace Nodes {
 				const bounds2 = bounds[i2];
 				const neighboursDeltas2 = nodesNeighbourDeltas[i2];
 
-				const zwt = getBoundsZoomWhenTouching(bounds1, bounds2);
-				const zoom = Zoom.getZoomIndex(zwt);
-				if (zoom < Zoom.MIN) continue;
+				const zwt = Bounds.getZoomWhenTouching(bounds1, bounds2);
+				const zoomIndex = zoom.getIndex(zwt);
+				if (zoomIndex == undefined) continue;
 
-				const zoomNeighbourDelta1 = neighboursDeltas1[zoom];
-				const zoomNeighbourDelta2 = neighboursDeltas2[zoom];
+				const zoomNeighbourDelta1 = neighboursDeltas1[zoomIndex];
+				const zoomNeighbourDelta2 = neighboursDeltas2[zoomIndex];
 
 				if (zoomNeighbourDelta1) zoomNeighbourDelta1.push(node2);
-				else neighboursDeltas1[zoom] = [node2];
+				else neighboursDeltas1[zoomIndex] = [node2];
 
 				if (zoomNeighbourDelta2) zoomNeighbourDelta2.push(node1);
-				else neighboursDeltas2[zoom] = [node1];
+				else neighboursDeltas2[zoomIndex] = [node1];
 			}
 		}
 
@@ -275,111 +314,109 @@ namespace Nodes {
 		}
 	}
 
-	export namespace Bounds {
-		export function updateBounds(nodes: Array<Node>, scale: number) {
-			for (let i = 0; i < nodes.length; i++) {
-				nodes[i].updateBounds(scale);
+	export function updateBounds(nodes: Array<Node>, scale: number) {
+		for (let i = 0; i < nodes.length; i++) {
+			nodes[i].updateBounds(scale);
+		}
+	}
+
+	export function getOverlaps(nodes: Array<Node>): Set<Node> {
+		const overlaps = new Set<Node>();
+
+		for (let i = 0; i < nodes.length; i++) {
+			const node1 = nodes[i];
+			const bounds1 = node1.bounds;
+			const neighbours1 = nodes[i].neighbours;
+
+			for (let j = 0; j < neighbours1.length; j++) {
+				const node2 = neighbours1[j];
+				const bounds2 = node2.bounds;
+
+				if (Bounds.areOverlaping(bounds2, bounds1)) {
+					overlaps.add(node1);
+					overlaps.add(node2);
+				}
 			}
 		}
 
-		export function getOverlaps(nodes: Array<Node>): Set<Node> {
-			const overlaps = new Set<Node>();
+		return overlaps;
+	}
 
-			for (let i = 0; i < nodes.length; i++) {
-				const node1 = nodes[i];
-				const bounds1 = node1.bounds;
-				const neighbours1 = nodes[i].neighbours;
+	export function updateOverlaps(overlaps: Set<Node>, nodes: Array<Node>) {
+		let updated = false;
 
-				for (let j = 0; j < neighbours1.length; j++) {
-					const node2 = neighbours1[j];
-					const bounds2 = node2.bounds;
+		for (let i = 0; i < nodes.length; i++) {
+			const node1 = nodes[i];
+			const bounds1 = node1.bounds;
+			const neighbours1 = nodes[i].neighbours;
 
-					if (areBoundsOverlaping(bounds2, bounds1)) {
+			for (let j = 0; j < neighbours1.length; j++) {
+				const node2 = neighbours1[j];
+				const bounds2 = node2.bounds;
+
+				if (Bounds.areOverlaping(bounds2, bounds1)) {
+					if (!overlaps.has(node1)) {
 						overlaps.add(node1);
+						updated = true;
+					}
+					if (!overlaps.has(node2)) {
 						overlaps.add(node2);
+						updated = true;
 					}
 				}
 			}
-
-			return overlaps;
 		}
 
-		export function updateOverlaps(overlaps: Set<Node>, nodes: Array<Node>) {
-			let updated = false;
+		return updated;
+	}
 
-			for (let i = 0; i < nodes.length; i++) {
-				const node1 = nodes[i];
-				const bounds1 = node1.bounds;
-				const neighbours1 = nodes[i].neighbours;
+	export function getOverlapsWorstNode(nodes: Array<Node>): Node | undefined {
+		let worstNode: Node | undefined = undefined;
+		let worstScore = 0;
 
-				for (let j = 0; j < neighbours1.length; j++) {
-					const node2 = neighbours1[j];
-					const bounds2 = node2.bounds;
+		for (let i = 0; i < nodes.length; i++) {
+			const node1 = nodes[i];
+			const bounds1 = node1.bounds;
+			const neighbours1 = nodes[i].neighbours;
 
-					if (areBoundsOverlaping(bounds2, bounds1)) {
-						if (!overlaps.has(node1)) {
-							overlaps.add(node1);
-							updated = true;
-						}
-						if (!overlaps.has(node2)) {
-							overlaps.add(node2);
-							updated = true;
-						}
-					}
+			let score = 0;
+
+			for (let j = 0; j < neighbours1.length; j++) {
+				const node2 = neighbours1[j];
+				const bounds2 = node2.bounds;
+
+				if (Bounds.areOverlaping(bounds2, bounds1)) {
+					score += 1 + (node2.rank - node1.rank);
 				}
 			}
 
-			return updated;
+			score = score * neighbours1.length;
+
+			if (score > worstScore) {
+				worstScore = score;
+				worstNode = node1;
+			}
 		}
 
-		export function getOverlapsWorstNode(nodes: Array<Node>): Node | undefined {
-			let worstNode: Node | undefined = undefined;
-			let worstScore = 0;
+		return worstNode;
+	}
 
-			for (let i = 0; i < nodes.length; i++) {
-				const node1 = nodes[i];
-				const bounds1 = node1.bounds;
-				const neighbours1 = nodes[i].neighbours;
+	export function areOverlaping(nodes: Array<Node>): boolean {
+		for (let i = 0; i < nodes.length; i++) {
+			const node1 = nodes[i];
+			const bounds1 = node1.bounds;
 
-				let score = 0;
+			for (let j = i + 1; j < nodes.length; j++) {
+				const node2 = nodes[j];
+				const bounds2 = node2.bounds;
 
-				for (let j = 0; j < neighbours1.length; j++) {
-					const node2 = neighbours1[j];
-					const bounds2 = node2.bounds;
-
-					if (areBoundsOverlaping(bounds2, bounds1)) {
-						score += 1 + (node2.rank - node1.rank);
-					}
-				}
-
-				score = score * neighbours1.length;
-
-				if (score > worstScore) {
-					worstScore = score;
-					worstNode = node1;
+				if (Bounds.areOverlaping(bounds2, bounds1)) {
+					return true;
 				}
 			}
-
-			return worstNode;
 		}
 
-		export function areOverlaping(nodes: Array<Node>): boolean {
-			for (let i = 0; i < nodes.length; i++) {
-				const node1 = nodes[i];
-				const bounds1 = node1.bounds;
-
-				for (let j = i + 1; j < nodes.length; j++) {
-					const node2 = nodes[j];
-					const bounds2 = node2.bounds;
-
-					if (areBoundsOverlaping(bounds2, bounds1)) {
-						return true;
-					}
-				}
-			}
-
-			return false;
-		}
+		return false;
 	}
 
 	export namespace Simulation {
@@ -411,65 +448,35 @@ namespace Nodes {
 			}
 		}
 	}
-
-	export namespace Zoom {
-		export const MIN = MAP_MIN_ZOOM;
-		export const MAX = MAP_MAX_ZOOM;
-
-		export const SCALE = MAP_ZOOM_SCALE;
-		export const STEP = 1 / SCALE;
-
-		export function addSteps(zoom: number, count: number) {
-			return Math.round((zoom + count * STEP) * SCALE) / SCALE;
-		}
-
-		export function getZoomIndex(zwt: number) {
-			return Math.min(Math.ceil(zwt * SCALE), MAX * SCALE);
-		}
-
-		export function getZoomMax(nodesNeighbourDeltas: Nodes.NodeNeighbourDeltas): number {
-			let zoom = MIN;
-
-			for (let i = 0; i < nodesNeighbourDeltas.length; i++) {
-				const nodeNeighbourDeltas = nodesNeighbourDeltas[i];
-				const nodeNeighbourDeltasZoomKeys = nodeNeighbourDeltas.keys();
-
-				for (const zoomKey of nodeNeighbourDeltasZoomKeys) {
-					const zoomValue = Number(zoomKey) / Zoom.SCALE;
-					if (zoomValue > zoom) zoom = zoomValue;
-				}
-			}
-
-			return zoom;
-		}
-	}
 }
 
-function getStates(data: Array<Popup.Data>): Popup.State[] {
+function getStates(parameters: Popup.Pramaters, data: Array<Popup.Data>): Popup.State[] {
+	const nodesZoom = new Nodes.Zoom(parameters);
+
 	if (data.length == 0) return [];
-	if (data.length == 1) return [[MAP_MIN_ZOOM, [[MAP_MIN_ZOOM, Angles.DEGREES.indexOf(Angles.DEFAULT)]]]];
+	if (data.length == 1) return [[nodesZoom.min, [[nodesZoom.min, Angles.DEGREES.indexOf(Angles.DEFAULT)]]]];
 
 	// Initialize markers
 	const markers = new Map<string, Nodes.Marker>(data.map((p) => [p.id, new Nodes.Marker()]));
 
 	// Initialze nodes
-	const nodes = Nodes.createNodes(data);
-	const nodeNeighbourDeltas = Nodes.createNeighbourDeltas(nodes);
+	const nodes = Nodes.createNodes(parameters, data);
+	const nodeNeighbourDeltas = Nodes.createNeighbourDeltas(nodesZoom, nodes);
 
 	// Initialize zoom
-	const zoomMin = Nodes.Zoom.MIN;
-	const zoomMax = Nodes.Zoom.getZoomMax(nodeNeighbourDeltas);
+	const zoomMin = nodesZoom.min;
+	const zoomMax = nodesZoom.getMax(nodeNeighbourDeltas);
 
 	// Initialize angles
 	Nodes.Simulation.initializeAngles(nodes);
 	// Initially add the last threshold event
-	Nodes.updateMarkers(nodes, markers, Nodes.Zoom.addSteps(Nodes.Zoom.MAX, 1));
+	Nodes.updateMarkers(nodes, markers, nodesZoom.addSteps(nodesZoom.max, 1));
 
 	// Go from last to first zoom
-	for (let zoom = zoomMax; zoom >= zoomMin; zoom = Nodes.Zoom.addSteps(zoom, -1)) {
+	for (let zoom = zoomMax; zoom >= zoomMin; zoom = nodesZoom.addSteps(zoom, -1)) {
 		// Calculate scale
 		const zoomScale = Math.pow(2, zoom);
-		const zoomIndex = Math.round(zoom * Nodes.Zoom.SCALE);
+		const zoomIndex = Math.round(zoom * nodesZoom.scale);
 
 		// Update expanded nodes neighbours
 		Nodes.updateNeighbours(nodes, nodeNeighbourDeltas, zoomIndex);
@@ -478,12 +485,12 @@ function getStates(data: Array<Popup.Data>): Popup.State[] {
 
 		for (const graph of graphs) {
 			// Update node bounds
-			Nodes.Bounds.updateBounds(graph, zoomScale);
+			Nodes.updateBounds(graph, zoomScale);
 			// Update the simulation for a given zoom level
 			Nodes.Simulation.updateParticles(graph, zoomScale);
 
 			// Get graph overlaps with neighbours
-			const overlaps = Nodes.Bounds.getOverlaps(graph);
+			const overlaps = Nodes.getOverlaps(graph);
 
 			// Remove overlaping nodes from the set
 			// until there is no overlaping nodes
@@ -496,22 +503,22 @@ function getStates(data: Array<Popup.Data>): Popup.State[] {
 					// Update node angles in the simulation
 					const simStable = Nodes.Simulation.updateAngles(overlapsArray);
 					// Update node bounds after angle update
-					Nodes.Bounds.updateBounds(overlapsArray, zoomScale);
+					Nodes.updateBounds(overlapsArray, zoomScale);
 
 					// If the simulation is stable break
 					if (simStable == true) break;
 					// If there are no overlaping nodes after simulation break
-					if (Nodes.Bounds.areOverlaping(overlapsArray) == false) break;
+					if (Nodes.areOverlaping(overlapsArray) == false) break;
 				}
 
 				// Update overlaps with neighbours set after angle update
 				// to check for new overlaps
-				const overlapsChanged = Nodes.Bounds.updateOverlaps(overlaps, overlapsArray);
+				const overlapsChanged = Nodes.updateOverlaps(overlaps, overlapsArray);
 				if (overlapsChanged) continue;
 
 				// Get the index of the worst overlaping node
 				// If there is an no overlaping node break
-				const overlapsWorstNode = Nodes.Bounds.getOverlapsWorstNode(overlapsArray);
+				const overlapsWorstNode = Nodes.getOverlapsWorstNode(overlapsArray);
 				if (overlapsWorstNode == undefined) break;
 
 				// Collapse it

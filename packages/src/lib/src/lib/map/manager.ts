@@ -13,11 +13,12 @@ import {
 	type MapPopup,
 	type MapPopupContentCallback,
 	type MapProvider,
-	type MapProviderMarker
+	type MapProviderMarker,
+	type MapProviderParameters
 } from './schemas.js';
 
-import { unproject } from '@workspace/shared/src/popup/projection.js';
-import { Angles, MAP_MAX_ZOOM, MAP_ZOOM_SCALE } from '@workspace/shared/src/constants.js';
+import { Mercator } from '@workspace/shared/src/popup/mercator.js';
+import { Angles } from '@workspace/shared/src/constants.js';
 
 const MAP_MARKERS_Z_INDEX_OFFSET = 1000000;
 const MAP_CIRCLES_MAX_ZOOM = 2;
@@ -129,8 +130,8 @@ class MapManager {
 		const mapHeight = this.provider.getHeight();
 		const mapOffsetX = this.popupMaxWidth * 2;
 		const mapOffsetY = this.popupMaxHeight * 2;
-		const mapOffsetBounds = new MapBounds(-mapOffsetX, mapHeight + mapOffsetY, mapWidth + mapOffsetX, -mapOffsetY);
-		const mapWindowBounds = new MapBounds(0, mapHeight, mapWidth, 0);
+		const mapOffsetBounds = new MapBounds(-mapOffsetX, mapHeight + mapOffsetY, mapWidth + mapOffsetX, -mapOffsetY, this.provider.parameters);
+		const mapWindowBounds = new MapBounds(0, mapHeight, mapWidth, 0, this.provider.parameters);
 
 		// Track circle count
 		let circleCount = 0;
@@ -211,7 +212,7 @@ class MapManager {
 			this.popupDataUpdating = true;
 
 			// Remove old data
-			const newPopupsMap = new Map(newPopups.map((m) => [m.data.id, new MapPopupData(m)]));
+			const newPopupsMap = new Map(newPopups.map((m) => [m.data.id, new MapPopupData(this.provider, m)]));
 			const oldPopupDataArray = Array.from(this.popupDataArray);
 
 			for (const oldPopupData of oldPopupDataArray) {
@@ -233,8 +234,8 @@ class MapManager {
 					oldData.update(newPopup);
 				} else {
 					// Create data
-					const newData = new MapPopupData(newPopup);
-					newData.create(this.provider);
+					const newData = new MapPopupData(this.provider, newPopup);
+					newData.create();
 
 					this.popupDataMap.set(newPopup.data.id, newData);
 					this.popupDataArray.push(newData);
@@ -283,6 +284,8 @@ class MapManager {
 }
 
 class MapPopupComponent<T> {
+	provider: MapProvider;
+
 	id: string;
 	lat: number;
 	lng: number;
@@ -292,16 +295,17 @@ class MapPopupComponent<T> {
 	component: T | undefined;
 	marker: MapProviderMarker | undefined;
 
-	constructor(popup: MapPopup) {
+	constructor(provider: MapProvider, popup: MapPopup) {
+		this.provider = provider;
 		this.id = popup.data.id;
 		this.lat = popup.data.lat;
 		this.lng = popup.data.lng;
 		this.zoom = popup.state[0];
 	}
 
-	create(provider: MapProvider) {
+	create() {
 		this.createElement();
-		this.createMarker(provider);
+		this.createMarker();
 		this.updateZIndex();
 	}
 
@@ -309,12 +313,12 @@ class MapPopupComponent<T> {
 		throw new Error('Create element not implemented');
 	}
 
-	createMarker(provider: MapProvider) {
+	createMarker() {
 		const element = this.element;
 		if (!element) throw new Error('Failed to create marker');
 
 		// Create new marker
-		this.marker = provider.createMarker(this.lat, this.lng, element);
+		this.marker = this.provider.createMarker(this.lat, this.lng, element);
 	}
 
 	update(popup: MapPopup) {
@@ -343,6 +347,10 @@ class MapPopupComponent<T> {
 		}
 	}
 
+	getZindex() {
+		return Math.round((this.provider.parameters.zoomMax - this.zoom) * this.provider.parameters.zoomScale);
+	}
+
 	isInBlock(zoom: number, bounds: MapBoundsPair) {
 		return this.zoom <= zoom && bounds.contains(this.lat, this.lng);
 	}
@@ -358,8 +366,8 @@ class MapPopupCircle extends MapPopupComponent<ReturnType<typeof MapMarkerCircle
 	pinLoaded = false;
 	pinCallback: MapPopupContentCallback | undefined;
 
-	constructor(popup: MapPopup) {
-		super(popup);
+	constructor(provider: MapProvider, popup: MapPopup) {
+		super(provider, popup);
 
 		this.pinCallback = popup.callbacks.pin;
 	}
@@ -369,7 +377,7 @@ class MapPopupCircle extends MapPopupComponent<ReturnType<typeof MapMarkerCircle
 		this.element.classList.add('circle');
 		this.component = mount(MapMarkerCircle, {
 			target: this.element,
-			props: { id: this.id + '_circle', priority: this.zoom * MAP_ZOOM_SCALE }
+			props: { id: this.id + '_circle', priority: this.zoom * this.provider.parameters.zoomScale }
 		});
 	}
 
@@ -377,8 +385,7 @@ class MapPopupCircle extends MapPopupComponent<ReturnType<typeof MapMarkerCircle
 		const element = this.element;
 		if (!element) return;
 
-		const zIndex = Math.round((MAP_MAX_ZOOM - this.zoom) * MAP_ZOOM_SCALE);
-		element.style.zIndex = zIndex.toString();
+		element.style.zIndex = this.getZindex().toString();
 	}
 
 	updateMap(contains: boolean) {
@@ -445,8 +452,8 @@ class MapPopupMarker extends MapPopupComponent<ReturnType<typeof MapMarker>> {
 	bodyLoaded = false;
 	bodyCallback: MapPopupContentCallback;
 
-	constructor(popup: MapPopup) {
-		super(popup);
+	constructor(provider: MapProvider, popup: MapPopup) {
+		super(provider, popup);
 
 		this.id = popup.data.id;
 		this.width = popup.data.width;
@@ -464,7 +471,7 @@ class MapPopupMarker extends MapPopupComponent<ReturnType<typeof MapMarker>> {
 			target: this.element,
 			props: {
 				id: this.id + '_marker',
-				priority: this.zoom * MAP_ZOOM_SCALE,
+				priority: this.zoom * this.provider.parameters.zoomScale,
 				width: this.width,
 				height: this.height,
 				padding: this.padding
@@ -481,7 +488,7 @@ class MapPopupMarker extends MapPopupComponent<ReturnType<typeof MapMarker>> {
 		const element = this.element;
 		if (!element) return;
 
-		const zIndex = Math.round((MAP_MAX_ZOOM - this.zoom) * MAP_ZOOM_SCALE) + MAP_MARKERS_Z_INDEX_OFFSET;
+		const zIndex = this.getZindex() + MAP_MARKERS_Z_INDEX_OFFSET;
 		element.style.zIndex = zIndex.toString();
 	}
 
@@ -553,7 +560,7 @@ class MapPopupData {
 	circle: MapPopupCircle;
 	marker: MapPopupMarker;
 
-	constructor(popup: MapPopup) {
+	constructor(provider: MapProvider, popup: MapPopup) {
 		this.id = popup.data.id;
 		this.rank = popup.data.rank;
 		this.lat = popup.data.lat;
@@ -561,13 +568,13 @@ class MapPopupData {
 		this.zoom = popup.state[0];
 		this.supressed = false;
 
-		this.circle = new MapPopupCircle(popup);
-		this.marker = new MapPopupMarker(popup);
+		this.circle = new MapPopupCircle(provider, popup);
+		this.marker = new MapPopupMarker(provider, popup);
 	}
 
-	create(provider: MapProvider) {
-		this.circle.create(provider);
-		this.marker.create(provider);
+	create() {
+		this.circle.create();
+		this.marker.create();
 	}
 
 	update(popup: MapPopup) {
@@ -587,9 +594,9 @@ class MapBounds {
 	neLat: number;
 	neLng: number;
 
-	constructor(swX: number, swY: number, neX: number, neY: number) {
-		const sw = unproject(swX, swY);
-		const ne = unproject(neX, neY);
+	constructor(swX: number, swY: number, neX: number, neY: number, parameters: MapProviderParameters) {
+		const sw = Mercator.unproject(swX, swY, parameters.mapSize);
+		const ne = Mercator.unproject(neX, neY, parameters.mapSize);
 		this.swLat = sw.lat;
 		this.swLng = sw.lng;
 		this.neLat = ne.lat;
