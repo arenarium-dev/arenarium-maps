@@ -11,14 +11,23 @@
 		"svelte"
 	],
 	"type": "module",
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
-	"svelte": "./dist/index.js",
+	"main": "./dist/main.cjs.js",
+	"module": "./dist/main.es.js",
+	"svelte": "./dist/main.es.js",
 	"types": "./dist/index.d.ts",
+	"unpkg": "./dist/index.js",
+	"jsdelivr": "./dist/index.js",
 	"exports": {
 		".": {
-			"svelte": "./dist/index.js",
+			"import": "./dist/main.es.js",
+			"require": "./dist/main.cjs.js",
+			"svelte": "./dist/main.es.js",
 			"types": "./dist/index.d.ts"
+		},
+		"./maplibre": {
+			"import": "./dist/maplibre.es.js",
+			"require": "./dist/maplibre.cjs.js",
+			"svelte": "./dist/maplibre.es.js"
 		},
 		"./dist/style.css": {
 			"import": "./dist/style.css",
@@ -66,9 +75,10 @@
 	"scripts": {
 		"dev": "vite dev --host",
 		"dev-browser": "vite dev --mode browser --host",
-		"build:vite": "vite build -c vite.build.config.ts",
+		"build:vite:modular": "vite build -c ./vite/modular/vite.config.ts",
+		"build:vite:browser": "vite build -c ./vite/browser/vite.config.ts",
 		"build:types": "dts-bundle-generator --export-referenced-types --umd-module-name=arenarium -o ./dist/index.d.ts ./src/lib/index.ts",
-		"build": "pnpm run build:vite && pnpm run build:types",
+		"build": "pnpm run build:vite:browser && pnpm run build:vite:modular && pnpm run build:types",
 		"preview": "vite preview",
 		"build-patch-commit-publish": "pnpm run build && pnpm version patch && git add * && git commit -m 'Publish' && pnpm publish --access public",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",

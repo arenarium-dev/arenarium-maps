@@ -9,7 +9,8 @@ export default defineConfig({
 			name: 'arenarium',
 			formats: ['umd'],
 			fileName: () => 'index.js',
-			cssFileName: 'style'
-		}
+			cssFileName: 'index'
+		},
+		emptyOutDir: false
 	}
 });
