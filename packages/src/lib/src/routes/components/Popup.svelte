@@ -1,6 +1,7 @@
 <script lang="ts">
-	import type { MapPopup } from '$lib/index.js';
 	import Icon from './Icon.svelte';
+
+	import type { MapPopup } from '$lib/types.js';
 
 	let { id, popup }: { id: string; popup: MapPopup } = $props();
 </script>

@@ -1,7 +1,6 @@
 TODO:
 
-Replace shared types with schema
-Make popups smaller for mobile
+Add getStates to manager
 Add booking/airbnb demo
 
 CUSTOMERS:

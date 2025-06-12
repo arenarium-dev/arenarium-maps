@@ -4,10 +4,9 @@
 	import Icon from './components/Icon.svelte';
 	import PopupComponent from './components/Popup.svelte';
 
-	import { MapManager } from '$lib/map/manager.js';
-	import { MapDarkStyle } from '$lib/map/styles.js';
-	import { MapProviders } from '$lib/map/providers/maplibre.js';
-	import type { MapPopup, MapPopupData, MapPopupState } from '$lib/map/schemas.js';
+	import { MapManager } from '$lib/main.js';
+	import { MapLibreProvider, MapDarkStyle } from '$lib/integrations.js';
+	import type { MapPopup, MapPopupData, MapPopupState } from '$lib/types.js';
 
 	import { getStates } from '@workspace/shared/src/popup/compute/states.js';
 	import { testStates } from '@workspace/shared/src/popup/compute/test.js';
@@ -18,8 +17,9 @@
 	import 'maplibre-gl/dist/maplibre-gl.css';
 
 	let mapContainer: HTMLElement;
-	let mapProvider: MapProviders.MapLibre;
 	let mapLibre: maplibregl.Map;
+
+	let mapProvider: MapLibreProvider;
 	let mapManager: MapManager;
 
 	let mapPopups = new Map<string, MapPopup>();
@@ -28,7 +28,7 @@
 	let zoom = $state<number>(0);
 
 	onMount(() => {
-		mapProvider = new MapProviders.MapLibre(maplibregl.Map, maplibregl.Marker, {
+		mapProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
 			container: mapContainer,
 			style: MapDarkStyle,
 			center: { lat: 51.505, lng: -0.09 },

@@ -25,7 +25,6 @@ export type MapConfiguration = z.infer<typeof mapConfigurationSchema>;
 
 // Map
 
-export const mapProviderNameSchema = z.enum(['maplibre', 'google']);
 export const mapLatitudeSchema = z.number().min(-90).max(90);
 export const mapLongitudeSchema = z.number().min(-180).max(180);
 export const mapHtmlElementSchema = z.any().refine((element) => element instanceof HTMLElement, 'Must be an HTMLElement');
@@ -45,7 +44,6 @@ export const mapProviderMarkerSchema = z.object({
 });
 
 export const mapProviderSchema = z.object({
-	name: mapProviderNameSchema,
 	parameters: mapProviderParametersSchema,
 	getContainer: z.function().args().returns(mapHtmlElementSchema),
 	getZoom: z.function().args().returns(z.number()),
@@ -54,7 +52,6 @@ export const mapProviderSchema = z.object({
 	createMarker: z.function().args(mapLatitudeSchema, mapLongitudeSchema, mapHtmlElementSchema).returns(mapProviderMarkerSchema)
 });
 
-export type MapProviderName = z.infer<typeof mapProviderNameSchema>;
 export type MapLatitude = z.infer<typeof mapLatitudeSchema>;
 export type MapLongitude = z.infer<typeof mapLongitudeSchema>;
 export type MapHtmlElement = z.infer<typeof mapHtmlElementSchema>;
