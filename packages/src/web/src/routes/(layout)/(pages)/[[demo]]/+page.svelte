@@ -22,11 +22,12 @@
 	import maplibregl from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 
-	import * as arenarium from '@arenarium/maps';
+	import { MapManager, type MapConfiguration, type MapPopup, type MapPopupData, type MapPopupState } from '@arenarium/maps';
+	import { MapDarkStyle, MapLibreProvider, MapStyleLight } from '@arenarium/maps/maplibre';
 	import '@arenarium/maps/dist/style.css';
 
-	let mapManager: arenarium.MapManager;
-	let mapProvider: arenarium.MapLibreProvider;
+	let mapManager: MapManager;
+	let mapProvider: MapLibreProvider;
 	let mapLibre: maplibregl.Map;
 
 	let zoom = $state<number>(0);
@@ -35,9 +36,9 @@
 
 	onMount(() => {
 		try {
-			mapProvider = new arenarium.MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
+			mapProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
 				container: 'map',
-				style: arenarium.MapDarkStyle,
+				style: MapDarkStyle,
 				center: { lat: 51.505, lng: -0.09 },
 				zoom: 4
 			});
@@ -47,10 +48,10 @@
 				zoom = mapLibre.getZoom();
 			});
 
-			mapManager = new arenarium.MapManager(mapProvider);
+			mapManager = new MapManager(mapProvider);
 			mapManager.setColors('darkgreen', 'white', 'black');
 
-			mapLibre.setStyle(app.theme.get() == 'dark' ? arenarium.MapDarkStyle : arenarium.MapStyleLight);
+			mapLibre.setStyle(app.theme.get() == 'dark' ? MapDarkStyle : MapStyleLight);
 			mapLibre.on('load', () => {
 				mapLoaded = true;
 			});
@@ -95,7 +96,7 @@
 	let style = $state<DemoStyle>('website');
 	let demo = $state<Demo>(page.params.demo as Demo);
 
-	let demoPopupData = new Map<string, arenarium.MapPopupData>();
+	let demoPopupData = new Map<string, MapPopupData>();
 	let demoPopupDataLoaded = false;
 	let demoAutoUpdate = $state<boolean>(false);
 	let demoTogglePopups = $state<boolean>(true);
@@ -197,8 +198,8 @@
 			params.append('nelat', bounds.getNorthEast().lat.toString());
 			params.append('nelng', bounds.getNorthEast().lng.toString());
 
-			const allPopupData = await Fetch.that<arenarium.MapPopupData[]>(`/api/popup/${demo}/data?${params}`);
-			const newPopupData = new Array<arenarium.MapPopupData>();
+			const allPopupData = await Fetch.that<MapPopupData[]>(`/api/popup/${demo}/data?${params}`);
+			const newPopupData = new Array<MapPopupData>();
 			for (const data of allPopupData) {
 				if (!demoPopupData.has(data.id)) {
 					newPopupData.push(data);
@@ -236,7 +237,7 @@
 		}
 	}
 
-	async function processPopupDataDelta(dataDelta: arenarium.MapPopupData[]) {
+	async function processPopupDataDelta(dataDelta: MapPopupData[]) {
 		try {
 			loading = true;
 
@@ -244,17 +245,21 @@
 			dataDelta.forEach((d) => demoPopupData.set(d.id, d));
 
 			// Get the new states
-			const statePopupData = Array.from(demoPopupData.values());
-			const states = await Fetch.that<arenarium.MapPopupState[]>(`/api/popup/states`, {
+			const statesData = Array.from(demoPopupData.values());
+			const statesRequest = {
+				parameters: mapProvider.parameters,
+				data: statesData
+			};
+			const states = await Fetch.that<MapPopupState[]>(`/api/popup/${demo}/states`, {
 				method: 'POST',
-				body: statePopupData
+				body: statesRequest
 			});
 
 			// Create the new popups
-			const popups = new Array<arenarium.MapPopup>();
+			const popups = new Array<MapPopup>();
 			for (let i = 0; i < states.length; i++) {
-				const popup: arenarium.MapPopup = {
-					data: statePopupData[i],
+				const popup: MapPopup = {
+					data: statesData[i],
 					state: states[i],
 					callbacks: {
 						body: getPopupBody,
@@ -308,13 +313,13 @@
 			default: {
 				switch (style) {
 					case 'website': {
-						return app.theme.get() == 'dark' ? arenarium.MapDarkStyle : arenarium.MapStyleLight;
+						return app.theme.get() == 'dark' ? MapDarkStyle : MapStyleLight;
 					}
 					case 'light': {
-						return arenarium.MapStyleLight;
+						return MapStyleLight;
 					}
 					case 'dark': {
-						return arenarium.MapDarkStyle;
+						return MapDarkStyle;
 					}
 					case 'liberty': {
 						return 'https://tiles.openfreemap.org/styles/liberty';
@@ -387,7 +392,7 @@
 		}
 	}
 
-	function getDemoConfiguration(demo: Demo): arenarium.MapConfiguration {
+	function getDemoConfiguration(demo: Demo): MapConfiguration {
 		switch (demo) {
 			default: {
 				return {
