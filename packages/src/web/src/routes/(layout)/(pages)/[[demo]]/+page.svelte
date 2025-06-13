@@ -33,10 +33,9 @@
 	import maplibregl from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 
-	import { MapManager, type MapConfiguration, type MapPopup, type MapPopupData, type MapPopupState } from '@arenarium/maps';
+	import { MapManager, type MapPopup, type MapPopupData, type MapPopupState } from '@arenarium/maps';
 	import { MapDarkStyle, MapLibreProvider, MapStyleLight } from '@arenarium/maps/maplibre';
 	import '@arenarium/maps/dist/style.css';
-	import { fa } from 'zod/v4/locales';
 
 	let mapManager: MapManager;
 	let mapProvider: MapLibreProvider;
