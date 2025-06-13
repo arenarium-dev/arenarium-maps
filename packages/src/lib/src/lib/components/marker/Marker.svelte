@@ -203,7 +203,7 @@
 		position: absolute;
 		width: 0px;
 		height: 0px;
-		filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.5));
+		filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.5));
 
 		.marker {
 			position: absolute;
@@ -223,8 +223,7 @@
 			position: absolute;
 			left: 0px;
 			top: 0px;
-			width: 50%;
-			height: 50%;
+			border-radius: 2px;
 			background-color: @border;
 			transform-origin: 0% 0%;
 		}
