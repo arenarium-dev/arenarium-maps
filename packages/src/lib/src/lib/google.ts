@@ -1,2 +1,3 @@
 import { GoogleMapsProvider } from './map/integrations/google/provider.js';
-export { GoogleMapsProvider };
+import { GoogleMapDarkStyle, GoogleMapLightStyle } from './map/integrations/google/styles.js';
+export { GoogleMapsProvider, GoogleMapDarkStyle, GoogleMapLightStyle };

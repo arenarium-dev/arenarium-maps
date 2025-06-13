@@ -43,7 +43,7 @@
 
 	//#region MapLibre
 
-	import { MapLibreProvider, MapStyleLight } from '$lib/maplibre.js';
+	import { MapLibreProvider, MapLibreStyleLight } from '$lib/maplibre.js';
 
 	import maplibregl from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';
@@ -53,7 +53,7 @@
 	function loadMapLibre() {
 		const mapLibreProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
 			container: mapElement,
-			style: MapStyleLight,
+			style: MapLibreStyleLight,
 			center: { lat: 51.505, lng: -0.09 },
 			zoom: 4
 		});
@@ -70,11 +70,15 @@
 
 	//#region Google Maps
 
-	import { GoogleMapsProvider } from '$lib/google.js';
+	import { GoogleMapsProvider, GoogleMapLightStyle, GoogleMapDarkStyle } from '$lib/google.js';
 
 	import { Loader } from '@googlemaps/js-api-loader';
 
 	let mapGoogle: google.maps.Map;
+	let mapOverlayView: google.maps.OverlayView;
+
+	let mapTypeLightId = 'light-id';
+	let mapTypeDarkId = 'dark-id';
 
 	async function loadGoogleMaps() {
 		const loader = new Loader({
@@ -88,12 +92,28 @@
 		const googleMapsProvider = new GoogleMapsProvider(mapsLibrary.Map, markerLibrary.AdvancedMarkerElement, mapElement, {
 			mapId: '11b85640a5094a146ed5dd8f',
 			center: { lat: 51.505, lng: -0.09 },
-			zoom: 4
+			zoom: 4,
+			disableDefaultUI: true,
+			isFractionalZoomEnabled: true
 		});
 
 		mapProvider = googleMapsProvider;
 
 		mapGoogle = googleMapsProvider.getMap();
+		mapGoogle.addListener('zoom_changed', () => {
+			zoom = mapGoogle.getZoom()!;
+		});
+
+		mapOverlayView = new mapsLibrary.OverlayView();
+		mapOverlayView.setMap(mapGoogle);
+
+		const mapTypeLight = new google.maps.StyledMapType(GoogleMapLightStyle, { name: 'Light Map' });
+		const mapTypeDark = new google.maps.StyledMapType(GoogleMapDarkStyle, { name: 'Dark Map' });
+
+		mapGoogle.mapTypes.set(mapTypeLightId, mapTypeLight);
+		mapGoogle.mapTypes.set(mapTypeDarkId, mapTypeDark);
+
+		mapGoogle.setMapTypeId(mapTypeLightId);
 	}
 
 	//#endregion
@@ -150,11 +170,29 @@
 	const zoomDelta = 0.05;
 
 	function onZoomIn() {
-		mapLibre.setZoom(mapLibre.getZoom() + zoomDelta);
+		switch (mode) {
+			case 'maplibre': {
+				mapLibre.setZoom(mapLibre.getZoom() + zoomDelta);
+				break;
+			}
+			case 'google': {
+				mapGoogle.setZoom(mapGoogle.getZoom()! + zoomDelta);
+				break;
+			}
+		}
 	}
 
 	function onZoomOut() {
-		mapLibre.setZoom(mapLibre.getZoom() - zoomDelta);
+		switch (mode) {
+			case 'maplibre': {
+				mapLibre.setZoom(mapLibre.getZoom() - zoomDelta);
+				break;
+			}
+			case 'google': {
+				mapGoogle.setZoom(mapGoogle.getZoom()! - zoomDelta);
+				break;
+			}
+		}
 	}
 
 	//#region Data
