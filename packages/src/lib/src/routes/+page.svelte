@@ -113,7 +113,7 @@
 		mapGoogle.mapTypes.set(mapTypeLightId, mapTypeLight);
 		mapGoogle.mapTypes.set(mapTypeDarkId, mapTypeDark);
 
-		mapGoogle.setMapTypeId(mapTypeLightId);
+		mapGoogle.setMapTypeId(mapTypeLightId); //'roadmap'
 	}
 
 	//#endregion
@@ -431,7 +431,6 @@
 		left: 0px;
 		width: 100%;
 		height: 100%;
-		background-color: red;
 	}
 
 	.buttons {

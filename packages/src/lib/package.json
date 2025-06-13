@@ -30,6 +30,12 @@
 			"import": "./dist/maplibre.es.js",
 			"require": "./dist/maplibre.cjs.js"
 		},
+		"./google": {
+			"types": "./dist/google.d.ts",
+			"svelte": "./dist/google.es.js",
+			"import": "./dist/google.es.js",
+			"require": "./dist/google.cjs.js"
+		},
 		"./dist/style.css": {
 			"import": "./dist/style.css",
 			"require": "./dist/style.css"

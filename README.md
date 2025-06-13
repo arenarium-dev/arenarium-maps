@@ -1,6 +1,6 @@
 TODO:
 
-Add getStates to manager
+Add getStates to manager, just expose update/remove popups with PopupData
 Add booking/airbnb demo
 
 CUSTOMERS:

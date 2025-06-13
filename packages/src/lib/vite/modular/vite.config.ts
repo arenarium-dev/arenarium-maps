@@ -17,7 +17,8 @@ export default defineConfig({
 		lib: {
 			entry: {
 				main: './src/lib/main.ts',
-				maplibre: './src/lib/maplibre.ts'
+				maplibre: './src/lib/maplibre.ts',
+				google: './src/lib/google.ts'
 			},
 			name: 'arenarium',
 			formats: ['es', 'cjs'],
