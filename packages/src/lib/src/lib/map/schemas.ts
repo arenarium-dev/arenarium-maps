@@ -49,7 +49,7 @@ export const mapProviderSchema = z.object({
 	getZoom: z.function().args().returns(z.number()),
 	getWidth: z.function().args().returns(z.number()),
 	getHeight: z.function().args().returns(z.number()),
-	createMarker: z.function().args(mapLatitudeSchema, mapLongitudeSchema, mapHtmlElementSchema).returns(mapProviderMarkerSchema)
+	createMarker: z.function().args(mapHtmlElementSchema, mapLatitudeSchema, mapLongitudeSchema, z.number()).returns(mapProviderMarkerSchema)
 });
 
 export type MapLatitude = z.infer<typeof mapLatitudeSchema>;

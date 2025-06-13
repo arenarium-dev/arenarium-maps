@@ -317,7 +317,7 @@ class MapPopupComponent<T> {
 		if (!element) throw new Error('Failed to create marker');
 
 		// Create new marker
-		this.marker = this.provider.createMarker(this.lat, this.lng, element);
+		this.marker = this.provider.createMarker(element, this.lat, this.lng, this.getZindex());
 	}
 
 	update(popup: MapPopup) {

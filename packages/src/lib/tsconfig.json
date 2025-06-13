@@ -15,6 +15,6 @@
 		"emitDeclarationOnly": true,
 		"module": "NodeNext",
 		"moduleResolution": "NodeNext",
-		"types": ["vite/client", "./node_modules/maplibre-gl/dist/maplibre-gl.d.ts"]
+		"types": ["vite/client", "./node_modules/maplibre-gl/dist/maplibre-gl.d.ts", "./node_modules/@types/google.maps/index.d.ts"]
 	}
 }

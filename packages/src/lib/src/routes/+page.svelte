@@ -5,21 +5,19 @@
 	import PopupComponent from './components/Popup.svelte';
 
 	import { MapManager } from '$lib/main.js';
-	import { MapLibreProvider, MapStyleLight } from '$lib/maplibre.js';
-	import type { MapPopup, MapPopupData, MapPopupState } from '$lib/main.js';
+	import type { MapPopup, MapPopupData, MapPopupState, MapProvider } from '$lib/main.js';
 
 	import { getStates } from '@workspace/shared/src/popup/compute/states.js';
 	import { testStates } from '@workspace/shared/src/popup/compute/test.js';
 
-	import { wasm } from '@workspace/shared/wasm/compute/states.js';
+	let Mode = {
+		MapLibre: 'maplibre',
+		Google: 'google'
+	};
+	let mode: string = Mode.Google;
 
-	import maplibregl from 'maplibre-gl';
-	import 'maplibre-gl/dist/maplibre-gl.css';
-
-	let mapContainer: HTMLElement;
-	let mapLibre: maplibregl.Map;
-
-	let mapProvider: MapLibreProvider;
+	let mapElement: HTMLElement;
+	let mapProvider: MapProvider;
 	let mapManager: MapManager;
 
 	let mapPopups = new Map<string, MapPopup>();
@@ -27,53 +25,105 @@
 	let loading = $state<boolean>(false);
 	let zoom = $state<number>(0);
 
-	onMount(() => {
-		mapProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
-			container: mapContainer,
+	onMount(async () => {
+		switch (mode) {
+			case 'maplibre': {
+				loadMapLibre();
+				break;
+			}
+			case 'google': {
+				await loadGoogleMaps();
+				break;
+			}
+		}
+
+		mapManager = new MapManager(mapProvider);
+		mapManager.setColors('purple', 'white', 'black');
+	});
+
+	//#region MapLibre
+
+	import { MapLibreProvider, MapStyleLight } from '$lib/maplibre.js';
+
+	import maplibregl from 'maplibre-gl';
+	import 'maplibre-gl/dist/maplibre-gl.css';
+
+	let mapLibre: maplibregl.Map;
+
+	function loadMapLibre() {
+		const mapLibreProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
+			container: mapElement,
 			style: MapStyleLight,
 			center: { lat: 51.505, lng: -0.09 },
 			zoom: 4
 		});
 
-		mapLibre = mapProvider.getMap();
+		mapProvider = mapLibreProvider;
+
+		mapLibre = mapLibreProvider.getMap();
 		mapLibre.on('move', (e) => {
 			zoom = mapLibre.getZoom();
 		});
+	}
 
-		mapManager = new MapManager(mapProvider);
-		mapManager.setColors('purple', 'white', 'black');
+	//#endregion
 
-		const wasmBinaryString = atob(wasm);
-		const wasmBytes = new Uint8Array(wasmBinaryString.length);
-		for (let i = 0; i < wasmBinaryString.length; i++) {
-			wasmBytes[i] = wasmBinaryString.charCodeAt(i);
+	//#region Google Maps
+
+	import { GoogleMapsProvider } from '$lib/google.js';
+
+	import { Loader } from '@googlemaps/js-api-loader';
+
+	let mapGoogle: google.maps.Map;
+
+	async function loadGoogleMaps() {
+		const loader = new Loader({
+			apiKey: 'AIzaSyCt6ERDLY4Hx5b6LEBQFPYJbRq9teByXyk',
+			version: 'weekly'
+		});
+
+		const mapsLibrary = await loader.importLibrary('maps');
+		const markerLibrary = await loader.importLibrary('marker');
+
+		const googleMapsProvider = new GoogleMapsProvider(mapsLibrary.Map, markerLibrary.AdvancedMarkerElement, mapElement, {
+			mapId: '11b85640a5094a146ed5dd8f',
+			center: { lat: 51.505, lng: -0.09 },
+			zoom: 4
+		});
+
+		mapProvider = googleMapsProvider;
+
+		mapGoogle = googleMapsProvider.getMap();
+	}
+
+	//#endregion
+
+	interface Bounds {
+		sw: { lat: number; lng: number };
+		ne: { lat: number; lng: number };
+	}
+
+	function getBounds(): Bounds {
+		switch (mode) {
+			case 'maplibre': {
+				const bounds = mapLibre.getBounds();
+				return { sw: { lat: bounds._sw.lat, lng: bounds._sw.lng }, ne: { lat: bounds._ne.lat, lng: bounds._ne.lng } };
+			}
+			case 'google': {
+				const bounds = mapGoogle.getBounds();
+				return {
+					sw: { lat: bounds?.getSouthWest().lat() ?? 0, lng: bounds?.getSouthWest().lng() ?? 0 },
+					ne: { lat: bounds?.getNorthEast().lat() ?? 0, lng: bounds?.getNorthEast().lng() ?? 0 }
+				};
+			}
+			default: {
+				throw new Error('Invalid mode');
+			}
 		}
-
-		const wasmImportObject = {};
-		// create a wasm module
-		const wasmModule = new WebAssembly.Module(wasmBytes);
-		// create a new instance of our wasm module
-		const wasmInstance = new WebAssembly.Instance(wasmModule, wasmImportObject);
-		// store the exported functions that are in our wasm instance
-		const exports = wasmInstance.exports as {
-			createPopupsArray: (length: number) => void;
-			deletePopupsArray: () => void;
-			addPopup: (index: number, rank: number, lat: number, lng: number, width: number, height: number) => void;
-			runPopupSimulation: () => void;
-		};
-
-		try {
-			exports.createPopupsArray(1);
-			exports.addPopup(1, 1, 1, 1, 1, 1);
-			exports.runPopupSimulation();
-			exports.deletePopupsArray();
-		} catch (error) {
-			console.error(error);
-		}
-	});
+	}
 
 	async function addData() {
-		const bounds = mapLibre.getBounds();
+		const bounds = getBounds();
 		const popups = await getPopups(bounds);
 
 		popups.forEach((popup) => mapPopups.set(popup.data.id, popup));
@@ -148,7 +198,7 @@
 		}
 	});
 
-	async function getPopups(bounds: maplibregl.LngLatBounds): Promise<MapPopup[]> {
+	async function getPopups(bounds: Bounds): Promise<MapPopup[]> {
 		const data = new Array<MapPopupData>();
 
 		let count = 0;
@@ -160,7 +210,7 @@
 			const rank = ranks[index];
 			index++;
 
-			if (lat < bounds._sw.lat || bounds._ne.lat < lat || lng < bounds._sw.lng || bounds._ne.lng < lng) continue;
+			if (lat < bounds.sw.lat || bounds.ne.lat < lat || lng < bounds.sw.lng || bounds.ne.lng < lng) continue;
 			count++;
 
 			data.push({
@@ -269,6 +319,42 @@
 	}
 
 	//#endregion
+
+	//#region WASM
+
+	import { wasm } from '@workspace/shared/wasm/compute/states.js';
+
+	function runWasm() {
+		const wasmBinaryString = atob(wasm);
+		const wasmBytes = new Uint8Array(wasmBinaryString.length);
+		for (let i = 0; i < wasmBinaryString.length; i++) {
+			wasmBytes[i] = wasmBinaryString.charCodeAt(i);
+		}
+
+		const wasmImportObject = {};
+		// create a wasm module
+		const wasmModule = new WebAssembly.Module(wasmBytes);
+		// create a new instance of our wasm module
+		const wasmInstance = new WebAssembly.Instance(wasmModule, wasmImportObject);
+		// store the exported functions that are in our wasm instance
+		const exports = wasmInstance.exports as {
+			createPopupsArray: (length: number) => void;
+			deletePopupsArray: () => void;
+			addPopup: (index: number, rank: number, lat: number, lng: number, width: number, height: number) => void;
+			runPopupSimulation: () => void;
+		};
+
+		try {
+			exports.createPopupsArray(1);
+			exports.addPopup(1, 1, 1, 1, 1, 1);
+			exports.runPopupSimulation();
+			exports.deletePopupsArray();
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
+	//#endregion
 </script>
 
 <svelte:head>
@@ -278,7 +364,7 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
 </svelte:head>
 
-<div id="map" bind:this={mapContainer}></div>
+<div class="map" bind:this={mapElement}></div>
 
 <div class="buttons">
 	<button class="data" onclick={addData}>Add data</button>
@@ -301,12 +387,13 @@
 {/if}
 
 <style lang="less">
-	#map {
-		position: fixed;
+	.map {
+		position: absolute;
 		top: 0px;
 		left: 0px;
 		width: 100%;
 		height: 100%;
+		background-color: red;
 	}
 
 	.buttons {

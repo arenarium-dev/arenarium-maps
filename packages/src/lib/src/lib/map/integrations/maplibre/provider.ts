@@ -61,7 +61,7 @@ export class MapLibreProvider implements MapProvider {
 		return this.map.getCanvas().height;
 	}
 
-	public createMarker(lat: number, lng: number, element: HTMLElement): MapProviderMarker {
+	public createMarker(element: HTMLElement, lat: number, lng: number): MapProviderMarker {
 		const marker = new this.MapMarkerClass({ element });
 		marker.setLngLat([lng, lat]);
 		return {
