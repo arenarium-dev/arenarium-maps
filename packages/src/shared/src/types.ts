@@ -1,5 +1,5 @@
 export namespace Popup {
-	export interface Pramaters {
+	export interface Parameters {
 		mapSize: number;
 		zoomMin: number;
 		zoomMax: number;
@@ -18,6 +18,7 @@ export namespace Popup {
 
 	export interface StatesRequest {
 		key: string;
+		parameters: Parameters;
 		data: Data[];
 	}
 

@@ -47,7 +47,7 @@ namespace Nodes {
 		/** The neighbours of the marker node. */
 		neighbours: Array<Node>;
 
-		constructor(parameters: Popup.Pramaters, data: Popup.Data, index: number) {
+		constructor(parameters: Popup.Parameters, data: Popup.Data, index: number) {
 			const projection = Mercator.project(data.lat, data.lng, parameters.mapSize);
 			const width = data.width + 2 * data.padding;
 			const height = data.height + 2 * data.padding;
@@ -114,7 +114,7 @@ namespace Nodes {
 		public scale: number;
 		public step: number;
 
-		constructor(parameters: Popup.Pramaters) {
+		constructor(parameters: Popup.Parameters) {
 			this.min = parameters.zoomMin;
 			this.max = parameters.zoomMax;
 			this.scale = parameters.zoomScale;
@@ -147,7 +147,7 @@ namespace Nodes {
 		}
 	}
 
-	export function createNodes(parameters: Popup.Pramaters, data: Array<Popup.Data>): Array<Node> {
+	export function createNodes(parameters: Popup.Parameters, data: Array<Popup.Data>): Array<Node> {
 		let nodes = new Array<Node>(data.length);
 
 		// Create marker nodes
@@ -450,7 +450,7 @@ namespace Nodes {
 	}
 }
 
-function getStates(parameters: Popup.Pramaters, data: Array<Popup.Data>): Popup.State[] {
+function getStates(parameters: Popup.Parameters, data: Array<Popup.Data>): Popup.State[] {
 	const nodesZoom = new Nodes.Zoom(parameters);
 
 	if (data.length == 0) return [];

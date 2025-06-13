@@ -18,7 +18,7 @@ class Popup {
 	angle: number;
 	bounds: Bounds | undefined;
 
-	constructor(parameters: Popup.Pramaters, data: Popup.Data, state: Popup.State) {
+	constructor(parameters: Popup.Parameters, data: Popup.Data, state: Popup.State) {
 		const point = Mercator.project(data.lat, data.lng, parameters.mapSize);
 		this.x = point.x;
 		this.y = point.y;
@@ -50,7 +50,7 @@ class Popup {
 	}
 }
 
-export function testStates(parameters: Popup.Pramaters, data: Popup.Data[], states: Popup.State[]) {
+export function testStates(parameters: Popup.Parameters, data: Popup.Data[], states: Popup.State[]) {
 	if (data.length != states.length) throw new Error('Data and states length must be the same');
 
 	const popups = new Array<Popup>(data.length);
