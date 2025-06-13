@@ -4,6 +4,11 @@
 
 <div class="page">
 	<div class="block">
+		<div class="title">Documentation is not up to date</div>
+		<div class="text">
+			The documentation is currently being updated. Please check back later or <a href="mailto:arenarium.dev@gmail.com?subject=Feedback">contact us</a> if you have any
+			questions or feedback.
+		</div>
 		<div class="title">Installation</div>
 		<div class="header">NPM</div>
 		<div class="text">To install the <code>@aranarium/maps</code> library using npm, run the following command in your project directory:</div>

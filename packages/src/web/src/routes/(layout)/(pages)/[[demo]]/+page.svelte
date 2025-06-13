@@ -25,6 +25,7 @@
 		getDemoPosition,
 		getDemoStyle,
 		getPopupDimensions,
+		isDemoCustom,
 		type DemoSize,
 		type DemoStyle
 	} from '$lib/shared/demo';
@@ -35,6 +36,7 @@
 	import { MapManager, type MapConfiguration, type MapPopup, type MapPopupData, type MapPopupState } from '@arenarium/maps';
 	import { MapDarkStyle, MapLibreProvider, MapStyleLight } from '@arenarium/maps/maplibre';
 	import '@arenarium/maps/dist/style.css';
+	import { fa } from 'zod/v4/locales';
 
 	let mapManager: MapManager;
 	let mapProvider: MapLibreProvider;
@@ -77,25 +79,6 @@
 			app.toast.set(null);
 		}
 	});
-
-	//#region Tune
-
-	let palleteMenuComponent = $state<ReturnType<typeof Menu>>();
-	let demoMenuComponent = $state<ReturnType<typeof Menu>>();
-
-	function onPalleteClick(e: Event) {
-		e.stopPropagation();
-		palleteMenuComponent?.show();
-		demoMenuComponent?.hide();
-	}
-
-	function onDemoClick(e: Event) {
-		e.stopPropagation();
-		palleteMenuComponent?.hide();
-		demoMenuComponent?.show();
-	}
-
-	//#endregion
 
 	//#region Demo
 
@@ -372,62 +355,62 @@
 <div class="container">
 	<div id="map">
 		{#if mapLoaded}
-			<div class="top">
-				<Menu>
-					{#snippet button()}
-						<div class="button shadow-small">
-							<Icon name={'tune'} size={22} />
-							<span>{getDemoName(demo)}</span>
-						</div>
-					{/snippet}
-					{#snippet menu()}
-						<div class="menu shadow-large">
-							<Menu axis={'x'} bind:this={palleteMenuComponent}>
-								{#snippet button()}
-									<button class="item" onclick={onPalleteClick}>
-										<Icon name={'palette'} size={22} />
-										<span>Style</span>
-										<Icon name={'arrow_right'} />
-									</button>
-								{/snippet}
-								{#snippet menu()}
-									<div class="menu pallete shadow-large">
-										<button class="item" class:selected={style == 'website'} onclick={() => (style = 'website')}>Website</button>
-										<button class="item" class:selected={style == 'light'} onclick={() => (style = 'light')}>Light</button>
-										<button class="item" class:selected={style == 'dark'} onclick={() => (style = 'dark')}>Dark</button>
-										<button class="item" class:selected={style == 'liberty'} onclick={() => (style = 'liberty')}>Liberty</button>
-									</div>
-								{/snippet}
-							</Menu>
-							<Menu axis={'x'} bind:this={demoMenuComponent}>
-								{#snippet button()}
-									<button class="item" onclick={onDemoClick}>
-										<Icon name={'database'} size={22} />
-										<span>Data</span>
-										<Icon name={'arrow_right'} />
-									</button>
-								{/snippet}
-								{#snippet menu()}
-									<div class="menu demo shadow-large">
-										<a href="/" class="item" class:selected={page.params.demo == undefined}> Basic </a>
-										<a href="/{Demo.Rentals}" class="item" class:selected={page.params.demo == Demo.Rentals}>{getDemoName(Demo.Rentals)}</a>
-										<a href="/{Demo.News}" class="item" inert>{getDemoName(Demo.News)}</a>
-										<a href="/{Demo.Events}" class="item" inert>{getDemoName(Demo.Events)}</a>
-									</div>
-								{/snippet}
-							</Menu>
-							<button class="item" onclick={onDemoAutoUpdateClick}>
-								<Icon name={demoAutoUpdate ? 'check_box' : 'check_box_outline_blank'} size={22} />
-								<span>Auto Load</span>
+			{#if isDemoCustom(demo) == false}
+				<div class="top">
+					<Menu axis={'x'}>
+						{#snippet button()}
+							<button class="button shadow-small">
+								<Icon name={'palette'} size={22} />
+								<span>Style</span>
 							</button>
-							<button class="item" onclick={onDemoTogglePopupsClick}>
-								<Icon name={demoTogglePopups ? 'check_box' : 'check_box_outline_blank'} size={22} />
-								<span>Show Popups</span>
+						{/snippet}
+						{#snippet menu()}
+							<div class="menu pallete shadow-large">
+								<button class="item" class:selected={style == 'website'} onclick={() => (style = 'website')}>Website</button>
+								<button class="item" class:selected={style == 'light'} onclick={() => (style = 'light')}>Light</button>
+								<button class="item" class:selected={style == 'dark'} onclick={() => (style = 'dark')}>Dark</button>
+								<button class="item" class:selected={style == 'default'} onclick={() => (style = 'default')}>Default</button>
+							</div>
+						{/snippet}
+					</Menu>
+					<Menu axis={'x'}>
+						{#snippet button()}
+							<button class="button shadow-small">
+								<Icon name={'database'} size={22} />
+								<span>Data</span>
 							</button>
-						</div>
-					{/snippet}
-				</Menu>
-			</div>
+						{/snippet}
+						{#snippet menu()}
+							<div class="menu demo shadow-large">
+								<a href="/" class="item" class:selected={page.params.demo == undefined}> Basic </a>
+								<a href="/{Demo.Rentals}" class="item" class:selected={page.params.demo == Demo.Rentals}>{getDemoName(Demo.Rentals)}</a>
+								<a href="/{Demo.News}" class="item" inert>{getDemoName(Demo.News)}</a>
+								<a href="/{Demo.Events}" class="item" inert>{getDemoName(Demo.Events)}</a>
+							</div>
+						{/snippet}
+					</Menu>
+					<Menu axis={'x'}>
+						{#snippet button()}
+							<div class="button shadow-small">
+								<Icon name={'tune'} size={22} />
+								<span>Tune</span>
+							</div>
+						{/snippet}
+						{#snippet menu()}
+							<div class="menu options shadow-large">
+								<button class="item" onclick={onDemoAutoUpdateClick}>
+									<Icon name={demoAutoUpdate ? 'check_box' : 'check_box_outline_blank'} size={22} />
+									<span>Auto Load</span>
+								</button>
+								<button class="item" onclick={onDemoTogglePopupsClick}>
+									<Icon name={demoTogglePopups ? 'check_box' : 'check_box_outline_blank'} size={22} />
+									<span>Show Popups</span>
+								</button>
+							</div>
+						{/snippet}
+					</Menu>
+				</div>
+			{/if}
 
 			<div class="side">
 				<button class="button shadow-small" onmousedown={onZoomIn}>
@@ -502,6 +485,7 @@
 				display: flex;
 				flex-direction: column;
 				align-items: stretch;
+				gap: 4px;
 				padding: 4px;
 				border-radius: 16px;
 				background-color: var(--map-style-background);
@@ -538,11 +522,19 @@
 				}
 			}
 
-			.menu.pallete,
+			.menu.pallete {
+				margin-top: 0px;
+				margin-left: 8px;
+			}
+
 			.menu.demo {
 				margin-top: 0px;
-				margin-left: 20px;
-				gap: 4px;
+				margin-left: 8px;
+			}
+
+			.menu.options {
+				margin-top: 0px;
+				margin-left: 8px;
 			}
 		}
 

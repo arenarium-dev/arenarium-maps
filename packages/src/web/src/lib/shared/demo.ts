@@ -14,7 +14,7 @@ export enum Demo {
 }
 
 export type DemoSize = 'small' | 'large';
-export type DemoStyle = 'website' | 'light' | 'dark' | 'liberty';
+export type DemoStyle = 'website' | 'light' | 'dark' | 'default';
 
 export function getDemoName(demo: Demo) {
 	switch (demo) {
@@ -52,7 +52,7 @@ export function getDemoStyle(demo: Demo, style: DemoStyle): string | maplibregl.
 				case 'dark': {
 					return MapDarkStyle;
 				}
-				case 'liberty': {
+				case 'default': {
 					return 'https://tiles.openfreemap.org/styles/liberty';
 				}
 			}
@@ -89,8 +89,8 @@ export function getDemoColors(demo: Demo, style: DemoStyle): { background: strin
 				case 'dark': {
 					return { background: 'var(--surface)', primary: 'lightgreen', text: 'var(--on-surface)' };
 				}
-				case 'liberty': {
-					return { background: 'white', primary: 'blue', text: 'black' };
+				case 'default': {
+					return { background: 'white', primary: 'red', text: 'black' };
 				}
 			}
 		}
@@ -163,4 +163,8 @@ export function getPopupDimensions(demo: Demo, size: DemoSize): { width: number;
 		case Demo.CityExpert:
 			return { width: 156, height: 128, padding: 8 };
 	}
+}
+
+export function isDemoCustom(demo: Demo) {
+	return demo == Demo.CityExpert || demo == Demo.SrbijaNekretnine;
 }
