@@ -9,6 +9,10 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
+		"outDir": "dist",
+		"declaration": true,
+		"declarationDir": "dist",
+		"emitDeclarationOnly": true,
 		"module": "NodeNext",
 		"moduleResolution": "NodeNext",
 		"types": ["vite/client", "./node_modules/maplibre-gl/dist/maplibre-gl.d.ts"]

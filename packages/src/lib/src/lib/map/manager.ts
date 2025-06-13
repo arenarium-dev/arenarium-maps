@@ -5,7 +5,6 @@ import MapMarkerCircle from '../components/marker/Circle.svelte';
 
 import { log } from './log.js';
 import { animation } from './animation/animation.js';
-import { MapBoundsPair } from './bounds.js';
 import {
 	mapPopupsSchema,
 	mapProviderSchema,
@@ -351,7 +350,7 @@ class MapPopupComponent<T> {
 		return Math.round((this.provider.parameters.zoomMax - this.zoom) * this.provider.parameters.zoomScale);
 	}
 
-	isInBlock(zoom: number, bounds: MapBoundsPair) {
+	isInBlock(zoom: number, bounds: MapBounds) {
 		return this.zoom <= zoom && bounds.contains(this.lat, this.lng);
 	}
 

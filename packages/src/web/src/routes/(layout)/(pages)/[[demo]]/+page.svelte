@@ -25,22 +25,33 @@
 	import * as arenarium from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
 
-	let map: maplibregl.Map;
 	let mapManager: arenarium.MapManager;
+	let mapProvider: arenarium.MapLibreProvider;
+	let mapLibre: maplibregl.Map;
 
+	let zoom = $state<number>(0);
 	let mapLoaded = $state<boolean>(false);
 	let loading = $state<boolean>(false);
 
 	onMount(() => {
 		try {
-			mapManager = new arenarium.MapManager(maplibregl.Map, maplibregl.Marker, {
-				container: 'map'
+			mapProvider = new arenarium.MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
+				container: 'map',
+				style: arenarium.MapDarkStyle,
+				center: { lat: 51.505, lng: -0.09 },
+				zoom: 4
 			});
+
+			mapLibre = mapProvider.getMap();
+			mapLibre.on('move', (e) => {
+				zoom = mapLibre.getZoom();
+			});
+
+			mapManager = new arenarium.MapManager(mapProvider);
 			mapManager.setColors('darkgreen', 'white', 'black');
 
-			map = mapManager.maplibre;
-			map.setStyle(app.theme.get() == 'dark' ? arenarium.MapDarkStyle : arenarium.MapStyleLight);
-			map.on('load', () => {
+			mapLibre.setStyle(app.theme.get() == 'dark' ? arenarium.MapDarkStyle : arenarium.MapStyleLight);
+			mapLibre.on('load', () => {
 				mapLoaded = true;
 			});
 		} catch (e) {
@@ -97,7 +108,7 @@
 				await onMapLoad();
 				await onMapIdle();
 
-				map.on('idle', async () => {
+				mapLibre.on('idle', async () => {
 					await onMapIdle();
 				});
 			});
@@ -107,7 +118,7 @@
 	$effect(() => {
 		if (mapLoaded) {
 			// Update style
-			map.setStyle(getDemoStyle(demo, style));
+			mapLibre.setStyle(getDemoStyle(demo, style));
 
 			// Update colors
 			const demoColors = getDemoColors(demo, style);
@@ -129,11 +140,11 @@
 	async function onMapLoad() {
 		// Update position
 		const demoRestriction = getDemoPosition(demo);
-		map.setMinZoom(demoRestriction.zoom);
-		map.setCenter([demoRestriction.lng, demoRestriction.lat]);
+		mapLibre.setMinZoom(demoRestriction.zoom);
+		mapLibre.setCenter([demoRestriction.lng, demoRestriction.lat]);
 
 		// Update configuration
-		mapManager.setConfiguration(getDemoConfiguration(demo));
+		mapManager.configuration = getDemoConfiguration(demo);
 
 		// Update data
 		demoPopupData.clear();
@@ -143,7 +154,7 @@
 	}
 
 	async function onMapIdle() {
-		const bounds = map.getBounds();
+		const bounds = mapLibre.getBounds();
 		processBoundsChange(bounds);
 	}
 
@@ -485,11 +496,11 @@
 	//#region Side
 
 	function onZoomIn() {
-		map?.zoomIn();
+		mapLibre?.zoomIn();
 	}
 
 	function onZoomOut() {
-		map?.zoomOut();
+		mapLibre?.zoomOut();
 	}
 
 	//#endregion

@@ -35,8 +35,9 @@ export const POST: RequestHandler = async (event) => {
 	const request: Popup.StatesRequest = await event.request.json();
 	if (!request) return response(400, 'Missing request');
 
+	const parameters = request.parameters;
 	const data = request.data;
-	if (!data) return response(400, 'Missing data');
+	if (!parameters || !data) return response(400, 'Missing parameters or data');
 
 	const key = request.key;
 	if (!key) return response(400, 'Missing API key');
@@ -83,7 +84,7 @@ export const POST: RequestHandler = async (event) => {
 	}
 
 	// Get the states
-	const states = getStates(data);
+	const states = getStates(parameters, data);
 
 	// Return the response
 	return result(states);

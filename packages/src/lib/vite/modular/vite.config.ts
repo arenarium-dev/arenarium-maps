@@ -1,8 +1,18 @@
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
+import dts from 'vite-plugin-dts';
 
 export default defineConfig({
-	plugins: [svelte()],
+	plugins: [
+		svelte(),
+		dts({
+			rollupTypes: true,
+			insertTypesEntry: true,
+			entryRoot: 'src/lib',
+			copyDtsFiles: true,
+			exclude: ['**/.svelte-kit/**', '**/node_modules/**']
+		})
+	],
 	build: {
 		lib: {
 			entry: {
@@ -13,7 +23,6 @@ export default defineConfig({
 			formats: ['es', 'cjs'],
 			fileName: (format, entryName) => `${entryName}.${format}.js`,
 			cssFileName: 'style'
-		},
-		emptyOutDir: false
+		}
 	}
 });
