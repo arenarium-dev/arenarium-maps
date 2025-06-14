@@ -1,8 +1,5 @@
 import { app } from '$lib/client/state/app.svelte';
 
-import type maplibregl from 'maplibre-gl';
-
-import { MapLibreDarkStyle, MapLibreStyleLight } from '@arenarium/maps/maplibre';
 import type { MapConfiguration } from '@arenarium/maps';
 
 export enum Demo {
@@ -147,33 +144,4 @@ export function getPopupDimensions(demo: Demo, size: DemoSize): { width: number;
 
 export function isDemoCustom(demo: Demo) {
 	return demo == Demo.CityExpert || demo == Demo.SrbijaNekretnine;
-}
-
-export namespace MapLibre {
-	export function getDemoStyle(demo: Demo, style: DemoStyle): string | maplibregl.StyleSpecification {
-		switch (demo) {
-			case Demo.SrbijaNekretnine: {
-				return 'https://tiles.openfreemap.org/styles/bright';
-			}
-			case Demo.CityExpert: {
-				return 'demo/cityexpert.style.json';
-			}
-			default: {
-				switch (style) {
-					case 'website': {
-						return app.theme.get() == 'dark' ? MapLibreDarkStyle : MapLibreStyleLight;
-					}
-					case 'light': {
-						return MapLibreStyleLight;
-					}
-					case 'dark': {
-						return MapLibreDarkStyle;
-					}
-					case 'default': {
-						return 'https://tiles.openfreemap.org/styles/liberty';
-					}
-				}
-			}
-		}
-	}
 }

@@ -25,7 +25,6 @@
 		getDemoPosition,
 		getPopupDimensions,
 		isDemoCustom,
-		MapLibre,
 		type DemoMap,
 		type DemoSize,
 		type DemoStyle
@@ -43,12 +42,13 @@
 
 	let mapManager: MapManager;
 	let mapProvider: MapProvider;
+	let mapElement: HTMLElement;
 
 	let mapZoom = $state<number>(0);
 	let mapLoaded = $state<boolean>(false);
 
 	let demoSize: DemoSize = 'large';
-	let demoMap = $state<DemoMap>('maplibre');
+	let demoMap = $state<DemoMap>((page.url.searchParams.get('map') as DemoMap) ?? 'maplibre');
 	let demoStyle = $state<DemoStyle>('website');
 	let demo = $state<Demo>(page.params.demo as Demo);
 
@@ -73,22 +73,10 @@
 
 	let mapLibre: maplibregl.Map;
 	let mapLibreProvider: MapLibreProvider;
-	let mapLibreEnabled = true;
 
 	function loadMapLibre() {
-		mapLibreEnabled = true;
-
-		// Load existing map
-		if (mapLibre) {
-			mapProvider = mapLibreProvider;
-			mapLoaded = true;
-			onMapIdle();
-			return;
-		}
-
-		// Load new map
 		mapLibreProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
-			container: 'map',
+			container: mapElement,
 			style: app.theme.get() == 'dark' ? MapLibreDarkStyle : MapLibreStyleLight,
 			center: { lat: 51.505, lng: -0.09 },
 			zoom: 4
@@ -108,12 +96,35 @@
 		});
 	}
 
-	function clearMapLibre() {
-		mapLibreEnabled = false;
+	function setMapLibreStyle(demo: Demo, style: DemoStyle) {
+		mapLibre.setStyle(getMapLibreStyle(demo, style));
 	}
 
-	function setMapLibreStyle(demo: Demo, style: DemoStyle) {
-		mapLibre.setStyle(MapLibre.getDemoStyle(demo, style));
+	function getMapLibreStyle(demo: Demo, style: DemoStyle): string | maplibregl.StyleSpecification {
+		switch (demo) {
+			case Demo.SrbijaNekretnine: {
+				return 'https://tiles.openfreemap.org/styles/bright';
+			}
+			case Demo.CityExpert: {
+				return 'demo/cityexpert.style.json';
+			}
+			default: {
+				switch (style) {
+					case 'website': {
+						return app.theme.get() == 'dark' ? MapLibreDarkStyle : MapLibreStyleLight;
+					}
+					case 'light': {
+						return MapLibreStyleLight;
+					}
+					case 'dark': {
+						return MapLibreDarkStyle;
+					}
+					case 'default': {
+						return 'https://tiles.openfreemap.org/styles/liberty';
+					}
+				}
+			}
+		}
 	}
 
 	function setMapLibrePosition(demo: Demo) {
@@ -132,25 +143,106 @@
 
 	//#endregion
 
+	//#region Google Maps
+
+	import { GoogleMapDarkStyle, GoogleMapLightStyle, GoogleMapsProvider } from '@arenarium/maps/google';
+
+	import { Loader } from '@googlemaps/js-api-loader';
+
+	let mapGoogle: google.maps.Map;
+	let mapGoogleProvider: GoogleMapsProvider;
+
+	let mapTypeLightId = 'light-id';
+	let mapTypeDarkId = 'dark-id';
+
+	async function loadGoogleMaps() {
+		// Load API and map
+		const loader = new Loader({
+			apiKey: 'AIzaSyCt6ERDLY4Hx5b6LEBQFPYJbRq9teByXyk',
+			version: 'weekly'
+		});
+
+		const mapsLibrary = await loader.importLibrary('maps');
+		const markerLibrary = await loader.importLibrary('marker');
+
+		mapGoogleProvider = new GoogleMapsProvider(mapsLibrary.Map, markerLibrary.AdvancedMarkerElement, mapElement, {
+			mapId: '11b85640a5094a146ed5dd8f',
+			center: { lat: 51.505, lng: -0.09 },
+			zoom: 4,
+			disableDefaultUI: true,
+			isFractionalZoomEnabled: true,
+			colorScheme: google.maps.ColorScheme.LIGHT
+		});
+
+		mapProvider = mapGoogleProvider;
+
+		mapGoogle = mapGoogleProvider.getMap();
+		// Set events
+		mapGoogle.addListener('tilesloaded', () => {
+			mapLoaded = true;
+		});
+		mapGoogle.addListener('zoom_changed', () => {
+			mapZoom = mapGoogle.getZoom()!;
+		});
+		mapGoogle.addListener('idle', () => {
+			onMapIdle();
+		});
+
+		// Set map type
+		const mapTypeLight = new google.maps.StyledMapType(GoogleMapLightStyle, { name: 'Light Map' });
+		const mapTypeDark = new google.maps.StyledMapType(GoogleMapDarkStyle, { name: 'Dark Map' });
+
+		mapGoogle.mapTypes.set(mapTypeLightId, mapTypeLight);
+		mapGoogle.mapTypes.set(mapTypeDarkId, mapTypeDark);
+	}
+
+	function setGoogleMapsStyle(demo: Demo, style: DemoStyle) {
+		switch (style) {
+			case 'default':
+				mapGoogle.setOptions({
+					mapTypeId: 'roadmap',
+					styles: null
+				});
+				break;
+			case 'website':
+				mapGoogle.setMapTypeId(app.theme.get() == 'dark' ? mapTypeDarkId : mapTypeLightId);
+				break;
+			case 'light':
+				mapGoogle.setMapTypeId(mapTypeLightId);
+				break;
+			case 'dark':
+				mapGoogle.setMapTypeId(mapTypeDarkId);
+				break;
+		}
+	}
+
+	function setGoogleMapsPosition(demo: Demo) {
+		const demoRestriction = getDemoPosition(demo);
+		mapGoogle.setOptions({ minZoom: demoRestriction.zoom });
+		mapGoogle.setCenter({ lat: demoRestriction.lat, lng: demoRestriction.lng });
+	}
+
+	function getGoogleMapsBounds(): Bounds {
+		const bounds = mapGoogle.getBounds();
+		return {
+			sw: { lat: bounds?.getSouthWest().lat() ?? 0, lng: bounds?.getSouthWest().lng() ?? 0 },
+			ne: { lat: bounds?.getNorthEast().lat() ?? 0, lng: bounds?.getNorthEast().lng() ?? 0 }
+		};
+	}
+
+	//#endregion
+
 	//#region Map Change
 
-	$effect(() => {
-		if (!mounted) return;
-
-		mapLoaded = false;
-
+	onMount(async () => {
 		try {
 			switch (demoMap) {
 				case 'maplibre': {
-					// clearGoogleMaps();
 					loadMapLibre();
 					break;
 				}
 				case 'google': {
-					clearMapLibre();
-					throw new Error('Not implemented');
-
-					// loadGoogleMaps();
+					await loadGoogleMaps();
 					break;
 				}
 			}
@@ -169,9 +261,17 @@
 		}
 	});
 
+	function onDemoMapClick(map: DemoMap) {
+		window.location.search = `?map=${map}`;
+	}
+
 	//#endregion
 
 	//#region Style Change
+
+	let colorPrimary = $state<string>();
+	let colorBackground = $state<string>();
+	let colorText = $state<string>();
 
 	$effect(() => {
 		if (mapLoaded) {
@@ -182,14 +282,16 @@
 					break;
 				}
 				case 'google': {
-					throw new Error('Not implemented');
-
+					setGoogleMapsStyle(demo, demoStyle);
 					break;
 				}
 			}
 
 			// Update colors
 			const demoColors = getDemoColors(demo, demoStyle);
+			colorPrimary = demoColors.primary;
+			colorBackground = demoColors.background;
+			colorText = demoColors.text;
 			mapManager.setColors(demoColors.primary, demoColors.background, demoColors.text);
 		}
 	});
@@ -213,8 +315,7 @@
 					break;
 				}
 				case 'google': {
-					throw new Error('Not implemented');
-
+					setGoogleMapsPosition(demo);
 					break;
 				}
 			}
@@ -237,7 +338,7 @@
 	function onDemoClear() {
 		popupData.clear();
 		dataLoaded = false;
-		mapManager.removePopups();
+		mapManager?.removePopups();
 	}
 
 	async function onDataRefresh() {
@@ -369,8 +470,7 @@
 				return getMapLibreBounds();
 			}
 			case 'google': {
-				throw new Error('Not implemented');
-				break;
+				return getGoogleMapsBounds();
 			}
 		}
 	}
@@ -386,9 +486,7 @@
 				break;
 			}
 			case 'google': {
-				throw new Error('Not implemented');
-
-				// mapGoogle?.zoomIn();
+				mapGoogle?.setZoom(mapGoogle.getZoom()! + 1);
 				break;
 			}
 		}
@@ -401,9 +499,7 @@
 				break;
 			}
 			case 'google': {
-				throw new Error('Not implemented');
-
-				// mapGoogle?.zoomOut();
+				mapGoogle?.setZoom(mapGoogle.getZoom()! - 1);
 				break;
 			}
 		}
@@ -412,85 +508,98 @@
 	//#endregion
 </script>
 
-<div class="container">
-	<div id="map">
-		{#if mapLoaded}
-			{#if isDemoCustom(demo) == false}
-				<div class="top">
-					<Menu axis={'x'}>
-						{#snippet button()}
-							<button class="button shadow-small">
-								<Icon name={'palette'} size={22} />
-								<span>Style</span>
+<div class="container" style="--map-style-background: {colorBackground}; --map-style-text: {colorText}; --map-style-primary: {colorPrimary}">
+	<div class="map" bind:this={mapElement}></div>
+	{#if mapLoaded}
+		{#if isDemoCustom(demo) == false}
+			<div class="top">
+				<Menu axis={'x'}>
+					{#snippet button()}
+						<button class="button shadow-small">
+							<Icon name={'map'} size={22} />
+							<span>Map</span>
+						</button>
+					{/snippet}
+					{#snippet menu()}
+						<div class="menu maps shadow-large">
+							<button class="item" class:selected={demoMap == 'maplibre'} onclick={() => onDemoMapClick('maplibre')}>MapLibre</button>
+							<button class="item" class:selected={demoMap == 'google'} onclick={() => onDemoMapClick('google')}>Google</button>
+						</div>
+					{/snippet}
+				</Menu>
+				<Menu axis={'x'}>
+					{#snippet button()}
+						<button class="button shadow-small">
+							<Icon name={'palette'} size={22} />
+							<span>Style</span>
+						</button>
+					{/snippet}
+					{#snippet menu()}
+						<div class="menu pallete shadow-large">
+							<button class="item" class:selected={demoStyle == 'website'} onclick={() => (demoStyle = 'website')}>Website</button>
+							<button class="item" class:selected={demoStyle == 'light'} onclick={() => (demoStyle = 'light')}>Light</button>
+							<button class="item" class:selected={demoStyle == 'dark'} onclick={() => (demoStyle = 'dark')}>Dark</button>
+							<button class="item" class:selected={demoStyle == 'default'} onclick={() => (demoStyle = 'default')}>Default</button>
+						</div>
+					{/snippet}
+				</Menu>
+				<Menu axis={'x'}>
+					{#snippet button()}
+						<button class="button shadow-small">
+							<Icon name={'database'} size={22} />
+							<span>Data</span>
+						</button>
+					{/snippet}
+					{#snippet menu()}
+						<div class="menu demo shadow-large">
+							<a href="/" class="item" class:selected={page.params.demo == undefined}> Basic </a>
+							<a href="/{Demo.Rentals}" class="item" class:selected={page.params.demo == Demo.Rentals}>{getDemoName(Demo.Rentals)}</a>
+							<a href="/{Demo.News}" class="item" inert>{getDemoName(Demo.News)}</a>
+							<a href="/{Demo.Events}" class="item" inert>{getDemoName(Demo.Events)}</a>
+						</div>
+					{/snippet}
+				</Menu>
+				<Menu axis={'x'}>
+					{#snippet button()}
+						<div class="button shadow-small">
+							<Icon name={'tune'} size={22} />
+							<span>Tune</span>
+						</div>
+					{/snippet}
+					{#snippet menu()}
+						<div class="menu options shadow-large">
+							<button class="item" onclick={onDataAutoUpdateClick}>
+								<Icon name={dataAutoUpdate ? 'check_box' : 'check_box_outline_blank'} size={22} />
+								<span>Auto Load</span>
 							</button>
-						{/snippet}
-						{#snippet menu()}
-							<div class="menu pallete shadow-large">
-								<button class="item" class:selected={demoStyle == 'website'} onclick={() => (demoStyle = 'website')}>Website</button>
-								<button class="item" class:selected={demoStyle == 'light'} onclick={() => (demoStyle = 'light')}>Light</button>
-								<button class="item" class:selected={demoStyle == 'dark'} onclick={() => (demoStyle = 'dark')}>Dark</button>
-								<button class="item" class:selected={demoStyle == 'default'} onclick={() => (demoStyle = 'default')}>Default</button>
-							</div>
-						{/snippet}
-					</Menu>
-					<Menu axis={'x'}>
-						{#snippet button()}
-							<button class="button shadow-small">
-								<Icon name={'database'} size={22} />
-								<span>Data</span>
+							<button class="item" onclick={onTogglePopupsClick}>
+								<Icon name={dataTogglePopups ? 'check_box' : 'check_box_outline_blank'} size={22} />
+								<span>Show Popups</span>
 							</button>
-						{/snippet}
-						{#snippet menu()}
-							<div class="menu demo shadow-large">
-								<a href="/" class="item" class:selected={page.params.demo == undefined}> Basic </a>
-								<a href="/{Demo.Rentals}" class="item" class:selected={page.params.demo == Demo.Rentals}>{getDemoName(Demo.Rentals)}</a>
-								<a href="/{Demo.News}" class="item" inert>{getDemoName(Demo.News)}</a>
-								<a href="/{Demo.Events}" class="item" inert>{getDemoName(Demo.Events)}</a>
-							</div>
-						{/snippet}
-					</Menu>
-					<Menu axis={'x'}>
-						{#snippet button()}
-							<div class="button shadow-small">
-								<Icon name={'tune'} size={22} />
-								<span>Tune</span>
-							</div>
-						{/snippet}
-						{#snippet menu()}
-							<div class="menu options shadow-large">
-								<button class="item" onclick={onDataAutoUpdateClick}>
-									<Icon name={dataAutoUpdate ? 'check_box' : 'check_box_outline_blank'} size={22} />
-									<span>Auto Load</span>
-								</button>
-								<button class="item" onclick={onTogglePopupsClick}>
-									<Icon name={dataTogglePopups ? 'check_box' : 'check_box_outline_blank'} size={22} />
-									<span>Show Popups</span>
-								</button>
-							</div>
-						{/snippet}
-					</Menu>
-				</div>
-			{/if}
-
-			<div class="side">
-				<button class="button shadow-small" onmousedown={onDataRefresh}>
-					<Icon name={'refresh'} size={22} />
-				</button>
-				<button class="button shadow-small" onmousedown={onZoomIn}>
-					<Icon name={'add'} size={22} />
-				</button>
-				<button class="button shadow-small" onmousedown={onZoomOut}>
-					<Icon name={'remove'} size={22} />
-				</button>
+						</div>
+					{/snippet}
+				</Menu>
 			</div>
-
-			{#if dataLoading}
-				<div class="progess" transition:fade={{ duration: 125, delay: 50 }}>
-					<Progress />
-				</div>
-			{/if}
 		{/if}
-	</div>
+
+		<div class="side">
+			<button class="button shadow-small" onmousedown={onDataRefresh}>
+				<Icon name={'refresh'} size={22} />
+			</button>
+			<button class="button shadow-small" onmousedown={onZoomIn}>
+				<Icon name={'add'} size={22} />
+			</button>
+			<button class="button shadow-small" onmousedown={onZoomOut}>
+				<Icon name={'remove'} size={22} />
+			</button>
+		</div>
+
+		{#if dataLoading}
+			<div class="progess" transition:fade={{ duration: 125, delay: 50 }}>
+				<Progress />
+			</div>
+		{/if}
+	{/if}
 </div>
 
 <Toast path="/" />
@@ -500,7 +609,7 @@
 		position: relative;
 		flex-grow: 1;
 
-		#map {
+		.map {
 			position: absolute;
 			top: 0px;
 			left: 0px;
@@ -583,6 +692,11 @@
 						background-color: color-mix(in srgb, var(--map-style-background) 70%, #888 30%);
 					}
 				}
+			}
+
+			.menu.maps {
+				margin-top: 0px;
+				margin-left: 10px;
 			}
 
 			.menu.pallete {
