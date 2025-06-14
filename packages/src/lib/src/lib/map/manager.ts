@@ -21,8 +21,6 @@ import {
 import { Mercator } from '@workspace/shared/src/popup/mercator.js';
 import { Angles } from '@workspace/shared/src/constants.js';
 
-import { PUBLIC_API_URL } from '$env/static/public';
-
 const MAP_MARKERS_Z_INDEX_OFFSET = 1000000;
 const MAP_CIRCLES_MAX_ZOOM = 2;
 const MAP_CIRCLES_MAX_COUNT = 128;
@@ -76,7 +74,7 @@ class MapManager {
 				parameters: this.provider.parameters,
 				data: popups.map((p) => p.data)
 			};
-			const popupStatesResponse = await fetch(PUBLIC_API_URL, {
+			const popupStatesResponse = await fetch(import.meta.env.VITE_API_URL, {
 				method: 'POST',
 				body: JSON.stringify(popupStatesRequest)
 			});

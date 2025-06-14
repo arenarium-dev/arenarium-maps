@@ -317,7 +317,6 @@
 	//#region Wasm
 
 	import { wasm } from '@workspace/shared/wasm/compute/states.js';
-	import { PUBLIC_API_URL } from '$env/static/public';
 
 	function runWasm() {
 		const wasmBinaryString = atob(wasm);
