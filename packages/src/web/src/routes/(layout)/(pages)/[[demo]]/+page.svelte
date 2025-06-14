@@ -23,49 +23,139 @@
 		getDemoConfiguration,
 		getDemoName,
 		getDemoPosition,
-		getDemoStyle,
 		getPopupDimensions,
 		isDemoCustom,
+		MapLibre,
+		type DemoMap,
 		type DemoSize,
 		type DemoStyle
 	} from '$lib/shared/demo';
 
+	import { MapManager, type MapPopup, type MapPopupData, type MapProvider } from '@arenarium/maps';
+	import '@arenarium/maps/dist/style.css';
+
+	interface Bounds {
+		sw: { lat: number; lng: number };
+		ne: { lat: number; lng: number };
+	}
+
+	let mounted = $state<boolean>(false);
+
+	let mapManager: MapManager;
+	let mapProvider: MapProvider;
+
+	let mapZoom = $state<number>(0);
+	let mapLoaded = $state<boolean>(false);
+
+	let demoSize: DemoSize = 'large';
+	let demoMap = $state<DemoMap>('maplibre');
+	let demoStyle = $state<DemoStyle>('website');
+	let demo = $state<Demo>(page.params.demo as Demo);
+
+	let popupData = new Map<string, MapPopupData>();
+	let dataLoaded = false;
+	let dataLoading = $state<boolean>(false);
+	let dataAutoUpdate = $state<boolean>(false);
+	let dataTogglePopups = $state<boolean>(true);
+
+	onMount(() => {
+		demoSize = window.innerWidth < 640 ? 'small' : 'large';
+
+		mounted = true;
+	});
+
+	//#region MapLibre
+
 	import maplibregl from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 
-	import { MapManager, type MapPopup, type MapPopupData } from '@arenarium/maps';
 	import { MapLibreProvider, MapLibreDarkStyle, MapLibreStyleLight } from '@arenarium/maps/maplibre';
-	import '@arenarium/maps/dist/style.css';
 
-	let mapManager: MapManager;
-	let mapProvider: MapLibreProvider;
 	let mapLibre: maplibregl.Map;
+	let mapLibreProvider: MapLibreProvider;
+	let mapLibreEnabled = true;
 
-	let zoom = $state<number>(0);
-	let mapLoaded = $state<boolean>(false);
-	let loading = $state<boolean>(false);
+	function loadMapLibre() {
+		mapLibreEnabled = true;
 
-	onMount(() => {
+		// Load existing map
+		if (mapLibre) {
+			mapProvider = mapLibreProvider;
+			mapLoaded = true;
+			onMapIdle();
+			return;
+		}
+
+		// Load new map
+		mapLibreProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
+			container: 'map',
+			style: app.theme.get() == 'dark' ? MapLibreDarkStyle : MapLibreStyleLight,
+			center: { lat: 51.505, lng: -0.09 },
+			zoom: 4
+		});
+
+		mapProvider = mapLibreProvider;
+		mapLibre = mapLibreProvider.getMap();
+
+		mapLibre.on('load', () => {
+			mapLoaded = true;
+		});
+		mapLibre.on('move', (e) => {
+			mapZoom = mapLibre.getZoom();
+		});
+		mapLibre.on('idle', () => {
+			onMapIdle();
+		});
+	}
+
+	function clearMapLibre() {
+		mapLibreEnabled = false;
+	}
+
+	function setMapLibreStyle(demo: Demo, style: DemoStyle) {
+		mapLibre.setStyle(MapLibre.getDemoStyle(demo, style));
+	}
+
+	function setMapLibrePosition(demo: Demo) {
+		const demoRestriction = getDemoPosition(demo);
+		mapLibre.setMinZoom(demoRestriction.zoom);
+		mapLibre.setCenter([demoRestriction.lng, demoRestriction.lat]);
+	}
+
+	function getMapLibreBounds(): Bounds {
+		const bounds = mapLibre.getBounds();
+		return {
+			sw: { lat: bounds.getSouthWest().lat, lng: bounds.getSouthWest().lng },
+			ne: { lat: bounds.getNorthEast().lat, lng: bounds.getNorthEast().lng }
+		};
+	}
+
+	//#endregion
+
+	//#region Map Change
+
+	$effect(() => {
+		if (!mounted) return;
+
+		mapLoaded = false;
+
 		try {
-			mapProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
-				container: 'map',
-				style: MapLibreDarkStyle,
-				center: { lat: 51.505, lng: -0.09 },
-				zoom: 4
-			});
+			switch (demoMap) {
+				case 'maplibre': {
+					// clearGoogleMaps();
+					loadMapLibre();
+					break;
+				}
+				case 'google': {
+					clearMapLibre();
+					throw new Error('Not implemented');
 
-			mapLibre = mapProvider.getMap();
-			mapLibre.on('move', (e) => {
-				zoom = mapLibre.getZoom();
-			});
+					// loadGoogleMaps();
+					break;
+				}
+			}
 
 			mapManager = new MapManager('KEY', mapProvider);
-			mapManager.setColors('darkgreen', 'white', 'black');
-
-			mapLibre.setStyle(app.theme.get() == 'dark' ? MapLibreDarkStyle : MapLibreStyleLight);
-			mapLibre.on('load', () => {
-				mapLoaded = true;
-			});
 		} catch (e) {
 			console.error(e);
 
@@ -79,165 +169,132 @@
 		}
 	});
 
-	//#region Demo
+	//#endregion
 
-	let size: DemoSize = 'large';
-	let style = $state<DemoStyle>('website');
-	let demo = $state<Demo>(page.params.demo as Demo);
-
-	let demoPopupData = new Map<string, MapPopupData>();
-	let demoPopupDataLoaded = false;
-	let demoAutoUpdate = $state<boolean>(false);
-	let demoTogglePopups = $state<boolean>(true);
-
-	$effect(() => {
-		if (mapLoaded) {
-			size = window.innerWidth < 640 ? 'small' : 'large';
-
-			setTimeout(async () => {
-				await onMapLoad();
-				await onMapIdle();
-
-				mapLibre.on('idle', async () => {
-					await onMapIdle();
-				});
-			});
-		}
-	});
+	//#region Style Change
 
 	$effect(() => {
 		if (mapLoaded) {
 			// Update style
-			mapLibre.setStyle(getDemoStyle(demo, style));
+			switch (demoMap) {
+				case 'maplibre': {
+					setMapLibreStyle(demo, demoStyle);
+					break;
+				}
+				case 'google': {
+					throw new Error('Not implemented');
 
-			// Update colors
-			const demoColors = getDemoColors(demo, style);
-			mapManager.setColors(demoColors.primary, demoColors.background, demoColors.text);
-		}
-	});
-
-	$effect(() => {
-		if (mapLoaded && demo != page.params.demo) {
-			demo = page.params.demo as Demo;
-
-			setTimeout(async () => {
-				await onMapLoad();
-				await onMapIdle();
-			});
-		}
-	});
-
-	async function onMapLoad() {
-		// Update position
-		const demoRestriction = getDemoPosition(demo);
-		mapLibre.setMinZoom(demoRestriction.zoom);
-		mapLibre.setCenter([demoRestriction.lng, demoRestriction.lat]);
-
-		// Update configuration
-		mapManager.configuration = getDemoConfiguration(demo);
-
-		// Update data
-		demoPopupData.clear();
-		demoPopupDataLoaded = false;
-
-		mapManager.removePopups();
-	}
-
-	async function onMapIdle() {
-		const bounds = mapLibre.getBounds();
-		processBoundsChange(bounds);
-	}
-
-	function onDemoAutoUpdateClick(e: Event) {
-		e.stopPropagation();
-		demoAutoUpdate = !demoAutoUpdate;
-	}
-
-	function onDemoTogglePopupsClick(e: Event) {
-		e.stopPropagation();
-
-		demoTogglePopups = !demoTogglePopups;
-		mapManager.togglePopups(Array.from(demoPopupData.values()).map((p) => ({ id: p.id, toggled: demoTogglePopups })));
-	}
-
-	async function processBoundsChange(bounds: maplibregl.LngLatBounds) {
-		if (demoPopupDataLoaded) return;
-
-		try {
-			loading = true;
-
-			app.toast.set(null);
-
-			switch (demo) {
-				case Demo.CityExpert: {
-					demoPopupDataLoaded = true;
 					break;
 				}
 			}
 
-			const { width, height, padding } = getPopupDimensions(demo, size);
+			// Update colors
+			const demoColors = getDemoColors(demo, demoStyle);
+			mapManager.setColors(demoColors.primary, demoColors.background, demoColors.text);
+		}
+	});
 
+	//#endregion
+
+	//#region Data Change
+
+	$effect(() => {
+		if (mapLoaded && demo != page.params.demo) {
+			demo = page.params.demo as Demo;
+		}
+	});
+
+	$effect(() => {
+		if (mapLoaded) {
+			// Update position
+			switch (demoMap) {
+				case 'maplibre': {
+					setMapLibrePosition(demo);
+					break;
+				}
+				case 'google': {
+					throw new Error('Not implemented');
+
+					break;
+				}
+			}
+
+			// Update configuration
+			mapManager.configuration = getDemoConfiguration(demo);
+
+			// Update data
+			onDemoClear();
+			onDataRefresh();
+		}
+	});
+
+	async function onMapIdle() {
+		if (dataAutoUpdate && !dataLoaded) {
+			onBoundsChange(getDataBounds());
+		}
+	}
+
+	function onDemoClear() {
+		popupData.clear();
+		dataLoaded = false;
+		mapManager.removePopups();
+	}
+
+	async function onDataRefresh() {
+		onBoundsChange(getDataBounds());
+	}
+
+	function onDataAutoUpdateClick(e: Event) {
+		e.stopPropagation();
+		dataAutoUpdate = !dataAutoUpdate;
+	}
+
+	function onTogglePopupsClick(e: Event) {
+		e.stopPropagation();
+
+		dataTogglePopups = !dataTogglePopups;
+		mapManager.togglePopups(Array.from(popupData.values()).map((p) => ({ id: p.id, toggled: dataTogglePopups })));
+	}
+
+	async function onBoundsChange(bounds: Bounds) {
+		try {
+			dataLoading = true;
+
+			switch (demo) {
+				case Demo.CityExpert: {
+					dataLoaded = true;
+					break;
+				}
+			}
+
+			// Get new popup data
+			const { width, height, padding } = getPopupDimensions(demo, demoSize);
 			const params = new URLSearchParams();
 			params.append('total', '128');
 			params.append('width', width.toString());
 			params.append('height', height.toString());
 			params.append('padding', padding.toString());
-			params.append('swlat', bounds.getSouthWest().lat.toString());
-			params.append('swlng', bounds.getSouthWest().lng.toString());
-			params.append('nelat', bounds.getNorthEast().lat.toString());
-			params.append('nelng', bounds.getNorthEast().lng.toString());
+			params.append('swlat', bounds.sw.lat.toString());
+			params.append('swlng', bounds.sw.lng.toString());
+			params.append('nelat', bounds.ne.lat.toString());
+			params.append('nelng', bounds.ne.lng.toString());
 
 			const allPopupData = await Fetch.that<MapPopupData[]>(`/api/popup/${demo}/data?${params}`);
 			const newPopupData = new Array<MapPopupData>();
 			for (const data of allPopupData) {
-				if (!demoPopupData.has(data.id)) {
+				if (!popupData.has(data.id)) {
 					newPopupData.push(data);
+					popupData.set(data.id, data);
 				}
 			}
-
 			if (newPopupData.length === 0) return;
 
-			if (demoAutoUpdate || demoPopupData.size === 0) {
-				await processPopupDataDelta(newPopupData);
-				return;
-			}
-
-			app.toast.set({
-				path: '/',
-				text: `Load ${newPopupData.length} new popups?`,
-				severity: 'info',
-				callback: {
-					name: 'Yes',
-					function: async () => {
-						await processPopupDataDelta(newPopupData);
-					}
-				}
-			});
-		} catch (err) {
-			console.error(err);
-			app.toast.set({
-				path: '/',
-				text: 'Failed to process popups.',
-				severity: 'error',
-				seconds: 2
-			});
-		} finally {
-			loading = false;
-		}
-	}
-
-	async function processPopupDataDelta(dataDelta: MapPopupData[]) {
-		try {
-			loading = true;
-
-			// Update the loaded data
-			dataDelta.forEach((d) => demoPopupData.set(d.id, d));
-
-			// Create the new popups
+			// Create popups
 			const popups = new Array<MapPopup>();
-			for (let i = 0; i < dataDelta.length; i++) {
+
+			for (const data of popupData.values()) {
 				const popup: MapPopup = {
-					data: dataDelta[i],
+					data: data,
 					callbacks: {
 						body: getPopupBody,
 						pin: getPopupPin
@@ -248,27 +305,26 @@
 
 			// Update the popups
 			await mapManager.updatePopups(popups);
-			mapManager.togglePopups(popups.map((p) => ({ id: p.data.id, toggled: demoTogglePopups })));
+			mapManager.togglePopups(popups.map((p) => ({ id: p.data.id, toggled: dataTogglePopups })));
 		} catch (err) {
 			console.error(err);
 			app.toast.set({
 				path: '/',
-				text: 'Failed to get popup state.',
+				text: 'Failed to process popups.',
 				severity: 'error',
 				seconds: 2
 			});
 		} finally {
-			loading = false;
+			dataLoading = false;
 		}
 	}
 
 	async function getPopupBody(id: string): Promise<HTMLElement> {
 		return await new Promise((resolve) => {
-			const popup = demoPopupData.get(id);
+			const popup = popupData.get(id);
 			if (!popup) throw new Error('Popup not found');
 
 			const element = document.createElement('div');
-			element.addEventListener('click', () => onPopupClick(id));
 
 			switch (demo) {
 				default:
@@ -290,11 +346,10 @@
 
 	async function getPopupPin(id: string): Promise<HTMLElement> {
 		return await new Promise((resolve) => {
-			const popup = demoPopupData.get(id) as any;
+			const popup = popupData.get(id) as any;
 			if (!popup) throw new Error('Popup not found');
 
 			const element = document.createElement('div');
-			element.addEventListener('click', () => onPinClick(id));
 
 			switch (demo) {
 				case Demo.Rentals:
@@ -308,19 +363,15 @@
 		});
 	}
 
-	function onPopupClick(id: string) {
-		switch (demo) {
-			case Demo.Rentals:
-				// map.togglePopups([{ id: id, toggled: false }]);
+	function getDataBounds(): Bounds {
+		switch (demoMap) {
+			case 'maplibre': {
+				return getMapLibreBounds();
+			}
+			case 'google': {
+				throw new Error('Not implemented');
 				break;
-		}
-	}
-
-	function onPinClick(id: string) {
-		switch (demo) {
-			case Demo.Rentals:
-				// map.togglePopups([{ id: id, toggled: true }]);
-				break;
+			}
 		}
 	}
 
@@ -329,11 +380,33 @@
 	//#region Side
 
 	function onZoomIn() {
-		mapLibre?.zoomIn();
+		switch (demoMap) {
+			case 'maplibre': {
+				mapLibre?.zoomIn();
+				break;
+			}
+			case 'google': {
+				throw new Error('Not implemented');
+
+				// mapGoogle?.zoomIn();
+				break;
+			}
+		}
 	}
 
 	function onZoomOut() {
-		mapLibre?.zoomOut();
+		switch (demoMap) {
+			case 'maplibre': {
+				mapLibre?.zoomOut();
+				break;
+			}
+			case 'google': {
+				throw new Error('Not implemented');
+
+				// mapGoogle?.zoomOut();
+				break;
+			}
+		}
 	}
 
 	//#endregion
@@ -353,10 +426,10 @@
 						{/snippet}
 						{#snippet menu()}
 							<div class="menu pallete shadow-large">
-								<button class="item" class:selected={style == 'website'} onclick={() => (style = 'website')}>Website</button>
-								<button class="item" class:selected={style == 'light'} onclick={() => (style = 'light')}>Light</button>
-								<button class="item" class:selected={style == 'dark'} onclick={() => (style = 'dark')}>Dark</button>
-								<button class="item" class:selected={style == 'default'} onclick={() => (style = 'default')}>Default</button>
+								<button class="item" class:selected={demoStyle == 'website'} onclick={() => (demoStyle = 'website')}>Website</button>
+								<button class="item" class:selected={demoStyle == 'light'} onclick={() => (demoStyle = 'light')}>Light</button>
+								<button class="item" class:selected={demoStyle == 'dark'} onclick={() => (demoStyle = 'dark')}>Dark</button>
+								<button class="item" class:selected={demoStyle == 'default'} onclick={() => (demoStyle = 'default')}>Default</button>
 							</div>
 						{/snippet}
 					</Menu>
@@ -385,12 +458,12 @@
 						{/snippet}
 						{#snippet menu()}
 							<div class="menu options shadow-large">
-								<button class="item" onclick={onDemoAutoUpdateClick}>
-									<Icon name={demoAutoUpdate ? 'check_box' : 'check_box_outline_blank'} size={22} />
+								<button class="item" onclick={onDataAutoUpdateClick}>
+									<Icon name={dataAutoUpdate ? 'check_box' : 'check_box_outline_blank'} size={22} />
 									<span>Auto Load</span>
 								</button>
-								<button class="item" onclick={onDemoTogglePopupsClick}>
-									<Icon name={demoTogglePopups ? 'check_box' : 'check_box_outline_blank'} size={22} />
+								<button class="item" onclick={onTogglePopupsClick}>
+									<Icon name={dataTogglePopups ? 'check_box' : 'check_box_outline_blank'} size={22} />
 									<span>Show Popups</span>
 								</button>
 							</div>
@@ -400,6 +473,9 @@
 			{/if}
 
 			<div class="side">
+				<button class="button shadow-small" onmousedown={onDataRefresh}>
+					<Icon name={'refresh'} size={22} />
+				</button>
 				<button class="button shadow-small" onmousedown={onZoomIn}>
 					<Icon name={'add'} size={22} />
 				</button>
@@ -408,7 +484,7 @@
 				</button>
 			</div>
 
-			{#if loading}
+			{#if dataLoading}
 				<div class="progess" transition:fade={{ duration: 125, delay: 50 }}>
 					<Progress />
 				</div>

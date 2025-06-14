@@ -13,6 +13,7 @@ export enum Demo {
 	CityExpert = 'cityexpert'
 }
 
+export type DemoMap = 'maplibre' | 'google';
 export type DemoSize = 'small' | 'large';
 export type DemoStyle = 'website' | 'light' | 'dark' | 'default';
 
@@ -30,33 +31,6 @@ export function getDemoName(demo: Demo) {
 			return 'srbija-nekretnine.org';
 		case Demo.CityExpert:
 			return 'cityexpert.rs';
-	}
-}
-
-export function getDemoStyle(demo: Demo, style: DemoStyle): string | maplibregl.StyleSpecification {
-	switch (demo) {
-		case Demo.SrbijaNekretnine: {
-			return 'https://tiles.openfreemap.org/styles/bright';
-		}
-		case Demo.CityExpert: {
-			return 'demo/cityexpert.style.json';
-		}
-		default: {
-			switch (style) {
-				case 'website': {
-					return app.theme.get() == 'dark' ? MapLibreDarkStyle : MapLibreStyleLight;
-				}
-				case 'light': {
-					return MapLibreStyleLight;
-				}
-				case 'dark': {
-					return MapLibreDarkStyle;
-				}
-				case 'default': {
-					return 'https://tiles.openfreemap.org/styles/liberty';
-				}
-			}
-		}
 	}
 }
 
@@ -130,7 +104,9 @@ export function getDemoConfiguration(demo: Demo): MapConfiguration {
 				pin: {
 					fade: true
 				},
-				api: '/api/popup/states'
+				states: {
+					api: '/api/popup/states'
+				}
 			};
 		}
 		case Demo.CityExpert: {
@@ -138,7 +114,9 @@ export function getDemoConfiguration(demo: Demo): MapConfiguration {
 				pin: {
 					fade: false
 				},
-				api: '/api/popup/states'
+				states: {
+					api: '/api/popup/states'
+				}
 			};
 		}
 	}
@@ -169,4 +147,33 @@ export function getPopupDimensions(demo: Demo, size: DemoSize): { width: number;
 
 export function isDemoCustom(demo: Demo) {
 	return demo == Demo.CityExpert || demo == Demo.SrbijaNekretnine;
+}
+
+export namespace MapLibre {
+	export function getDemoStyle(demo: Demo, style: DemoStyle): string | maplibregl.StyleSpecification {
+		switch (demo) {
+			case Demo.SrbijaNekretnine: {
+				return 'https://tiles.openfreemap.org/styles/bright';
+			}
+			case Demo.CityExpert: {
+				return 'demo/cityexpert.style.json';
+			}
+			default: {
+				switch (style) {
+					case 'website': {
+						return app.theme.get() == 'dark' ? MapLibreDarkStyle : MapLibreStyleLight;
+					}
+					case 'light': {
+						return MapLibreStyleLight;
+					}
+					case 'dark': {
+						return MapLibreDarkStyle;
+					}
+					case 'default': {
+						return 'https://tiles.openfreemap.org/styles/liberty';
+					}
+				}
+			}
+		}
+	}
 }
