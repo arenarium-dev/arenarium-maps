@@ -27,9 +27,7 @@ export class GoogleMapsProvider implements MapProvider {
 		this.MapMarkerClass = mapMarkerClass;
 
 		this.map = new this.MapClass(container, {
-			...options,
-			zoomControl: false,
-			rotateControl: false
+			...options
 		});
 	}
 

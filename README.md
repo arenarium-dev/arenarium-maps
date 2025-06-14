@@ -1,6 +1,8 @@
 TODO:
 
 Add getStates to manager, just expose update/remove popups with PopupData
+Add domain restrictions to api keys
+
 Add booking/airbnb demo
 
 CUSTOMERS:

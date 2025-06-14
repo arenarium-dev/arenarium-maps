@@ -5,16 +5,13 @@
 	import PopupComponent from './components/Popup.svelte';
 
 	import { MapManager } from '$lib/main.js';
-	import type { MapPopup, MapPopupData, MapPopupState, MapProvider } from '$lib/main.js';
-
-	import { getStates } from '@workspace/shared/src/popup/compute/states.js';
-	import { testStates } from '@workspace/shared/src/popup/compute/test.js';
+	import type { MapPopup, MapPopupData, MapProvider } from '$lib/main.js';
 
 	let Mode = {
 		MapLibre: 'maplibre',
 		Google: 'google'
 	};
-	let mode: string = Mode.Google;
+	let mode: string = Mode.MapLibre;
 
 	let mapElement: HTMLElement;
 	let mapProvider: MapProvider;
@@ -37,7 +34,7 @@
 			}
 		}
 
-		mapManager = new MapManager(mapProvider);
+		mapManager = new MapManager('KEY', mapProvider);
 		mapManager.setColors('purple', 'white', 'black');
 	});
 
@@ -264,18 +261,9 @@
 
 		const popups = new Array<MapPopup>(data.length);
 
-		let now = performance.now();
-		const states = await getPopupStates(data);
-		console.log(`[STATES CALCULATION ${data.length}] ${performance.now() - now}ms`);
-
-		now = performance.now();
-		testStates(mapProvider.parameters, data, states);
-		console.log(`[STATES TEST ${data.length}] ${performance.now() - now}ms`);
-
 		for (let i = 0; i < data.length; i++) {
 			popups[i] = {
 				data: data[i],
-				state: states[i],
 				callbacks: {
 					body: getPopupBody,
 					pin: getPopupPin
@@ -284,38 +272,6 @@
 		}
 
 		return await new Promise((resolve) => resolve(popups));
-	}
-
-	async function getPopupStates(data: MapPopupData[]): Promise<MapPopupState[]> {
-		if (import.meta.env.DEV) {
-			switch (import.meta.env.MODE) {
-				case 'browser': {
-					return getStates(mapProvider.parameters, data);
-				}
-				default: {
-					return await getStatesApi(data);
-				}
-			}
-		} else {
-			return await getStatesApi(data);
-		}
-	}
-
-	async function getStatesApi(data: MapPopupData[]): Promise<MapPopupState[]> {
-		const response = await fetch(`/api`, {
-			method: 'POST',
-			body: JSON.stringify({
-				parameters: mapProvider.parameters,
-				data: data
-			})
-		});
-
-		if (!response.ok || !response.body) {
-			throw new Error('Failed to get markers');
-		}
-
-		const states: MapPopupState[] = await response.json();
-		return states;
 	}
 
 	async function getPopupBody(id: string): Promise<HTMLElement> {
@@ -358,9 +314,10 @@
 
 	//#endregion
 
-	//#region WASM
+	//#region Wasm
 
 	import { wasm } from '@workspace/shared/wasm/compute/states.js';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
 	function runWasm() {
 		const wasmBinaryString = atob(wasm);

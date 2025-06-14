@@ -79,7 +79,6 @@ export const mapPopupContentCallbackSchema = z.function().args(z.string()).retur
 
 export const mapPopupSchema = z.object({
 	data: mapPopupDataSchema,
-	state: mapPopupStateSchema,
 	callbacks: z.object({
 		body: mapPopupContentCallbackSchema,
 		pin: mapPopupContentCallbackSchema.optional()
@@ -90,6 +89,7 @@ export const mapPopupsSchema = z.array(mapPopupSchema);
 
 export const mapPopupStatesRequestSchema = z.object({
 	key: z.string(),
+	parameters: mapProviderParametersSchema,
 	data: z.array(mapPopupDataSchema)
 });
 
