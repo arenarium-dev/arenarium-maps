@@ -5,5 +5,8 @@ export default defineConfig({
 	build: {
 		chunkSizeWarningLimit: 5000
 	},
-	plugins: [sveltekit()]
+	plugins: [sveltekit()],
+	ssr: {
+		noExternal: ['@googlemaps/js-api-loader']
+	}
 });
