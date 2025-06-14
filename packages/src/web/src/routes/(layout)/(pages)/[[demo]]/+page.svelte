@@ -33,8 +33,8 @@
 	import maplibregl from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 
-	import { MapManager, type MapPopup, type MapPopupData, type MapPopupState } from '@arenarium/maps';
-	import { MapDarkStyle, MapLibreProvider, MapStyleLight } from '@arenarium/maps/maplibre';
+	import { MapManager, type MapPopup, type MapPopupData } from '@arenarium/maps';
+	import { MapLibreProvider, MapLibreDarkStyle, MapLibreStyleLight } from '@arenarium/maps/maplibre';
 	import '@arenarium/maps/dist/style.css';
 
 	let mapManager: MapManager;
@@ -49,7 +49,7 @@
 		try {
 			mapProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
 				container: 'map',
-				style: MapDarkStyle,
+				style: MapLibreDarkStyle,
 				center: { lat: 51.505, lng: -0.09 },
 				zoom: 4
 			});
@@ -59,10 +59,10 @@
 				zoom = mapLibre.getZoom();
 			});
 
-			mapManager = new MapManager(mapProvider);
+			mapManager = new MapManager("KEY", mapProvider);
 			mapManager.setColors('darkgreen', 'white', 'black');
 
-			mapLibre.setStyle(app.theme.get() == 'dark' ? MapDarkStyle : MapStyleLight);
+			mapLibre.setStyle(app.theme.get() == 'dark' ? MapLibreDarkStyle : MapLibreStyleLight);
 			mapLibre.on('load', () => {
 				mapLoaded = true;
 			});
