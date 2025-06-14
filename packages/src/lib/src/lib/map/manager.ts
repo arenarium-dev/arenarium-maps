@@ -55,7 +55,7 @@ class MapManager {
 		this.configurationPinFade = configuration?.pin?.fade ?? true;
 		this.configurationPinMaxCount = configuration?.pin?.maxCount ?? Math.max(MAP_CIRCLES_MAX_COUNT, 8 * navigator.hardwareConcurrency);
 		this.configurationPinMaxZoomDelta = configuration?.pin?.maxZoom ?? MAP_CIRCLES_MAX_ZOOM;
-		this.configurationApiUrl = configuration?.api ?? API_URL;
+		this.configurationApiUrl = configuration?.states?.api ?? API_URL;
 
 		animation.setLimit(configuration?.animation?.queue?.limit ?? 8 * navigator.hardwareConcurrency);
 	}
@@ -80,6 +80,7 @@ class MapManager {
 			};
 			const popupStatesResponse = await fetch(this.configurationApiUrl, {
 				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(popupStatesRequest)
 			});
 			if (!popupStatesResponse.ok || !popupStatesResponse.body) {
