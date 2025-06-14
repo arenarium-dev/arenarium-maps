@@ -354,7 +354,9 @@ class MapPopupComponent<T> {
 	}
 
 	updateZIndex() {
-		throw new Error('Update z-index not implemented');
+		if (this.marker == undefined) throw new Error('Failed to update marker z-index');
+
+		this.marker.update(this.getZindex());
 	}
 
 	updateMap(contains: boolean) {
@@ -405,13 +407,6 @@ class MapPopupCircle extends MapPopupComponent<ReturnType<typeof MapMarkerCircle
 			target: this.element,
 			props: { id: this.id + '_circle', priority: this.zoom * this.provider.parameters.zoomScale }
 		});
-	}
-
-	updateZIndex() {
-		const element = this.element;
-		if (!element) return;
-
-		element.style.zIndex = this.getZindex().toString();
 	}
 
 	updateMap(contains: boolean) {
@@ -510,14 +505,6 @@ class MapPopupMarker extends MapPopupComponent<ReturnType<typeof MapMarker>> {
 		this.states = state[1].map((s) => [s[0], Angles.DEGREES[s[1]]]);
 	}
 
-	updateZIndex() {
-		const element = this.element;
-		if (!element) return;
-
-		const zIndex = this.getZindex() + MAP_MARKERS_Z_INDEX_OFFSET;
-		element.style.zIndex = zIndex.toString();
-	}
-
 	updateMap(contains: boolean) {
 		super.updateMap(contains);
 
@@ -553,6 +540,10 @@ class MapPopupMarker extends MapPopupComponent<ReturnType<typeof MapMarker>> {
 		const state = this.states.findLast((s) => s[0] <= zoom);
 		if (!state) throw new Error('Angle not found');
 		return state[1];
+	}
+
+	getZindex(): number {
+		return super.getZindex() + MAP_MARKERS_Z_INDEX_OFFSET;
 	}
 
 	setCollapsed(value: boolean) {

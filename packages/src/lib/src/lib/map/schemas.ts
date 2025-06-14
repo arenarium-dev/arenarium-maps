@@ -45,7 +45,8 @@ export const mapProviderMarkerSchema = z.object({
 	instance: z.any(),
 	inserted: z.function().args().returns(z.boolean()),
 	insert: z.function().args().returns(z.void()),
-	remove: z.function().args().returns(z.void())
+	remove: z.function().args().returns(z.void()),
+	update: z.function().args(z.number()).returns(z.void())
 });
 
 export const mapProviderSchema = z.object({

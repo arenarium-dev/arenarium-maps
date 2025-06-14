@@ -68,7 +68,8 @@ export class MapLibreProvider implements MapProvider {
 			instance: marker,
 			inserted: () => marker._map != null,
 			insert: () => marker.addTo(this.map),
-			remove: () => marker.remove()
+			remove: () => marker.remove(),
+			update: (zIndex: number) => (marker.getElement().style.zIndex = zIndex.toString())
 		};
 	}
 }

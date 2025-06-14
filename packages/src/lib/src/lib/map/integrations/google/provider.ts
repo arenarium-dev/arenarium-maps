@@ -57,7 +57,8 @@ export class GoogleMapsProvider implements MapProvider {
 			instance: marker,
 			inserted: () => marker.map != undefined && marker.map == this.map,
 			insert: () => (marker.map = this.map),
-			remove: () => (marker.map = undefined)
+			remove: () => (marker.map = undefined),
+			update: (zIndex: number) => (marker.zIndex = zIndex)
 		};
 	}
 }
