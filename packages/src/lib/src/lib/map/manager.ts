@@ -25,6 +25,8 @@ const MAP_MARKERS_Z_INDEX_OFFSET = 1000000;
 const MAP_CIRCLES_MAX_ZOOM = 2;
 const MAP_CIRCLES_MAX_COUNT = 128;
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 class MapManager {
 	private key: string;
 	private provider: MapProvider;
@@ -39,6 +41,7 @@ class MapManager {
 	private configurationPinFade = false;
 	private configurationPinMaxCount = 0;
 	private configurationPinMaxZoomDelta = 0;
+	private configurationApiUrl = API_URL;
 
 	constructor(apiKey: string, mapProvider: MapProvider, mapConfiguration?: MapConfiguration) {
 		mapProviderSchema.parse(mapProvider);
@@ -52,6 +55,7 @@ class MapManager {
 		this.configurationPinFade = configuration?.pin?.fade ?? true;
 		this.configurationPinMaxCount = configuration?.pin?.maxCount ?? Math.max(MAP_CIRCLES_MAX_COUNT, 8 * navigator.hardwareConcurrency);
 		this.configurationPinMaxZoomDelta = configuration?.pin?.maxZoom ?? MAP_CIRCLES_MAX_ZOOM;
+		this.configurationApiUrl = configuration?.api ?? API_URL;
 
 		animation.setLimit(configuration?.animation?.queue?.limit ?? 8 * navigator.hardwareConcurrency);
 	}
@@ -74,7 +78,7 @@ class MapManager {
 				parameters: this.provider.parameters,
 				data: popups.map((p) => p.data)
 			};
-			const popupStatesResponse = await fetch(import.meta.env.VITE_API_URL, {
+			const popupStatesResponse = await fetch(this.configurationApiUrl, {
 				method: 'POST',
 				body: JSON.stringify(popupStatesRequest)
 			});

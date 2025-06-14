@@ -18,7 +18,8 @@ export const mapConfigurationSchema = z.object({
 				})
 				.optional()
 		})
-		.optional()
+		.optional(),
+	api: z.string().optional()
 });
 
 export type MapConfiguration = z.infer<typeof mapConfigurationSchema>;
