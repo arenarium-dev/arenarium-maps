@@ -59,7 +59,9 @@
 				zoom = mapLibre.getZoom();
 			});
 
-			mapManager = new MapManager("KEY", mapProvider);
+			mapManager = new MapManager('KEY', mapProvider, {
+				api: '/api/popup/states'
+			});
 			mapManager.setColors('darkgreen', 'white', 'black');
 
 			mapLibre.setStyle(app.theme.get() == 'dark' ? MapLibreDarkStyle : MapLibreStyleLight);
@@ -233,23 +235,11 @@
 			// Update the loaded data
 			dataDelta.forEach((d) => demoPopupData.set(d.id, d));
 
-			// Get the new states
-			const statesData = Array.from(demoPopupData.values());
-			const statesRequest = {
-				parameters: mapProvider.parameters,
-				data: statesData
-			};
-			const states = await Fetch.that<MapPopupState[]>(`/api/popup/${demo}/states`, {
-				method: 'POST',
-				body: statesRequest
-			});
-
 			// Create the new popups
 			const popups = new Array<MapPopup>();
-			for (let i = 0; i < states.length; i++) {
+			for (let i = 0; i < dataDelta.length; i++) {
 				const popup: MapPopup = {
-					data: statesData[i],
-					state: states[i],
+					data: dataDelta[i],
 					callbacks: {
 						body: getPopupBody,
 						pin: getPopupPin

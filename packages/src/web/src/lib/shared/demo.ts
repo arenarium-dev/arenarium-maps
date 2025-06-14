@@ -2,7 +2,7 @@ import { app } from '$lib/client/state/app.svelte';
 
 import type maplibregl from 'maplibre-gl';
 
-import { MapDarkStyle, MapStyleLight } from '@arenarium/maps/maplibre';
+import { MapLibreDarkStyle, MapLibreStyleLight } from '@arenarium/maps/maplibre';
 import type { MapConfiguration } from '@arenarium/maps';
 
 export enum Demo {
@@ -44,13 +44,13 @@ export function getDemoStyle(demo: Demo, style: DemoStyle): string | maplibregl.
 		default: {
 			switch (style) {
 				case 'website': {
-					return app.theme.get() == 'dark' ? MapDarkStyle : MapStyleLight;
+					return app.theme.get() == 'dark' ? MapLibreDarkStyle : MapLibreStyleLight;
 				}
 				case 'light': {
-					return MapStyleLight;
+					return MapLibreStyleLight;
 				}
 				case 'dark': {
-					return MapDarkStyle;
+					return MapLibreDarkStyle;
 				}
 				case 'default': {
 					return 'https://tiles.openfreemap.org/styles/liberty';
