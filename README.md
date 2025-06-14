@@ -1,6 +1,6 @@
 TODO:
 
-Add getStates to manager, just expose update/remove popups with PopupData
+Put evenryting in same project, deploy lib and api at the same time
 Add domain restrictions to api keys
 
 Add booking/airbnb demo
