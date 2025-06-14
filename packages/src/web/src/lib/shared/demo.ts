@@ -129,14 +129,16 @@ export function getDemoConfiguration(demo: Demo): MapConfiguration {
 			return {
 				pin: {
 					fade: true
-				}
+				},
+				api: '/api/popup/states'
 			};
 		}
 		case Demo.CityExpert: {
 			return {
 				pin: {
 					fade: false
-				}
+				},
+				api: '/api/popup/states'
 			};
 		}
 	}

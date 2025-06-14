@@ -59,9 +59,7 @@
 				zoom = mapLibre.getZoom();
 			});
 
-			mapManager = new MapManager('KEY', mapProvider, {
-				api: '/api/popup/states'
-			});
+			mapManager = new MapManager('KEY', mapProvider);
 			mapManager.setColors('darkgreen', 'white', 'black');
 
 			mapLibre.setStyle(app.theme.get() == 'dark' ? MapLibreDarkStyle : MapLibreStyleLight);
