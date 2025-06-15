@@ -18,8 +18,7 @@ export class User {
 		if (!this.client) throw new Error('Client not initialized');
 
 		await this.client.signIn.social({
-			provider: 'github',
-			callbackURL: '/'
+			provider: 'google'
 		});
 	}
 

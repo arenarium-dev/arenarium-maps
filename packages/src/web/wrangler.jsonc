@@ -18,7 +18,9 @@
 	"vars": {
 		"AUTH_SECRET": "BxUBCbpAe3v8NQ5Yyd1OrQIeaH45p9NHXpGAAeKah2Ye",
 		"AUTH_GITHUB_ID": "Ov23lil6tiSRo1n39FEe",
-		"AUTH_GITHUB_SECRET": "53229d4a7f81f0d3be2a36860927bcf136224b46"
+		"AUTH_GITHUB_SECRET": "53229d4a7f81f0d3be2a36860927bcf136224b46",
+		"AUTH_GOOGLE_ID": "713270614741-opi0h85ese6s7iag3mtgi6lq6tp43o21.apps.googleusercontent.com",
+		"AUTH_GOOGLE_SECRET": "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"
 	},
 	"d1_databases": [
 		{
@@ -33,7 +35,9 @@
 			"vars": {
 				"AUTH_SECRET": "BxUBCbpAe3v8NQ5Yyd1OrQIeaH45p9NHXpGAAeKah2Ye",
 				"AUTH_GITHUB_ID": "Ov23lixPTsYP5DBtATkX",
-				"AUTH_GITHUB_SECRET": "edff8fa2b4abc64aede4e24d224b6086f264df37"
+				"AUTH_GITHUB_SECRET": "edff8fa2b4abc64aede4e24d224b6086f264df37",
+				"AUTH_GOOGLE_ID": "713270614741-opi0h85ese6s7iag3mtgi6lq6tp43o21.apps.googleusercontent.com",
+				"AUTH_GOOGLE_SECRET": "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"
 			},
 			"d1_databases": [
 				{
