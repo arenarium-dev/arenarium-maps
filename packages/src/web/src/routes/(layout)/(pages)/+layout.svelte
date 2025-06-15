@@ -13,6 +13,10 @@
 	onMount(() => {
 		app.initialize(page);
 	});
+
+	async function goHome() {
+		window.location.href = '/';
+	}
 </script>
 
 <svelte:head>
@@ -26,10 +30,10 @@
 
 <div class="body">
 	<div class="bar">
-		<a class="icon" href="/">
+		<a class="icon" href="/" onclick={goHome}>
 			<Icon name={'psychiatry'} size={24} />
 		</a>
-		<a class="title text" href="/">@arenarium/maps</a>
+		<a class="title text" href="/" onclick={goHome}>@arenarium/maps</a>
 		<div class="grow"></div>
 		<a class="text" href="/pricing">Pricing</a>
 		<a class="text" href="/docs">Docs</a>

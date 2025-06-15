@@ -37,11 +37,6 @@ export function getDemoName(demo: Demo) {
 
 export function getDemoColors(demo: Demo, style: DemoStyle): { background: string; primary: string; text: string } {
 	switch (demo) {
-		case Demo.Bookings: {
-			return app.theme.get() == 'dark'
-				? { background: 'var(--surface)', primary: 'lightblue', text: 'var(--on-surface)' }
-				: { background: 'var(--surface)', primary: 'darkblue', text: 'var(--on-surface)' };
-		}
 		case Demo.SrbijaNekretnine: {
 			return {
 				background: 'white',

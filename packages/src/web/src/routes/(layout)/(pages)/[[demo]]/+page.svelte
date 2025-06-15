@@ -302,7 +302,7 @@
 	function onDemoStyleClick(style: DemoStyle) {
 		const searchParams = page.url.searchParams;
 		searchParams.set('style', style);
-		goto(`/?${searchParams.toString()}`);
+		goto(`/${demo == Demo.Basic ? '' : demo}?${searchParams.toString()}`);
 	}
 
 	//#endregion
@@ -331,12 +331,6 @@
 			onDataRefresh();
 		}
 	});
-
-	function onDemoClick(demo: Demo) {
-		const searchParams = page.url.searchParams;
-		searchParams.set('demo', demo);
-		goto(`/?${searchParams.toString()}`);
-	}
 
 	async function onMapIdle() {
 		if (dataAutoUpdate && !dataLoaded) {
@@ -568,11 +562,11 @@
 					{/snippet}
 					{#snippet menu()}
 						<div class="menu demo shadow-large">
-							<a href="/" class="item" class:selected={demo == undefined}> Basic </a>
-							<a href="/{Demo.Rentals}" class="item" class:selected={demo == Demo.Rentals}>{getDemoName(Demo.Rentals)}</a>
-							<a href="/{Demo.Bookings}" class="item" class:selected={demo == Demo.Bookings}>{getDemoName(Demo.Bookings)}</a>
-							<a href="/{Demo.News}" class="item" inert>{getDemoName(Demo.News)}</a>
-							<a href="/{Demo.Events}" class="item" inert>{getDemoName(Demo.Events)}</a>
+							<a href="/?{page.url.searchParams}" class="item" class:selected={demo == undefined}> Basic </a>
+							<a href="/{Demo.Rentals}?{page.url.searchParams}" class="item" class:selected={demo == Demo.Rentals}>{getDemoName(Demo.Rentals)}</a>
+							<a href="/{Demo.Bookings}?{page.url.searchParams}" class="item" class:selected={demo == Demo.Bookings}>{getDemoName(Demo.Bookings)}</a>
+							<a href="/{Demo.News}?{page.url.searchParams}" class="item" inert>{getDemoName(Demo.News)}</a>
+							<a href="/{Demo.Events}?{page.url.searchParams}" class="item" inert>{getDemoName(Demo.Events)}</a>
 						</div>
 					{/snippet}
 				</Menu>
