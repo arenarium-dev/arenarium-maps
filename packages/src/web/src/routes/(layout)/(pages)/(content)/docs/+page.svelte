@@ -4,16 +4,11 @@
 
 <div class="page">
 	<div class="block">
-		<div class="title">Documentation is not up to date</div>
-		<div class="text">
-			The documentation is currently being updated. Please check back later or <a href="mailto:arenarium.dev@gmail.com?subject=Feedback">contact us</a> if you have any
-			questions or feedback.
-		</div>
 		<div class="title">Installation</div>
 		<div class="header">NPM</div>
 		<div class="text">To install the <code>@aranarium/maps</code> library using npm, run the following command in your project directory:</div>
 		<div class="highlight">
-			<Highlight language="bash" text={`npm install maplibre-gl @arenarium/maps`} />
+			<Highlight language="bash" text={`npm install @arenarium/maps`} />
 		</div>
 		<div class="text">Import the necessary module and CSS file into your project to begin using the map:</div>
 		<div class="highlight">
@@ -23,11 +18,11 @@
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-import * as arenarium from '@arenarium/maps';
+import { MapManager } from '@arenarium/maps';
 import '@arenarium/maps/dist/style.css';
 
 // Initialize and mount the map manager (further configuration details follow)
-const mapManager = new arenarium.MapManager(...);`}
+const mapManager = new MapManager(...);`}
 			/>
 		</div>
 		<div class="header">CDN</div>
@@ -60,9 +55,19 @@ const mapManager = new arenarium.MapManager(...);
 	<div class="block">
 		<div class="title">Usage</div>
 		<div class="header">Initialization</div>
-		<div class="text">To initialize the map, first add a container element to your HTML where the map will be rendered:</div>
+		<div class="text">
+			To initialize the map, first add a container element to your HTML where the map will be rendered. Then depending on the map library used there are
+			different instructions:
+		</div>
 		<div class="highlight">
 			<Highlight language="xml" text={`<div id="map"></div>`} />
+		</div>
+		<div class="header">MapLibre GL</div>
+		<div class="text">
+			First, install the <code>maplibre-gl</code> library:
+		</div>
+		<div class="highlight">
+			<Highlight language="bash" text={`npm install maplibre-gl`} />
 		</div>
 		<div class="text">
 			Next, use the <code>MapManager</code> class which requires a <code>maplibre.Map</code> class, a <code>maplibre.Marker</code> class and a
@@ -76,31 +81,32 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 import { MapManager } from '@arenarium/maps';
+import { MapLibreProvider } from '@arenarium/maps/maplibre';
 import '@arenarium/maps/dist/style.css';
 
-// The map manager used for managing the map popups
-const mapManager = new MapManager(maplibregl.Map, maplibregl.Marker, {
+// Create a MapLibre provider instancece
+const mapLibreProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
     container: 'map',
-    center: { lat: 51.505, lng: -0.09 },
-    zoom: 13,
 	...
 });
 
-// The maplibre instance used for interacting with the map
-const mapLibre = mapManager.maplibre;`}
+// Initialize the map manager with the provider
+const mapManager = new MapManager('YOUR_API_KEY', mapLibreProvider);
+
+// Access the MapLibre instance for direct map interactions
+const mapLibre = mapLibreProvider.getMap();`}
 			/>
-		</div>
-		<div class="header">Styles</div>
-		<div class="text">
-			To set the colors used by the map and popups, use the <code>setColors</code> method. The first argument is the primary color, the second is the background,
-			and the third is the text color.
-		</div>
-		<div class="highlight">
-			<Highlight language="javascript" text={`mapManager.setColors('darkgreen', 'white', 'black');`} />
 		</div>
 		<div class="text">You can change the map's visual appearance by setting a predefined dark or light theme:</div>
 		<div class="highlight">
-			<Highlight language="javascript" text={`mapLibre.setStyle(arenarium.MapDarkStyle);`} />
+			<Highlight
+				language="javascript"
+				text={`
+import { MapLibreDarkStyle, MapLibreLightStyle } from '@arenarium/maps/maplibre';
+
+mapLibre.setStyle(MapLibreDarkStyle); // or MapLibreLightStyle
+`}
+			/>
 		</div>
 		<div class="text">
 			Alternatively, you can apply a custom map style by providing a URL to a JSON file that adheres to the
@@ -110,68 +116,71 @@ const mapLibre = mapManager.maplibre;`}
 		<div class="highlight">
 			<Highlight language="javascript" text={`mapLibre.setStyle('https://tiles.openfreemap.org/styles/liberty.json');`} />
 		</div>
-
-		<div class="header">Popups</div>
-		<div class="text">To display interactive popups on the map, you first need to define an array of <code>MapPopupData</code> objects:</div>
+		<div class="header">Google Maps</div>
+		<div class="text">First, install the <code>@googlemaps/js-api-loader</code> library:</div>
+		<div class="highlight">
+			<Highlight language="bash" text={`npm install @googlemaps/js-api-loader`} />
+		</div>
+		<div class="text">To use Google Maps, you'll need to load the Google Maps JavaScript API and create a Google Maps provider instance.</div>
 		<div class="highlight">
 			<Highlight
 				language="javascript"
 				text={`
-import { type MapPopupData } from '@arenarium/maps';
+import { Loader } from '@googlemaps/js-api-loader';
 
-const popupData: MapPopupData[] = [];
+import { MapManager } from '@arenarium/maps';
+import { GoogleMapsProvider } from '@arenarium/maps/google';
+import '@arenarium/maps/dist/style.css';
 
-for (let i = 0; i < count; i++) {
-    popupData.push({
-        // A unique identifier for the popup
-        id: ...,
-        // The ranking of the popup, used for visual prioritization
-        rank: ..,
-        // The latitude of the popup's location
-        lat: ...,
-        // The longitude of the popup's location
-        lng: ...,
-        // The desired height of the popup's content area
-        height: ...,
-        // The desired width of the popup's content area
-        width: ...
-    });
-}`}
-			/>
-		</div>
-		<div class="text">
-			Next, retrieve the dynamic state information for these popups using the API. You will need your API key, which can be found on your <a href="/keys"
-				>API Keys</a
-			> page after signing in.
-		</div>
-		<div class="highlight">
-			<Highlight
-				language="javascript"
-				text={`
-import { type MapPopupState, type MapPopupStatesRequest } from '@arenarium/maps';
-
-const body: MapPopupStatesRequest = {
-    // Your Arenarium API key
-    key: 'YOUR_API_KEY',
-    // The array of popup data
-    data: popupData,
-};
-
-const response = await fetch('https://arenarium.dev/api/public/v1/popup/states', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
+// Load Google Maps API
+const loader = new Loader({
+	apiKey: 'YOUR_GOOGLE_MAPS_API_KEY',
+	version: 'weekly'
 });
 
-const popupStates: MapPopupState[] = await response.json();
+// Import required libraries
+const mapsLibrary = await loader.importLibrary('maps');
+const markerLibrary = await loader.importLibrary('marker');
+
+// Create a Google Maps provider instance
+const mapElement = document.getElementById('map')!;
+const mapGoogleProvider = new GoogleMapsProvider(mapsLibrary.Map, markerLibrary.AdvancedMarkerElement, mapElement, {
+	mapId: 'YOUR_GOOGLE_MAPS_MAP_ID', // For enabling advanced marker elements
+	...
+});
+
+// Initialize the map manager with the provider
+const mapManager = new MapManager('YOUR_API_KEY', mapGoogleProvider);
+
+// Access the Google Maps instance for direct map interactions
+const mapGoogle = mapGoogleProvider.getMap();
 `}
 			/>
 		</div>
 		<div class="text">
-			Finally, combine the <code>MapPopupData</code> and <code>MapPopupState</code> arrays to create an array of <code>MapPopup</code> objects. For each
-			popup, provide content rendering callbacks for the body and optionally for a custom pin. These callbacks should return a <code>HTMLElement</code>.
-			Use the <code>updatePopups</code> method on the map instance to display or update the popups. This method efficiently adds new popups and updates existing
-			ones based on their IDs. Popups not present in the provided array will remain on the map. This approach is designed for continuous updates of map popups.
+			You can change the map's visual appearance by using the predefined styles in combination with custom <code>StyledMapType</code>:
+		</div>
+		<Highlight
+			language="javascript"
+			text={`
+import { GoogleMapsDarkStyle, GoogleMapsLightStyle } from '@arenarium/maps/google';
+
+const mapTypeLight = new google.maps.StyledMapType(GoogleMapsLightStyle, { name: 'Light Map' });
+const mapTypeDark = new google.maps.StyledMapType(GoogleMapsDarkStyle, { name: 'Dark Map' });
+
+mapGoogle.mapTypes.set("light-id", mapTypeLight);
+mapGoogle.mapTypes.set("dark-id", mapTypeDark);
+
+mapGoogle.setMapTypeId("light-id"); // or "dark-id" for dark theme
+`}
+		/>
+
+		<div class="header">Popups</div>
+		<div class="text">
+			To display interactive popups on the map, you first need to define an array of <code>MapPopup</code> objects. Provide content rendering callbacks
+			for the body and optionally for a custom pin. These callbacks should return a <code>HTMLElement</code>. Use the
+			<code>updatePopups</code> method on the map instance to display or update the popups. This method efficiently adds new popups and updates existing ones
+			based on their IDs. Popups not present in the provided array will remain on the map. This approach is designed for continuous updates of map popups.
 		</div>
 		<div class="highlight">
 			<Highlight
@@ -183,8 +192,22 @@ const popups: MapPopup[] = [];
 
 for (let i = 0; i < count; i++) {
     popups.push({
-        data: popupData[i],
-        state: popupStates[i],
+        data: {
+			// A unique identifier for the popup
+			id: ...,
+			// The ranking of the popup, used for visual prioritization
+			rank: ..,
+			// The latitude of the popup's location
+			lat: ...,
+			// The longitude of the popup's location
+			lng: ...,
+			// The desired height of the popup's content area
+			height: ...,
+			// The desired width of the popup's content area
+			width: ...
+			// The desired padding of the popup's content area
+			padding: ...
+    	},
         callbacks: {
             // Callback function that returns the HTMLElement object for the popup body (required)
             body: async (id) => { ... }
@@ -197,13 +220,20 @@ for (let i = 0; i < count; i++) {
 await mapManager.updatePopups(popups);`}
 			/>
 		</div>
+		<div class="text">
+			To set the colors used by the map and popups, use the <code>setColors</code> method. The first argument is the primary color, the second is the background,
+			and the third is the text color.
+		</div>
+		<div class="highlight">
+			<Highlight language="javascript" text={`mapManager.setColors('darkgreen', 'white', 'black');`} />
+		</div>
 		<div class="text">To remove all popups from the map, use the <code>removePopups</code> method:</div>
 		<div class="highlight">
-			<Highlight language="javascript" text={`await mapManager.removePopups();`} />
+			<Highlight language="javascript" text={`mapManager.removePopups();`} />
 		</div>
 		<div class="text">To toggle the display of popups, use the <code>togglePopups</code> method:</div>
 		<div class="highlight">
-			<Highlight language="javascript" text={`await mapManager.togglePopups([{ id: 'id', toggled: true }]);`} />
+			<Highlight language="javascript" text={`mapManager.togglePopups([{ id: 'id', toggled: true }]);`} />
 		</div>
 		<div class="title" id="about">About</div>
 		<div class="text">

@@ -2,6 +2,7 @@
 	import { mount, onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 	import Menu from '$lib/client/components/utils/Menu.svelte';
@@ -150,7 +151,6 @@
 	import { GoogleMapDarkStyle, GoogleMapLightStyle, GoogleMapsProvider } from '@arenarium/maps/google';
 
 	import { Loader } from '@googlemaps/js-api-loader';
-	import { goto } from '$app/navigation';
 
 	let mapGoogle: google.maps.Map;
 	let mapGoogleProvider: GoogleMapsProvider;
