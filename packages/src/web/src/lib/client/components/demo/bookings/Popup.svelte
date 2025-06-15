@@ -34,15 +34,15 @@
 		</div>
 		<div class="text">
 			<div class="line top">
-				<span class="type">{type}</span>
-				<span class="star">★</span>
-				<span class="rating">{rating.toFixed(1)} ({votes})</span>
+				<div class="type">{type}</div>
+				<div class="star">★</div>
+				<div class="rating">{rating.toFixed(1)} ({votes})</div>
 			</div>
 			<div class="line bottom">
-				<span class="price">
+				<div class="price">
 					${price}
-				</span>
-				<span> for {days} night{days == 1 ? '' : 's'}</span>
+				</div>
+				<div>for {days} night{days == 1 ? '' : 's'}</div>
 			</div>
 		</div>
 	</button>
@@ -115,7 +115,7 @@
 				&.bottom {
 					font-size: 0.9m;
 
-					span {
+					div {
 						opacity: 0.8;
 					}
 
