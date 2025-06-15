@@ -146,7 +146,7 @@
 			.nav {
 				opacity: 0;
 				position: absolute;
-				top: 52px;
+				top: 48px;
 				width: 20px;
 				height: 20px;
 				display: flex;

@@ -11,6 +11,8 @@
 	import BasicPopup from '$lib/client/components/demo/basic/Popup.svelte';
 	import RentalPopup from '$lib/client/components/demo/rentals/Popup.svelte';
 	import RentalPin from '$lib/client/components/demo/rentals/Pin.svelte';
+	import BookingsPopup from '$lib/client/components/demo/bookings/Popup.svelte';
+	import BookingsPin from '$lib/client/components/demo/bookings/Pin.svelte';
 	import SrbijaNekretninePopup from '$lib/client/components/demo/srbija-nekretnine/Popup.svelte';
 	import CityExpertPopup from '$lib/client/components/demo/cityexpert/Popup.svelte';
 	import CityExpertPin from '$lib/client/components/demo/cityexpert/Pin.svelte';
@@ -434,6 +436,9 @@
 				case Demo.Rentals:
 					mount(RentalPopup, { target: element, props: { id, width: popup.width, height: popup.height } });
 					break;
+				case Demo.Bookings:
+					mount(BookingsPopup, { target: element, props: { id, width: popup.width, height: popup.height } });
+					break;
 				case Demo.SrbijaNekretnine:
 					mount(SrbijaNekretninePopup, { target: element, props: { id, width: popup.width, height: popup.height } });
 					break;
@@ -455,6 +460,9 @@
 			switch (demo) {
 				case Demo.Rentals:
 					mount(RentalPin, { target: element, props: { id } });
+					break;
+				case Demo.Bookings:
+					mount(BookingsPin, { target: element, props: { id } });
 					break;
 				case Demo.CityExpert:
 					mount(CityExpertPin, { target: element, props: { id, type: popup.type } });
@@ -517,7 +525,7 @@
 					{#snippet button()}
 						<button class="button shadow-small">
 							<Icon name={'map'} size={22} />
-							<span>Map</span>
+							<span class="text">Map</span>
 						</button>
 					{/snippet}
 					{#snippet menu()}
@@ -531,7 +539,7 @@
 					{#snippet button()}
 						<button class="button shadow-small">
 							<Icon name={'palette'} size={22} />
-							<span>Style</span>
+							<span class="text">Style</span>
 						</button>
 					{/snippet}
 					{#snippet menu()}
@@ -547,13 +555,14 @@
 					{#snippet button()}
 						<button class="button shadow-small">
 							<Icon name={'database'} size={22} />
-							<span>Data</span>
+							<span class="text">Data</span>
 						</button>
 					{/snippet}
 					{#snippet menu()}
 						<div class="menu demo shadow-large">
 							<a href="/" class="item" class:selected={page.params.demo == undefined}> Basic </a>
 							<a href="/{Demo.Rentals}" class="item" class:selected={page.params.demo == Demo.Rentals}>{getDemoName(Demo.Rentals)}</a>
+							<a href="/{Demo.Bookings}" class="item" class:selected={page.params.demo == Demo.Bookings}>{getDemoName(Demo.Bookings)}</a>
 							<a href="/{Demo.News}" class="item" inert>{getDemoName(Demo.News)}</a>
 							<a href="/{Demo.Events}" class="item" inert>{getDemoName(Demo.Events)}</a>
 						</div>
@@ -563,7 +572,7 @@
 					{#snippet button()}
 						<div class="button shadow-small">
 							<Icon name={'tune'} size={22} />
-							<span>Tune</span>
+							<span class="text">Tune</span>
 						</div>
 					{/snippet}
 					{#snippet menu()}
@@ -740,7 +749,23 @@
 	@media (max-width: 640px) {
 		.container {
 			.side {
-				display: none;
+				bottom: 64px;
+			}
+
+			.top {
+				.button {
+					width: 36px;
+					justify-content: center;
+					padding: 0px;
+
+					.text {
+						display: none;
+					}
+				}
+
+				.menu {
+					margin-left: 8px !important;
+				}
 			}
 		}
 	}

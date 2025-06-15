@@ -4,6 +4,7 @@ import type { MapConfiguration } from '@arenarium/maps';
 
 export enum Demo {
 	Rentals = 'rentals',
+	Bookings = 'bookings',
 	Events = 'events',
 	News = 'news',
 	SrbijaNekretnine = 'srbija-nekretnine',
@@ -20,6 +21,8 @@ export function getDemoName(demo: Demo) {
 			return 'Basic';
 		case Demo.Rentals:
 			return 'Rentals';
+		case Demo.Bookings:
+			return 'Bookings';
 		case Demo.Events:
 			return 'Events';
 		case Demo.News:
@@ -33,6 +36,11 @@ export function getDemoName(demo: Demo) {
 
 export function getDemoColors(demo: Demo, style: DemoStyle): { background: string; primary: string; text: string } {
 	switch (demo) {
+		case Demo.Bookings: {
+			return app.theme.get() == 'dark'
+				? { background: 'var(--surface)', primary: 'lightblue', text: 'var(--on-surface)' }
+				: { background: 'var(--surface)', primary: 'darkblue', text: 'var(--on-surface)' };
+		}
 		case Demo.SrbijaNekretnine: {
 			return {
 				background: 'white',
@@ -96,10 +104,10 @@ export function getDemoPosition(demo: Demo): { lat: number; lng: number; zoom: n
 
 export function getDemoConfiguration(demo: Demo): MapConfiguration {
 	switch (demo) {
-		default: {
+		case Demo.Bookings: {
 			return {
 				pin: {
-					fade: true
+					fade: false
 				},
 				states: {
 					api: '/api/popup/states'
@@ -109,7 +117,17 @@ export function getDemoConfiguration(demo: Demo): MapConfiguration {
 		case Demo.CityExpert: {
 			return {
 				pin: {
-					fade: false
+					fade: true
+				},
+				states: {
+					api: '/api/popup/states'
+				}
+			};
+		}
+		default: {
+			return {
+				pin: {
+					fade: true
 				},
 				states: {
 					api: '/api/popup/states'
@@ -134,6 +152,13 @@ export function getPopupDimensions(demo: Demo, size: DemoSize): { width: number;
 					return { width: 128, height: 104, padding: 8 };
 				case 'small':
 					return { width: 96, height: 80, padding: 6 };
+			}
+		case Demo.Bookings:
+			switch (size) {
+				case 'large':
+					return { width: 140, height: 104, padding: 8 };
+				case 'small':
+					return { width: 120, height: 90, padding: 6 };
 			}
 		case Demo.SrbijaNekretnine:
 			return { width: 156, height: 128, padding: 8 };
