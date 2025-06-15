@@ -1,9 +1,7 @@
 TODO:
 
-Put evenryting in same project, deploy lib and api at the same time
 Add domain restrictions to api keys
-
-Add booking/airbnb demo
+Put evenryting in same project, deploy lib and api at the same time
 
 CUSTOMERS:
 

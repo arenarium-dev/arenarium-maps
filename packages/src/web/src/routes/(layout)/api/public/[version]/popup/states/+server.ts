@@ -50,6 +50,12 @@ export const POST: RequestHandler = async (event) => {
 		});
 		if (!dbApiKey) return response(404, 'API key not found');
 
+		// Check if the request domain is allowed
+		if (dbApiKey.domains) {
+			const domains = dbApiKey.domains.split(',');
+			if (!domains.includes(event.url.hostname)) return response(403, 'Request not allowed for this domain!');
+		}
+
 		// Chech the api key rate limit
 		if (dbApiKey.unlimited != true) {
 			// Check is the request itself is larger than the limit

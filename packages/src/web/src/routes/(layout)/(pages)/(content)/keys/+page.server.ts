@@ -22,6 +22,7 @@ export const load: PageServerLoad = async (event) => {
 	const apiKeys = dbUserApiKeys.map((dbUserKey) => ({
 		key: dbUserKey.key,
 		name: dbUserKey.name,
+		domains: dbUserKey.domains ? dbUserKey.domains.split(',') : [],
 		date: dbUserKey.createdAt,
 		usage: dbUserKey.apiKeyUsages.reduce((acc, usage) => acc + usage.count, 0) ?? 0,
 		active: dbUserKey.active

@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { Fetch } from '$lib/client/core/fetch';
-	import { nameSchema } from '$lib/shared/validation';
+	import { nameSchema, domainsSchema } from '$lib/shared/validation';
 
-	let { success, key, name } = $props<{ success: Function; key: string; name: string }>();
+	let { success, key, name, domains } = $props<{ success: Function; key: string; name: string; domains: string[] }>();
 
 	let title = $derived(key ? 'Edit API Key' : 'Create API Key');
 	let button = $derived(key ? 'Save' : 'Create');
 
 	let nameValue = $state<string>(name);
+	let domainsValue = $state<string>(domains.join(', '));
 
 	let submitting = $state(false);
 	let error = $state('');
@@ -16,8 +17,19 @@
 		e.preventDefault();
 
 		const name = nameValue.trim();
-		if (!nameSchema.safeParse(nameValue).success) {
+		const nameResult = nameSchema.safeParse(name);
+		if (!nameResult.success) {
 			error = 'API Key name cannot be empty.';
+			return;
+		}
+
+		const domains = domainsValue
+			.split(', ')
+			.map((domain) => domain.trim())
+			.filter((domain) => domain);
+		const domainsResult = domainsSchema.safeParse(domains);
+		if (!domainsResult.success) {
+			error = domainsResult.error.message;
 			return;
 		}
 
@@ -30,12 +42,14 @@
 				method: 'POST',
 				body: {
 					key: key,
-					name: name
+					name: name,
+					domains: domains
 				}
 			});
 
 			// Handle Success
 			nameValue = '';
+			domainsValue = '';
 
 			success();
 		} catch (error: any) {
@@ -50,7 +64,7 @@
 <div class="container shadow-medium">
 	<h3>{title}</h3>
 
-	<form onsubmit={handleSubmit} aria-labelledby="header">
+	<form class="form" onsubmit={handleSubmit} aria-labelledby="header">
 		<input
 			type="text"
 			id="name"
@@ -60,6 +74,15 @@
 			aria-required="true"
 			aria-describedby={error ? 'error-message-desc' : undefined}
 			bind:value={nameValue}
+		/>
+
+		<input
+			type="text"
+			id="domains"
+			placeholder="example.com sub.example.com (optional)"
+			disabled={submitting}
+			aria-describedby={error ? 'error-message-desc' : undefined}
+			bind:value={domainsValue}
 		/>
 
 		{#if error}
@@ -94,61 +117,67 @@
 			font-weight: 600;
 		}
 
-		input[type='text'] {
-			width: 100%;
-			padding: 8px 12px;
-			border: 1px solid var(--outline-variant);
-			border-radius: 8px;
-			background-color: var(--surface-container-lowest);
-			color: var(--on-surface);
-			font-size: 14px;
-		}
-
-		input[type='text']:disabled {
-			cursor: not-allowed;
-		}
-
-		.buttons {
-			margin-top: 24px;
-			text-align: right;
+		.form {
 			display: flex;
-			justify-content: flex-end;
+			flex-direction: column;
+			gap: 12px;
 
-			.button {
-				border: none;
-				padding: 10px 18px;
+			input[type='text'] {
+				width: 100%;
+				padding: 8px 12px;
+				border: 1px solid var(--outline-variant);
 				border-radius: 8px;
-				cursor: pointer;
-				font-weight: 600;
-				border: 1px solid var(--on-primary-container);
-				background-color: var(--primary-container);
-				color: var(--on-primary-container);
-				transition: all ease-in-out 125ms;
+				background-color: var(--surface-container-lowest);
+				color: var(--on-surface);
+				font-size: 14px;
 			}
 
-			.button:hover {
-				box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.2);
-			}
-
-			.button:disabled {
-				opacity: 0.6;
+			input[type='text']:disabled {
 				cursor: not-allowed;
 			}
-		}
 
-		/* Message Styling */
-		.message {
-			padding: 8px 12px;
-			margin-bottom: 16px;
-			border-radius: 4px;
-			font-size: 14px;
-			border: 1px solid transparent;
-		}
+			.buttons {
+				margin-top: 12px;
+				text-align: right;
+				display: flex;
+				justify-content: flex-end;
 
-		.error-message {
-			color: var(--on-error);
-			background-color: var(--error);
-			border-color: var(--outline-variant);
+				.button {
+					border: none;
+					padding: 10px 18px;
+					border-radius: 8px;
+					cursor: pointer;
+					font-weight: 600;
+					border: 1px solid var(--on-primary-container);
+					background-color: var(--primary-container);
+					color: var(--on-primary-container);
+					transition: all ease-in-out 125ms;
+				}
+
+				.button:hover {
+					box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.2);
+				}
+
+				.button:disabled {
+					opacity: 0.6;
+					cursor: not-allowed;
+				}
+			}
+
+			/* Message Styling */
+			.message {
+				padding: 8px 12px;
+				margin-bottom: 16px;
+				border-radius: 4px;
+				font-size: 14px;
+				border: 1px solid transparent;
+			}
+
+			.error-message {
+				color: var(--on-error);
+				background-color: var(--error);
+				border-color: var(--outline-variant);
+			}
 		}
 	}
 
