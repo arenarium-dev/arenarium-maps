@@ -81,6 +81,7 @@
 		}
 
 		.text {
+			width: 100%;
 			display: flex;
 			flex-direction: column;
 			gap: 1px;
@@ -88,9 +89,10 @@
 			color: var(--map-style-text);
 
 			.line {
-				height: 1.3em;
 				display: flex;
+				flex-direction: row;
 				align-items: center;
+				height: 1.3em;
 
 				&.top {
 					font-size: 1em;
