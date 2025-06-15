@@ -50,9 +50,9 @@
 	let mapLoaded = $state<boolean>(false);
 
 	let demoSize: DemoSize = 'large';
-	let demoMap = $state<DemoMap>((page.url.searchParams.get('map') as DemoMap) ?? 'maplibre');
-	let demoStyle = $state<DemoStyle>('website');
-	let demo = $state<Demo>(page.params.demo as Demo);
+	let demoMap = $derived<DemoMap>((page.url.searchParams.get('map') as DemoMap) ?? 'maplibre');
+	let demoStyle = $derived<DemoStyle>((page.url.searchParams.get('style') as DemoStyle) ?? 'website');
+	let demo = $derived<Demo>((page.params.demo as Demo) ?? Demo.Basic);
 
 	let popupData = new Map<string, MapPopupData>();
 	let dataLoaded = false;
@@ -150,6 +150,7 @@
 	import { GoogleMapDarkStyle, GoogleMapLightStyle, GoogleMapsProvider } from '@arenarium/maps/google';
 
 	import { Loader } from '@googlemaps/js-api-loader';
+	import { goto } from '$app/navigation';
 
 	let mapGoogle: google.maps.Map;
 	let mapGoogleProvider: GoogleMapsProvider;
@@ -298,15 +299,15 @@
 		}
 	});
 
+	function onDemoStyleClick(style: DemoStyle) {
+		const searchParams = page.url.searchParams;
+		searchParams.set('style', style);
+		goto(`/?${searchParams.toString()}`);
+	}
+
 	//#endregion
 
 	//#region Data Change
-
-	$effect(() => {
-		if (mapLoaded && demo != page.params.demo) {
-			demo = page.params.demo as Demo;
-		}
-	});
 
 	$effect(() => {
 		if (mapLoaded) {
@@ -326,10 +327,16 @@
 			mapManager.configuration = getDemoConfiguration(demo);
 
 			// Update data
-			onDemoClear();
+			onDataClear();
 			onDataRefresh();
 		}
 	});
+
+	function onDemoClick(demo: Demo) {
+		const searchParams = page.url.searchParams;
+		searchParams.set('demo', demo);
+		goto(`/?${searchParams.toString()}`);
+	}
 
 	async function onMapIdle() {
 		if (dataAutoUpdate && !dataLoaded) {
@@ -337,7 +344,7 @@
 		}
 	}
 
-	function onDemoClear() {
+	function onDataClear() {
 		popupData.clear();
 		dataLoaded = false;
 		mapManager?.removePopups();
@@ -373,6 +380,7 @@
 			// Get new popup data
 			const { width, height, padding } = getPopupDimensions(demo, demoSize);
 			const params = new URLSearchParams();
+			params.append('demo', demo);
 			params.append('total', '128');
 			params.append('width', width.toString());
 			params.append('height', height.toString());
@@ -382,7 +390,7 @@
 			params.append('nelat', bounds.ne.lat.toString());
 			params.append('nelng', bounds.ne.lng.toString());
 
-			const allPopupData = await Fetch.that<MapPopupData[]>(`/api/popup/${demo}/data?${params}`);
+			const allPopupData = await Fetch.that<MapPopupData[]>(`/api/popup/data?${params}`);
 			const newPopupData = new Array<MapPopupData>();
 			for (const data of allPopupData) {
 				if (!popupData.has(data.id)) {
@@ -544,10 +552,10 @@
 					{/snippet}
 					{#snippet menu()}
 						<div class="menu pallete shadow-large">
-							<button class="item" class:selected={demoStyle == 'website'} onclick={() => (demoStyle = 'website')}>Website</button>
-							<button class="item" class:selected={demoStyle == 'light'} onclick={() => (demoStyle = 'light')}>Light</button>
-							<button class="item" class:selected={demoStyle == 'dark'} onclick={() => (demoStyle = 'dark')}>Dark</button>
-							<button class="item" class:selected={demoStyle == 'default'} onclick={() => (demoStyle = 'default')}>Default</button>
+							<button class="item" class:selected={demoStyle == 'website'} onclick={() => onDemoStyleClick('website')}>Website</button>
+							<button class="item" class:selected={demoStyle == 'light'} onclick={() => onDemoStyleClick('light')}>Light</button>
+							<button class="item" class:selected={demoStyle == 'dark'} onclick={() => onDemoStyleClick('dark')}>Dark</button>
+							<button class="item" class:selected={demoStyle == 'default'} onclick={() => onDemoStyleClick('default')}>Default</button>
 						</div>
 					{/snippet}
 				</Menu>
@@ -560,9 +568,9 @@
 					{/snippet}
 					{#snippet menu()}
 						<div class="menu demo shadow-large">
-							<a href="/" class="item" class:selected={page.params.demo == undefined}> Basic </a>
-							<a href="/{Demo.Rentals}" class="item" class:selected={page.params.demo == Demo.Rentals}>{getDemoName(Demo.Rentals)}</a>
-							<a href="/{Demo.Bookings}" class="item" class:selected={page.params.demo == Demo.Bookings}>{getDemoName(Demo.Bookings)}</a>
+							<a href="/" class="item" class:selected={demo == undefined}> Basic </a>
+							<a href="/{Demo.Rentals}" class="item" class:selected={demo == Demo.Rentals}>{getDemoName(Demo.Rentals)}</a>
+							<a href="/{Demo.Bookings}" class="item" class:selected={demo == Demo.Bookings}>{getDemoName(Demo.Bookings)}</a>
 							<a href="/{Demo.News}" class="item" inert>{getDemoName(Demo.News)}</a>
 							<a href="/{Demo.Events}" class="item" inert>{getDemoName(Demo.Events)}</a>
 						</div>

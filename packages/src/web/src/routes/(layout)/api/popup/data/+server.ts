@@ -4,9 +4,12 @@ import { Demo } from '$lib/shared/demo';
 
 import { type MapPopupData } from '@arenarium/maps';
 
-import type { RequestHandler } from '../$types';
+import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event) => {
+	const demo = event.url.searchParams.get('demo');
+	if (!demo) return new Response(null);
+
 	const total = Number(event.url.searchParams.get('total'));
 	const width = Number(event.url.searchParams.get('width'));
 	const height = Number(event.url.searchParams.get('height'));
@@ -30,7 +33,7 @@ export const GET: RequestHandler = async (event) => {
 		}
 	};
 
-	switch (event.params.demo) {
+	switch (demo) {
 		default: {
 			const coordinatesResponse = await dataAssetsFetch('/demo/coordinates.json');
 			if (!coordinatesResponse?.ok) error(500, 'Failed to get coordinates');

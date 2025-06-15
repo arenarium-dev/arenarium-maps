@@ -5,14 +5,27 @@ import { Demo } from '$lib/shared/demo';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event) => {
-	switch (event.params.demo) {
+	const demo = event.url.searchParams.get('demo');
+	const id = event.url.searchParams.get('id');
+
+	if (!demo || !id) return new Response(null);
+
+	const dataAssetsFetch = (url: string) => {
+		if (event.platform?.env?.ASSETS?.fetch) {
+			return event.platform.env.ASSETS.fetch(event.url.origin + url);
+		} else {
+			return event.fetch(url);
+		}
+	};
+
+	switch (demo) {
 		case Demo.SrbijaNekretnine: {
-			const dataResponse = await event.platform?.env.ASSETS.fetch(event.url.origin + '/demo/srbija-nekretnine.json');
+			const dataResponse = await dataAssetsFetch('/demo/srbija-nekretnine.json');
 			if (!dataResponse?.ok) error(500, 'Failed to get data');
 
 			const dataJson = await dataResponse.json<any>();
 			const dataEntires = Object.entries(dataJson.propertiesByLatLon);
-			const dataEntry = dataEntires[Number(event.params.id)][1] as any;
+			const dataEntry = dataEntires[Number(id)][1] as any;
 			const dataProperties = dataEntry.popupProperties[0];
 
 			const data = {
@@ -29,7 +42,7 @@ export const GET: RequestHandler = async (event) => {
 			return json(data);
 		}
 		case Demo.CityExpert: {
-			const dataResponse = await event.fetch(`https://cityexpert.rs/api/propertyView/${event.params.id}/r`);
+			const dataResponse = await event.fetch(`https://cityexpert.rs/api/propertyView/${id}/r`);
 			if (!dataResponse.ok) error(500, 'Failed to get data');
 
 			const dataJson = await dataResponse.json<any>();

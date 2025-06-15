@@ -20,7 +20,7 @@
 	let mounted = $state<boolean>(false);
 
 	onMount(async () => {
-		const data = await Fetch.that<any>(`/api/popup/${Demo.CityExpert}/details/${id}`);
+		const data = await Fetch.that<any>(`/api/popup/details?demo=${Demo.CityExpert}&id=${id}`);
 		images = data.images;
 		images = images.map((i) => 'https://img.cityexpert.rs/sites/default/files/styles/470x/public/image/' + i);
 		imageIndex = 0;
