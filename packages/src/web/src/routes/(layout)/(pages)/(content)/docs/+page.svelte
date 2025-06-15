@@ -178,7 +178,7 @@ mapGoogle.setMapTypeId("light-id"); // or "dark-id" for dark theme
 		<div class="header">Popups</div>
 		<div class="text">
 			To display interactive popups on the map, you first need to define an array of <code>MapPopup</code> objects. Provide content rendering callbacks
-			for the body and optionally for a custom pin. These callbacks should return a <code>HTMLElement</code>. Use the
+			for the body and optionally for the pin. These callbacks should return a <code>HTMLElement</code>. Use the
 			<code>updatePopups</code> method on the map instance to display or update the popups. This method efficiently adds new popups and updates existing ones
 			based on their IDs. Popups not present in the provided array will remain on the map. This approach is designed for continuous updates of map popups.
 		</div>
