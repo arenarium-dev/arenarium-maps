@@ -38,7 +38,22 @@ export function getDemoName(demo: Demo) {
 export function getDemoColors(demo: Demo, style: DemoStyle): { background: string; primary: string; text: string } {
 	switch (demo) {
 		case Demo.Bookings: {
-			return { background: 'var(--surface)', primary: 'var(--surface)', text: 'var(--on-surface)' };
+			switch (style) {
+				case 'website': {
+					return app.theme.get() == 'dark'
+						? { background: 'black', primary: 'black', text: 'white' }
+						: { background: 'white', primary: 'white', text: 'black' };
+				}
+				case 'light': {
+					return { background: 'white', primary: 'white', text: 'black' };
+				}
+				case 'dark': {
+					return { background: 'black', primary: 'black', text: 'white' };
+				}
+				default: {
+					return { background: 'white', primary: 'white', text: 'black' };
+				}
+			}
 		}
 		case Demo.SrbijaNekretnine: {
 			return {
