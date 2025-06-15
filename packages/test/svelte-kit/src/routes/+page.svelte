@@ -1,44 +1,46 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	import { mountMap, type MapBounds, type MapPopup, type MapPopupData, type MapPopupState, type MapPopupStatesRequest } from '@arenarium/maps';
+	import { MapManager, type MapPopup } from '@arenarium/maps';
+	import { MapLibreProvider } from '@arenarium/maps/maplibre';
 	import '@arenarium/maps/dist/style.css';
 
-	let map: ReturnType<typeof mountMap>;
+	import maplibregl from 'maplibre-gl';
+	import 'maplibre-gl/dist/maplibre-gl.css';
+
+	let mapManager: MapManager;
+	let map: maplibregl.Map;
+	let mapContainer: HTMLDivElement;
 
 	onMount(() => {
-		map = mountMap({
-			container: 'map',
-			position: {
-				center: { lat: 51.505, lng: -0.09 },
-				zoom: 13
-			},
-			style: {
-				name: 'light',
-				colors: {
-					primary: 'violet',
-					background: 'white',
-					text: 'black'
-				}
-			}
+		const mapProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
+			container: mapContainer,
+			center: { lat: 51.505, lng: -0.09 },
+			zoom: 13
 		});
+
+		mapManager = new MapManager('5b2a06ecfa734dccaa0e7488aaceb487', mapProvider);
+		mapManager.setColors('violet', 'white', 'black');
+
+		map = mapProvider.getMap();
 	});
 
 	async function insert() {
 		const bounds = map.getBounds();
-		const popups = await getPopups(bounds);
+		const popups = getPopups(bounds);
 
 		const now = performance.now();
-		await map.updatePopups(popups);
+		await mapManager.updatePopups(popups);
 		console.log(`[SET ${popups.length}] ${performance.now() - now}ms`);
 	}
 
 	function remove() {
-		map.removePopups();
+		mapManager.removePopups();
 	}
 
-	async function getPopups(bounds: MapBounds): Promise<MapPopup[]> {
-		const popupsData = new Array<MapPopupData>();
+	function getPopups(bounds: maplibregl.LngLatBounds): MapPopup[] {
+		const popups = new Array<MapPopup>();
+
 		const centers = [
 			{ lat: 51.505, lng: -0.09 },
 			{ lat: 45, lng: 22 },
@@ -57,6 +59,7 @@
 		};
 
 		let cnt = 0;
+
 		for (let i = 0; i < count; i++) {
 			const index = Math.floor(random() * count);
 			const distance = radius / (count - index);
@@ -64,32 +67,19 @@
 
 			const lat = center.lat + distance * (-1 + random() * 2);
 			const lng = center.lng + distance * (-1 + random() * 2);
-			if (lat < bounds.sw.lat || bounds.ne.lat < lat || lng < bounds.sw.lng || bounds.ne.lng < lng) continue;
+			if (lat < bounds._sw.lat || bounds._ne.lat < lat || lng < bounds._sw.lng || bounds._ne.lng < lng) continue;
 			if (cnt++ > limit) break;
 
-			popupsData.push({
-				id: i.toString(),
-				rank: i,
-				lat: lat,
-				lng: lng,
-				height: 100,
-				width: 150
-			});
-		}
-
-		const popupStatesResponse = await fetch('/states', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(popupsData)
-		});
-		const popupStates: MapPopupState[] = await popupStatesResponse.json();
-
-		const popups = new Array<MapPopup>();
-
-		for (let i = 0; i < popupsData.length; i++) {
 			popups.push({
-				data: popupsData[i],
-				state: popupStates[i],
+				data: {
+					id: i.toString(),
+					rank: i,
+					lat: lat,
+					lng: lng,
+					height: 100,
+					width: 150,
+					padding: 8
+				},
 				callbacks: {
 					body: getPopupContent
 				}
@@ -112,7 +102,7 @@
 	}
 </script>
 
-<div id="map"></div>
+<div class="map" bind:this={mapContainer}></div>
 
 <div class="bottom-left">
 	<button class="button" onclick={insert}> Insert </button>
@@ -120,8 +110,8 @@
 </div>
 
 <style>
-	#map {
-		position: fixed;
+	.map {
+		position: absolute;
 		top: 0px;
 		left: 0px;
 		width: 100%;

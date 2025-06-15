@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"update": "pnpm update",
-		"dev": "vite dev",
+		"dev": "vite dev --port 3000",
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
@@ -23,6 +23,7 @@
 		"vite": "^6.3.5"
 	},
 	"dependencies": {
-		"@arenarium/maps": "latest"
+		"@arenarium/maps": "latest",
+		"maplibre-gl": "^5.6.0"
 	}
 }
