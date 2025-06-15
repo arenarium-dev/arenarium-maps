@@ -52,8 +52,11 @@ export const POST: RequestHandler = async (event) => {
 
 		// Check if the request domain is allowed
 		if (dbApiKey.domains) {
+			const source = event.request.headers.get('origin') ?? event.request.headers.get('referer');
+			if (!source) return response(403, 'Request not allowed for this domain!');
+
 			const domains = dbApiKey.domains.split(',');
-			if (!domains.includes(event.url.hostname)) return response(403, 'Request not allowed for this domain!');
+			if (!domains.includes(new URL(source).host)) return response(403, 'Request not allowed for this domain!');
 		}
 
 		// Chech the api key rate limit
