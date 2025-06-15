@@ -15,9 +15,6 @@
 			<Highlight
 				language="javascript"
 				text={`
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
-
 import { MapManager } from '@arenarium/maps';
 import '@arenarium/maps/dist/style.css';
 
