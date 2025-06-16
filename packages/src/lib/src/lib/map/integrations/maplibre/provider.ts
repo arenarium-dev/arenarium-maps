@@ -28,6 +28,7 @@ export class MapLibreProvider implements MapProvider {
 
 		this.map = new this.MapClass({
 			...options,
+			style: options.style ?? 'https://tiles.openfreemap.org/styles/liberty',
 			pitchWithRotate: false,
 			attributionControl: { customAttribution: '@arenarium/maps' }
 		});

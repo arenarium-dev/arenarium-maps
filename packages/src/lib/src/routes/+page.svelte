@@ -25,7 +25,7 @@
 	onMount(async () => {
 		switch (mode) {
 			case 'maplibre': {
-				loadMapLibre();
+				await loadMapLibre();
 				break;
 			}
 			case 'google': {
@@ -42,12 +42,12 @@
 
 	import { MapLibreProvider, MapLibreStyleLight } from '$lib/maplibre.js';
 
-	import maplibregl from 'maplibre-gl';
-	import 'maplibre-gl/dist/maplibre-gl.css';
-
 	let mapLibre: maplibregl.Map;
 
-	function loadMapLibre() {
+	async function loadMapLibre() {
+		const maplibregl = await import('maplibre-gl');
+		await import('maplibre-gl/dist/maplibre-gl.css');
+
 		const mapLibreProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
 			container: mapElement,
 			style: MapLibreStyleLight,
@@ -67,7 +67,7 @@
 
 	//#region Google Maps
 
-	import { GoogleMapsProvider, GoogleMapLightStyle, GoogleMapDarkStyle } from '$lib/google.js';
+	import { GoogleMapsProvider, GoogleMapLightStyle, GoogleMapDarkStyle } from '../lib/google.js';
 
 	import { Loader } from '@googlemaps/js-api-loader';
 
