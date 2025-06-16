@@ -1,8 +1,5 @@
 TODO:
 
-Add domain restrictions to api keys
-Put evenryting in same project, deploy lib and api at the same time
-
 CUSTOMERS:
 
 Real Estate Rent/Sale:
