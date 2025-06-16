@@ -17,7 +17,7 @@
 	let price = 20 + Math.floor(idNumber / 100);
 	let rating = Math.random() + 4;
 	let votes = Math.floor(Math.max(100 - idNumber / 100, 1));
-	let days = Math.floor(Math.random() * 2) + 1;
+	let days = Math.floor(Math.random() * 4) + 1;
 
 	let mounted = $state<boolean>(false);
 
@@ -40,7 +40,7 @@
 			</div>
 			<div class="line bottom">
 				<div class="price">
-					${price}
+					${price * days}
 				</div>
 				<div>for {days} night{days == 1 ? '' : 's'}</div>
 			</div>

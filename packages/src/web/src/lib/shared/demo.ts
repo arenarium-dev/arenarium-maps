@@ -37,24 +37,6 @@ export function getDemoName(demo: Demo) {
 
 export function getDemoColors(demo: Demo, style: DemoStyle): { background: string; primary: string; text: string } {
 	switch (demo) {
-		case Demo.Bookings: {
-			switch (style) {
-				case 'website': {
-					return app.theme.get() == 'dark'
-						? { background: 'black', primary: 'black', text: 'white' }
-						: { background: 'white', primary: 'white', text: 'black' };
-				}
-				case 'light': {
-					return { background: 'white', primary: 'white', text: 'black' };
-				}
-				case 'dark': {
-					return { background: 'black', primary: 'black', text: 'white' };
-				}
-				default: {
-					return { background: 'white', primary: 'white', text: 'black' };
-				}
-			}
-		}
 		case Demo.SrbijaNekretnine: {
 			return {
 				background: 'white',
@@ -70,20 +52,31 @@ export function getDemoColors(demo: Demo, style: DemoStyle): { background: strin
 			};
 		}
 		default: {
+			let colorLight = 'darkgreen';
+			let colorDark = 'lightgreen';
+
+			switch (demo) {
+				case Demo.Bookings: {
+					colorLight = 'midnightblue';
+					colorDark = 'lightblue';
+					break;
+				}
+			}
+
 			switch (style) {
 				case 'website': {
 					return app.theme.get() == 'dark'
-						? { background: 'var(--surface)', primary: 'lightgreen', text: 'var(--on-surface)' }
-						: { background: 'var(--surface)', primary: 'darkgreen', text: 'var(--on-surface)' };
+						? { background: 'var(--surface)', primary: colorDark, text: 'var(--on-surface)' }
+						: { background: 'var(--surface)', primary: colorLight, text: 'var(--on-surface)' };
 				}
 				case 'light': {
-					return { background: 'white', primary: 'darkgreen', text: 'black' };
+					return { background: 'white', primary: colorLight, text: 'black' };
 				}
 				case 'dark': {
-					return { background: 'black', primary: 'lightgreen', text: 'white' };
+					return { background: 'black', primary: colorDark, text: 'white' };
 				}
 				case 'default': {
-					return { background: 'white', primary: 'purple', text: 'black' };
+					return { background: 'white', primary: "white", text: 'black' };
 				}
 			}
 		}
