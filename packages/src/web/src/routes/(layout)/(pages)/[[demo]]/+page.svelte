@@ -108,6 +108,9 @@
 			case Demo.CityExpert: {
 				return 'demo/cityexpert.style.json';
 			}
+			case Demo.Bookaweb: {
+				return 'https://tiles.openfreemap.org/styles/positron';
+			}
 			default: {
 				switch (style) {
 					case 'website': {

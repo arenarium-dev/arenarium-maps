@@ -47,7 +47,8 @@ export function getDemoColors(demo: Demo, style: DemoStyle): { background: strin
 				text: 'black'
 			};
 		}
-		case Demo.CityExpert: {
+		case Demo.CityExpert:
+		case Demo.Bookaweb: {
 			return {
 				background: 'white',
 				primary: 'white',
@@ -62,11 +63,6 @@ export function getDemoColors(demo: Demo, style: DemoStyle): { background: strin
 				case Demo.Bookings: {
 					colorLight = 'midnightblue';
 					colorDark = 'lightblue';
-					break;
-				}
-				case Demo.Bookaweb: {
-					colorLight = 'white';
-					colorDark = 'black';
 					break;
 				}
 			}

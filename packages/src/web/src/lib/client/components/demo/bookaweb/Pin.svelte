@@ -11,9 +11,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		background-color: var(--map-style-text);
 
 		.text {
-			color: var(--map-style-text);
+			color: var(--map-style-background);
 			font-weight: bold;
 			font-size: 12px;
 			text-align: center;

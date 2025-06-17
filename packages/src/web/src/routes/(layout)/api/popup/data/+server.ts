@@ -158,7 +158,7 @@ export const GET: RequestHandler = async (event) => {
 						guests: item.guests,
 						bedrooms: item.bedrooms,
 						bathrooms: item.bathrooms,
-						price: item.price_with_tax,
+						price: Number.parseInt(item.price_with_tax),
 						photos: item.photos.map((p: any) => p.responsive.at(-1) ?? p.original_url)
 					}
 				});
