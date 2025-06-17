@@ -64,7 +64,7 @@
 		flex-direction: column;
 		gap: 0px;
 		padding: 4px;
-		background-color: white;
+		background-color: var(--map-style-background);
 		font-family:
 			Helvetica Neue,
 			Helvetica,
@@ -96,8 +96,8 @@
 				justify-content: center;
 				padding: 0px;
 				border-radius: 50%;
-				background-color: white;
-				color: black;
+				background-color: var(--map-style-background);
+				color: var(--map-style-text);
 				font-weight: 600;
 				cursor: pointer;
 				transition: opacity ease-in-out 125ms;
@@ -126,15 +126,13 @@
 			gap: 4px;
 			padding: 0px 4px;
 			padding-top: 4px;
-			color: black;
+			color: var(--map-style-text);
 			font-size: 12px;
-			font-family: var(--font-regular);
 
 			.name {
 				flex-grow: 1;
 				font-weight: 600;
 				font-size: 13px;
-				font-family: var(--font-numerical);
 			}
 
 			img {
@@ -147,10 +145,10 @@
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			padding: 0px 4px;
 			gap: 3px;
+			padding: 0px 4px;
+			color: var(--map-style-text);
 			font-size: 12px;
-			font-family: var(--font-regular);
 
 			.price {
 				font-weight: 600;
