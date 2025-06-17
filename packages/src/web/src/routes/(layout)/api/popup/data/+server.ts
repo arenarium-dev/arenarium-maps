@@ -24,7 +24,7 @@ export const GET: RequestHandler = async (event) => {
 		return error(400, 'Invalid parameters');
 	}
 
-	const data = new Array<MapPopupData>();
+	const data = new Array<MapPopupData & { details?: any }>();
 	const dataAssetsFetch = (url: string) => {
 		if (event.platform?.env?.ASSETS?.fetch) {
 			return event.platform.env.ASSETS.fetch(event.url.origin + url);
@@ -107,17 +107,61 @@ export const GET: RequestHandler = async (event) => {
 			for (let i = 0; i < dataJson.length; i++) {
 				const item = dataJson[i];
 
-				const any: any = {
+				data.push({
 					id: item.propId.toString(),
 					rank: dataJson.length - i,
 					lat: item.mapLat,
 					lng: item.mapLng,
-					type: item.ptId,
 					height: height,
 					width: width,
-					padding: padding
-				};
-				data.push(any as MapPopupData);
+					padding: padding,
+					details: {
+						type: item.ptId
+					}
+				});
+			}
+
+			break;
+		}
+		case Demo.Bookaweb: {
+			const dataSearchParams = new URLSearchParams();
+			dataSearchParams.set('city_id', '1');
+			dataSearchParams.set('category_id', '1');
+			dataSearchParams.set('sort_by', 'price');
+			dataSearchParams.set('sort_dir', 'DESC');
+			dataSearchParams.set('bounds', `${swlat},${swlng},${nelat},${nelng}`);
+
+			const dataResponse = await fetch('https://bookaweb.com/sr/api/properties?' + dataSearchParams.toString());
+			if (!dataResponse.ok) error(500, 'Failed to get data');
+
+			const dataJson = await dataResponse.json<any>();
+			const dataList = dataJson.properties.data;
+
+			for (let i = 0; i < dataList.length; i++) {
+				const item = dataList[i];
+
+				data.push({
+					id: item.id.toString(),
+					rank: Number.parseInt(item.price_with_tax),
+					lat: Number.parseFloat(item.latitude),
+					lng: Number.parseFloat(item.longitude),
+					height: height,
+					width: width,
+					padding: padding,
+					details: {
+						name: item.name,
+						url: item.url,
+						category: item.category_const,
+						instant: item.instant,
+						parking: item.parking,
+						area: item.m2,
+						guests: item.guests,
+						bedrooms: item.bedrooms,
+						bathrooms: item.bathrooms,
+						price: item.price_with_tax,
+						photos: item.photos.map((p: any) => p.responsive.at(-1) ?? p.original_url)
+					}
+				});
 			}
 
 			break;

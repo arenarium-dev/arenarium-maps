@@ -9,7 +9,8 @@ export enum Demo {
 	Events = 'events',
 	News = 'news',
 	SrbijaNekretnine = 'srbija-nekretnine',
-	CityExpert = 'cityexpert'
+	CityExpert = 'cityexpert',
+	Bookaweb = 'bookaweb'
 }
 
 export type DemoMap = 'maplibre' | 'google';
@@ -32,6 +33,8 @@ export function getDemoName(demo: Demo) {
 			return 'srbija-nekretnine.org';
 		case Demo.CityExpert:
 			return 'cityexpert.rs';
+		case Demo.Bookaweb:
+			return 'bookaweb.com';
 	}
 }
 
@@ -44,7 +47,8 @@ export function getDemoColors(demo: Demo, style: DemoStyle): { background: strin
 				text: 'black'
 			};
 		}
-		case Demo.CityExpert: {
+		case Demo.CityExpert:
+		case Demo.Bookaweb: {
 			return {
 				background: 'white',
 				primary: 'white',
@@ -76,7 +80,7 @@ export function getDemoColors(demo: Demo, style: DemoStyle): { background: strin
 					return { background: 'black', primary: colorDark, text: 'white' };
 				}
 				case 'default': {
-					return { background: 'white', primary: "white", text: 'black' };
+					return { background: 'white', primary: 'white', text: 'black' };
 				}
 			}
 		}
@@ -85,18 +89,13 @@ export function getDemoColors(demo: Demo, style: DemoStyle): { background: strin
 
 export function getDemoPosition(demo: Demo): { lat: number; lng: number; zoom: number } {
 	switch (demo) {
-		case Demo.SrbijaNekretnine: {
+		case Demo.SrbijaNekretnine:
+		case Demo.CityExpert:
+		case Demo.Bookaweb: {
 			return {
 				lat: 44.811222,
 				lng: 20.450989,
 				zoom: 12
-			};
-		}
-		case Demo.CityExpert: {
-			return {
-				lat: 44.811222,
-				lng: 20.450989,
-				zoom: 10
 			};
 		}
 		default: {
@@ -111,7 +110,8 @@ export function getDemoPosition(demo: Demo): { lat: number; lng: number; zoom: n
 
 export function getDemoConfiguration(demo: Demo): MapConfiguration {
 	switch (demo) {
-		case Demo.Bookings: {
+		case Demo.Bookings:
+		case Demo.CityExpert: {
 			return {
 				pin: {
 					fade: false
@@ -121,10 +121,11 @@ export function getDemoConfiguration(demo: Demo): MapConfiguration {
 				}
 			};
 		}
-		case Demo.CityExpert: {
+		case Demo.Bookaweb: {
 			return {
 				pin: {
-					fade: false
+					fade: false,
+					maxZoom: 3
 				},
 				states: {
 					api: '/api/popup/states'
@@ -171,11 +172,22 @@ export function getPopupDimensions(demo: Demo, size: DemoSize): { width: number;
 			return { width: 156, height: 128, padding: 8 };
 		case Demo.CityExpert:
 			return { width: 156, height: 128, padding: 8 };
+		case Demo.Bookaweb:
+			return { width: 164, height: 132, padding: 8 };
+	}
+}
+
+export function getDemoAutoUpdate(demo: Demo) {
+	switch (demo) {
+		default:
+			return false;
+		case Demo.Bookaweb:
+			return true;
 	}
 }
 
 export function isDemoCustom(demo: Demo) {
-	return demo == Demo.CityExpert || demo == Demo.SrbijaNekretnine;
+	return demo == Demo.CityExpert || demo == Demo.SrbijaNekretnine || demo == Demo.Bookaweb;
 }
 
 export const rentalImages = [

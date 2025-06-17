@@ -17,11 +17,14 @@
 	import SrbijaNekretninePopup from '$lib/client/components/demo/srbija-nekretnine/Popup.svelte';
 	import CityExpertPopup from '$lib/client/components/demo/cityexpert/Popup.svelte';
 	import CityExpertPin from '$lib/client/components/demo/cityexpert/Pin.svelte';
+	import BookawebPopup from '$lib/client/components/demo/bookaweb/Popup.svelte';
+	import BookawebPin from '$lib/client/components/demo/bookaweb/Pin.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
 	import { Fetch } from '$lib/client/core/fetch';
 	import {
 		Demo,
+		getDemoAutoUpdate,
 		getDemoColors,
 		getDemoConfiguration,
 		getDemoName,
@@ -41,13 +44,9 @@
 		ne: { lat: number; lng: number };
 	}
 
-	let mounted = $state<boolean>(false);
-
 	let mapManager: MapManager;
 	let mapProvider: MapProvider;
 	let mapElement: HTMLElement;
-
-	let mapZoom = $state<number>(0);
 	let mapLoaded = $state<boolean>(false);
 
 	let demoSize: DemoSize = 'large';
@@ -63,8 +62,6 @@
 
 	onMount(() => {
 		demoSize = window.innerWidth < 640 ? 'small' : 'large';
-
-		mounted = true;
 	});
 
 	//#region MapLibre
@@ -77,7 +74,10 @@
 	let mapLibre: maplibregl.Map;
 	let mapLibreProvider: MapLibreProvider;
 
-	function loadMapLibre() {
+	async function loadMapLibre() {
+		const maplibregl = await import('maplibre-gl');
+		await import('maplibre-gl/dist/maplibre-gl.css');
+
 		mapLibreProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
 			container: mapElement,
 			style: app.theme.get() == 'dark' ? MapLibreDarkStyle : MapLibreStyleLight,
@@ -90,9 +90,6 @@
 
 		mapLibre.on('load', () => {
 			mapLoaded = true;
-		});
-		mapLibre.on('move', (e) => {
-			mapZoom = mapLibre.getZoom();
 		});
 		mapLibre.on('idle', () => {
 			onMapIdle();
@@ -159,7 +156,6 @@
 	let mapTypeDarkId = 'dark-id';
 
 	async function loadGoogleMaps() {
-		// Load API and map
 		const loader = new Loader({
 			apiKey: 'AIzaSyCt6ERDLY4Hx5b6LEBQFPYJbRq9teByXyk',
 			version: 'weekly'
@@ -180,18 +176,13 @@
 		mapProvider = mapGoogleProvider;
 
 		mapGoogle = mapGoogleProvider.getMap();
-		// Set events
 		mapGoogle.addListener('tilesloaded', () => {
 			mapLoaded = true;
-		});
-		mapGoogle.addListener('zoom_changed', () => {
-			mapZoom = mapGoogle.getZoom()!;
 		});
 		mapGoogle.addListener('idle', () => {
 			onMapIdle();
 		});
 
-		// Set map type
 		const mapTypeLight = new google.maps.StyledMapType(GoogleMapLightStyle, { name: 'Light Map' });
 		const mapTypeDark = new google.maps.StyledMapType(GoogleMapDarkStyle, { name: 'Dark Map' });
 
@@ -241,7 +232,7 @@
 		try {
 			switch (demoMap) {
 				case 'maplibre': {
-					loadMapLibre();
+					await loadMapLibre();
 					break;
 				}
 				case 'google': {
@@ -325,6 +316,9 @@
 
 			// Update configuration
 			mapManager.configuration = getDemoConfiguration(demo);
+
+			// Update auto update
+			dataAutoUpdate = getDemoAutoUpdate(demo);
 
 			// Update data
 			onDataClear();
@@ -447,6 +441,9 @@
 				case Demo.CityExpert:
 					mount(CityExpertPopup, { target: element, props: { id, width: popup.width, height: popup.height } });
 					break;
+				case Demo.Bookaweb:
+					mount(BookawebPopup, { target: element, props: { id, width: popup.width, height: popup.height, data: (popup as any).details } });
+					break;
 			}
 			resolve(element);
 		});
@@ -467,7 +464,10 @@
 					mount(BookingsPin, { target: element, props: { id } });
 					break;
 				case Demo.CityExpert:
-					mount(CityExpertPin, { target: element, props: { id, type: popup.type } });
+					mount(CityExpertPin, { target: element, props: { id, type: popup.details.type } });
+					break;
+				case Demo.Bookaweb:
+					mount(BookawebPin, { target: element, props: { id, price: popup.details.price } });
 					break;
 			}
 			resolve(element);

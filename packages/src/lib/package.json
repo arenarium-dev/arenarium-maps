@@ -82,17 +82,17 @@
 		"svelte": "^5.0.0"
 	},
 	"scripts": {
+		"format": "prettier --write .",
+		"lint": "prettier --check . && eslint .",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"dev": "vite dev --host",
 		"dev-browser": "vite dev --mode browser --host",
 		"build:vite:modular": "vite build -c ./vite/modular/vite.config.ts",
 		"build:vite:browser": "vite build -c ./vite/browser/vite.config.ts",
 		"build:types:browser": "dts-bundle-generator --export-referenced-types --umd-module-name=arenarium -o ./dist/index.d.ts ./src/lib/index.ts",
 		"build": "pnpm run build:vite:modular && pnpm run build:vite:browser && pnpm run build:types:browser",
-		"preview": "vite preview",
-		"build-patch-commit-publish": "pnpm run build && pnpm version patch && git add * && git commit -m 'Publish' && pnpm publish --access public",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"format": "prettier --write .",
-		"lint": "prettier --check . && eslint ."
+		"build:patch:commit:publish": "pnpm run build && pnpm version patch && git add * && git commit -m 'Publish' && pnpm publish --access public",
+		"preview": "vite preview"
 	}
 }
