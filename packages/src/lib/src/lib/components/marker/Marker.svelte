@@ -9,8 +9,8 @@
 	let { id, priority, width, height, padding }: { id: string; priority: number; width: number; height: number; padding: number } = $props();
 
 	let anchor: HTMLElement;
-	let marker: HTMLElement;
-	let pin: HTMLElement;
+	let bubble: HTMLElement;
+	let pointer: HTMLElement;
 	let body: HTMLElement;
 
 	const markerWidth = width + 2 * padding;
@@ -21,8 +21,8 @@
 	//#region Position
 
 	$effect(() => {
-		pin.style.width = `${Math.min(markerWidth, markerHeight) / 4}px`;
-		pin.style.height = `${Math.min(markerWidth, markerHeight) / 4}px`;
+		pointer.style.width = `${Math.min(markerWidth, markerHeight) / 4}px`;
+		pointer.style.height = `${Math.min(markerWidth, markerHeight) / 4}px`;
 	});
 
 	//#endregion
@@ -94,12 +94,12 @@
 	});
 
 	function updateScaleStyle(scale: number) {
-		if (!anchor || !marker || !pin) return;
+		if (!anchor || !bubble || !pointer) return;
 
 		animation.equeue(scalePriority, priority, id + '_scale', () => {
 			anchor.style.opacity = `${scale}`;
-			marker.style.scale = `${scale}`;
-			pin.style.scale = `${scale}`;
+			bubble.style.scale = `${scale}`;
+			pointer.style.scale = `${scale}`;
 		});
 	}
 
@@ -108,66 +108,66 @@
 	let angle = NaN;
 	let angleDefined = $state<boolean>(false);
 
-	let markerOffsetXTransition = new Transition(-markerWidth / 2, { easing: sineInOut });
-	let markerOffsetYTransition = new Transition(-markerHeight / 2, { easing: sineInOut });
+	let bubbleOffsetXTransition = new Transition(-markerWidth / 2, { easing: sineInOut });
+	let bubbleOffsetYTransition = new Transition(-markerHeight / 2, { easing: sineInOut });
 
 	$effect(() => {
-		updateAngleStyle(markerOffsetXTransition.motion.current, markerOffsetYTransition.motion.current);
+		updateAngleStyle(bubbleOffsetXTransition.motion.current, bubbleOffsetYTransition.motion.current);
 	});
 
 	$effect(() => {
 		if (displayed == false) {
-			markerOffsetXTransition.snap();
-			markerOffsetXTransition.snap();
+			bubbleOffsetXTransition.snap();
+			bubbleOffsetXTransition.snap();
 			animation.clear(priority, id + '_angle');
 		}
 	});
 
 	$effect(() => {
 		if (collapsed == true && angleDefined) {
-			markerOffsetXTransition.update({ duration: 75 });
-			markerOffsetXTransition.update({ duration: 75 });
+			bubbleOffsetXTransition.update({ duration: 75 });
+			bubbleOffsetXTransition.update({ duration: 75 });
 		}
 	});
 
 	function updateAngleStyle(markerOffsetX: number, markerOffsetY: number) {
-		if (!anchor || !marker || !pin) return;
+		if (!anchor || !bubble || !pointer) return;
 
 		const markerCenterX = markerOffsetX + markerWidth / 2;
 		const markerCenterY = markerOffsetY + markerHeight / 2;
 
-		// Pin center is the center of the circle in the marker
-		const pinCenterX = markerHeight < markerWidth ? (markerCenterX * markerHeight) / markerWidth : markerCenterX;
-		const pinCenterY = markerHeight > markerWidth ? (markerCenterY * markerWidth) / markerHeight : markerCenterY;
+		// Pointer center is the center of the circle in the marker
+		const pointerCenterX = markerHeight < markerWidth ? (markerCenterX * markerHeight) / markerWidth : markerCenterX;
+		const pointerCenterY = markerHeight > markerWidth ? (markerCenterY * markerWidth) / markerHeight : markerCenterY;
 
-		// Calculate pin angle, it point to the center of the inverse width/height rectangle of the marker
-		const pinAngleRad = Math.atan2(pinCenterY, pinCenterX);
-		const pinAngleDeg = (pinAngleRad / Math.PI) * 180 - 45;
+		// Calculate pointer angle, it point to the center of the inverse width/height rectangle of the marker
+		const pointerAngleRad = Math.atan2(pointerCenterY, pointerCenterX);
+		const pointerAngleDeg = (pointerAngleRad / Math.PI) * 180 - 45;
 
-		// Calculate pin skew, its is lower (ak. wider) the closer the pin is to the center of the marker
-		const pinMinSkew = 0;
-		const pinMaxSkew = 30;
+		// Calculate pointer skew, its is lower (ak. wider) the closer the pointer is to the center of the marker
+		const pointerMinSkew = 0;
+		const pointerMaxSkew = 30;
 
-		const pinCenterDistance = Math.sqrt(markerCenterX * markerCenterX + markerCenterY * markerCenterY);
-		const pinCenterMinDistance = Math.min(markerWidth, markerHeight) / 2;
-		const pinCenterMaxDistance = Math.sqrt(markerWidth * markerWidth + markerHeight * markerHeight) / 2;
+		const pointerCenterDistance = Math.sqrt(markerCenterX * markerCenterX + markerCenterY * markerCenterY);
+		const pointerCenterMinDistance = Math.min(markerWidth, markerHeight) / 2;
+		const pointerCenterMaxDistance = Math.sqrt(markerWidth * markerWidth + markerHeight * markerHeight) / 2;
 
-		const pinSkewRatio = (pinCenterDistance - pinCenterMinDistance) / (pinCenterMaxDistance - pinCenterMinDistance);
-		const pinSkewDeg = pinMinSkew + pinSkewRatio * (pinMaxSkew - pinMinSkew);
-		const pinScale = pinCenterDistance < pinCenterMinDistance ? pinCenterDistance / pinCenterMinDistance : 1;
+		const pointerSkewRatio = (pointerCenterDistance - pointerCenterMinDistance) / (pointerCenterMaxDistance - pointerCenterMinDistance);
+		const pointerSkewDeg = pointerMinSkew + pointerSkewRatio * (pointerMaxSkew - pointerMinSkew);
+		const pointerScale = pointerCenterDistance < pointerCenterMinDistance ? pointerCenterDistance / pointerCenterMinDistance : 1;
 
 		animation.equeue(ANIMATION_MARKER_LAYER, priority, id + '_angle', () => {
-			marker.style.transform = `translate(${Math.round(markerOffsetX)}px, ${Math.round(markerOffsetY)}px)`;
-			pin.style.transform = `scale(${pinScale}) rotate(${pinAngleDeg}deg) skew(${pinSkewDeg}deg, ${pinSkewDeg}deg)`;
+			bubble.style.transform = `translate(${Math.round(markerOffsetX)}px, ${Math.round(markerOffsetY)}px)`;
+			pointer.style.transform = `scale(${pointerScale}) rotate(${pointerAngleDeg}deg) skew(${pointerSkewDeg}deg, ${pointerSkewDeg}deg)`;
 		});
 	}
 
 	export function setAngle(value: number) {
 		if (angleDefined == false) {
 			let angleOffsets = Rectangle.getOffsets(markerWidth, markerHeight, value);
-			markerOffsetXTransition.set(Math.round(angleOffsets.offsetX), { duration: 0 });
-			markerOffsetYTransition.set(Math.round(angleOffsets.offsetY), { duration: 0 });
-			updateAngleStyle(markerOffsetXTransition.value, markerOffsetYTransition.value);
+			bubbleOffsetXTransition.set(Math.round(angleOffsets.offsetX), { duration: 0 });
+			bubbleOffsetYTransition.set(Math.round(angleOffsets.offsetY), { duration: 0 });
+			updateAngleStyle(bubbleOffsetXTransition.value, bubbleOffsetYTransition.value);
 
 			angle = value;
 			angleDefined = true;
@@ -177,8 +177,8 @@
 			let angleDuration = Math.log(angleSteps) * 75;
 
 			let angleOffsets = Rectangle.getOffsets(markerWidth, markerHeight, value);
-			markerOffsetXTransition.set(Math.round(angleOffsets.offsetX), { duration: angleDuration });
-			markerOffsetYTransition.set(Math.round(angleOffsets.offsetY), { duration: angleDuration });
+			bubbleOffsetXTransition.set(Math.round(angleOffsets.offsetX), { duration: angleDuration });
+			bubbleOffsetYTransition.set(Math.round(angleOffsets.offsetY), { duration: angleDuration });
 
 			angle = value;
 		}
@@ -188,8 +188,8 @@
 </script>
 
 <div class="anchor" class:displayed bind:this={anchor}>
-	<div class="pin" bind:this={pin}></div>
-	<div class="marker" style:padding={padding + 'px'} bind:this={marker}>
+	<div class="pointer" bind:this={pointer}></div>
+	<div class="bubble" style:padding={padding + 'px'} bind:this={bubble}>
 		<div class="body" style:width={`${width}px`} style:height={`${height}px`} bind:this={body}></div>
 	</div>
 </div>
@@ -205,7 +205,7 @@
 		height: 0px;
 		filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.5));
 
-		.marker {
+		.bubble {
 			position: absolute;
 			left: 0px;
 			top: 0px;
@@ -219,7 +219,7 @@
 			}
 		}
 
-		.pin {
+		.pointer {
 			position: absolute;
 			left: 0px;
 			top: 0px;
@@ -235,7 +235,7 @@
 		transform-style: preserve-3d;
 		backface-visibility: hidden;
 
-		.marker {
+		.bubble {
 			transform-style: preserve-3d;
 			backface-visibility: hidden;
 		}
@@ -247,13 +247,13 @@
 		opacity: 0;
 		will-change: opacity;
 
-		.marker {
+		.bubble {
 			scale: 0;
 			transform-origin: 0% 0%;
 			will-change: transform, scale;
 		}
 
-		.pin {
+		.pointer {
 			scale: 0;
 			transform-origin: 0% 0%;
 			will-change: transform, scale;
