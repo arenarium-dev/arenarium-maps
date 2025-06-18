@@ -1,5 +1,8 @@
 TODO:
 
+Rename popups to markers and marker pin to pointer, rename circle to pin
+Add toggle popup, an reveal popup good logic
+
 CUSTOMERS:
 
 Real Estate Rent/Sale:

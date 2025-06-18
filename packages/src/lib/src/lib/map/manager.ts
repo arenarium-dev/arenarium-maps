@@ -1,7 +1,7 @@
 import { mount } from 'svelte';
 
 import MapMarker from '../components/marker/Marker.svelte';
-import MapMarkerCircle from '../components/marker/Circle.svelte';
+import MapMarkerPin from '../components/marker/Pin.svelte';
 
 import { log } from './log.js';
 import { animation } from './animation/animation.js';
@@ -22,8 +22,8 @@ import { Mercator } from '@workspace/shared/src/popup/mercator.js';
 import { Angles } from '@workspace/shared/src/constants.js';
 
 const MAP_MARKERS_Z_INDEX_OFFSET = 1000000;
-const MAP_CIRCLES_MAX_ZOOM = 2;
-const MAP_CIRCLES_MAX_COUNT = 128;
+const MAP_PINS_MAX_ZOOM = 2;
+const MAP_PINS_MAX_COUNT = 128;
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -53,8 +53,8 @@ class MapManager {
 
 	public set configuration(configuration: MapConfiguration | undefined) {
 		this.configurationPinFade = configuration?.pin?.fade ?? true;
-		this.configurationPinMaxCount = configuration?.pin?.maxCount ?? Math.max(MAP_CIRCLES_MAX_COUNT, 8 * navigator.hardwareConcurrency);
-		this.configurationPinMaxZoomDelta = configuration?.pin?.maxZoom ?? MAP_CIRCLES_MAX_ZOOM;
+		this.configurationPinMaxCount = configuration?.pin?.maxCount ?? Math.max(MAP_PINS_MAX_COUNT, 8 * navigator.hardwareConcurrency);
+		this.configurationPinMaxZoomDelta = configuration?.pin?.maxZoom ?? MAP_PINS_MAX_ZOOM;
 		this.configurationApiUrl = configuration?.states?.api ?? API_URL;
 
 		animation.setLimit(configuration?.animation?.queue?.limit ?? 8 * navigator.hardwareConcurrency);
@@ -156,46 +156,46 @@ class MapManager {
 		const mapOffsetBounds = new MapBounds(-mapOffsetX, mapHeight + mapOffsetY, mapWidth + mapOffsetX, -mapOffsetY, this.provider.parameters);
 		const mapWindowBounds = new MapBounds(0, mapHeight, mapWidth, 0, this.provider.parameters);
 
-		// Track circle count
-		let circleCount = 0;
+		// Track pin count
+		let pinCount = 0;
 
 		for (const data of this.popupDataArray) {
 			const zoomThreshold = data.supressed ? -1 : zoom;
 
-			// Process popup circle
-			const circle = data.circle;
+			// Process popup pin
+			const pin = data.pin;
 
-			if (mapWindowBounds.contains(circle.lat, circle.lng)) {
-				if (zoomThreshold <= circle.zoom && circle.zoom <= zoom + this.configurationPinMaxZoomDelta) {
-					if (circleCount < this.configurationPinMaxCount) {
-						// Update circle state
+			if (mapWindowBounds.contains(pin.lat, pin.lng)) {
+				if (zoomThreshold <= pin.zoom && pin.zoom <= zoom + this.configurationPinMaxZoomDelta) {
+					if (pinCount < this.configurationPinMaxCount) {
+						// Update pin state
 						if (this.configurationPinFade == true) {
-							circle.updateState(zoom);
+							pin.updateState(zoom);
 						} else {
-							circle.setExpanded();
+							pin.setExpanded();
 						}
 
-						// Update circle map
-						circle.updateMap(true);
+						// Update pin map
+						pin.updateMap(true);
 
-						// Update circle pin if not loaded
-						if (circle.isPinLoaded() == false) {
-							circle.updatePin();
+						// Update pin pin if not loaded
+						if (pin.isBodyLoaded() == false) {
+							pin.updateBody();
 						}
 					}
 
-					circleCount++;
+					pinCount++;
 				} else {
-					circle.setCollapsed();
+					pin.setCollapsed();
 
-					// Wait until circle is invisible before removing it
-					if (circle.isCollapsed()) {
-						circle.updateMap(false);
+					// Wait until pin is invisible before removing it
+					if (pin.isCollapsed()) {
+						pin.updateMap(false);
 					}
 				}
 			} else {
-				// If created immediately remove circle
-				circle.updateMap(false);
+				// If created immediately remove pin
+				pin.updateMap(false);
 			}
 
 			// Process popup marker
@@ -389,23 +389,23 @@ class MapPopupComponent<T> {
 	}
 }
 
-class MapPopupCircle extends MapPopupComponent<ReturnType<typeof MapMarkerCircle>> {
-	pinLoading = false;
-	pinLoaded = false;
-	pinCallback: MapPopupContentCallback | undefined;
+class MapPopupPin extends MapPopupComponent<ReturnType<typeof MapMarkerPin>> {
+	bodyLoading = false;
+	bodyLoaded = false;
+	bodyCallback: MapPopupContentCallback | undefined;
 
 	constructor(provider: MapProvider, popup: MapPopup, state: MapPopupState) {
 		super(provider, popup, state);
 
-		this.pinCallback = popup.callbacks.pin;
+		this.bodyCallback = popup.callbacks.pin;
 	}
 
 	createElement() {
 		this.element = document.createElement('div');
-		this.element.classList.add('circle');
-		this.component = mount(MapMarkerCircle, {
+		this.element.classList.add('pin');
+		this.component = mount(MapMarkerPin, {
 			target: this.element,
-			props: { id: this.id + '_circle', priority: this.zoom * this.provider.parameters.zoomScale }
+			props: { id: this.id + '_pin', priority: this.zoom * this.provider.parameters.zoomScale }
 		});
 	}
 
@@ -416,35 +416,35 @@ class MapPopupCircle extends MapPopupComponent<ReturnType<typeof MapMarkerCircle
 	}
 
 	updateState(zoom: number) {
-		const circle = this.component;
-		if (!circle) throw new Error('Failed to update circle state');
+		const pin = this.component;
+		if (!pin) throw new Error('Failed to update pin state');
 
-		// Set circle scale
-		circle.setScale(this.getScale(zoom));
+		// Set pin scale
+		pin.setScale(this.getScale(zoom));
 	}
 
-	updatePin() {
-		if (this.pinCallback == undefined) return;
-		if (this.pinLoaded || this.pinLoading) return;
+	updateBody() {
+		if (this.bodyCallback == undefined) return;
+		if (this.bodyLoaded || this.bodyLoading) return;
 
 		const pin = this.component?.getBody();
 		if (pin == undefined) return;
 
-		this.pinLoading = true;
-		this.pinCallback(this.id).then((content) => {
+		this.bodyLoading = true;
+		this.bodyCallback(this.id).then((content) => {
 			pin.appendChild(content);
-			this.pinLoaded = true;
-			this.pinLoading = false;
+			this.bodyLoaded = true;
+			this.bodyLoading = false;
 		});
 	}
 
 	setExpanded() {
-		if (this.component == undefined) throw new Error('Failed to set circle expanded');
+		if (this.component == undefined) throw new Error('Failed to set pin expanded');
 		this.component.setScale(1);
 	}
 
 	setCollapsed() {
-		if (this.component == undefined) throw new Error('Failed to set circle collapsed');
+		if (this.component == undefined) throw new Error('Failed to set pin collapsed');
 		this.component.setScale(0);
 	}
 
@@ -458,8 +458,8 @@ class MapPopupCircle extends MapPopupComponent<ReturnType<typeof MapMarkerCircle
 		return this.component.getCollapsed();
 	}
 
-	isPinLoaded() {
-		return this.pinCallback == undefined || this.pinLoaded;
+	isBodyLoaded() {
+		return this.bodyCallback == undefined || this.bodyLoaded;
 	}
 }
 
@@ -574,7 +574,7 @@ class MapPopupData {
 	zoom: number;
 	supressed: boolean;
 
-	circle: MapPopupCircle;
+	pin: MapPopupPin;
 	marker: MapPopupMarker;
 
 	constructor(provider: MapProvider, popup: MapPopup, state: MapPopupState) {
@@ -585,22 +585,22 @@ class MapPopupData {
 		this.zoom = state[0];
 		this.supressed = false;
 
-		this.circle = new MapPopupCircle(provider, popup, state);
+		this.pin = new MapPopupPin(provider, popup, state);
 		this.marker = new MapPopupMarker(provider, popup, state);
 	}
 
 	create() {
-		this.circle.create();
+		this.pin.create();
 		this.marker.create();
 	}
 
 	update(state: MapPopupState) {
-		this.circle.update(state);
+		this.pin.update(state);
 		this.marker.update(state);
 	}
 
 	remove() {
-		this.circle.remove();
+		this.pin.remove();
 		this.marker.remove();
 	}
 }

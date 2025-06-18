@@ -1,7 +1,7 @@
 export const ANIMATION_LIMIT_DEFAULT = 128;
 export const ANIMATION_PRIORITY_LAYER = 0;
 export const ANIMATION_MARKER_LAYER = 1;
-export const ANIMATION_CIRCLE_LAYER = 2;
+export const ANIMATION_PIN_LAYER = 2;
 
 interface AnimationItem {
 	id: string;

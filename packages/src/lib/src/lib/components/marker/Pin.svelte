@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { sineInOut } from 'svelte/easing';
 
-	import { animation, ANIMATION_CIRCLE_LAYER } from '../../map/animation/animation.js';
+	import { animation, ANIMATION_PIN_LAYER } from '../../map/animation/animation.js';
 	import { Transition } from '../../map/animation/transition.js';
 
 	let { id, priority }: { id: string; priority: number } = $props();
 
-	let circle: HTMLElement;
+	let pin: HTMLElement;
 	let body: HTMLElement;
 
 	export function getBody() {
@@ -43,11 +43,11 @@
 	});
 
 	function updateScaleStyle(scale: number) {
-		if (!circle) return;
+		if (!pin) return;
 
-		animation.equeue(ANIMATION_CIRCLE_LAYER, priority, id, () => {
-			circle.style.scale = scale.toString();
-			circle.style.filter = `brightness(${0.25 + 0.75 * scale})`;
+		animation.equeue(ANIMATION_PIN_LAYER, priority, id, () => {
+			pin.style.scale = scale.toString();
+			pin.style.filter = `brightness(${0.25 + 0.75 * scale})`;
 			body.style.opacity = scale.toString();
 		});
 	}
@@ -69,7 +69,7 @@
 	//#endregion
 </script>
 
-<div class="circle" class:displayed bind:this={circle}>
+<div class="pin" class:displayed bind:this={pin}>
 	<div class="body" bind:this={body}></div>
 </div>
 
@@ -78,7 +78,7 @@
 	@min-size: 16px;
 	@max-size: 64px;
 
-	.circle {
+	.pin {
 		max-width: @max-size;
 		max-height: @max-size;
 		position: absolute;
@@ -105,19 +105,19 @@
 
 	// Scale properties
 
-	.circle {
+	.pin {
 		scale: 0;
 		filter: brightness(0);
 	}
 
 	// Displayed properties
 
-	.circle {
+	.pin {
 		display: none;
 		content-visibility: hidden;
 	}
 
-	.circle.displayed {
+	.pin.displayed {
 		display: initial;
 		content-visibility: initial;
 	}
