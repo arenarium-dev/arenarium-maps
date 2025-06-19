@@ -1,12 +1,26 @@
 <script lang="ts">
 	import { sineIn, sineInOut, sineOut } from 'svelte/easing';
 
-	import { animation, ANIMATION_MARKER_LAYER, ANIMATION_PRIORITY_LAYER } from '../../map/animation/animation.js';
+	import { animation } from '../../map/animation/animation.js';
 	import { Transition } from '../../map/animation/transition.js';
 
-	import { Rectangle } from '@workspace/shared/src/popup/rectangle.js';
+	import { Rectangle } from '@workspace/shared/src/tooltip/rectangle.js';
 
-	let { id, priority, width, height, padding }: { id: string; priority: number; width: number; height: number; padding: number } = $props();
+	let {
+		id,
+		priority,
+		layer,
+		width,
+		height,
+		padding
+	}: {
+		id: string;
+		priority: number;
+		layer: number;
+		width: number;
+		height: number;
+		padding: number;
+	} = $props();
 
 	let anchor: HTMLElement;
 	let bubble: HTMLElement;
@@ -62,7 +76,6 @@
 	//#region Scale
 
 	let scaleTransition = new Transition(0);
-	let scalePriority = ANIMATION_MARKER_LAYER;
 
 	$effect(() => {
 		updateScaleStyle(scaleTransition.motion.current);
@@ -77,8 +90,6 @@
 
 	$effect(() => {
 		if (collapsed == true && scaleTransition.value != 0) {
-			scalePriority = ANIMATION_PRIORITY_LAYER;
-
 			if (animation.stacked()) {
 				scaleTransition.set(0, { duration: 0 });
 			} else {
@@ -87,8 +98,6 @@
 		}
 
 		if (collapsed == false && scaleTransition.value != 1) {
-			scalePriority = ANIMATION_MARKER_LAYER;
-
 			scaleTransition.set(1, { duration: 150, easing: sineOut });
 		}
 	});
@@ -96,7 +105,7 @@
 	function updateScaleStyle(scale: number) {
 		if (!anchor || !bubble || !pointer) return;
 
-		animation.equeue(scalePriority, priority, id + '_scale', () => {
+		animation.equeue(collapsed ? 0 : layer, priority, id + '_scale', () => {
 			anchor.style.opacity = `${scale}`;
 			bubble.style.scale = `${scale}`;
 			pointer.style.scale = `${scale}`;
@@ -156,7 +165,7 @@
 		const pointerSkewDeg = pointerMinSkew + pointerSkewRatio * (pointerMaxSkew - pointerMinSkew);
 		const pointerScale = pointerCenterDistance < pointerCenterMinDistance ? pointerCenterDistance / pointerCenterMinDistance : 1;
 
-		animation.equeue(ANIMATION_MARKER_LAYER, priority, id + '_angle', () => {
+		animation.equeue(layer, priority, id + '_angle', () => {
 			bubble.style.transform = `translate(${Math.round(markerOffsetX)}px, ${Math.round(markerOffsetY)}px)`;
 			pointer.style.transform = `scale(${pointerScale}) rotate(${pointerAngleDeg}deg) skew(${pointerSkewDeg}deg, ${pointerSkewDeg}deg)`;
 		});

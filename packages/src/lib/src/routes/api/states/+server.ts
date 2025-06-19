@@ -2,8 +2,8 @@ import { json } from '@sveltejs/kit';
 
 import type { MapPopupData, MapProviderParameters } from '$lib/map/schemas.js';
 
-import { getStates } from '@workspace/shared/src/popup/compute/states.js';
-import { testStates } from '@workspace/shared/src/popup/compute/test.js';
+import { getStates } from '@workspace/shared/src/tooltip/compute/states.js';
+import { testStates } from '@workspace/shared/src/tooltip/compute/test.js';
 
 import type { RequestHandler } from '../$types.js';
 

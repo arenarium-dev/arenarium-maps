@@ -1,6 +1,6 @@
 export const ANIMATION_LIMIT_DEFAULT = 128;
 export const ANIMATION_PRIORITY_LAYER = 0;
-export const ANIMATION_MARKER_LAYER = 1;
+export const ANIMATION_TOOLTIP_LAYER = 1;
 export const ANIMATION_PIN_LAYER = 2;
 
 interface AnimationItem {
@@ -60,15 +60,15 @@ class Animation {
 		}
 	}
 
-	public equeue(slice: number, priority: number, id: string, callback: () => void) {
-		let layer = this.layers[slice];
-		if (layer == undefined) {
-			layer = this.layers[slice] = { animations: new Array<Map<string, AnimationItem>>() };
+	public equeue(layer: number, priority: number, id: string, callback: () => void) {
+		let animationsLayer = this.layers[layer];
+		if (animationsLayer == undefined) {
+			animationsLayer = this.layers[layer] = { animations: new Array<Map<string, AnimationItem>>() };
 		}
 
-		let animations = layer.animations[priority];
+		let animations = animationsLayer.animations[priority];
 		if (animations == undefined) {
-			animations = layer.animations[priority] = new Map<string, AnimationItem>();
+			animations = animationsLayer.animations[priority] = new Map<string, AnimationItem>();
 		}
 
 		let animationItem: AnimationItem = { id, priority, executed: false, function: callback };
@@ -82,10 +82,10 @@ class Animation {
 
 	public clear(priority: number, id: string) {
 		for (let i = 0; i < this.layers.length; i++) {
-			let layer = this.layers[i];
-			if (layer == undefined) continue;
+			let animationsLayer = this.layers[i];
+			if (animationsLayer == undefined) continue;
 
-			let animations = layer.animations[priority];
+			let animations = animationsLayer.animations[priority];
 			if (animations == undefined) return;
 
 			let animation = animations.get(id);

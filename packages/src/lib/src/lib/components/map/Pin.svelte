@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { sineInOut } from 'svelte/easing';
 
-	import { animation, ANIMATION_PIN_LAYER } from '../../map/animation/animation.js';
+	import { animation } from '../../map/animation/animation.js';
 	import { Transition } from '../../map/animation/transition.js';
 
-	let { id, priority }: { id: string; priority: number } = $props();
+	let { id, priority, layer }: { id: string; priority: number; layer: number } = $props();
 
 	let pin: HTMLElement;
 	let body: HTMLElement;
@@ -45,7 +45,7 @@
 	function updateScaleStyle(scale: number) {
 		if (!pin) return;
 
-		animation.equeue(ANIMATION_PIN_LAYER, priority, id, () => {
+		animation.equeue(layer, priority, id, () => {
 			pin.style.scale = scale.toString();
 			pin.style.filter = `brightness(${0.25 + 0.75 * scale})`;
 			body.style.opacity = scale.toString();

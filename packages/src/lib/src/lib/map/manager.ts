@@ -18,7 +18,7 @@ import {
 	type MapProviderParameters
 } from './schemas.js';
 
-import { Mercator } from '@workspace/shared/src/popup/mercator.js';
+import { Mercator } from '@workspace/shared/src/tooltip/mercator.js';
 import { Angles } from '@workspace/shared/src/constants.js';
 
 const MAP_MARKERS_Z_INDEX_OFFSET = 1000000;

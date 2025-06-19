@@ -3,6 +3,16 @@ TODO:
 Rename popups to markers and marker pin to pointer, rename circle to pin
 Add toggle popup, an reveal popup good logic
 
+Change library log fetch from get to post
+
+OBJECTS:
+
+Map -> Markers
+Marker -> Tooltip (Tooltip), Pin, Popup (Tooltip),
+Tooltip -> Bubble, Pointer
+
+Tooltip, Pin, Popup -> MapProviderMarker
+
 CUSTOMERS:
 
 Real Estate Rent/Sale:
