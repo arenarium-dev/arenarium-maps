@@ -55,6 +55,8 @@ class Animation {
 					}
 				}
 			}
+		} catch (e) {
+			if (import.meta.env.DEV) console.error(e);
 		} finally {
 			window.requestAnimationFrame(this.tick.bind(this));
 		}

@@ -1,10 +1,10 @@
 import { mount } from 'svelte';
 
-import MapMarker from '../components/map/Marker.svelte';
+import MapMarker from '../components/map/Tooltip.svelte';
 import MapPin from '../components/map/Pin.svelte';
 
 import { log } from './log.js';
-import { animation } from './animation/animation.js';
+import { animation, ANIMATION_PIN_LAYER, ANIMATION_TOOLTIP_LAYER } from './animation/animation.js';
 import {
 	mapPopupsSchema,
 	mapProviderSchema,
@@ -398,7 +398,11 @@ class MapPopupPin extends MapPopupComponent<ReturnType<typeof MapPin>> {
 		this.element.classList.add('pin');
 		this.component = mount(MapPin, {
 			target: this.element,
-			props: { id: this.id + '_pin', priority: this.zoom * this.provider.parameters.zoomScale }
+			props: {
+				id: this.id + '_pin',
+				layer: ANIMATION_PIN_LAYER,
+				priority: this.zoom * this.provider.parameters.zoomScale
+			}
 		});
 	}
 
@@ -485,6 +489,7 @@ class MapPopupMarker extends MapPopupComponent<ReturnType<typeof MapMarker>> {
 			target: this.element,
 			props: {
 				id: this.id + '_marker',
+				layer: ANIMATION_TOOLTIP_LAYER,
 				priority: this.zoom * this.provider.parameters.zoomScale,
 				width: this.width,
 				height: this.height,
