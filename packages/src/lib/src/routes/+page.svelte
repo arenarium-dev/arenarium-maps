@@ -252,9 +252,9 @@
 				rank: rank,
 				lat: lat,
 				lng: lng,
-				height: 100,
-				width: 150,
-				padding: 8
+				height: 24,
+				width: 48,
+				padding: 2
 			});
 		}
 
@@ -265,7 +265,7 @@
 				data: data[i],
 				callbacks: {
 					body: getPopupBody,
-					pin: getPopupPin
+					// pin: getPopupPin
 				}
 			};
 		}

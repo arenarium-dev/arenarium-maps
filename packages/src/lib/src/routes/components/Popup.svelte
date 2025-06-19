@@ -7,17 +7,18 @@
 </script>
 
 <div {id} class="popup">
-	{id}-{popup.data.rank}
-	<Icon name={'location_on'} />
+	{popup.data.rank}
 </div>
 
 <style lang="less">
 	.popup {
-		width: 150px;
-		height: 100px;
+		width: 48px;
+		height: 24px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		color: red;
-		padding: 8px;
-		font-size: 16px;
+		font-size: 14px;
 		font-weight: bold;
 	}
 </style>
