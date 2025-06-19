@@ -21,7 +21,7 @@
 		});
 
 		mapManager = new MapManager('5b2a06ecfa734dccaa0e7488aaceb487', mapProvider);
-		mapManager.setColors('violet', 'white', 'black');
+		// mapManager.setColors('violet', 'white', 'black');
 
 		map = mapProvider.getMap();
 	});

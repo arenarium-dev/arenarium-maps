@@ -289,7 +289,7 @@
 			colorPrimary = demoColors.primary;
 			colorBackground = demoColors.background;
 			colorText = demoColors.text;
-			mapManager.setColors(demoColors.primary, demoColors.background, demoColors.text);
+			// mapManager.setColors(demoColors.primary, demoColors.background, demoColors.text);
 		}
 	});
 

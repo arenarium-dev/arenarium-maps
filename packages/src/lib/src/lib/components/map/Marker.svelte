@@ -195,15 +195,15 @@
 </div>
 
 <style lang="less">
-	@background: var(--map-style-background);
-	@border: var(--map-style-background);
+	@background: var(--arenarium-maps-marker-background, white);
+	@shadow: var(--arenarium-maps-marker-shadow, 0px 2px 2px rgba(0, 0, 0, 0.5));
 
 	.anchor {
 		display: block;
 		position: absolute;
 		width: 0px;
 		height: 0px;
-		filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.5));
+		filter: drop-shadow(@shadow);
 
 		.bubble {
 			position: absolute;
@@ -224,7 +224,7 @@
 			left: 0px;
 			top: 0px;
 			border-radius: 2px;
-			background-color: @border;
+			background-color: @background;
 			transform-origin: 0% 0%;
 		}
 	}

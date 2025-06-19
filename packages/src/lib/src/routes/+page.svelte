@@ -35,7 +35,6 @@
 		}
 
 		mapManager = new MapManager('KEY', mapProvider);
-		mapManager.setColors('purple', 'white', 'black');
 	});
 
 	//#region MapLibre
@@ -382,6 +381,9 @@
 
 <style lang="less">
 	.map {
+		--arenarium-maps-marker-background: white;
+		--arenarium-maps-pin-background: purple;
+
 		position: absolute;
 		top: 0px;
 		left: 0px;
@@ -446,6 +448,12 @@
 		justify-content: center;
 		font-size: 24px;
 		font-weight: 500;
+	}
+
+	:global {
+		.marker {
+			--arenarium-maps-marker-shadow: 0px 2px 2px rgba(0, 0, 0, 0.5);
+		}
 	}
 
 	:global {

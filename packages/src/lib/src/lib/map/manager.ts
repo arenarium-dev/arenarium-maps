@@ -1,7 +1,7 @@
 import { mount } from 'svelte';
 
-import MapMarker from '../components/marker/Marker.svelte';
-import MapMarkerPin from '../components/marker/Pin.svelte';
+import MapMarker from '../components/map/Marker.svelte';
+import MapPin from '../components/map/Pin.svelte';
 
 import { log } from './log.js';
 import { animation } from './animation/animation.js';
@@ -58,13 +58,6 @@ class MapManager {
 		this.configurationApiUrl = configuration?.states?.api ?? API_URL;
 
 		animation.setLimit(configuration?.animation?.queue?.limit ?? 8 * navigator.hardwareConcurrency);
-	}
-
-	public setColors(primary: string, background: string, text: string) {
-		const container = this.provider.getContainer();
-		container.style.setProperty('--map-style-primary', primary);
-		container.style.setProperty('--map-style-background', background);
-		container.style.setProperty('--map-style-text', text);
 	}
 
 	public async updatePopups(popups: MapPopup[]) {
@@ -389,7 +382,7 @@ class MapPopupComponent<T> {
 	}
 }
 
-class MapPopupPin extends MapPopupComponent<ReturnType<typeof MapMarkerPin>> {
+class MapPopupPin extends MapPopupComponent<ReturnType<typeof MapPin>> {
 	bodyLoading = false;
 	bodyLoaded = false;
 	bodyCallback: MapPopupContentCallback | undefined;
@@ -403,7 +396,7 @@ class MapPopupPin extends MapPopupComponent<ReturnType<typeof MapMarkerPin>> {
 	createElement() {
 		this.element = document.createElement('div');
 		this.element.classList.add('pin');
-		this.component = mount(MapMarkerPin, {
+		this.component = mount(MapPin, {
 			target: this.element,
 			props: { id: this.id + '_pin', priority: this.zoom * this.provider.parameters.zoomScale }
 		});

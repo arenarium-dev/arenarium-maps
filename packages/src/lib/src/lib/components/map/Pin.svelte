@@ -74,6 +74,9 @@
 </div>
 
 <style lang="less">
+	@background: var(--arenarium-maps-pin-background, darkgreen);
+	@border: var(--arenarium-maps-pin-border, white);
+	@shadow: var(--arenarium-maps-pin-shadow, 0px 2px 2px rgba(0, 0, 0, 0.5));
 	@padding-size: 2px;
 	@min-size: 16px;
 	@max-size: 64px;
@@ -82,11 +85,11 @@
 		max-width: @max-size;
 		max-height: @max-size;
 		position: absolute;
-		background-color: var(--map-style-background);
+		background-color: @border;
 		padding: @padding-size;
 		border-radius: @max-size;
 		box-sizing: border-box;
-		box-shadow: 0 2px 2px rgba(0, 0, 0, 0.5);
+		box-shadow: @shadow;
 		transform-origin: 0% 0%;
 		transform-style: preserve-3d;
 		transform: translate(-50%, -50%);
@@ -97,7 +100,7 @@
 			min-width: @min-size - @padding-size * 2;
 			min-height: @min-size - @padding-size * 2;
 			border-radius: @max-size;
-			background-color: var(--map-style-primary);
+			background-color: @background;
 			overflow: hidden;
 			will-change: opacity;
 		}
