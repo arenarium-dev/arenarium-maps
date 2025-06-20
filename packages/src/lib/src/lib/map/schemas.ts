@@ -65,43 +65,60 @@ export type MapProvider = z.infer<typeof mapProviderSchema>;
 export type MapProviderMarker = z.infer<typeof mapProviderMarkerSchema>;
 export type MapProviderParameters = z.infer<typeof mapProviderParametersSchema>;
 
-// Popups
+// Markers
 
-export const mapPopupDataSchema = z
+export const mapTooltipDataSchema = z
 	.object({
-		id: z.string().min(1),
-		rank: z.number(),
-		lat: z.number().min(-90).max(90),
-		lng: z.number().min(-180).max(180),
 		width: z.number(),
 		height: z.number(),
 		margin: z.number(),
 		radius: z.number()
 	})
-	.refine((data) => Math.min(data.width, data.height) / data.margin >= 4, 'Popup width and height must be at least 4 times the margin');
+	.refine((data) => Math.min(data.width, data.height) / data.margin >= 4, 'Tooltip width and height must be at least 4 times the margin');
 
-export const mapPopupStateSchema = z.tuple([z.number(), z.array(z.tuple([z.number(), z.number()]))]);
+export const mapBodyCallbackSchema = z.function().args(z.string()).returns(z.promise(mapHtmlElementSchema));
 
-export const mapPopupContentCallbackSchema = z.function().args(z.string()).returns(z.promise(z.any()));
-
-export const mapPopupSchema = z.object({
-	data: mapPopupDataSchema,
-	callbacks: z.object({
-		body: mapPopupContentCallbackSchema,
-		pin: mapPopupContentCallbackSchema.optional()
-	})
+export const mapMarkerSchema = z.object({
+	id: z.string().min(1),
+	rank: z.number(),
+	lat: z.number().min(-90).max(90),
+	lng: z.number().min(-180).max(180),
+	tooltip: z.object({
+		data: mapTooltipDataSchema,
+		body: mapBodyCallbackSchema
+	}),
+	pin: z
+		.object({
+			body: mapBodyCallbackSchema
+		})
+		.optional()
 });
 
-export const mapPopupsSchema = z.array(mapPopupSchema);
+export const mapMarkersSchema = z.array(mapMarkerSchema);
 
-export const mapPopupStatesRequestSchema = z.object({
+export type MapBodyCallback = z.infer<typeof mapBodyCallbackSchema>;
+export type MapMarker = z.infer<typeof mapMarkerSchema>;
+
+// Tooltip states
+
+export const mapTooltipStateSchema = z.tuple([z.number(), z.array(z.tuple([z.number(), z.number()]))]);
+
+export const mapTooltipStateInputSchema = z.object({
+	id: z.string(),
+	rank: z.number(),
+	lat: z.number(),
+	lng: z.number(),
+	width: z.number(),
+	height: z.number(),
+	margin: z.number()
+});
+
+export const mapTooltipStatesRequestSchema = z.object({
 	key: z.string(),
 	parameters: mapProviderParametersSchema,
-	data: z.array(mapPopupDataSchema)
+	input: z.array(mapTooltipStateInputSchema)
 });
 
-export type MapPopupData = z.infer<typeof mapPopupDataSchema>;
-export type MapPopupState = z.infer<typeof mapPopupStateSchema>;
-export type MapPopupContentCallback = z.infer<typeof mapPopupContentCallbackSchema>;
-export type MapPopup = z.infer<typeof mapPopupSchema>;
-export type MapPopupStatesRequest = z.infer<typeof mapPopupStatesRequestSchema>;
+export type MapTooltipState = z.infer<typeof mapTooltipStateSchema>;
+export type MapTooltipStateInput = z.infer<typeof mapTooltipStateInputSchema>;
+export type MapTooltipStatesRequest = z.infer<typeof mapTooltipStatesRequestSchema>;

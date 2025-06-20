@@ -1,4 +1,4 @@
-export namespace Popup {
+export namespace Tooltip {
 	export interface Parameters {
 		mapSize: number;
 		zoomMin: number;
@@ -6,7 +6,7 @@ export namespace Popup {
 		zoomScale: number;
 	}
 
-	export interface Data {
+	export interface StateInput {
 		id: string;
 		rank: number;
 		lat: number;
@@ -16,13 +16,13 @@ export namespace Popup {
 		margin: number;
 	}
 
+	export type State = [number, [number, number][]];
+
 	export interface StatesRequest {
 		key: string;
 		parameters: Parameters;
-		data: Data[];
+		input: StateInput[];
 	}
-
-	export type State = [number, [number, number][]];
 }
 
 export interface Log {

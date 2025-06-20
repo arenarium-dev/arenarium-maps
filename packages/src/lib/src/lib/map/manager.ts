@@ -6,13 +6,13 @@ import MapPinComponent from '../components/map/Pin.svelte';
 import { log } from './log.js';
 import { animation, ANIMATION_PIN_LAYER, ANIMATION_TOOLTIP_LAYER } from './animation/animation.js';
 import {
-	mapPopupsSchema,
+	mapMarkersSchema,
 	mapProviderSchema,
 	type MapConfiguration,
-	type MapPopup,
-	type MapPopupContentCallback,
-	type MapPopupState,
-	type MapPopupStatesRequest,
+	type MapMarker,
+	type MapBodyCallback,
+	type MapTooltipState,
+	type MapTooltipStatesRequest,
 	type MapProvider,
 	type MapProviderMarker,
 	type MapProviderParameters
@@ -21,9 +21,9 @@ import {
 import { Mercator } from '@workspace/shared/src/tooltip/mercator.js';
 import { Angles } from '@workspace/shared/src/constants.js';
 
-const MAP_MARKERS_Z_INDEX_OFFSET = 1000000;
 const MAP_PINS_MAX_ZOOM = 2;
 const MAP_PINS_MAX_COUNT = 128;
+const MAP_TOOLTIPS_Z_INDEX_OFFSET = 1000000;
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -31,12 +31,12 @@ class MapManager {
 	private key: string;
 	private provider: MapProvider;
 
-	private popupDataArray = new Array<MapPopupData>();
-	private popupDataMap = new Map<string, MapPopupData>();
-	private popupDataUpdating = false;
+	private markerDataArray = new Array<MapMarkerData>();
+	private markerDataMap = new Map<string, MapMarkerData>();
+	private markerDataUpdating = false;
 
-	private popupMaxWidth = 0;
-	private popupMaxHeight = 0;
+	private tooltipMaxWidth = 0;
+	private tooltipMaxHeight = 0;
 
 	private configurationPinFade = false;
 	private configurationPinMaxCount = 0;
@@ -60,82 +60,79 @@ class MapManager {
 		animation.setLimit(configuration?.animation?.queue?.limit ?? 8 * navigator.hardwareConcurrency);
 	}
 
-	public async updatePopups(popups: MapPopup[]) {
+	public async updateMarkers(markers: MapMarker[]) {
 		try {
-			// Validate popups
-			await mapPopupsSchema.parseAsync(popups);
+			// Validate markers
+			await mapMarkersSchema.parseAsync(markers);
 
-			// Get popup states
-			const popupStatesRequest: MapPopupStatesRequest = {
+			// Get marker states
+			const markerStatesRequest: MapTooltipStatesRequest = {
 				key: this.key,
 				parameters: this.provider.parameters,
-				data: popups.map((p) => p.data)
+				input: markers.map((m) => ({
+					id: m.id,
+					rank: m.rank,
+					lat: m.lat,
+					lng: m.lng,
+					width: m.tooltip.data.width,
+					height: m.tooltip.data.height,
+					margin: m.tooltip.data.margin
+				}))
 			};
-			const popupStatesResponse = await fetch(this.configurationApiUrl, {
+			const markerStatesResponse = await fetch(this.configurationApiUrl, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(popupStatesRequest)
+				body: JSON.stringify(markerStatesRequest)
 			});
-			if (!popupStatesResponse.ok || !popupStatesResponse.body) {
-				throw new Error('Failed to get popup states');
+			if (!markerStatesResponse.ok || !markerStatesResponse.body) {
+				throw new Error('Failed to get marker states');
 			}
-			const states: MapPopupState[] = await popupStatesResponse.json();
+			const states: MapTooltipState[] = await markerStatesResponse.json();
 
 			// Update data
-			await this.updatePopupData(popups, states);
+			this.updateMarkerData(markers, states);
 
 			// Update max width and height
-			this.popupMaxWidth = this.popupDataArray.reduce((a, b) => Math.max(a, b.tooltip.width), 0);
-			this.popupMaxHeight = this.popupDataArray.reduce((a, b) => Math.max(a, b.tooltip.height), 0);
+			this.tooltipMaxWidth = this.markerDataArray.reduce((a, b) => Math.max(a, b.tooltip.width), 0);
+			this.tooltipMaxHeight = this.markerDataArray.reduce((a, b) => Math.max(a, b.tooltip.height), 0);
 
-			// Process popup data
-			this.processPopupDataCallback();
+			// Process marker data
+			this.processMarkerDataCallback();
 		} catch (error: any) {
 			console.error(error);
-			log('[Error] Failed to update popups', { message: error.message, stack: error.stack });
+			log('[Error] Failed to update markers', { message: error.message, stack: error.stack });
 
 			throw error;
 		}
 	}
 
-	public removePopups() {
+	public removeMarkers() {
 		try {
-			this.removePopupData();
+			this.removeMarkerData();
 		} catch (error: any) {
 			console.error(error);
-			log('[Error] Failed to remove popups', { message: error.message, stack: error.stack });
+			log('[Error] Failed to remove markers', { message: error.message, stack: error.stack });
 
 			throw error;
 		}
 	}
 
-	public togglePopups(states: { id: string; toggled: boolean }[]) {
-		try {
-			this.togglePopupData(states);
-		} catch (error: any) {
-			console.error(error);
-			log('[Error] Failed to toggle popups', { message: error.message, stack: error.stack });
-
-			throw error;
-		}
-	}
-
-	private processPopupDataCallback() {
+	private processMarkerDataCallback() {
 		// Check if map is loaded or marker data is empty
-		if (this.popupDataArray.length == 0) return;
+		if (this.markerDataArray.length == 0) return;
 
 		try {
-			this.processPopupData();
-			window.setTimeout(this.processPopupDataCallback.bind(this), 25);
+			this.processMarkerData();
+			window.setTimeout(this.processMarkerDataCallback.bind(this), 25);
 		} catch (error: any) {
 			console.error(error);
-			log('[Error] Failed to process popups', { message: error.message, stack: error.stack });
+			log('[Error] Failed to process markers', { message: error.message, stack: error.stack });
 		}
 	}
 
-	private processPopupData() {
-		// Check if map popup data is updating
-		if (this.popupDataUpdating) return;
+	private processMarkerData() {
+		// Check if map marker data is updating
+		if (this.markerDataUpdating) return;
 
 		// Get map zoom
 		const zoom = this.provider.getZoom();
@@ -144,18 +141,18 @@ class MapManager {
 		// Get bounds
 		const mapWidth = this.provider.getWidth();
 		const mapHeight = this.provider.getHeight();
-		const mapOffsetX = this.popupMaxWidth * 2;
-		const mapOffsetY = this.popupMaxHeight * 2;
+		const mapOffsetX = this.tooltipMaxWidth * 2;
+		const mapOffsetY = this.tooltipMaxHeight * 2;
 		const mapOffsetBounds = new MapBounds(-mapOffsetX, mapHeight + mapOffsetY, mapWidth + mapOffsetX, -mapOffsetY, this.provider.parameters);
 		const mapWindowBounds = new MapBounds(0, mapHeight, mapWidth, 0, this.provider.parameters);
 
 		// Track pin count
 		let pinCount = 0;
 
-		for (const data of this.popupDataArray) {
+		for (const data of this.markerDataArray) {
 			const zoomThreshold = data.supressed ? -1 : zoom;
 
-			// Process popup pin
+			// Process marker pin
 			const pin = data.pin;
 
 			if (mapWindowBounds.contains(pin.lat, pin.lng)) {
@@ -191,7 +188,7 @@ class MapManager {
 				pin.updateMap(false);
 			}
 
-			// Process popup marker
+			// Process marker marker
 			const marker = data.tooltip;
 
 			if (mapOffsetBounds.contains(marker.lat, marker.lng)) {
@@ -223,82 +220,71 @@ class MapManager {
 		}
 	}
 
-	private async updatePopupData(newPopups: MapPopup[], newPopupStates: MapPopupState[]) {
+	private updateMarkerData(newMarkers: MapMarker[], newMarkerStates: MapTooltipState[]) {
 		try {
-			this.popupDataUpdating = true;
+			this.markerDataUpdating = true;
 
 			// Remove old data
-			const newPopupsMap = new Map(newPopups.map((newPopup, i) => [newPopup.data.id, new MapPopupData(this.provider, newPopup, newPopupStates[i])]));
-			const oldPopupDataArray = Array.from(this.popupDataArray);
+			const newMarkersMap = new Map(newMarkers.map((m, i) => [m.id, new MapMarkerData(this.provider, m, newMarkerStates[i])]));
+			const oldMarkerDataArray = Array.from(this.markerDataArray);
 
-			for (const oldPopupData of oldPopupDataArray) {
-				if (newPopupsMap.has(oldPopupData.id) == false) {
-					oldPopupData.remove();
+			for (const oldMarkerData of oldMarkerDataArray) {
+				if (newMarkersMap.has(oldMarkerData.id) == false) {
+					oldMarkerData.remove();
 
-					this.popupDataMap.delete(oldPopupData.id);
-					this.popupDataArray.splice(this.popupDataArray.indexOf(oldPopupData), 1);
+					this.markerDataMap.delete(oldMarkerData.id);
+					this.markerDataArray.splice(this.markerDataArray.indexOf(oldMarkerData), 1);
 				}
 			}
 
 			// Crate or update new data
-			for (let i = 0; i < newPopups.length; i++) {
-				const newPopup = newPopups[i];
-				const newPopupState = newPopupStates[i];
+			for (let i = 0; i < newMarkers.length; i++) {
+				const newMarker = newMarkers[i];
+				const newMarkerState = newMarkerStates[i];
 
 				// Check if data already exists
-				const oldData = this.popupDataMap.get(newPopup.data.id);
+				const oldData = this.markerDataMap.get(newMarker.id);
 
 				if (oldData) {
 					// Update data
-					oldData.update(newPopupState);
+					oldData.update(newMarkerState);
 				} else {
 					// Create data
-					const newData = new MapPopupData(this.provider, newPopup, newPopupState);
+					const newData = new MapMarkerData(this.provider, newMarker, newMarkerState);
 					newData.create();
 
-					this.popupDataMap.set(newPopup.data.id, newData);
-					this.popupDataArray.push(newData);
+					this.markerDataMap.set(newMarker.id, newData);
+					this.markerDataArray.push(newData);
 				}
 			}
 
-			this.popupDataArray.sort((a, b) => a.zoom - b.zoom);
+			this.markerDataArray.sort((a, b) => a.zoom - b.zoom);
 		} catch (error) {
 			console.error(error);
 
-			this.popupDataArray.length = 0;
-			this.popupDataMap.clear();
+			this.markerDataArray.forEach((data) => data.remove());
+			this.markerDataArray.length = 0;
+			this.markerDataMap.clear();
 
 			throw error;
 		} finally {
-			this.popupDataUpdating = false;
+			this.markerDataUpdating = false;
 		}
 	}
 
-	private removePopupData() {
+	private removeMarkerData() {
 		try {
-			this.popupDataUpdating = true;
+			this.markerDataUpdating = true;
 
-			this.popupDataArray.forEach((data) => data.remove());
-			this.popupDataArray.length = 0;
-			this.popupDataMap.clear();
+			this.markerDataArray.forEach((data) => data.remove());
+			this.markerDataArray.length = 0;
+			this.markerDataMap.clear();
 		} catch (error) {
 			console.error(error);
-
-			this.popupDataArray.forEach((data) => data.remove());
-			this.popupDataArray.length = 0;
-			this.popupDataMap.clear();
-
 			throw error;
 		} finally {
-			this.popupDataUpdating = false;
+			this.markerDataUpdating = false;
 		}
-	}
-
-	private togglePopupData(states: { id: string; toggled: boolean }[]) {
-		states.forEach((state) => {
-			const data = this.popupDataMap.get(state.id);
-			if (data) data.supressed = !state.toggled;
-		});
 	}
 }
 
@@ -314,11 +300,11 @@ class MapElement<T> {
 	component: T | undefined;
 	marker: MapProviderMarker | undefined;
 
-	constructor(provider: MapProvider, popup: MapPopup, state: MapPopupState) {
+	constructor(provider: MapProvider, marker: MapMarker, state: MapTooltipState) {
 		this.provider = provider;
-		this.id = popup.data.id;
-		this.lat = popup.data.lat;
-		this.lng = popup.data.lng;
+		this.id = marker.id;
+		this.lat = marker.lat;
+		this.lng = marker.lng;
 		this.zoom = state[0];
 	}
 
@@ -340,7 +326,7 @@ class MapElement<T> {
 		this.marker = this.provider.createMarker(element, this.lat, this.lng, this.getZindex());
 	}
 
-	update(state: MapPopupState) {
+	update(state: MapTooltipState) {
 		this.zoom = state[0];
 
 		this.updateZIndex();
@@ -355,7 +341,7 @@ class MapElement<T> {
 	updateMap(contains: boolean) {
 		const marker = this.marker;
 		const component = this.component;
-		if (marker == undefined || component == undefined) throw new Error('Failed to update popup map');
+		if (marker == undefined || component == undefined) throw new Error('Failed to update marker map');
 
 		if (contains) {
 			if (marker.inserted() == false) {
@@ -382,15 +368,15 @@ class MapElement<T> {
 	}
 }
 
-class MapPin extends MapElement<ReturnType<typeof MapPinComponent>> {
+class MapPinElement extends MapElement<ReturnType<typeof MapPinComponent>> {
 	bodyLoading = false;
 	bodyLoaded = false;
-	bodyCallback: MapPopupContentCallback | undefined;
+	bodyCallback: MapBodyCallback | undefined;
 
-	constructor(provider: MapProvider, popup: MapPopup, state: MapPopupState) {
-		super(provider, popup, state);
+	constructor(provider: MapProvider, marker: MapMarker, state: MapTooltipState) {
+		super(provider, marker, state);
 
-		this.bodyCallback = popup.callbacks.pin;
+		this.bodyCallback = marker.pin?.body;
 	}
 
 	createElement() {
@@ -460,7 +446,7 @@ class MapPin extends MapElement<ReturnType<typeof MapPinComponent>> {
 	}
 }
 
-class MapTooltip extends MapElement<ReturnType<typeof MapTooltipComponent>> {
+class MapTooltipElement extends MapElement<ReturnType<typeof MapTooltipComponent>> {
 	width: number;
 	height: number;
 	margin: number;
@@ -469,19 +455,19 @@ class MapTooltip extends MapElement<ReturnType<typeof MapTooltipComponent>> {
 
 	bodyLoading = false;
 	bodyLoaded = false;
-	bodyCallback: MapPopupContentCallback;
+	bodyCallback: MapBodyCallback;
 
-	constructor(provider: MapProvider, popup: MapPopup, state: MapPopupState) {
-		super(provider, popup, state);
+	constructor(provider: MapProvider, marker: MapMarker, state: MapTooltipState) {
+		super(provider, marker, state);
 
-		this.id = popup.data.id;
-		this.width = popup.data.width;
-		this.height = popup.data.height;
-		this.margin = popup.data.margin;
-		this.radius = popup.data.radius;
+		this.id = marker.id;
+		this.width = marker.tooltip.data.width;
+		this.height = marker.tooltip.data.height;
+		this.margin = marker.tooltip.data.margin;
+		this.radius = marker.tooltip.data.radius;
 		this.states = state[1].map((s) => [s[0], Angles.DEGREES[s[1]]]);
 
-		this.bodyCallback = popup.callbacks.body;
+		this.bodyCallback = marker.tooltip.body;
 	}
 
 	createElement() {
@@ -501,7 +487,7 @@ class MapTooltip extends MapElement<ReturnType<typeof MapTooltipComponent>> {
 		});
 	}
 
-	update(state: MapPopupState) {
+	update(state: MapTooltipState) {
 		super.update(state);
 		this.states = state[1].map((s) => [s[0], Angles.DEGREES[s[1]]]);
 	}
@@ -544,7 +530,7 @@ class MapTooltip extends MapElement<ReturnType<typeof MapTooltipComponent>> {
 	}
 
 	getZindex(): number {
-		return super.getZindex() + MAP_MARKERS_Z_INDEX_OFFSET;
+		return super.getZindex() + MAP_TOOLTIPS_Z_INDEX_OFFSET;
 	}
 
 	setCollapsed(value: boolean) {
@@ -567,7 +553,7 @@ class MapTooltip extends MapElement<ReturnType<typeof MapTooltipComponent>> {
 	}
 }
 
-class MapPopupData {
+class MapMarkerData {
 	id: string;
 	rank: number;
 	lat: number;
@@ -575,19 +561,19 @@ class MapPopupData {
 	zoom: number;
 	supressed: boolean;
 
-	pin: MapPin;
-	tooltip: MapTooltip;
+	pin: MapPinElement;
+	tooltip: MapTooltipElement;
 
-	constructor(provider: MapProvider, popup: MapPopup, state: MapPopupState) {
-		this.id = popup.data.id;
-		this.rank = popup.data.rank;
-		this.lat = popup.data.lat;
-		this.lng = popup.data.lng;
+	constructor(provider: MapProvider, marker: MapMarker, state: MapTooltipState) {
+		this.id = marker.id;
+		this.rank = marker.rank;
+		this.lat = marker.lat;
+		this.lng = marker.lng;
 		this.zoom = state[0];
 		this.supressed = false;
 
-		this.pin = new MapPin(provider, popup, state);
-		this.tooltip = new MapTooltip(provider, popup, state);
+		this.pin = new MapPinElement(provider, marker, state);
+		this.tooltip = new MapTooltipElement(provider, marker, state);
 	}
 
 	create() {
@@ -595,7 +581,7 @@ class MapPopupData {
 		this.tooltip.create();
 	}
 
-	update(state: MapPopupState) {
+	update(state: MapTooltipState) {
 		this.pin.update(state);
 		this.tooltip.update(state);
 	}

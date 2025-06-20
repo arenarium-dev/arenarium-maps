@@ -5,10 +5,10 @@ import { Rectangle } from '../rectangle.js';
 import { Mercator } from '../mercator.js';
 
 import { Angles } from '../../constants.js';
-import { type Popup } from '../../types.js';
+import { type Tooltip } from '../../types.js';
 
 namespace Nodes {
-	export class Marker {
+	export class Tooltip {
 		zoomAfterExpanded: number;
 		zoomAfterAngleIndexes: [number, number][];
 
@@ -22,39 +22,39 @@ namespace Nodes {
 		// PROPERTIES
 		/** The index of the node in the nodes array. */
 		index: number;
-		/** The id of the marker that this node represents. */
+		/** The id of the tooltip that this node represents. */
 		id: string;
-		/** The rank of the marker node. */
+		/** The rank of the tooltip node. */
 		rank: number;
-		/** The x coordinate of the marker node. */
+		/** The x coordinate of the tooltip node. */
 		x: number;
-		/** The y coordinate of the marker node. */
+		/** The y coordinate of the tooltip node. */
 		y: number;
-		/** The width of the marker node. */
+		/** The width of the tooltip node. */
 		width: number;
-		/** The height of the marker node. */
+		/** The height of the tooltip node. */
 		height: number;
 
 		// STATE
-		/** State of the marker expanded or not. */
+		/** State of the tooltip expanded or not. */
 		expanded: boolean;
-		/** The angle of the marker node. */
+		/** The angle of the tooltip node. */
 		angle: number;
-		/** The bounds of the marker node. */
+		/** The bounds of the tooltip node. */
 		bounds: Bounds;
-		/** A marker node has a particle whose position is used to calculate the angle */
+		/** A tooltip node has a particle whose position is used to calculate the angle */
 		particle: Particles.Particle;
-		/** The neighbours of the marker node. */
+		/** The neighbours of the tooltip node. */
 		neighbours: Array<Node>;
 
-		constructor(parameters: Popup.Parameters, data: Popup.Data, index: number) {
-			const projection = Mercator.project(data.lat, data.lng, parameters.mapSize);
-			const width = data.width + 2 * data.margin;
-			const height = data.height + 2 * data.margin;
+		constructor(parameters: Tooltip.Parameters, input: Tooltip.StateInput, index: number) {
+			const projection = Mercator.project(input.lat, input.lng, parameters.mapSize);
+			const width = input.width + 2 * input.margin;
+			const height = input.height + 2 * input.margin;
 
 			this.index = index;
-			this.id = data.id;
-			this.rank = data.rank;
+			this.id = input.id;
+			this.rank = input.rank;
 			this.x = projection.x;
 			this.y = projection.y;
 			this.width = width;
@@ -114,7 +114,7 @@ namespace Nodes {
 		public scale: number;
 		public step: number;
 
-		constructor(parameters: Popup.Parameters) {
+		constructor(parameters: Tooltip.Parameters) {
 			this.min = parameters.zoomMin;
 			this.max = parameters.zoomMax;
 			this.scale = parameters.zoomScale;
@@ -147,13 +147,12 @@ namespace Nodes {
 		}
 	}
 
-	export function createNodes(parameters: Popup.Parameters, data: Array<Popup.Data>): Array<Node> {
-		let nodes = new Array<Node>(data.length);
+	export function createNodes(parameters: Tooltip.Parameters, input: Array<Tooltip.StateInput>): Array<Node> {
+		let nodes = new Array<Node>(input.length);
 
-		// Create marker nodes
-		for (let i = 0; i < data.length; i++) {
-			const popup = data[i];
-			nodes[i] = new Node(parameters, popup, i);
+		// Create tooltip nodes
+		for (let i = 0; i < input.length; i++) {
+			nodes[i] = new Node(parameters, input[i], i);
 		}
 
 		return nodes;
@@ -168,8 +167,8 @@ namespace Nodes {
 			nodesNeighbourDeltas[i] = new Array<Array<Node>>();
 		}
 
-		// Create marker connection bounds of influence,
-		// bounds are the maximum rectangle where the marker can be positioned
+		// Create tooltip connection bounds of influence,
+		// bounds are the maximum rectangle where the tooltip can be positioned
 		const bounds = new Array<Bounds>(nodes.length);
 
 		for (let i = 0; i < nodes.length; i++) {
@@ -185,9 +184,9 @@ namespace Nodes {
 			};
 		}
 
-		// Calculate marker connections zoom when touching,
+		// Calculate tooltip connections zoom when touching,
 		// the zoom when touching is the maximum zoom level at
-		// which the markers influencing each others position (angle, expanded, etc.)
+		// which the tooltips influencing each others position (angle, expanded, etc.)
 		for (let i1 = 0; i1 < nodes.length; i1++) {
 			const node1 = nodes[i1];
 			const bounds1 = bounds[i1];
@@ -286,29 +285,29 @@ namespace Nodes {
 		}
 	}
 
-	export function updateMarkers(nodes: Array<Node>, markers: Map<string, Marker>, zoom: number) {
+	export function updateTooltips(nodes: Array<Node>, tooltips: Map<string, Tooltip>, zoom: number) {
 		for (let i = 0; i < nodes.length; i++) {
 			const node = nodes[i];
 			if (node.expanded == false) continue;
 
-			const marker = markers.get(node.id);
-			if (!marker) throw new Error('Marker not found');
+			const tooltip = tooltips.get(node.id);
+			if (!tooltip) throw new Error('Tooltip not found');
 
-			// Update marker zoom when expanded
-			marker.zoomAfterExpanded = zoom;
+			// Update tooltip zoom when expanded
+			tooltip.zoomAfterExpanded = zoom;
 
-			// Update marker angles
+			// Update tooltip angles
 			// If the last angle value is different from the new angle value, add the new angle
 			// (ang[0] = threshold, ang[1] = angle index)
 			const angleIndex = Angles.DEGREES.indexOf(node.angle);
 
-			if (marker.zoomAfterAngleIndexes.length == 0) {
-				marker.zoomAfterAngleIndexes.push([zoom, angleIndex]);
+			if (tooltip.zoomAfterAngleIndexes.length == 0) {
+				tooltip.zoomAfterAngleIndexes.push([zoom, angleIndex]);
 			} else {
-				if (marker.zoomAfterAngleIndexes[0][1] != angleIndex) {
-					marker.zoomAfterAngleIndexes.unshift([zoom, angleIndex]);
+				if (tooltip.zoomAfterAngleIndexes[0][1] != angleIndex) {
+					tooltip.zoomAfterAngleIndexes.unshift([zoom, angleIndex]);
 				} else {
-					marker.zoomAfterAngleIndexes[0][0] = zoom;
+					tooltip.zoomAfterAngleIndexes[0][0] = zoom;
 				}
 			}
 		}
@@ -450,14 +449,14 @@ namespace Nodes {
 	}
 }
 
-function getStates(parameters: Popup.Parameters, data: Array<Popup.Data>): Popup.State[] {
+function getStates(parameters: Tooltip.Parameters, data: Array<Tooltip.StateInput>): Tooltip.State[] {
 	const nodesZoom = new Nodes.Zoom(parameters);
 
 	if (data.length == 0) return [];
 	if (data.length == 1) return [[nodesZoom.min, [[nodesZoom.min, Angles.DEGREES.indexOf(Angles.DEFAULT)]]]];
 
-	// Initialize markers
-	const markers = new Map<string, Nodes.Marker>(data.map((p) => [p.id, new Nodes.Marker()]));
+	// Initialize tooltips
+	const tooltips = new Map<string, Nodes.Tooltip>(data.map((p) => [p.id, new Nodes.Tooltip()]));
 
 	// Initialze nodes
 	const nodes = Nodes.createNodes(parameters, data);
@@ -470,7 +469,7 @@ function getStates(parameters: Popup.Parameters, data: Array<Popup.Data>): Popup
 	// Initialize angles
 	Nodes.Simulation.initializeAngles(nodes);
 	// Initially add the last threshold event
-	Nodes.updateMarkers(nodes, markers, nodesZoom.addSteps(nodesZoom.max, 1));
+	Nodes.updateTooltips(nodes, tooltips, nodesZoom.addSteps(nodesZoom.max, 1));
 
 	// Go from last to first zoom
 	for (let zoom = zoomMax; zoom >= zoomMin; zoom = nodesZoom.addSteps(zoom, -1)) {
@@ -528,11 +527,11 @@ function getStates(parameters: Popup.Parameters, data: Array<Popup.Data>): Popup
 			}
 		}
 
-		// Update markers
-		Nodes.updateMarkers(nodes, markers, Number(zoom.toFixed(1)));
+		// Update tooltips
+		Nodes.updateTooltips(nodes, tooltips, Number(zoom.toFixed(1)));
 	}
 
-	return Array.from(markers.values()).map((s) => [s.zoomAfterExpanded, s.zoomAfterAngleIndexes]);
+	return Array.from(tooltips.values()).map((s) => [s.zoomAfterExpanded, s.zoomAfterAngleIndexes]);
 }
 
 export { getStates };

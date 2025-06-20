@@ -2,10 +2,10 @@
 	import { mount, onMount, tick } from 'svelte';
 
 	import Icon from './components/Icon.svelte';
-	import PopupComponent from './components/Popup.svelte';
+	import TooltipComponent from './components/Tooltip.svelte';
 
 	import { MapManager } from '$lib/main.js';
-	import type { MapPopup, MapPopupData, MapProvider } from '$lib/main.js';
+	import type { MapMarker, MapProvider } from '$lib/main.js';
 
 	let Mode = {
 		MapLibre: 'maplibre',
@@ -17,7 +17,7 @@
 	let mapProvider: MapProvider;
 	let mapManager: MapManager;
 
-	let mapPopups = new Map<string, MapPopup>();
+	let mapMarkers = new Map<string, MapMarker>();
 
 	let loading = $state<boolean>(false);
 	let zoom = $state<number>(0);
@@ -140,27 +140,27 @@
 
 	async function addData() {
 		const bounds = getBounds();
-		const popups = await getPopups(bounds);
+		const markers = await getMarkers(bounds);
 
-		popups.forEach((popup) => mapPopups.set(popup.data.id, popup));
+		markers.forEach((m) => mapMarkers.set(m.id, m));
 		await tick();
 
 		const now = performance.now();
-		await mapManager.updatePopups(popups);
-		console.log(`[UPDATE POPUPS ${popups.length}] ${performance.now() - now}ms`);
+		await mapManager.updateMarkers(markers);
+		console.log(`[UPDATE MARKERS ${markers.length}] ${performance.now() - now}ms`);
 	}
 
 	async function clearData() {
-		mapPopups.clear();
-		mapManager.removePopups();
+		mapMarkers.clear();
+		mapManager.removeMarkers();
 	}
 
 	let toggled = false;
 
 	async function toggleData() {
 		toggled = !toggled;
-		const states = Array.from(mapPopups.values()).map((popup) => ({ id: popup.data.id, toggled: toggled }));
-		mapManager.togglePopups(states);
+		const states = Array.from(mapMarkers.values()).map((m) => ({ id: m.id, toggled: toggled }));
+		// mapManager.togglePopups(states);
 	}
 
 	const zoomDelta = 0.05;
@@ -232,8 +232,8 @@
 		}
 	});
 
-	async function getPopups(bounds: Bounds): Promise<MapPopup[]> {
-		const data = new Array<MapPopupData>();
+	async function getMarkers(bounds: Bounds): Promise<MapMarker[]> {
+		const markers = new Array<MapMarker>();
 
 		let count = 0;
 		let index = 0;
@@ -247,51 +247,44 @@
 			if (lat < bounds.sw.lat || bounds.ne.lat < lat || lng < bounds.sw.lng || bounds.ne.lng < lng) continue;
 			count++;
 
-			data.push({
+			markers.push({
 				id: index.toString(),
 				rank: rank,
 				lat: lat,
 				lng: lng,
-				height: 24,
-				width: 36,
-				margin: 4,
-				radius: 4
+				tooltip: {
+					data: {
+						height: 24,
+						width: 36,
+						margin: 4,
+						radius: 4
+					},
+					body: getTooltipBody
+				},
+				// pin: {
+				// 	body: getPinBody
+				// }
 			});
 		}
 
-		const popups = new Array<MapPopup>(data.length);
-
-		for (let i = 0; i < data.length; i++) {
-			popups[i] = {
-				data: data[i],
-				callbacks: {
-					body: getPopupBody
-					// pin: getPopupPin
-				}
-			};
-		}
-
-		return await new Promise((resolve) => resolve(popups));
+		return await new Promise((resolve) => resolve(markers));
 	}
 
-	async function getPopupBody(id: string): Promise<HTMLElement> {
+	async function getTooltipBody(id: string): Promise<HTMLElement> {
 		return await new Promise((resolve) => {
-			const popup = mapPopups.get(id);
-			if (popup == undefined) throw new Error('Failed to get popup');
+			const marker = mapMarkers.get(id);
+			if (marker == undefined) throw new Error('Failed to get marker');
 
 			const element = document.createElement('div');
-			mount(PopupComponent, { target: element, props: { id: id, popup: popup } });
-
-			element.style.width = popup.data.width + 'px';
-			element.style.height = popup.data.height + 'px';
+			mount(TooltipComponent, { target: element, props: { id: id, marker: marker } });
 			resolve(element);
 		});
 	}
 
-	async function getPopupPin(id: string): Promise<HTMLElement> {
+	async function getPinBody(id: string): Promise<HTMLElement> {
 		return await new Promise((resolve) => {
-			const popup = mapPopups.get(id);
-			if (popup == undefined) throw new Error('Failed to get popup');
+			const marker = mapMarkers.get(id);
+			if (marker == undefined) throw new Error('Failed to get marker');
 
 			if (Number.parseInt(id) % 10 <= 3) {
 				const element = document.createElement('div');
