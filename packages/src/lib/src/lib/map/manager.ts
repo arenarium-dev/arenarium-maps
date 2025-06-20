@@ -65,8 +65,8 @@ class MapManager {
 			// Validate markers
 			await mapMarkersSchema.parseAsync(markers);
 
-			// Get marker states
-			const markerStatesRequest: MapTooltipStatesRequest = {
+			// Get marker tooltip states
+			const tooltipStatesRequest: MapTooltipStatesRequest = {
 				key: this.key,
 				parameters: this.provider.parameters,
 				input: markers.map((m) => ({
@@ -79,18 +79,18 @@ class MapManager {
 					margin: m.tooltip.data.margin
 				}))
 			};
-			const markerStatesResponse = await fetch(this.configurationApiUrl, {
+			const tooltipStatesResponse = await fetch(this.configurationApiUrl, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(markerStatesRequest)
+				body: JSON.stringify(tooltipStatesRequest)
 			});
-			if (!markerStatesResponse.ok || !markerStatesResponse.body) {
+			if (!tooltipStatesResponse.ok || !tooltipStatesResponse.body) {
 				throw new Error('Failed to get marker states');
 			}
-			const states: MapTooltipState[] = await markerStatesResponse.json();
+			const tooltipStates: MapTooltipState[] = await tooltipStatesResponse.json();
 
 			// Update data
-			this.updateMarkerData(markers, states);
+			this.updateMarkerData(markers, tooltipStates);
 
 			// Update max width and height
 			this.tooltipMaxWidth = this.markerDataArray.reduce((a, b) => Math.max(a, b.tooltip.width), 0);
@@ -143,8 +143,8 @@ class MapManager {
 		const mapHeight = this.provider.getHeight();
 		const mapOffsetX = this.tooltipMaxWidth * 2;
 		const mapOffsetY = this.tooltipMaxHeight * 2;
-		const mapOffsetBounds = new MapBounds(-mapOffsetX, mapHeight + mapOffsetY, mapWidth + mapOffsetX, -mapOffsetY, this.provider.parameters);
-		const mapWindowBounds = new MapBounds(0, mapHeight, mapWidth, 0, this.provider.parameters);
+		const mapTooltipBounds = new MapBounds(-mapOffsetX, mapHeight + mapOffsetY, mapWidth + mapOffsetX, -mapOffsetY, this.provider.parameters);
+		const mapPinBounds = new MapBounds(0, mapHeight, mapWidth, 0, this.provider.parameters);
 
 		// Track pin count
 		let pinCount = 0;
@@ -155,7 +155,7 @@ class MapManager {
 			// Process marker pin
 			const pin = data.pin;
 
-			if (mapWindowBounds.contains(pin.lat, pin.lng)) {
+			if (mapPinBounds.contains(pin.lat, pin.lng)) {
 				if (zoomThreshold <= pin.zoom && pin.zoom <= zoom + this.configurationPinMaxZoomDelta) {
 					if (pinCount < this.configurationPinMaxCount) {
 						// Update pin state
@@ -188,34 +188,34 @@ class MapManager {
 				pin.updateMap(false);
 			}
 
-			// Process marker marker
-			const marker = data.tooltip;
+			// Process marker tooltip
+			const tooltip = data.tooltip;
 
-			if (mapOffsetBounds.contains(marker.lat, marker.lng)) {
-				if (marker.zoom <= zoomThreshold) {
+			if (mapTooltipBounds.contains(tooltip.lat, tooltip.lng)) {
+				if (tooltip.zoom <= zoomThreshold) {
 					// Update marker state
-					marker.updateState(zoom);
-					marker.setCollapsed(false);
+					tooltip.updateState(zoom);
+					tooltip.setCollapsed(false);
 
 					// Update marker map
-					marker.updateMap(true);
+					tooltip.updateMap(true);
 
 					// If marker is expanded, update body if not loaded
-					if (marker.isExpanded() && marker.isBodyLoaded() == false) {
-						marker.updateBody();
+					if (tooltip.isExpanded() && tooltip.isBodyLoaded() == false) {
+						tooltip.updateBody();
 					}
 				} else {
 					// Check if marker exist on map
-					marker.setCollapsed(true);
+					tooltip.setCollapsed(true);
 
 					// Wait until marker is collapsed before removing it
-					if (marker.isCollapsed()) {
-						marker.updateMap(false);
+					if (tooltip.isCollapsed()) {
+						tooltip.updateMap(false);
 					}
 				}
 			} else {
 				// If outside bounds immediately remove
-				marker.updateMap(false);
+				tooltip.updateMap(false);
 			}
 		}
 	}
@@ -320,7 +320,7 @@ class MapElement<T> {
 
 	createMarker() {
 		const element = this.element;
-		if (!element) throw new Error('Failed to create marker');
+		if (!element) throw new Error('Failed to create provider marker');
 
 		// Create new marker
 		this.marker = this.provider.createMarker(element, this.lat, this.lng, this.getZindex());
@@ -333,7 +333,7 @@ class MapElement<T> {
 	}
 
 	updateZIndex() {
-		if (this.marker == undefined) throw new Error('Failed to update marker z-index');
+		if (this.marker == undefined) throw new Error('Failed to update provider marker z-index');
 
 		this.marker.update(this.getZindex());
 	}
@@ -341,7 +341,7 @@ class MapElement<T> {
 	updateMap(contains: boolean) {
 		const marker = this.marker;
 		const component = this.component;
-		if (marker == undefined || component == undefined) throw new Error('Failed to update marker map');
+		if (marker == undefined || component == undefined) throw new Error('Failed to update provider marker map');
 
 		if (contains) {
 			if (marker.inserted() == false) {
@@ -356,10 +356,6 @@ class MapElement<T> {
 
 	getZindex() {
 		return Math.round((this.provider.parameters.zoomMax - this.zoom) * this.provider.parameters.zoomScale);
-	}
-
-	isInBlock(zoom: number, bounds: MapBounds) {
-		return this.zoom <= zoom && bounds.contains(this.lat, this.lng);
 	}
 
 	remove() {
@@ -399,11 +395,8 @@ class MapPinElement extends MapElement<ReturnType<typeof MapPinComponent>> {
 	}
 
 	updateState(zoom: number) {
-		const pin = this.component;
-		if (!pin) throw new Error('Failed to update pin state');
-
-		// Set pin scale
-		pin.setScale(this.getScale(zoom));
+		if (this.component == undefined) throw new Error('Failed to update pin state');
+		this.component.setScale(this.getScale(zoom));
 	}
 
 	updateBody() {
@@ -472,11 +465,11 @@ class MapTooltipElement extends MapElement<ReturnType<typeof MapTooltipComponent
 
 	createElement() {
 		this.element = document.createElement('div');
-		this.element.classList.add('marker');
+		this.element.classList.add('tooltip');
 		this.component = mount(MapTooltipComponent, {
 			target: this.element,
 			props: {
-				id: this.id + '_marker',
+				id: this.id + '_tooltip',
 				layer: ANIMATION_TOOLTIP_LAYER,
 				priority: this.zoom * this.provider.parameters.zoomScale,
 				width: this.width,
@@ -499,11 +492,8 @@ class MapTooltipElement extends MapElement<ReturnType<typeof MapTooltipComponent
 	}
 
 	updateState(zoom: number) {
-		const marker = this.component;
-		if (!marker) throw new Error('Failed to update marker state');
-
-		// Set marker angle
-		marker.setAngle(this.getAngle(zoom));
+		if (this.component == undefined) throw new Error('Failed to update tooltip state');
+		this.component.setAngle(this.getAngle(zoom));
 	}
 
 	updateBody() {
@@ -534,17 +524,17 @@ class MapTooltipElement extends MapElement<ReturnType<typeof MapTooltipComponent
 	}
 
 	setCollapsed(value: boolean) {
-		if (this.component == undefined) throw new Error('Failed to set marker collapsed');
+		if (this.component == undefined) throw new Error('Failed to set tooltip collapsed');
 		this.component.setCollapsed(value);
 	}
 
 	isExpanded() {
-		if (!this.component) return false;
+		if (this.component == undefined) return false;
 		return this.component.getExpanded();
 	}
 
 	isCollapsed() {
-		if (!this.component) return false;
+		if (this.component == undefined) return false;
 		return this.component.getCollapsed();
 	}
 
