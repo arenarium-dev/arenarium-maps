@@ -13,7 +13,7 @@ export namespace Popup {
 		lng: number;
 		width: number;
 		height: number;
-		padding: number;
+		margin: number;
 	}
 
 	export interface StatesRequest {

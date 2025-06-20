@@ -12,7 +12,7 @@
 		layer,
 		width,
 		height,
-		padding,
+		margin,
 		radius
 	}: {
 		id: string;
@@ -20,7 +20,7 @@
 		layer: number;
 		width: number;
 		height: number;
-		padding: number;
+		margin: number;
 		radius: number;
 	} = $props();
 
@@ -29,16 +29,16 @@
 	let pointer: HTMLElement;
 	let body: HTMLElement;
 
-	const markerWidth = width + 2 * padding;
-	const markerHeight = height + 2 * padding;
+	const markerWidth = width + 2 * margin;
+	const markerHeight = height + 2 * margin;
 
 	export const getBody = () => body;
 
 	//#region Position
 
 	$effect(() => {
-		pointer.style.width = `${padding * 4}px`;
-		pointer.style.height = `${padding * 4}px`;
+		pointer.style.width = `${margin * 4}px`;
+		pointer.style.height = `${margin * 4}px`;
 	});
 
 	//#endregion
@@ -165,7 +165,7 @@
 
 		const pointerSkewRatio = (pointerCenterDistance - pointerCenterMinDistance) / (pointerCenterMaxDistance - pointerCenterMinDistance);
 		const pointerSkewDeg = pointerMinSkew + pointerSkewRatio * (pointerMaxSkew - pointerMinSkew);
-		const pointerScale = pointerCenterDistance < pointerCenterMinDistance ? pointerCenterDistance / pointerCenterMinDistance : 1;		
+		const pointerScale = pointerCenterDistance < pointerCenterMinDistance ? pointerCenterDistance / pointerCenterMinDistance : 1;
 
 		animation.equeue(layer, priority, id + '_angle', () => {
 			bubble.style.transform = `translate(${Math.round(markerOffsetX)}px, ${Math.round(markerOffsetY)}px)`;
@@ -200,7 +200,7 @@
 
 <div class="anchor" class:displayed bind:this={anchor}>
 	<div class="pointer" bind:this={pointer}></div>
-	<div class="bubble" style:padding={padding + 'px'} bind:this={bubble}>
+	<div class="bubble" style:padding={margin + 'px'} bind:this={bubble}>
 		<div class="body" style:width={`${width}px`} style:height={`${height}px`} style:border-radius={radius + 'px'} bind:this={body}></div>
 	</div>
 </div>

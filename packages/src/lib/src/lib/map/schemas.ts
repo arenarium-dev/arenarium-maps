@@ -75,10 +75,10 @@ export const mapPopupDataSchema = z
 		lng: z.number().min(-180).max(180),
 		width: z.number(),
 		height: z.number(),
-		padding: z.number(),
+		margin: z.number(),
 		radius: z.number()
 	})
-	.refine((data) => Math.min(data.width, data.height) / data.padding >= 4, 'Popup width and height must be at least 4 times the padding');
+	.refine((data) => Math.min(data.width, data.height) / data.margin >= 4, 'Popup width and height must be at least 4 times the margin');
 
 export const mapPopupStateSchema = z.tuple([z.number(), z.array(z.tuple([z.number(), z.number()]))]);
 

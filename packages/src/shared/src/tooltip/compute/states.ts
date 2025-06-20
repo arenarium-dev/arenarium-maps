@@ -49,8 +49,8 @@ namespace Nodes {
 
 		constructor(parameters: Popup.Parameters, data: Popup.Data, index: number) {
 			const projection = Mercator.project(data.lat, data.lng, parameters.mapSize);
-			const width = data.width + 2 * data.padding;
-			const height = data.height + 2 * data.padding;
+			const width = data.width + 2 * data.margin;
+			const height = data.height + 2 * data.margin;
 
 			this.index = index;
 			this.id = data.id;

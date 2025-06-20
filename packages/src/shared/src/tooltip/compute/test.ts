@@ -22,8 +22,8 @@ class Popup {
 		const point = Mercator.project(data.lat, data.lng, parameters.mapSize);
 		this.x = point.x;
 		this.y = point.y;
-		this.width = data.width + 2 * data.padding;
-		this.height = data.height + 2 * data.padding;
+		this.width = data.width + 2 * data.margin;
+		this.height = data.height + 2 * data.margin;
 		this.zoom = state[0];
 		this.angles = state[1].map((s) => [s[0], Angles.DEGREES[s[1]]]);
 

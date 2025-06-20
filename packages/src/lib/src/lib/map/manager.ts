@@ -463,7 +463,7 @@ class MapPopupPin extends MapPopupComponent<ReturnType<typeof MapPin>> {
 class MapPopupMarker extends MapPopupComponent<ReturnType<typeof MapMarker>> {
 	width: number;
 	height: number;
-	padding: number;
+	margin: number;
 	radius: number;
 	states: [number, number][];
 
@@ -477,7 +477,7 @@ class MapPopupMarker extends MapPopupComponent<ReturnType<typeof MapMarker>> {
 		this.id = popup.data.id;
 		this.width = popup.data.width;
 		this.height = popup.data.height;
-		this.padding = popup.data.padding;
+		this.margin = popup.data.margin;
 		this.radius = popup.data.radius;
 		this.states = state[1].map((s) => [s[0], Angles.DEGREES[s[1]]]);
 
@@ -495,7 +495,7 @@ class MapPopupMarker extends MapPopupComponent<ReturnType<typeof MapMarker>> {
 				priority: this.zoom * this.provider.parameters.zoomScale,
 				width: this.width,
 				height: this.height,
-				padding: this.padding,
+				margin: this.margin,
 				radius: this.radius
 			}
 		});

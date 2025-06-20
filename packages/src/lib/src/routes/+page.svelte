@@ -254,7 +254,7 @@
 				lng: lng,
 				height: 24,
 				width: 48,
-				padding: 4,
+				margin: 4,
 				radius: 8
 			});
 		}
