@@ -6,14 +6,12 @@
 	let { id, popup }: { id: string; popup: MapPopup } = $props();
 </script>
 
-<div {id} class="popup">
+<div {id} class="popup" style:width={popup.data.width + 'px'} style:height={popup.data.height + 'px'}>
 	{popup.data.rank}
 </div>
 
 <style lang="less">
 	.popup {
-		width: 48px;
-		height: 24px;
 		display: flex;
 		align-items: center;
 		justify-content: center;

@@ -12,7 +12,8 @@
 		layer,
 		width,
 		height,
-		padding
+		padding,
+		radius
 	}: {
 		id: string;
 		priority: number;
@@ -20,6 +21,7 @@
 		width: number;
 		height: number;
 		padding: number;
+		radius: number;
 	} = $props();
 
 	let anchor: HTMLElement;
@@ -35,8 +37,8 @@
 	//#region Position
 
 	$effect(() => {
-		pointer.style.width = `${Math.min(markerWidth, markerHeight) / 4}px`;
-		pointer.style.height = `${Math.min(markerWidth, markerHeight) / 4}px`;
+		pointer.style.width = `${padding * 4}px`;
+		pointer.style.height = `${padding * 4}px`;
 	});
 
 	//#endregion
@@ -157,13 +159,13 @@
 		const pointerMinSkew = 0;
 		const pointerMaxSkew = 30;
 
-		const pointerCenterDistance = Math.sqrt(markerCenterX * markerCenterX + markerCenterY * markerCenterY);
+		const pointerCenterDistance = Math.sqrt(pointerCenterX * pointerCenterX + pointerCenterY * pointerCenterY);
 		const pointerCenterMinDistance = Math.min(markerWidth, markerHeight) / 2;
-		const pointerCenterMaxDistance = Math.sqrt(markerWidth * markerWidth + markerHeight * markerHeight) / 2;
+		const pointerCenterMaxDistance = pointerCenterMinDistance * Math.SQRT2;
 
 		const pointerSkewRatio = (pointerCenterDistance - pointerCenterMinDistance) / (pointerCenterMaxDistance - pointerCenterMinDistance);
 		const pointerSkewDeg = pointerMinSkew + pointerSkewRatio * (pointerMaxSkew - pointerMinSkew);
-		const pointerScale = pointerCenterDistance < pointerCenterMinDistance ? pointerCenterDistance / pointerCenterMinDistance : 1;
+		const pointerScale = pointerCenterDistance < pointerCenterMinDistance ? pointerCenterDistance / pointerCenterMinDistance : 1;		
 
 		animation.equeue(layer, priority, id + '_angle', () => {
 			bubble.style.transform = `translate(${Math.round(markerOffsetX)}px, ${Math.round(markerOffsetY)}px)`;
@@ -199,7 +201,7 @@
 <div class="anchor" class:displayed bind:this={anchor}>
 	<div class="pointer" bind:this={pointer}></div>
 	<div class="bubble" style:padding={padding + 'px'} bind:this={bubble}>
-		<div class="body" style:width={`${width}px`} style:height={`${height}px`} bind:this={body}></div>
+		<div class="body" style:width={`${width}px`} style:height={`${height}px`} style:border-radius={radius + 'px'} bind:this={body}></div>
 	</div>
 </div>
 
@@ -221,7 +223,6 @@
 
 			.body {
 				position: relative;
-				border-radius: 12px;
 				background-color: @background;
 				overflow: hidden;
 				cursor: pointer;
@@ -232,7 +233,6 @@
 			position: absolute;
 			left: 0px;
 			top: 0px;
-			border-radius: 2px;
 			background-color: @background;
 			transform-origin: 0% 0%;
 		}

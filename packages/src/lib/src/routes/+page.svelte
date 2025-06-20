@@ -254,7 +254,8 @@
 				lng: lng,
 				height: 24,
 				width: 48,
-				padding: 2
+				padding: 4,
+				radius: 8
 			});
 		}
 
@@ -264,7 +265,7 @@
 			popups[i] = {
 				data: data[i],
 				callbacks: {
-					body: getPopupBody,
+					body: getPopupBody
 					// pin: getPopupPin
 				}
 			};

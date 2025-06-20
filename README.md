@@ -1,5 +1,7 @@
 TODO:
 
+Rename popup paddin to margin
+
 Rename popups to markers and marker pin to pointer, rename circle to pin
 Add toggle popup, an reveal popup good logic
 
