@@ -1,7 +1,7 @@
 import { mount } from 'svelte';
 
-import MapMarker from '../components/map/Tooltip.svelte';
-import MapPin from '../components/map/Pin.svelte';
+import MapTooltipComponent from '../components/map/Tooltip.svelte';
+import MapPinComponent from '../components/map/Pin.svelte';
 
 import { log } from './log.js';
 import { animation, ANIMATION_PIN_LAYER, ANIMATION_TOOLTIP_LAYER } from './animation/animation.js';
@@ -85,8 +85,8 @@ class MapManager {
 			await this.updatePopupData(popups, states);
 
 			// Update max width and height
-			this.popupMaxWidth = this.popupDataArray.reduce((a, b) => Math.max(a, b.marker.width), 0);
-			this.popupMaxHeight = this.popupDataArray.reduce((a, b) => Math.max(a, b.marker.height), 0);
+			this.popupMaxWidth = this.popupDataArray.reduce((a, b) => Math.max(a, b.tooltip.width), 0);
+			this.popupMaxHeight = this.popupDataArray.reduce((a, b) => Math.max(a, b.tooltip.height), 0);
 
 			// Process popup data
 			this.processPopupDataCallback();
@@ -187,12 +187,12 @@ class MapManager {
 					}
 				}
 			} else {
-				// If created immediately remove pin
+				// If outside bounds immediately remove
 				pin.updateMap(false);
 			}
 
 			// Process popup marker
-			const marker = data.marker;
+			const marker = data.tooltip;
 
 			if (mapOffsetBounds.contains(marker.lat, marker.lng)) {
 				if (marker.zoom <= zoomThreshold) {
@@ -217,7 +217,7 @@ class MapManager {
 					}
 				}
 			} else {
-				// If created immediately remove marker
+				// If outside bounds immediately remove
 				marker.updateMap(false);
 			}
 		}
@@ -302,7 +302,7 @@ class MapManager {
 	}
 }
 
-class MapPopupComponent<T> {
+class MapElement<T> {
 	provider: MapProvider;
 
 	id: string;
@@ -382,7 +382,7 @@ class MapPopupComponent<T> {
 	}
 }
 
-class MapPopupPin extends MapPopupComponent<ReturnType<typeof MapPin>> {
+class MapPin extends MapElement<ReturnType<typeof MapPinComponent>> {
 	bodyLoading = false;
 	bodyLoaded = false;
 	bodyCallback: MapPopupContentCallback | undefined;
@@ -396,7 +396,7 @@ class MapPopupPin extends MapPopupComponent<ReturnType<typeof MapPin>> {
 	createElement() {
 		this.element = document.createElement('div');
 		this.element.classList.add('pin');
-		this.component = mount(MapPin, {
+		this.component = mount(MapPinComponent, {
 			target: this.element,
 			props: {
 				id: this.id + '_pin',
@@ -460,7 +460,7 @@ class MapPopupPin extends MapPopupComponent<ReturnType<typeof MapPin>> {
 	}
 }
 
-class MapPopupMarker extends MapPopupComponent<ReturnType<typeof MapMarker>> {
+class MapTooltip extends MapElement<ReturnType<typeof MapTooltipComponent>> {
 	width: number;
 	height: number;
 	margin: number;
@@ -487,7 +487,7 @@ class MapPopupMarker extends MapPopupComponent<ReturnType<typeof MapMarker>> {
 	createElement() {
 		this.element = document.createElement('div');
 		this.element.classList.add('marker');
-		this.component = mount(MapMarker, {
+		this.component = mount(MapTooltipComponent, {
 			target: this.element,
 			props: {
 				id: this.id + '_marker',
@@ -575,8 +575,8 @@ class MapPopupData {
 	zoom: number;
 	supressed: boolean;
 
-	pin: MapPopupPin;
-	marker: MapPopupMarker;
+	pin: MapPin;
+	tooltip: MapTooltip;
 
 	constructor(provider: MapProvider, popup: MapPopup, state: MapPopupState) {
 		this.id = popup.data.id;
@@ -586,23 +586,23 @@ class MapPopupData {
 		this.zoom = state[0];
 		this.supressed = false;
 
-		this.pin = new MapPopupPin(provider, popup, state);
-		this.marker = new MapPopupMarker(provider, popup, state);
+		this.pin = new MapPin(provider, popup, state);
+		this.tooltip = new MapTooltip(provider, popup, state);
 	}
 
 	create() {
 		this.pin.create();
-		this.marker.create();
+		this.tooltip.create();
 	}
 
 	update(state: MapPopupState) {
 		this.pin.update(state);
-		this.marker.update(state);
+		this.tooltip.update(state);
 	}
 
 	remove() {
 		this.pin.remove();
-		this.marker.remove();
+		this.tooltip.remove();
 	}
 }
 

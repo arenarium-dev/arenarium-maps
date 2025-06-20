@@ -253,9 +253,9 @@
 				lat: lat,
 				lng: lng,
 				height: 24,
-				width: 48,
+				width: 36,
 				margin: 4,
-				radius: 8
+				radius: 4
 			});
 		}
 
