@@ -36,7 +36,7 @@ class MapManager {
 		
 		this.markerPinProcessor = new MapPinProcessor(mapProvider);
 		this.markerTooltipProcessor = new MapTooltipProcessor(mapProvider);
-		
+
 		this.configuration = mapConfiguration;
 	}
 
@@ -123,11 +123,11 @@ class MapManager {
 				const newMarkerState = newMarkerStates[i];
 
 				// Check if data already exists
-				const oldData = this.markerDataMap.get(newMarker.id);
+				const oldMarkerData = this.markerDataMap.get(newMarker.id);
 
-				if (oldData) {
+				if (oldMarkerData) {
 					// Update data
-					oldData.update(newMarkerState);
+					oldMarkerData.update(newMarkerState);
 				} else {
 					// Create data
 					const newData = new MapMarkerData(this.provider, newMarker, newMarkerState);

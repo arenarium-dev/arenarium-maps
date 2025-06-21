@@ -208,6 +208,7 @@
 <style lang="less">
 	@background: var(--arenarium-maps-tooltip-background, white);
 	@shadow: var(--arenarium-maps-tooltip-shadow, 0px 2px 2px rgba(0, 0, 0, 0.5));
+	@shadow-hover: var(--arenarium-maps-tooltip-shadow-hover, 0px 2px 4px rgba(0, 0, 0, 0.5));
 
 	.anchor {
 		display: block;
@@ -215,6 +216,7 @@
 		width: 0px;
 		height: 0px;
 		filter: drop-shadow(@shadow);
+		transition: filter ease-in-out 125ms;
 
 		.bubble {
 			position: absolute;
@@ -243,6 +245,7 @@
 	.anchor:hover {
 		transform-style: preserve-3d;
 		backface-visibility: hidden;
+		filter: drop-shadow(@shadow-hover);
 
 		.bubble {
 			transform-style: preserve-3d;
