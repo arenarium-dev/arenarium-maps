@@ -1,4 +1,4 @@
-import { MapManager } from './map/manager.js';
+import { MapManager } from './map/manager/manager.js';
 export { MapManager };
 
 import type { MapConfiguration, MapProvider, MapMarker } from './map/schemas.js';
