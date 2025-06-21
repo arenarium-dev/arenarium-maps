@@ -260,7 +260,7 @@
 						radius: 4
 					},
 					body: getTooltipBody
-				},
+				}
 				// pin: {
 				// 	body: getPinBody
 				// }
@@ -375,7 +375,7 @@
 
 <style lang="less">
 	.map {
-		--arenarium-maps-marker-background: white;
+		--arenarium-maps-tooltip-background: white;
 		--arenarium-maps-pin-background: purple;
 
 		position: absolute;

@@ -15,7 +15,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: red;
+		color: purple;
 		font-size: 14px;
 		font-weight: bold;
 	}

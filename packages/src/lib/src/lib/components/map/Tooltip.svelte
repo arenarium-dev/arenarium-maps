@@ -29,8 +29,8 @@
 	let pointer: HTMLElement;
 	let body: HTMLElement;
 
-	const markerWidth = width + 2 * margin;
-	const markerHeight = height + 2 * margin;
+	const tooltipWidth = width + 2 * margin;
+	const tooltipHeight = height + 2 * margin;
 
 	export const getBody = () => body;
 
@@ -119,8 +119,8 @@
 	let angle = NaN;
 	let angleDefined = $state<boolean>(false);
 
-	let bubbleOffsetXTransition = new Transition(-markerWidth / 2, { easing: sineInOut });
-	let bubbleOffsetYTransition = new Transition(-markerHeight / 2, { easing: sineInOut });
+	let bubbleOffsetXTransition = new Transition(-tooltipWidth / 2, { easing: sineInOut });
+	let bubbleOffsetYTransition = new Transition(-tooltipHeight / 2, { easing: sineInOut });
 
 	$effect(() => {
 		updateAngleStyle(bubbleOffsetXTransition.motion.current, bubbleOffsetYTransition.motion.current);
@@ -141,26 +141,26 @@
 		}
 	});
 
-	function updateAngleStyle(markerOffsetX: number, markerOffsetY: number) {
+	function updateAngleStyle(offsetX: number, offsetY: number) {
 		if (!anchor || !bubble || !pointer) return;
 
-		const markerCenterX = markerOffsetX + markerWidth / 2;
-		const markerCenterY = markerOffsetY + markerHeight / 2;
+		const tooltipCenterX = offsetX + tooltipWidth / 2;
+		const tooltipCenterY = offsetY + tooltipHeight / 2;
 
-		// Pointer center is the center of the circle in the marker
-		const pointerCenterX = markerHeight < markerWidth ? (markerCenterX * markerHeight) / markerWidth : markerCenterX;
-		const pointerCenterY = markerHeight > markerWidth ? (markerCenterY * markerWidth) / markerHeight : markerCenterY;
+		// Pointer center is the center of the circle in the tooltip
+		const pointerCenterX = tooltipHeight < tooltipWidth ? (tooltipCenterX * tooltipHeight) / tooltipWidth : tooltipCenterX;
+		const pointerCenterY = tooltipHeight > tooltipWidth ? (tooltipCenterY * tooltipWidth) / tooltipHeight : tooltipCenterY;
 
-		// Calculate pointer angle, it point to the center of the inverse width/height rectangle of the marker
+		// Calculate pointer angle, it point to the center of the inverse width/height rectangle of the tooltip
 		const pointerAngleRad = Math.atan2(pointerCenterY, pointerCenterX);
 		const pointerAngleDeg = (pointerAngleRad / Math.PI) * 180 - 45;
 
-		// Calculate pointer skew, its is lower (ak. wider) the closer the pointer is to the center of the marker
+		// Calculate pointer skew, its is lower (ak. wider) the closer the pointer is to the center of the tooltip
 		const pointerMinSkew = 0;
 		const pointerMaxSkew = 30;
 
 		const pointerCenterDistance = Math.sqrt(pointerCenterX * pointerCenterX + pointerCenterY * pointerCenterY);
-		const pointerCenterMinDistance = Math.min(markerWidth, markerHeight) / 2;
+		const pointerCenterMinDistance = Math.min(tooltipWidth, tooltipHeight) / 2;
 		const pointerCenterMaxDistance = pointerCenterMinDistance * Math.SQRT2;
 
 		const pointerSkewRatio = (pointerCenterDistance - pointerCenterMinDistance) / (pointerCenterMaxDistance - pointerCenterMinDistance);
@@ -168,14 +168,14 @@
 		const pointerScale = pointerCenterDistance < pointerCenterMinDistance ? pointerCenterDistance / pointerCenterMinDistance : 1;
 
 		animation.equeue(layer, priority, id + '_angle', () => {
-			bubble.style.transform = `translate(${Math.round(markerOffsetX)}px, ${Math.round(markerOffsetY)}px)`;
+			bubble.style.transform = `translate(${Math.round(offsetX)}px, ${Math.round(offsetY)}px)`;
 			pointer.style.transform = `scale(${pointerScale}) rotate(${pointerAngleDeg}deg) skew(${pointerSkewDeg}deg, ${pointerSkewDeg}deg)`;
 		});
 	}
 
 	export function setAngle(value: number) {
 		if (angleDefined == false) {
-			let angleOffsets = Rectangle.getOffsets(markerWidth, markerHeight, value);
+			let angleOffsets = Rectangle.getOffsets(tooltipWidth, tooltipHeight, value);
 			bubbleOffsetXTransition.set(Math.round(angleOffsets.offsetX), { duration: 0 });
 			bubbleOffsetYTransition.set(Math.round(angleOffsets.offsetY), { duration: 0 });
 			updateAngleStyle(bubbleOffsetXTransition.value, bubbleOffsetYTransition.value);
@@ -187,7 +187,7 @@
 			let angleSteps = angleDistance < 180 ? angleDistance : 360 - angleDistance;
 			let angleDuration = Math.log(angleSteps) * 75;
 
-			let angleOffsets = Rectangle.getOffsets(markerWidth, markerHeight, value);
+			let angleOffsets = Rectangle.getOffsets(tooltipWidth, tooltipHeight, value);
 			bubbleOffsetXTransition.set(Math.round(angleOffsets.offsetX), { duration: angleDuration });
 			bubbleOffsetYTransition.set(Math.round(angleOffsets.offsetY), { duration: angleDuration });
 
@@ -206,8 +206,8 @@
 </div>
 
 <style lang="less">
-	@background: var(--arenarium-maps-marker-background, white);
-	@shadow: var(--arenarium-maps-marker-shadow, 0px 2px 2px rgba(0, 0, 0, 0.5));
+	@background: var(--arenarium-maps-tooltip-background, white);
+	@shadow: var(--arenarium-maps-tooltip-shadow, 0px 2px 2px rgba(0, 0, 0, 0.5));
 
 	.anchor {
 		display: block;
