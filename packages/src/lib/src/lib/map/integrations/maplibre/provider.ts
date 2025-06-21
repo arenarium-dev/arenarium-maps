@@ -54,12 +54,11 @@ export class MapLibreProvider implements MapProvider {
 		return this.map.getZoom();
 	}
 
-	public getWidth(): number {
-		return this.map.getCanvas().width;
-	}
-
-	public getHeight(): number {
-		return this.map.getCanvas().height;
+	public getBounds(): { sw: { lat: number; lng: number }; ne: { lat: number; lng: number } } {
+		const bounds = this.map.getBounds();
+		const sw = bounds.getSouthWest();
+		const ne = bounds.getNorthEast();
+		return { sw, ne };
 	}
 
 	public createMarker(element: HTMLElement, lat: number, lng: number): MapProviderMarker {

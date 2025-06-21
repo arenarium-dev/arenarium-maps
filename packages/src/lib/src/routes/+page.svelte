@@ -257,7 +257,7 @@
 						height: 24,
 						width: 36,
 						margin: 4,
-						radius: 4
+						radius: 6
 					},
 					body: getTooltipBody
 				}

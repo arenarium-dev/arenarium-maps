@@ -43,12 +43,13 @@ export class GoogleMapsProvider implements MapProvider {
 		return this.map.getZoom() ?? NaN;
 	}
 
-	public getWidth(): number {
-		return this.map.getDiv().clientWidth;
-	}
+	public getBounds(): { sw: { lat: number; lng: number }; ne: { lat: number; lng: number } } {
+		const bounds = this.map.getBounds();
+		if (bounds == undefined) return { sw: { lat: NaN, lng: NaN }, ne: { lat: NaN, lng: NaN } };
 
-	public getHeight(): number {
-		return this.map.getDiv().clientHeight;
+		const sw = bounds.getSouthWest();
+		const ne = bounds.getNorthEast();
+		return { sw: { lat: sw.lat(), lng: sw.lng() }, ne: { lat: ne.lat(), lng: ne.lng() } };
 	}
 
 	public createMarker(element: HTMLElement, lat: number, lng: number, zIndex: number): MapProviderMarker {

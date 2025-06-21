@@ -4,7 +4,7 @@ export namespace Mercator {
 	/**
 	 * @param lat - The latitude of the point.
 	 * @param lng - The longitude of the point.
-	 * @param size - The size of the map at zoom 0 in pixels.
+	 * @param size - The size of the map at zoom n in pixels.
 	 */
 	export function project(lat: number, lng: number, size: number) {
 		return {
@@ -16,7 +16,7 @@ export namespace Mercator {
 	/**
 	 * @param x - The x coordinate of the point.
 	 * @param y - The y coordinate of the point.
-	 * @param size - The size of the map at zoom 0 in pixels.
+	 * @param size - The size of the map at zoom n in pixels.
 	 */
 	export function unproject(x: number, y: number, size: number) {
 		return {

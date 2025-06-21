@@ -3,8 +3,7 @@ import { mount } from 'svelte';
 import MapTooltipComponent from '../../components/map/Tooltip.svelte';
 import MapPinComponent from '../../components/map/Pin.svelte';
 
-import { MapBounds } from './bounds.js';
-
+import { MapViewport } from './viewport.js';
 import { log } from '../log.js';
 import { animation, ANIMATION_PIN_LAYER, ANIMATION_TOOLTIP_LAYER } from '../animation/animation.js';
 import {
@@ -16,7 +15,8 @@ import {
 	type MapTooltipStatesRequest,
 	type MapProvider,
 	type MapProviderMarker,
-	type MapBodyCallback
+	type MapBodyCallback,
+	type MapBounds
 } from '../schemas.js';
 
 import { Angles } from '@workspace/shared/src/constants.js';
@@ -197,12 +197,11 @@ class MapManager {
 		if (this.markerDataUpdating) return;
 
 		// Get map zoom
+		const mapBounds = this.provider.getBounds();
 		const mapZoom = this.provider.getZoom();
-		const mapWidth = this.provider.getWidth();
-		const mapHeight = this.provider.getHeight();
 
-		this.markerTooltipProcessor.process(mapWidth, mapHeight, mapZoom);
-		this.markerPinProcessor.process(mapWidth, mapHeight, mapZoom);
+		this.markerTooltipProcessor.process(mapBounds, mapZoom);
+		this.markerPinProcessor.process(mapBounds, mapZoom);
 	}
 }
 
@@ -409,6 +408,8 @@ class MapPinProcessor {
 	private pinElements = new Array<MapPinElement>();
 
 	// Configuration
+	private pinMaxWidth = 0;
+	private pinMaxHeight = 0;
 	private pinFade = false;
 	private pinMaxCount = 0;
 	private pinMaxZoomDelta = 0;
@@ -425,16 +426,20 @@ class MapPinProcessor {
 
 	public setElements(elements: Array<MapPinElement>) {
 		this.pinElements = elements;
+
+		this.pinMaxWidth = elements.reduce((a, b) => Math.max(a, b.width), 0);
+		this.pinMaxHeight = elements.reduce((a, b) => Math.max(a, b.height), 0);
 	}
 
-	public process(mapWidth: number, mapHeight: number, mapZoom: number) {
-		const mapPinBounds = new MapBounds(0, mapHeight, mapWidth, 0, this.provider.parameters);
+	public process(mapBounds: MapBounds, mapZoom: number) {
+		const mapSize = this.provider.parameters.mapSize;
+		const mapViewport = new MapViewport(mapBounds, mapZoom, mapSize, this.pinMaxWidth * 2, this.pinMaxHeight * 2);
 
 		// Track pin count
 		let pinCount = 0;
 
 		for (const pin of this.pinElements) {
-			if (mapPinBounds.contains(pin.lat, pin.lng)) {
+			if (mapViewport.contains(pin.lat, pin.lng)) {
 				if (mapZoom <= pin.zoom && pin.zoom <= mapZoom + this.pinMaxZoomDelta) {
 					if (pinCount < this.pinMaxCount) {
 						// Update pin state
@@ -600,13 +605,12 @@ class MapTooltipProcessor {
 		this.tooltipMaxHeight = this.tooltipElements.reduce((a, b) => Math.max(a, b.height), 0);
 	}
 
-	public process(mapWidth: number, mapHeight: number, mapZoom: number) {
-		const mapOffsetX = this.tooltipMaxWidth * 2;
-		const mapOffsetY = this.tooltipMaxHeight * 2;
-		const mapTooltipBounds = new MapBounds(-mapOffsetX, mapHeight + mapOffsetY, mapWidth + mapOffsetX, -mapOffsetY, this.provider.parameters);
+	public process(mapBounds: MapBounds, mapZoom: number) {
+		const mapSize = this.provider.parameters.mapSize;
+		const mapViewport = new MapViewport(mapBounds, mapZoom, mapSize, this.tooltipMaxWidth * 2, this.tooltipMaxHeight * 2);
 
 		for (const tooltip of this.tooltipElements) {
-			if (mapTooltipBounds.contains(tooltip.lat, tooltip.lng)) {
+			if (mapViewport.contains(tooltip.lat, tooltip.lng)) {
 				if (tooltip.zoom <= mapZoom) {
 					// Update marker state
 					tooltip.updateState(mapZoom);

@@ -32,6 +32,10 @@ export type MapConfiguration = z.infer<typeof mapConfigurationSchema>;
 
 export const mapLatitudeSchema = z.number().min(-90).max(90);
 export const mapLongitudeSchema = z.number().min(-180).max(180);
+export const mapBoundsSchema = z.object({
+	sw: z.object({ lat: mapLatitudeSchema, lng: mapLongitudeSchema }),
+	ne: z.object({ lat: mapLatitudeSchema, lng: mapLongitudeSchema })
+});
 export const mapHtmlElementSchema = z.any().refine((element) => element instanceof HTMLElement, 'Must be an HTMLElement');
 
 export const mapProviderParametersSchema = z.object({
@@ -53,13 +57,13 @@ export const mapProviderSchema = z.object({
 	parameters: mapProviderParametersSchema,
 	getContainer: z.function().args().returns(mapHtmlElementSchema),
 	getZoom: z.function().args().returns(z.number()),
-	getWidth: z.function().args().returns(z.number()),
-	getHeight: z.function().args().returns(z.number()),
+	getBounds: z.function().args().returns(mapBoundsSchema),
 	createMarker: z.function().args(mapHtmlElementSchema, mapLatitudeSchema, mapLongitudeSchema, z.number()).returns(mapProviderMarkerSchema)
 });
 
 export type MapLatitude = z.infer<typeof mapLatitudeSchema>;
 export type MapLongitude = z.infer<typeof mapLongitudeSchema>;
+export type MapBounds = z.infer<typeof mapBoundsSchema>;
 export type MapHtmlElement = z.infer<typeof mapHtmlElementSchema>;
 export type MapProvider = z.infer<typeof mapProviderSchema>;
 export type MapProviderMarker = z.infer<typeof mapProviderMarkerSchema>;
