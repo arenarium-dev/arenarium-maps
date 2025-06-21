@@ -253,7 +253,7 @@
 				lat: lat,
 				lng: lng,
 				tooltip: {
-					data: {
+					style: {
 						height: 24,
 						width: 36,
 						margin: 4,

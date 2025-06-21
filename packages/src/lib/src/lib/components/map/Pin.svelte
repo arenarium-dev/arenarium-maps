@@ -4,7 +4,21 @@
 	import { animation } from '../../map/animation/animation.js';
 	import { Transition } from '../../map/animation/transition.js';
 
-	let { id, priority, layer }: { id: string; priority: number; layer: number } = $props();
+	let {
+		id,
+		priority,
+		layer,
+		width,
+		height,
+		radius
+	}: {
+		id: string;
+		priority: number;
+		layer: number;
+		width: number;
+		height: number;
+		radius: number;
+	} = $props();
 
 	let pin: HTMLElement;
 	let body: HTMLElement;
@@ -69,8 +83,8 @@
 	//#endregion
 </script>
 
-<div class="pin" class:displayed bind:this={pin}>
-	<div class="body" bind:this={body}></div>
+<div class="pin" class:displayed bind:this={pin} style:border-radius={`${radius + 4}px`}>
+	<div class="body" bind:this={body} style:width={`${width}px`} style:height={`${height}px`} style:border-radius={`${radius}px`}></div>
 </div>
 
 <style lang="less">
@@ -78,16 +92,11 @@
 	@border: var(--arenarium-maps-pin-border, white);
 	@shadow: var(--arenarium-maps-pin-shadow, 0px 2px 2px rgba(0, 0, 0, 0.5));
 	@padding-size: 2px;
-	@min-size: 16px;
-	@max-size: 64px;
 
 	.pin {
-		max-width: @max-size;
-		max-height: @max-size;
 		position: absolute;
 		background-color: @border;
 		padding: @padding-size;
-		border-radius: @max-size;
 		box-sizing: border-box;
 		box-shadow: @shadow;
 		transform-origin: 0% 0%;
@@ -97,9 +106,6 @@
 		will-change: scale;
 
 		.body {
-			min-width: @min-size - @padding-size * 2;
-			min-height: @min-size - @padding-size * 2;
-			border-radius: @max-size;
 			background-color: @background;
 			overflow: hidden;
 			will-change: opacity;

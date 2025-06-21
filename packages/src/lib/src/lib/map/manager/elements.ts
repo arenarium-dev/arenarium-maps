@@ -4,13 +4,7 @@ import MapTooltipComponent from '../../components/map/Tooltip.svelte';
 import MapPinComponent from '../../components/map/Pin.svelte';
 
 import { ANIMATION_PIN_LAYER, ANIMATION_TOOLTIP_LAYER } from '../animation/animation.js';
-import {
-	type MapMarker,
-	type MapBodyCallback,
-	type MapTooltipState,
-	type MapProvider,
-	type MapProviderMarker
-} from '../schemas.js';
+import { type MapMarker, type MapBodyCallback, type MapTooltipState, type MapProvider, type MapProviderMarker } from '../schemas.js';
 
 import { Angles } from '@workspace/shared/src/constants.js';
 
@@ -94,6 +88,12 @@ class MapElement<T> {
 }
 
 class MapPinElement extends MapElement<ReturnType<typeof MapPinComponent>> {
+	private static DEFAULT_SIZE = 14;
+
+	width: number;
+	height: number;
+	radius: number;
+
 	bodyLoading = false;
 	bodyLoaded = false;
 	bodyCallback: MapBodyCallback | undefined;
@@ -101,6 +101,9 @@ class MapPinElement extends MapElement<ReturnType<typeof MapPinComponent>> {
 	constructor(provider: MapProvider, marker: MapMarker, state: MapTooltipState) {
 		super(provider, marker, state);
 
+		this.width = marker.pin?.style.width ?? MapPinElement.DEFAULT_SIZE;
+		this.height = marker.pin?.style.height ?? MapPinElement.DEFAULT_SIZE;
+		this.radius = marker.pin?.style.radius ?? MapPinElement.DEFAULT_SIZE / 2;
 		this.bodyCallback = marker.pin?.body;
 	}
 
@@ -112,7 +115,10 @@ class MapPinElement extends MapElement<ReturnType<typeof MapPinComponent>> {
 			props: {
 				id: this.id + '_pin',
 				layer: ANIMATION_PIN_LAYER,
-				priority: this.zoom * this.provider.parameters.zoomScale
+				priority: this.zoom * this.provider.parameters.zoomScale,
+				width: this.width,
+				height: this.height,
+				radius: this.radius
 			}
 		});
 	}
@@ -183,10 +189,10 @@ class MapTooltipElement extends MapElement<ReturnType<typeof MapTooltipComponent
 		super(provider, marker, state);
 
 		this.id = marker.id;
-		this.width = marker.tooltip.data.width;
-		this.height = marker.tooltip.data.height;
-		this.margin = marker.tooltip.data.margin;
-		this.radius = marker.tooltip.data.radius;
+		this.width = marker.tooltip.style.width;
+		this.height = marker.tooltip.style.height;
+		this.margin = marker.tooltip.style.margin;
+		this.radius = marker.tooltip.style.radius;
 		this.states = state[1].map((s) => [s[0], Angles.DEGREES[s[1]]]);
 
 		this.bodyCallback = marker.tooltip.body;

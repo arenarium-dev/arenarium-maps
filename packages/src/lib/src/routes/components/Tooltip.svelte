@@ -6,7 +6,7 @@
 	let { id, marker }: { id: string; marker: MapMarker } = $props();
 </script>
 
-<div {id} class="marker" style:width={marker.tooltip.data.width + 'px'} style:height={marker.tooltip.data.height + 'px'}>
+<div {id} class="marker" style:width={marker.tooltip.style.width + 'px'} style:height={marker.tooltip.style.height + 'px'}>
 	{marker.rank}
 </div>
 

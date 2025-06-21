@@ -61,9 +61,9 @@ class MapManager {
 					rank: m.rank,
 					lat: m.lat,
 					lng: m.lng,
-					width: m.tooltip.data.width,
-					height: m.tooltip.data.height,
-					margin: m.tooltip.data.margin
+					width: m.tooltip.style.width,
+					height: m.tooltip.style.height,
+					margin: m.tooltip.style.margin
 				}))
 			};
 			const tooltipStatesResponse = await fetch(this.apiUrl, {

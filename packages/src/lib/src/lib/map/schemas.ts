@@ -67,15 +67,6 @@ export type MapProviderParameters = z.infer<typeof mapProviderParametersSchema>;
 
 // Markers
 
-export const mapTooltipDataSchema = z
-	.object({
-		width: z.number(),
-		height: z.number(),
-		margin: z.number(),
-		radius: z.number()
-	})
-	.refine((data) => Math.min(data.width, data.height) / data.margin >= 4, 'Tooltip width and height must be at least 4 times the margin');
-
 export const mapBodyCallbackSchema = z.function().args(z.string()).returns(z.promise(mapHtmlElementSchema));
 
 export const mapMarkerSchema = z.object({
@@ -84,11 +75,23 @@ export const mapMarkerSchema = z.object({
 	lat: z.number().min(-90).max(90),
 	lng: z.number().min(-180).max(180),
 	tooltip: z.object({
-		data: mapTooltipDataSchema,
+		style: z
+			.object({
+				width: z.number(),
+				height: z.number(),
+				margin: z.number(),
+				radius: z.number()
+			})
+			.refine((data) => Math.min(data.width, data.height) / data.margin >= 4, 'Tooltip width and height must be at least 4 times the margin'),
 		body: mapBodyCallbackSchema
 	}),
 	pin: z
 		.object({
+			style: z.object({
+				width: z.number(),
+				height: z.number(),
+				radius: z.number()
+			}),
 			body: mapBodyCallbackSchema
 		})
 		.optional()
