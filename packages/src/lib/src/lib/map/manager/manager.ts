@@ -44,7 +44,7 @@ class MapManager {
 
 		this.markerPinProcessor = new MapPinProcessor(mapProvider);
 		this.markerTooltipProcessor = new MapTooltipProcessor(mapProvider);
-		this.markerPopupProcessor = new MapPopupProcessor();
+		this.markerPopupProcessor = new MapPopupProcessor(mapProvider);
 
 		this.configuration = mapConfiguration;
 	}
@@ -111,11 +111,11 @@ class MapManager {
 
 	public showPopup(id: string) {
 		try {
-			for (const marker of this.markerDataArray) {
-				if (marker.id == id) {
-					this.markerPopupProcessor.show(marker);
+			for (const data of this.markerDataArray) {
+				if (data.marker.id == id) {
+					this.markerPopupProcessor.show(data);
 				} else {
-					this.markerPopupProcessor.hide(marker);
+					this.markerPopupProcessor.hide(data);
 				}
 			}
 		} catch (error: any) {
@@ -133,13 +133,13 @@ class MapManager {
 	public hidePopup(id?: string) {
 		try {
 			if (id) {
-				const marker = this.markerDataMap.get(id);
-				if (marker == undefined) return;
+				const data = this.markerDataMap.get(id);
+				if (data == undefined) return;
 
-				this.markerPopupProcessor.hide(marker);
+				this.markerPopupProcessor.hide(data);
 			} else {
-				for (const marker of this.markerDataArray) {
-					this.markerPopupProcessor.hide(marker);
+				for (const data of this.markerDataArray) {
+					this.markerPopupProcessor.hide(data);
 				}
 			}
 		} catch (error: any) {
@@ -163,10 +163,10 @@ class MapManager {
 			const oldMarkerDataArray = Array.from(this.markerDataArray);
 
 			for (const oldMarkerData of oldMarkerDataArray) {
-				if (newMarkersMap.has(oldMarkerData.id) == false) {
+				if (newMarkersMap.has(oldMarkerData.marker.id) == false) {
 					oldMarkerData.remove();
 
-					this.markerDataMap.delete(oldMarkerData.id);
+					this.markerDataMap.delete(oldMarkerData.marker.id);
 					this.markerDataArray.splice(this.markerDataArray.indexOf(oldMarkerData), 1);
 				}
 			}
@@ -254,28 +254,23 @@ class MapManager {
 }
 
 class MapMarkerData {
-	id: string;
-	rank: number;
+	marker: MapMarker;
 	zoom: number;
 
 	pin: MapPinElement;
 	tooltip: MapTooltipElement;
-	popup: MapPopupElement;
 
 	constructor(provider: MapProvider, marker: MapMarker, state: MapTooltipState) {
-		this.id = marker.id;
-		this.rank = marker.rank;
+		this.marker = marker;
 		this.zoom = state[0];
 
 		this.pin = new MapPinElement(provider, marker, state);
 		this.tooltip = new MapTooltipElement(provider, marker, state);
-		this.popup = new MapPopupElement(provider, marker);
 	}
 
 	create() {
 		this.pin.create();
 		this.tooltip.create();
-		this.popup.create();
 	}
 
 	update(state: MapTooltipState) {
@@ -286,7 +281,6 @@ class MapMarkerData {
 	remove() {
 		this.pin.remove();
 		this.tooltip.remove();
-		this.popup.remove();
 	}
 }
 
@@ -801,24 +795,38 @@ class MapPopupElement extends MapElement<ReturnType<typeof MapTooltipComponent>>
 }
 
 class MapPopupProcessor {
+	private provider: MapProvider;
+
 	// Data
-	private popupElements = new Set<MapPopupElement>();
+	private popupElements = new Map<string, MapPopupElement>();
+
+	constructor(provider: MapProvider) {
+		this.provider = provider;
+	}
 
 	public show(data: MapMarkerData) {
 		data.pin.shown = false;
 		data.tooltip.shown = false;
-		data.popup.shown = true;
-		this.popupElements.add(data.popup);
+
+		const popup = new MapPopupElement(this.provider, data.marker);
+		this.popupElements.set(data.marker.id, popup);
+
+		popup.create();
+		popup.shown = true;
 	}
 
 	public hide(data: MapMarkerData) {
 		data.pin.shown = true;
 		data.tooltip.shown = true;
-		data.popup.shown = false;
+
+		const popup = this.popupElements.get(data.marker.id);
+		if (popup == undefined) return;
+
+		popup.shown = false;
 	}
 
 	public process() {
-		for (const popup of this.popupElements) {
+		for (const popup of this.popupElements.values()) {
 			if (popup.shown) {
 				// Update popup state
 				popup.setCollapsed(false);
@@ -837,8 +845,10 @@ class MapPopupProcessor {
 				// Wait until popup is collapsed before removing it
 				if (popup.isCollapsed()) {
 					popup.updateMap(false);
+					popup.remove();
+					
 					// Remove popup
-					this.popupElements.delete(popup);
+					this.popupElements.delete(popup.id);
 				}
 			}
 		}
