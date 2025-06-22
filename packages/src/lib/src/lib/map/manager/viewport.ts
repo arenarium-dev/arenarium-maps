@@ -8,20 +8,32 @@ export class MapViewport {
 	neLat: number;
 	neLng: number;
 
+	/**
+	 * @param mapBounds - The bounds of the map.
+	 * @param mapZoom - The zoom level of the map.
+	 * @param mapSize - The size of the map in pixels at zoom level 0.
+	 * @param offsetX - The x offset of the map in pixels at zoom level n.
+	 * @param offsetY - The y offset of the map in pixels at zoom level n.
+	 */
 	constructor(mapBounds: MapBounds, mapZoom: number, mapSize: number, offsetX: number, offsetY: number) {
-		const zoomSize = mapSize * Math.pow(2, mapZoom);
+		// Calculate the size of the map at zoom level n.
+		const zoomMapSize = mapSize * Math.pow(2, mapZoom);
 
-		const blPoint = Mercator.project(mapBounds.sw.lat, mapBounds.sw.lng, zoomSize);
-		const trPoint = Mercator.project(mapBounds.ne.lat, mapBounds.ne.lng, zoomSize);
+		// Calculate the bottom left and top right points of the map bounds in pixels at zoom level n.
+		const blPoint = Mercator.project(mapBounds.sw.lat, mapBounds.sw.lng, zoomMapSize);
+		const trPoint = Mercator.project(mapBounds.ne.lat, mapBounds.ne.lng, zoomMapSize);
 
+		// Expand the bounds by the offset x and y.
 		const swX = blPoint.x - offsetX;
 		const swY = blPoint.y + offsetY;
 		const neX = trPoint.x + offsetX;
 		const neY = trPoint.y - offsetY;
 
-		const sw = Mercator.unproject(swX, swY, zoomSize);
-		const ne = Mercator.unproject(neX, neY, zoomSize);
+		// Convert back to lat and lng.
+		const sw = Mercator.unproject(swX, swY, zoomMapSize);
+		const ne = Mercator.unproject(neX, neY, zoomMapSize);
 
+		// Set the bounds.
 		this.swLat = sw.lat;
 		this.swLng = sw.lng;
 		this.neLat = ne.lat;

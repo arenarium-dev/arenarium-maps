@@ -8,36 +8,52 @@ export namespace Mercator {
 	 */
 	export function project(lat: number, lng: number, size: number) {
 		return {
-			x: mercatorXfromLng(lng) * size,
-			y: mercatorYfromLat(lat) * size
+			x: xRatiofromLng(lng) * size,
+			y: yRatiofromLat(lat) * size
 		};
 	}
 
 	/**
-	 * @param x - The x coordinate of the point.
-	 * @param y - The y coordinate of the point.
+	 * @param x - The x coordinate of the point in pixels.
+	 * @param y - The y coordinate of the point in pixels.
 	 * @param size - The size of the map at zoom n in pixels.
 	 */
 	export function unproject(x: number, y: number, size: number) {
 		return {
-			lat: latFromMercatorY(y / size),
-			lng: lngFromMercatorX(x / size)
+			lat: latFromYRatio(y / size),
+			lng: lngFromXratio(x / size)
 		};
 	}
 
-	function mercatorXfromLng(lng: number) {
+	/**	 
+	 * @param lng 
+	 * @returns a number between 0 and 1 representing the x coordinate ratio. (left to right)
+	 */  
+	function xRatiofromLng(lng: number) {
 		return (180 + lng) / 360;
 	}
 
-	function mercatorYfromLat(lat: number) {
+	/**
+	 * @param lat 
+	 * @returns a number between 0 and 1 representing the y coordinate ratio. (top to bottom)
+	 */
+	function yRatiofromLat(lat: number) {
 		return (180 - (180 / Math.PI) * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360))) / 360;
 	}
 
-	function lngFromMercatorX(x: number) {
+	/** 
+	 * @param x a number between 0 and 1 representing the x coordinate ratio. (left to right)
+	 * @returns a number between -180 and 180 representing the longitude.
+	 */
+	function lngFromXratio(x: number) {
 		return x * 360 - 180;
 	}
 
-	function latFromMercatorY(y: number) {
+	/** 
+	 * @param y a number between 0 and 1 representing the y coordinate ratio. (top to bottom)
+	 * @returns a number between -90 and 90 representing the latitude.
+	 */
+	function latFromYRatio(y: number) {
 		return (360 / Math.PI) * Math.atan(Math.exp(((180 - y * 360) * Math.PI) / 180)) - 90;
 	}
 }
