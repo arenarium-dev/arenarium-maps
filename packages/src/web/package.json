@@ -27,30 +27,30 @@
 		"@googlemaps/js-api-loader": "^1.16.8",
 		"@sveltejs/adapter-auto": "^6.0.1",
 		"@sveltejs/adapter-cloudflare": "^7.0.4",
-		"@sveltejs/kit": "^2.21.5",
+		"@sveltejs/kit": "^2.22.0",
 		"@sveltejs/vite-plugin-svelte": "^5.1.0",
 		"drizzle-kit": "^0.31.1",
 		"eslint": "^9.29.0",
 		"eslint-config-prettier": "^10.1.5",
-		"eslint-plugin-svelte": "^3.9.2",
+		"eslint-plugin-svelte": "^3.9.3",
 		"globals": "^16.2.0",
 		"prettier": "^3.5.3",
 		"prettier-plugin-svelte": "^3.4.0",
-		"svelte": "^5.34.3",
-		"svelte-check": "^4.2.1",
+		"svelte": "^5.34.7",
+		"svelte-check": "^4.2.2",
 		"typescript": "^5.8.3",
-		"typescript-eslint": "^8.34.0",
+		"typescript-eslint": "^8.34.1",
 		"vite": "^6.3.5",
-		"wrangler": "^4.20.0"
+		"wrangler": "^4.20.5"
 	},
 	"dependencies": {
 		"@arenarium/maps": "latest",
 		"@better-fetch/fetch": "^1.1.18",
 		"@workspace/shared": "workspace:*",
-		"better-auth": "^1.2.9",
+		"better-auth": "^1.2.10",
 		"drizzle-orm": "^0.44.2",
 		"highlight.js": "^11.11.1",
 		"maplibre-gl": "^5.6.0",
-		"zod": "^3.25.64"
+		"zod": "^3.25.67"
 	}
 }
