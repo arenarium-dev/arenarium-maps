@@ -3,6 +3,7 @@
 
 	import Icon from './components/Icon.svelte';
 	import TooltipComponent from './components/Tooltip.svelte';
+	import PopupComponent from './components/Popup.svelte';
 
 	import { MapManager } from '$lib/main.js';
 	import type { MapMarker, MapProvider } from '$lib/main.js';
@@ -60,6 +61,9 @@
 		mapLibre.on('move', (e) => {
 			zoom = mapLibre.getZoom();
 		});
+		mapLibre.on('click', (e) => {
+			onMapClick();
+		});
 	}
 
 	//#endregion
@@ -98,6 +102,9 @@
 		mapGoogle = googleMapsProvider.getMap();
 		mapGoogle.addListener('zoom_changed', () => {
 			zoom = mapGoogle.getZoom()!;
+		});
+		mapGoogle.addListener('click', () => {
+			onMapClick();
 		});
 
 		mapOverlayView = new mapsLibrary.OverlayView();
@@ -191,6 +198,11 @@
 		}
 	}
 
+	function onMapClick() {
+		console.log('Map click');
+		mapManager.hidePopup();
+	}
+
 	//#region Data
 
 	const total = 1000;
@@ -260,14 +272,28 @@
 						radius: 6
 					},
 					body: getTooltipBody
-				}
+				},
+
 				// pin: {
 				// 	body: getPinBody
 				// }
+				popup: {
+					style: {
+						width: 150,
+						height: 100,
+						radius: 12,
+						margin: 8
+					},
+					body: getPopupBody
+				}
 			});
 		}
 
 		return await new Promise((resolve) => resolve(markers));
+	}
+
+	function onTooltipClick(id: string) {
+		mapManager.showPopup(id);
 	}
 
 	async function getTooltipBody(id: string): Promise<HTMLElement> {
@@ -276,6 +302,11 @@
 			if (marker == undefined) throw new Error('Failed to get marker');
 
 			const element = document.createElement('div');
+			element.addEventListener('click', (e) => {
+				e.stopPropagation();
+				onTooltipClick(id);
+			});
+
 			mount(TooltipComponent, { target: element, props: { id: id, marker: marker } });
 			resolve(element);
 		});
@@ -302,6 +333,17 @@
 				element.innerHTML = '$' + id + '0';
 				resolve(element);
 			}
+		});
+	}
+
+	async function getPopupBody(id: string): Promise<HTMLElement> {
+		return await new Promise((resolve) => {
+			const marker = mapMarkers.get(id);
+			if (marker == undefined) throw new Error('Failed to get marker');
+
+			const element = document.createElement('div');
+			mount(PopupComponent, { target: element, props: { id: id, marker: marker } });
+			resolve(element);
 		});
 	}
 

@@ -47,9 +47,9 @@ export const mapProviderParametersSchema = z.object({
 
 export const mapProviderMarkerSchema = z.object({
 	instance: z.any(),
-	inserted: z.function().args().returns(z.boolean()),
-	insert: z.function().args().returns(z.void()),
-	remove: z.function().args().returns(z.void()),
+	inserted: z.function().returns(z.boolean()),
+	insert: z.function().returns(z.void()),
+	remove: z.function().returns(z.void()),
 	update: z.function().args(z.number()).returns(z.void())
 });
 
@@ -95,6 +95,17 @@ export const mapMarkerSchema = z.object({
 				width: z.number(),
 				height: z.number(),
 				radius: z.number()
+			}),
+			body: mapBodyCallbackSchema
+		})
+		.optional(),
+	popup: z
+		.object({
+			style: z.object({
+				width: z.number(),
+				height: z.number(),
+				radius: z.number(),
+				margin: z.number()
 			}),
 			body: mapBodyCallbackSchema
 		})

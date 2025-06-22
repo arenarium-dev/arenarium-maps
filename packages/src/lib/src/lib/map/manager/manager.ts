@@ -1,11 +1,11 @@
 import { mount } from 'svelte';
 
-import MapTooltipComponent from '../../components/map/Tooltip.svelte';
 import MapPinComponent from '../../components/map/Pin.svelte';
+import MapTooltipComponent from '../../components/map/Tooltip.svelte';
 
 import { MapViewport } from './viewport.js';
 import { log } from '../log.js';
-import { animation, ANIMATION_PIN_LAYER, ANIMATION_TOOLTIP_LAYER } from '../animation/animation.js';
+import { animation, ANIMATION_PIN_LAYER, ANIMATION_PRIORITY_LAYER, ANIMATION_TOOLTIP_LAYER } from '../animation/animation.js';
 import {
 	mapMarkersSchema,
 	mapProviderSchema,
@@ -34,6 +34,7 @@ class MapManager {
 
 	private markerPinProcessor: MapPinProcessor;
 	private markerTooltipProcessor: MapTooltipProcessor;
+	private markerPopupProcessor: MapPopupProcessor;
 
 	constructor(apiKey: string, mapProvider: MapProvider, mapConfiguration?: MapConfiguration) {
 		mapProviderSchema.parse(mapProvider);
@@ -43,6 +44,7 @@ class MapManager {
 
 		this.markerPinProcessor = new MapPinProcessor(mapProvider);
 		this.markerTooltipProcessor = new MapTooltipProcessor(mapProvider);
+		this.markerPopupProcessor = new MapPopupProcessor();
 
 		this.configuration = mapConfiguration;
 	}
@@ -102,6 +104,51 @@ class MapManager {
 		} catch (error: any) {
 			console.error(error);
 			log('[Error] Failed to remove markers', { message: error.message, stack: error.stack });
+
+			throw error;
+		}
+	}
+
+	public showPopup(id: string) {
+		try {
+			for (const marker of this.markerDataArray) {
+				if (marker.id == id) {
+					this.markerPopupProcessor.show(marker);
+				} else {
+					this.markerPopupProcessor.hide(marker);
+				}
+			}
+		} catch (error: any) {
+			console.error(error);
+			log('[Error] Failed to show popup', { message: error.message, stack: error.stack });
+
+			for (const marker of this.markerDataArray) {
+				this.markerPopupProcessor.hide(marker);
+			}
+
+			throw error;
+		}
+	}
+
+	public hidePopup(id?: string) {
+		try {
+			if (id) {
+				const marker = this.markerDataMap.get(id);
+				if (marker == undefined) return;
+
+				this.markerPopupProcessor.hide(marker);
+			} else {
+				for (const marker of this.markerDataArray) {
+					this.markerPopupProcessor.hide(marker);
+				}
+			}
+		} catch (error: any) {
+			console.error(error);
+			log('[Error] Failed to hide popup', { message: error.message, stack: error.stack });
+
+			for (const marker of this.markerDataArray) {
+				this.markerPopupProcessor.hide(marker);
+			}
 
 			throw error;
 		}
@@ -200,6 +247,7 @@ class MapManager {
 		const mapBounds = this.provider.getBounds();
 		const mapZoom = this.provider.getZoom();
 
+		this.markerPopupProcessor.process();
 		this.markerTooltipProcessor.process(mapBounds, mapZoom);
 		this.markerPinProcessor.process(mapBounds, mapZoom);
 	}
@@ -212,6 +260,7 @@ class MapMarkerData {
 
 	pin: MapPinElement;
 	tooltip: MapTooltipElement;
+	popup: MapPopupElement;
 
 	constructor(provider: MapProvider, marker: MapMarker, state: MapTooltipState) {
 		this.id = marker.id;
@@ -220,11 +269,13 @@ class MapMarkerData {
 
 		this.pin = new MapPinElement(provider, marker, state);
 		this.tooltip = new MapTooltipElement(provider, marker, state);
+		this.popup = new MapPopupElement(provider, marker);
 	}
 
 	create() {
 		this.pin.create();
 		this.tooltip.create();
+		this.popup.create();
 	}
 
 	update(state: MapTooltipState) {
@@ -235,6 +286,7 @@ class MapMarkerData {
 	remove() {
 		this.pin.remove();
 		this.tooltip.remove();
+		this.popup.remove();
 	}
 }
 
@@ -244,18 +296,18 @@ class MapElement<T> {
 	id: string;
 	lat: number;
 	lng: number;
-	zoom: number;
+	shown: boolean;
 
 	element: HTMLElement | undefined;
 	component: T | undefined;
 	marker: MapProviderMarker | undefined;
 
-	constructor(provider: MapProvider, marker: MapMarker, state: MapTooltipState) {
+	constructor(provider: MapProvider, marker: MapMarker) {
 		this.provider = provider;
 		this.id = marker.id;
 		this.lat = marker.lat;
 		this.lng = marker.lng;
-		this.zoom = state[0];
+		this.shown = true;
 	}
 
 	create() {
@@ -274,12 +326,6 @@ class MapElement<T> {
 
 		// Create new marker
 		this.marker = this.provider.createMarker(element, this.lat, this.lng, this.getZindex());
-	}
-
-	update(state: MapTooltipState) {
-		this.zoom = state[0];
-
-		this.updateZIndex();
 	}
 
 	updateZIndex() {
@@ -304,8 +350,8 @@ class MapElement<T> {
 		}
 	}
 
-	getZindex() {
-		return Math.round((this.provider.parameters.zoomMax - this.zoom) * this.provider.parameters.zoomScale);
+	getZindex(): number {
+		throw new Error('Get z-index not implemented');
 	}
 
 	remove() {
@@ -323,16 +369,19 @@ class MapPinElement extends MapElement<ReturnType<typeof MapPinComponent>> {
 	height: number;
 	radius: number;
 
+	zoom: number;
+
 	bodyLoading = false;
 	bodyLoaded = false;
 	bodyCallback: MapBodyCallback | undefined;
 
 	constructor(provider: MapProvider, marker: MapMarker, state: MapTooltipState) {
-		super(provider, marker, state);
+		super(provider, marker);
 
 		this.width = marker.pin?.style.width ?? MapPinElement.DEFAULT_SIZE;
 		this.height = marker.pin?.style.height ?? MapPinElement.DEFAULT_SIZE;
 		this.radius = marker.pin?.style.radius ?? MapPinElement.DEFAULT_SIZE / 2;
+		this.zoom = state[0];
 		this.bodyCallback = marker.pin?.body;
 	}
 
@@ -350,6 +399,12 @@ class MapPinElement extends MapElement<ReturnType<typeof MapPinComponent>> {
 				radius: this.radius
 			}
 		});
+	}
+
+	update(state: MapTooltipState) {
+		this.zoom = state[0];
+
+		this.updateZIndex();
 	}
 
 	updateMap(contains: boolean) {
@@ -386,6 +441,10 @@ class MapPinElement extends MapElement<ReturnType<typeof MapPinComponent>> {
 	getScale(zoom: number) {
 		if (this.zoom < zoom) return 1;
 		else return Math.max(0, 1 - (this.zoom - zoom) * 0.125);
+	}
+
+	getZindex(): number {
+		return Math.round((this.provider.parameters.zoomMax - this.zoom) * this.provider.parameters.zoomScale);
 	}
 
 	isCollapsed() {
@@ -440,7 +499,7 @@ class MapPinProcessor {
 
 		for (const pin of this.pinElements) {
 			if (mapViewport.contains(pin.lat, pin.lng)) {
-				if (mapZoom <= pin.zoom && pin.zoom <= mapZoom + this.pinMaxZoomDelta) {
+				if (pin.shown && mapZoom <= pin.zoom && pin.zoom <= mapZoom + this.pinMaxZoomDelta) {
 					if (pinCount < this.pinMaxCount) {
 						// Update pin state
 						if (this.pinFade == true) {
@@ -486,6 +545,8 @@ class MapTooltipElement extends MapElement<ReturnType<typeof MapTooltipComponent
 	height: number;
 	margin: number;
 	radius: number;
+
+	zoom: number;
 	states: [number, number][];
 
 	bodyLoading = false;
@@ -493,13 +554,14 @@ class MapTooltipElement extends MapElement<ReturnType<typeof MapTooltipComponent
 	bodyCallback: MapBodyCallback;
 
 	constructor(provider: MapProvider, marker: MapMarker, state: MapTooltipState) {
-		super(provider, marker, state);
+		super(provider, marker);
 
-		this.id = marker.id;
 		this.width = marker.tooltip.style.width;
 		this.height = marker.tooltip.style.height;
 		this.margin = marker.tooltip.style.margin;
 		this.radius = marker.tooltip.style.radius;
+
+		this.zoom = state[0];
 		this.states = state[1].map((s) => [s[0], Angles.DEGREES[s[1]]]);
 
 		this.bodyCallback = marker.tooltip.body;
@@ -523,8 +585,10 @@ class MapTooltipElement extends MapElement<ReturnType<typeof MapTooltipComponent
 	}
 
 	update(state: MapTooltipState) {
-		super.update(state);
+		this.zoom = state[0];
 		this.states = state[1].map((s) => [s[0], Angles.DEGREES[s[1]]]);
+
+		this.updateZIndex();
 	}
 
 	updateMap(contains: boolean) {
@@ -562,7 +626,8 @@ class MapTooltipElement extends MapElement<ReturnType<typeof MapTooltipComponent
 	}
 
 	getZindex(): number {
-		return super.getZindex() + MapTooltipElement.Z_INDEX_OFFSET;
+		const zIndex = Math.round((this.provider.parameters.zoomMax - this.zoom) * this.provider.parameters.zoomScale);
+		return zIndex + MapTooltipElement.Z_INDEX_OFFSET;
 	}
 
 	setCollapsed(value: boolean) {
@@ -611,7 +676,7 @@ class MapTooltipProcessor {
 
 		for (const tooltip of this.tooltipElements) {
 			if (mapViewport.contains(tooltip.lat, tooltip.lng)) {
-				if (tooltip.zoom <= mapZoom) {
+				if (tooltip.shown && tooltip.zoom <= mapZoom) {
 					// Update marker state
 					tooltip.updateState(mapZoom);
 					tooltip.setCollapsed(false);
@@ -635,6 +700,146 @@ class MapTooltipProcessor {
 			} else {
 				// If outside bounds immediately remove
 				tooltip.updateMap(false);
+			}
+		}
+	}
+}
+
+//#endregion
+
+//#region Popup
+
+class MapPopupElement extends MapElement<ReturnType<typeof MapTooltipComponent>> {
+	private static Z_INDEX_OFFSET = 2000000;
+
+	width: number;
+	height: number;
+	margin: number;
+	radius: number;
+
+	bodyLoading = false;
+	bodyLoaded = false;
+	bodyCallback: MapBodyCallback;
+
+	constructor(provider: MapProvider, marker: MapMarker) {
+		if (marker.popup == undefined) throw new Error('Failed to create popup');
+
+		super(provider, marker);
+
+		this.shown = false;
+		this.width = marker.popup.style.width;
+		this.height = marker.popup.style.height;
+		this.margin = marker.popup.style.margin;
+		this.radius = marker.popup.style.radius;
+
+		this.bodyCallback = marker.popup.body;
+	}
+
+	createElement() {
+		this.element = document.createElement('div');
+		this.element.classList.add('popup');
+		this.component = mount(MapTooltipComponent, {
+			target: this.element,
+			props: {
+				id: this.id + '_popup',
+				layer: ANIMATION_PRIORITY_LAYER,
+				priority: 0,
+				width: this.width,
+				height: this.height,
+				margin: this.margin,
+				radius: this.radius
+			}
+		});
+		this.component.setAngle(Angles.DEFAULT);
+	}
+
+	updateMap(contains: boolean) {
+		super.updateMap(contains);
+
+		this.component?.setDisplayed(contains);
+	}
+
+	updateBody() {
+		// Check if content is already loaded or loading
+		if (this.bodyLoaded || this.bodyLoading) return;
+
+		// Check if content div rendered
+		const body = this.component?.getBody();
+		if (body == undefined) return;
+
+		// Load body callback
+		this.bodyLoading = true;
+		this.bodyCallback(this.id).then((content: any) => {
+			body.appendChild(content);
+			this.bodyLoading = false;
+			this.bodyLoaded = true;
+		});
+	}
+
+	getZindex(): number {
+		return MapPopupElement.Z_INDEX_OFFSET;
+	}
+
+	setCollapsed(value: boolean) {
+		if (this.component == undefined) throw new Error('Failed to set tooltip collapsed');
+		this.component.setCollapsed(value);
+	}
+
+	isExpanded() {
+		if (this.component == undefined) return false;
+		return this.component.getExpanded();
+	}
+
+	isCollapsed() {
+		if (this.component == undefined) return false;
+		return this.component.getCollapsed();
+	}
+
+	isBodyLoaded() {
+		return this.bodyLoaded;
+	}
+}
+
+class MapPopupProcessor {
+	// Data
+	private popupElements = new Set<MapPopupElement>();
+
+	public show(data: MapMarkerData) {
+		data.pin.shown = false;
+		data.tooltip.shown = false;
+		data.popup.shown = true;
+		this.popupElements.add(data.popup);
+	}
+
+	public hide(data: MapMarkerData) {
+		data.pin.shown = true;
+		data.tooltip.shown = true;
+		data.popup.shown = false;
+	}
+
+	public process() {
+		for (const popup of this.popupElements) {
+			if (popup.shown) {
+				// Update popup state
+				popup.setCollapsed(false);
+
+				// Update popup map
+				popup.updateMap(true);
+
+				// If popup is expanded, update body if not loaded
+				if (popup.isExpanded() && popup.isBodyLoaded() == false) {
+					popup.updateBody();
+				}
+			} else {
+				// Check if popup exist on map
+				popup.setCollapsed(true);
+
+				// Wait until popup is collapsed before removing it
+				if (popup.isCollapsed()) {
+					popup.updateMap(false);
+					// Remove popup
+					this.popupElements.delete(popup);
+				}
 			}
 		}
 	}
