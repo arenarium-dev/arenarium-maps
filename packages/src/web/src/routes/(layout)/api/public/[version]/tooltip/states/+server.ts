@@ -4,8 +4,8 @@ import { USAGE_MAX_ITEMS, USAGE_MAX_TIMESPAN } from '$lib/shared/constants';
 
 import { API_KEY_FREE_KEY } from '$env/static/private';
 
-import { getStates } from '@workspace/shared/src/popup/compute/states';
-import type { Popup } from '@workspace/shared/src/types.js';
+import { getStates } from '@workspace/shared/src/tooltip/compute/states';
+import type { Tooltip } from '@workspace/shared/src/types.js';
 
 import { and, eq, gt, sum } from 'drizzle-orm';
 
@@ -32,12 +32,12 @@ export const POST: RequestHandler = async (event) => {
 	const response = (status: number, message: string) => new Response(null, { headers, status, statusText: message });
 	const result = (data: any) => new Response(JSON.stringify(data), { headers, status: 200 });
 
-	const request: Popup.StatesRequest = await event.request.json();
+	const request: Tooltip.StatesRequest = await event.request.json();
 	if (!request) return response(400, 'Missing request');
 
 	const parameters = request.parameters;
-	const data = request.data;
-	if (!parameters || !data) return response(400, 'Missing parameters or data');
+	const input = request.input;
+	if (!parameters || !input) return response(400, 'Missing parameters or data');
 
 	const key = request.key;
 	if (!key) return response(400, 'Missing API key');
@@ -62,7 +62,7 @@ export const POST: RequestHandler = async (event) => {
 		// Chech the api key rate limit
 		if (dbApiKey.unlimited != true) {
 			// Check is the request itself is larger than the limit
-			if (data.length > USAGE_MAX_ITEMS) {
+			if (input.length > USAGE_MAX_ITEMS) {
 				return new Response(null, { headers, status: 429, statusText: 'Request too large!' });
 			}
 
@@ -75,7 +75,7 @@ export const POST: RequestHandler = async (event) => {
 			const dbUsageSum = Number.parseInt(dbUsageSumResult.at(0)?.sum ?? '0');
 
 			// Check if the total sum of request is larger than the limit
-			if (dbUsageSum + data.length > USAGE_MAX_ITEMS) {
+			if (dbUsageSum + input.length > USAGE_MAX_ITEMS) {
 				return new Response(null, { headers, status: 429, statusText: 'Too many large requests!' });
 			}
 		}
@@ -85,7 +85,7 @@ export const POST: RequestHandler = async (event) => {
 			new Promise(async () => {
 				const dbUsage: schema.DbApiKeyUsageInsert = {
 					keyIndex: dbApiKey.index,
-					count: data.length
+					count: input.length
 				};
 				await db.insert(schema.apiKeyUsages).values([dbUsage]);
 			})
@@ -93,7 +93,7 @@ export const POST: RequestHandler = async (event) => {
 	}
 
 	// Get the states
-	const states = getStates(parameters, data);
+	const states = getStates(parameters, input);
 
 	// Return the response
 	return result(states);

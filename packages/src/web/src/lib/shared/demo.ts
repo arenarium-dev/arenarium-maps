@@ -117,7 +117,7 @@ export function getDemoConfiguration(demo: Demo): MapConfiguration {
 					fade: false
 				},
 				states: {
-					api: '/api/popup/states'
+					api: '/api/tooltip/states'
 				}
 			};
 		}
@@ -128,7 +128,7 @@ export function getDemoConfiguration(demo: Demo): MapConfiguration {
 					maxZoom: 3
 				},
 				states: {
-					api: '/api/popup/states'
+					api: '/api/tooltip/states'
 				}
 			};
 		}
@@ -138,43 +138,47 @@ export function getDemoConfiguration(demo: Demo): MapConfiguration {
 					fade: true
 				},
 				states: {
-					api: '/api/popup/states'
+					api: '/api/tooltip/states'
 				}
 			};
 		}
 	}
 }
 
-export function getPopupDimensions(demo: Demo, size: DemoSize): { width: number; height: number; padding: number } {
+export function getTooltipDimensions(demo: Demo, size: DemoSize): { width: number; height: number; margin: number; radius: number } {
 	switch (demo) {
 		default:
 			switch (size) {
 				case 'large':
-					return { width: 64, height: 64, padding: 6 };
+					return { width: 64, height: 64, margin: 6, radius: 6 };
 				case 'small':
-					return { width: 48, height: 48, padding: 4 };
+					return { width: 48, height: 48, margin: 4, radius: 4 };
 			}
 		case Demo.Rentals:
 			switch (size) {
 				case 'large':
-					return { width: 128, height: 104, padding: 8 };
+					return { width: 128, height: 104, margin: 8, radius: 12 };
 				case 'small':
-					return { width: 96, height: 80, padding: 6 };
+					return { width: 96, height: 80, margin: 6, radius: 8 };
 			}
 		case Demo.Bookings:
 			switch (size) {
 				case 'large':
-					return { width: 140, height: 104, padding: 8 };
+					return { width: 140, height: 104, margin: 8, radius: 12 };
 				case 'small':
-					return { width: 120, height: 90, padding: 6 };
+					return { width: 120, height: 90, margin: 6, radius: 12 };
 			}
 		case Demo.SrbijaNekretnine:
-			return { width: 156, height: 128, padding: 8 };
+			return { width: 156, height: 128, margin: 8, radius: 12 };
 		case Demo.CityExpert:
-			return { width: 156, height: 128, padding: 8 };
+			return { width: 156, height: 128, margin: 8, radius: 12 };
 		case Demo.Bookaweb:
-			return { width: 164, height: 132, padding: 8 };
+			return { width: 164, height: 132, margin: 8, radius: 12 };
 	}
+}
+
+export function getPinDimensions(demo: Demo, size: DemoSize): { width: number; height: number; radius: number } {
+	return { width: 16, height: 16, radius: 8 };
 }
 
 export function getDemoAutoUpdate(demo: Demo) {

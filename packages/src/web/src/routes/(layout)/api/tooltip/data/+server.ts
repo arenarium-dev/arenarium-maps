@@ -2,8 +2,6 @@ import { error, json } from '@sveltejs/kit';
 
 import { Demo } from '$lib/shared/demo';
 
-import { type MapPopupData } from '@arenarium/maps';
-
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event) => {
@@ -11,10 +9,6 @@ export const GET: RequestHandler = async (event) => {
 	if (!demo) return new Response(null);
 
 	const total = Number(event.url.searchParams.get('total'));
-	const width = Number(event.url.searchParams.get('width'));
-	const height = Number(event.url.searchParams.get('height'));
-	const padding = Number(event.url.searchParams.get('padding'));
-
 	const swlat = Number(event.url.searchParams.get('swlat'));
 	const swlng = Number(event.url.searchParams.get('swlng'));
 	const nelat = Number(event.url.searchParams.get('nelat'));
@@ -24,7 +18,7 @@ export const GET: RequestHandler = async (event) => {
 		return error(400, 'Invalid parameters');
 	}
 
-	const data = new Array<MapPopupData & { details?: any }>();
+	const data = new Array<any>();
 	const dataAssetsFetch = (url: string) => {
 		if (event.platform?.env?.ASSETS?.fetch) {
 			return event.platform.env.ASSETS.fetch(event.url.origin + url);
@@ -54,10 +48,7 @@ export const GET: RequestHandler = async (event) => {
 					id: i.toString(),
 					rank: i,
 					lat: lat,
-					lng: lng,
-					height: height,
-					width: width,
-					padding: padding
+					lng: lng
 				});
 			}
 
@@ -83,10 +74,7 @@ export const GET: RequestHandler = async (event) => {
 					id: i.toString(),
 					rank: object.price ? Number.parseInt(object.price) : 0,
 					lat: lat,
-					lng: lng,
-					height: height,
-					width: width,
-					padding: padding
+					lng: lng
 				});
 			}
 
@@ -112,9 +100,6 @@ export const GET: RequestHandler = async (event) => {
 					rank: dataJson.length - i,
 					lat: item.mapLat,
 					lng: item.mapLng,
-					height: height,
-					width: width,
-					padding: padding,
 					details: {
 						type: item.ptId
 					}
@@ -145,9 +130,6 @@ export const GET: RequestHandler = async (event) => {
 					rank: Number.parseInt(item.price_with_tax),
 					lat: Number.parseFloat(item.latitude),
 					lng: Number.parseFloat(item.longitude),
-					height: height,
-					width: width,
-					padding: padding,
 					details: {
 						name: item.name,
 						url: item.url,

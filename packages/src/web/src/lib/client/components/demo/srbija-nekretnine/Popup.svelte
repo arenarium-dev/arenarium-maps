@@ -19,7 +19,7 @@
 	let mounted = $state<boolean>(false);
 
 	onMount(async () => {
-		const data = await Fetch.that<any>(`/api/popup/details?demo=${Demo.SrbijaNekretnine}&id=${id}`);
+		const data = await Fetch.that<any>(`/api/tooltip/details?demo=${Demo.SrbijaNekretnine}&id=${id}`);
 		url = data.url;
 		image = data.image;
 		price = data.price;

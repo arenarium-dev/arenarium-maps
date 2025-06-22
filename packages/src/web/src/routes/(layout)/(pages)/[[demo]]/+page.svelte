@@ -29,14 +29,15 @@
 		getDemoConfiguration,
 		getDemoName,
 		getDemoPosition,
-		getPopupDimensions,
+		getPinDimensions,
+		getTooltipDimensions,
 		isDemoCustom,
 		type DemoMap,
 		type DemoSize,
 		type DemoStyle
 	} from '$lib/shared/demo';
 
-	import { MapManager, type MapPopup, type MapPopupData, type MapProvider } from '@arenarium/maps';
+	import { MapManager, type MapMarker, type MapProvider } from '@arenarium/maps';
 	import '@arenarium/maps/dist/style.css';
 
 	interface Bounds {
@@ -54,11 +55,12 @@
 	let demoStyle = $derived<DemoStyle>((page.url.searchParams.get('style') as DemoStyle) ?? 'website');
 	let demo = $derived<Demo>((page.params.demo as Demo) ?? Demo.Basic);
 
-	let popupData = new Map<string, MapPopupData>();
+	let dataMarkers = new Map<string, MapMarker>();
+	let dataDetails = new Map<string, any>();
+
 	let dataLoaded = false;
 	let dataLoading = $state<boolean>(false);
 	let dataAutoUpdate = $state<boolean>(false);
-	let dataTogglePopups = $state<boolean>(true);
 
 	onMount(() => {
 		demoSize = window.innerWidth < 640 ? 'small' : 'large';
@@ -336,9 +338,9 @@
 	}
 
 	function onDataClear() {
-		popupData.clear();
+		dataMarkers.clear();
 		dataLoaded = false;
-		mapManager?.removePopups();
+		mapManager?.removeMarkers();
 	}
 
 	async function onDataRefresh() {
@@ -348,13 +350,6 @@
 	function onDataAutoUpdateClick(e: Event) {
 		e.stopPropagation();
 		dataAutoUpdate = !dataAutoUpdate;
-	}
-
-	function onTogglePopupsClick(e: Event) {
-		e.stopPropagation();
-
-		dataTogglePopups = !dataTogglePopups;
-		mapManager.togglePopups(Array.from(popupData.values()).map((p) => ({ id: p.id, toggled: dataTogglePopups })));
 	}
 
 	async function onBoundsChange(bounds: Bounds) {
@@ -367,52 +362,56 @@
 					break;
 				}
 			}
+			getTooltipDimensions;
+			// Get new marker data
 
-			// Get new popup data
-			const { width, height, padding } = getPopupDimensions(demo, demoSize);
 			const params = new URLSearchParams();
 			params.append('demo', demo);
 			params.append('total', '128');
-			params.append('width', width.toString());
-			params.append('height', height.toString());
-			params.append('padding', padding.toString());
 			params.append('swlat', bounds.sw.lat.toString());
 			params.append('swlng', bounds.sw.lng.toString());
 			params.append('nelat', bounds.ne.lat.toString());
 			params.append('nelng', bounds.ne.lng.toString());
 
-			const allPopupData = await Fetch.that<MapPopupData[]>(`/api/popup/data?${params}`);
-			const newPopupData = new Array<MapPopupData>();
-			for (const data of allPopupData) {
-				if (!popupData.has(data.id)) {
-					newPopupData.push(data);
-					popupData.set(data.id, data);
-				}
-			}
-			if (newPopupData.length === 0) return;
+			const tooltipData = await Fetch.that<any[]>(`/api/tooltip/data?${params}`);
+			if (tooltipData.length === 0) return;
 
-			// Create popups
-			const popups = new Array<MapPopup>();
+			// Create markers
+			const markers = new Array<MapMarker>();
 
-			for (const data of popupData.values()) {
-				const popup: MapPopup = {
-					data: data,
-					callbacks: {
-						body: getPopupBody,
-						pin: getPopupPin
+			const tooltipStyle = getTooltipDimensions(demo, demoSize);
+			const pinStyle = getPinDimensions(demo, demoSize);
+
+			for (const data of tooltipData) {
+				const marker: MapMarker = {
+					id: data.id,
+					rank: data.rank,
+					lat: data.lat,
+					lng: data.lng,
+					tooltip: {
+						style: tooltipStyle,
+						body: getTooltipBody
+					},
+					pin: {
+						style: pinStyle,
+						body: getPinBody
 					}
 				};
-				popups.push(popup);
+				markers.push(marker);
+
+				console.log(marker);
+
+				dataMarkers.set(data.id, marker);
+				dataDetails.set(data.id, data.details);
 			}
 
-			// Update the popups
-			await mapManager.updatePopups(popups);
-			mapManager.togglePopups(popups.map((p) => ({ id: p.data.id, toggled: dataTogglePopups })));
+			// Update the markers
+			await mapManager.updateMarkers(markers);
 		} catch (err) {
 			console.error(err);
 			app.toast.set({
 				path: '/',
-				text: 'Failed to process popups.',
+				text: 'Failed to process markers.',
 				severity: 'error',
 				seconds: 2
 			});
@@ -421,41 +420,43 @@
 		}
 	}
 
-	async function getPopupBody(id: string): Promise<HTMLElement> {
+	async function getTooltipBody(id: string): Promise<HTMLElement> {
 		return await new Promise((resolve) => {
-			const popup = popupData.get(id);
-			if (!popup) throw new Error('Popup not found');
+			const marker = dataMarkers.get(id);
+			if (!marker) throw new Error('Marker not found');
 
 			const element = document.createElement('div');
+			const dimestions = marker.tooltip.style;
 
 			switch (demo) {
 				default:
-					mount(BasicPopup, { target: element, props: { id, width: popup.width, height: popup.height } });
+					mount(BasicPopup, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
 				case Demo.Rentals:
-					mount(RentalPopup, { target: element, props: { id, width: popup.width, height: popup.height } });
+					mount(RentalPopup, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
 				case Demo.Bookings:
-					mount(BookingsPopup, { target: element, props: { id, width: popup.width, height: popup.height } });
+					mount(BookingsPopup, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
 				case Demo.SrbijaNekretnine:
-					mount(SrbijaNekretninePopup, { target: element, props: { id, width: popup.width, height: popup.height } });
+					mount(SrbijaNekretninePopup, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
 				case Demo.CityExpert:
-					mount(CityExpertPopup, { target: element, props: { id, width: popup.width, height: popup.height } });
+					mount(CityExpertPopup, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
 				case Demo.Bookaweb:
-					mount(BookawebPopup, { target: element, props: { id, width: popup.width, height: popup.height, data: (popup as any).details } });
+					mount(BookawebPopup, { target: element, props: { id, width: dimestions.width, height: dimestions.height, data: (marker as any).details } });
 					break;
 			}
 			resolve(element);
 		});
 	}
 
-	async function getPopupPin(id: string): Promise<HTMLElement> {
+	async function getPinBody(id: string): Promise<HTMLElement> {
 		return await new Promise((resolve) => {
-			const popup = popupData.get(id) as any;
-			if (!popup) throw new Error('Popup not found');
+			const marker = dataMarkers.get(id);
+			const details = dataDetails.get(id);
+			if (!marker) throw new Error('Marker not found');
 
 			const element = document.createElement('div');
 
@@ -467,10 +468,10 @@
 					mount(BookingsPin, { target: element, props: { id } });
 					break;
 				case Demo.CityExpert:
-					mount(CityExpertPin, { target: element, props: { id, type: popup.details.type } });
+					mount(CityExpertPin, { target: element, props: { id, type: details.type } });
 					break;
 				case Demo.Bookaweb:
-					mount(BookawebPin, { target: element, props: { id, price: popup.details.price } });
+					mount(BookawebPin, { target: element, props: { id, price: details.price } });
 					break;
 			}
 			resolve(element);
@@ -585,10 +586,6 @@
 							<button class="item" onclick={onDataAutoUpdateClick}>
 								<Icon name={dataAutoUpdate ? 'check_box' : 'check_box_outline_blank'} size={22} />
 								<span>Auto Load</span>
-							</button>
-							<button class="item" onclick={onTogglePopupsClick}>
-								<Icon name={dataTogglePopups ? 'check_box' : 'check_box_outline_blank'} size={22} />
-								<span>Show Popups</span>
 							</button>
 						</div>
 					{/snippet}

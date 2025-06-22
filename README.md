@@ -1,8 +1,6 @@
 TODO:
 
-Rename popups to markers and marker pin to pointer, rename circle to pin
-Add toggle popup, an reveal popup good logic
-
+Change demo path to search params
 Change library log fetch from get to post
 
 OBJECTS:
