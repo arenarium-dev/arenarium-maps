@@ -4,7 +4,7 @@
 	let fontSize = Math.min(width, height) / 2;
 
 	let idNumber = Number.parseInt(id);
-	let price = 20 + Math.floor(idNumber / 100);
+	let price = 20 + Math.floor(idNumber / 10);
 </script>
 
 <div class="pin" style="width: {width}px; height: {height}px; font-size: {fontSize}px;">
