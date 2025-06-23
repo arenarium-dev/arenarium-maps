@@ -357,7 +357,7 @@ class MapElement<T> {
 //#region Pin
 
 class MapPinElement extends MapElement<ReturnType<typeof MapPinComponent>> {
-	private static DEFAULT_SIZE = 14;
+	private static DEFAULT_SIZE = 16;
 
 	width: number;
 	height: number;
@@ -374,7 +374,7 @@ class MapPinElement extends MapElement<ReturnType<typeof MapPinComponent>> {
 
 		this.width = marker.pin?.style.width ?? MapPinElement.DEFAULT_SIZE;
 		this.height = marker.pin?.style.height ?? MapPinElement.DEFAULT_SIZE;
-		this.radius = marker.pin?.style.radius ?? MapPinElement.DEFAULT_SIZE / 2;
+		this.radius = marker.pin?.style.radius ?? MapPinElement.DEFAULT_SIZE;
 		this.zoom = state[0];
 		this.bodyCallback = marker.pin?.body;
 	}

@@ -273,10 +273,14 @@
 					},
 					body: getTooltipBody
 				},
-
-				// pin: {
-				// 	body: getPinBody
-				// }
+				pin: {
+					style: {
+						width: 16,
+						height: 16,
+						radius: 4
+					},
+					body: getPinBody
+				},
 				popup: {
 					style: {
 						width: 150,
@@ -317,22 +321,21 @@
 			const marker = mapMarkers.get(id);
 			if (marker == undefined) throw new Error('Failed to get marker');
 
-			if (Number.parseInt(id) % 10 <= 3) {
-				const element = document.createElement('div');
-				element.style.display = 'flex';
-				element.style.padding = '2px';
-				mount(Icon, { target: element, props: { name: 'location_on', size: 16, color: 'white' } });
+			const element = document.createElement('div');
 
-				resolve(element);
-			} else if (Number.parseInt(id) % 10 <= 6) {
-				const element = document.createElement('div');
-				element.style.color = 'white';
-				element.style.fontSize = '12px';
-				element.style.fontWeight = '600';
-				element.style.padding = '2px 6px';
-				element.innerHTML = '$' + id + '0';
-				resolve(element);
-			}
+			// if (Number.parseInt(id) % 10 <= 3) {
+			// 	element.style.display = 'flex';
+			// 	element.style.padding = '2px';
+			// 	mount(Icon, { target: element, props: { name: 'location_on', size: 16, color: 'white' } });
+			// } else if (Number.parseInt(id) % 10 <= 6) {
+			// 	element.style.color = 'white';
+			// 	element.style.fontSize = '12px';
+			// 	element.style.fontWeight = '600';
+			// 	element.style.padding = '2px 6px';
+			// 	element.innerHTML = '$' + id + '0';
+			// }
+
+			resolve(element);
 		});
 	}
 

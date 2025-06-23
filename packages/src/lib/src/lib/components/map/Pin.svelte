@@ -83,8 +83,8 @@
 	//#endregion
 </script>
 
-<div class="pin" class:displayed bind:this={pin} style:border-radius={`${radius + 4}px`}>
-	<div class="body" bind:this={body} style:width={`${width}px`} style:height={`${height}px`} style:border-radius={`${radius}px`}></div>
+<div class="pin" class:displayed bind:this={pin} style:width={`${width}px`} style:height={`${height}px`} style:border-radius={`${radius}px`}>
+	<div class="body" bind:this={body} style:width={`${width - 4}px`} style:height={`${height - 4}px`} style:border-radius={`${radius - 2}px`}></div>
 </div>
 
 <style lang="less">
