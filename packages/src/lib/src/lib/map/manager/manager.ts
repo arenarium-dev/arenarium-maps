@@ -199,8 +199,8 @@ class MapManager {
 			this.markerDataArray.sort((a, b) => a.zoom - b.zoom);
 
 			// Set elements
-			this.markerPinProcessor.setElements(this.markerDataArray.map((m) => m.pin));
-			this.markerTooltipProcessor.setElements(this.markerDataArray.map((m) => m.tooltip));
+			this.markerPinProcessor.updateElements(this.markerDataArray.map((m) => m.pin));
+			this.markerTooltipProcessor.updateElements(this.markerDataArray.map((m) => m.tooltip));
 		} catch (error) {
 			console.error(error);
 
@@ -218,7 +218,10 @@ class MapManager {
 		try {
 			this.markerDataUpdating = true;
 
-			this.markerDataArray.forEach((data) => data.remove());
+			this.markerPinProcessor.removeElements();
+			this.markerTooltipProcessor.removeElements();
+			this.markerPopupProcessor.clear();
+
 			this.markerDataArray.length = 0;
 			this.markerDataMap.clear();
 		} catch (error) {
@@ -499,11 +502,16 @@ class MapPinProcessor {
 		this.pinMaxZoomDelta = configuration?.pin?.maxZoom ?? MapPinProcessor.MAP_PINS_MAX_ZOOM;
 	}
 
-	public setElements(elements: Array<MapPinElement>) {
+	public updateElements(elements: Array<MapPinElement>) {
 		this.pinElements = elements;
 
 		this.pinMaxWidth = elements.reduce((a, b) => Math.max(a, b.width), 0);
 		this.pinMaxHeight = elements.reduce((a, b) => Math.max(a, b.height), 0);
+	}
+
+	public removeElements() {
+		this.pinElements.forEach((pin) => pin.remove());
+		this.pinElements.length = 0;
 	}
 
 	public process(mapBounds: MapBounds, mapZoom: number) {
@@ -684,10 +692,15 @@ class MapTooltipProcessor {
 		this.provider = mapProvider;
 	}
 
-	public setElements(elements: Array<MapTooltipElement>) {
+	public updateElements(elements: Array<MapTooltipElement>) {
 		this.tooltipElements = elements;
 		this.tooltipMaxWidth = this.tooltipElements.reduce((a, b) => Math.max(a, b.width), 0);
 		this.tooltipMaxHeight = this.tooltipElements.reduce((a, b) => Math.max(a, b.height), 0);
+	}
+
+	public removeElements() {
+		this.tooltipElements.forEach((tooltip) => tooltip.remove());
+		this.tooltipElements.length = 0;
 	}
 
 	public process(mapBounds: MapBounds, mapZoom: number) {
@@ -854,6 +867,11 @@ class MapPopupProcessor {
 		if (popup == undefined) return;
 
 		popup.shown = false;
+	}
+
+	public clear() {
+		this.popupElements.values().forEach((popup) => popup.remove());
+		this.popupElements.clear();
 	}
 
 	public process() {

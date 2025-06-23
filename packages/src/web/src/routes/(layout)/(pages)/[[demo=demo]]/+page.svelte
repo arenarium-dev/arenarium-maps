@@ -351,7 +351,7 @@
 	function onDataClear() {
 		dataMarkers.clear();
 		dataLoaded = false;
-		mapManager?.removeMarkers();
+		mapManager.removeMarkers();
 	}
 
 	async function onDataRefresh() {
