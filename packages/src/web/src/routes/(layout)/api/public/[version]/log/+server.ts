@@ -2,19 +2,26 @@ import type { Log } from '@workspace/shared/src/types.js';
 
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async (event) => {
-	const logString = event.url.searchParams.get('log');
-	if (!logString) return new Response(null, { status: 400 });
+export const OPTIONS: RequestHandler = () => {
+	return new Response(null, {
+		headers: {
+			'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Headers': '*'
+		}
+	});
+};
 
-	const logJson = decodeURIComponent(logString);
-	const log: Log = JSON.parse(logJson);
+export const POST: RequestHandler = async (event) => {
+	const log: Log = await event.request.json();
 
 	console.error(log);
 
 	return new Response('OK', {
 		headers: {
 			'Access-Control-Allow-Origin': '*',
-			'Access-Control-Allow-Methods': 'GET'
+			'Access-Control-Allow-Methods': 'POST, OPTIONS',
+			'Access-Control-Allow-Headers': 'Content-Type'
 		}
 	});
 };

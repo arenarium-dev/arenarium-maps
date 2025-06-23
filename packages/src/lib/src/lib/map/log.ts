@@ -9,7 +9,11 @@ export async function log(title: string, content: any) {
 			content
 		};
 
-		await fetch('https://arenarium.dev/api/public/v1/log?log=' + encodeURIComponent(JSON.stringify(log)));
+		await fetch('https://arenarium.dev/api/public/v1/log', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(log)
+		});
 	} catch (error) {
 		console.error(error);
 	}
