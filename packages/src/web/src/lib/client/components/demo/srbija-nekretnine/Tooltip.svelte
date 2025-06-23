@@ -4,7 +4,6 @@
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 
 	import { Fetch } from '$lib/client/core/fetch';
-	import { Demo } from '$lib/shared/demo';
 
 	let { id, width, height }: { id: string; width: number; height: number } = $props();
 
@@ -19,7 +18,7 @@
 	let mounted = $state<boolean>(false);
 
 	onMount(async () => {
-		const data = await Fetch.that<any>(`/api/tooltip/details?demo=${Demo.SrbijaNekretnine}&id=${id}`);
+		const data = await Fetch.that<any>(`/api/tooltip/details?demo=srbija-nekretnine&id=${id}`);
 		url = data.url;
 		image = data.image;
 		price = data.price;

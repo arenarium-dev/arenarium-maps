@@ -1,11 +1,14 @@
 import { error, json } from '@sveltejs/kit';
 
-import { Demo } from '$lib/shared/demo';
+import { DemoSchema } from '$lib/shared/demo';
 
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event) => {
-	const demo = event.url.searchParams.get('demo');
+	const demoResult = DemoSchema.safeParse(event.url.searchParams.get('demo'));
+	if (!demoResult.success) return new Response(null);
+
+	const demo = demoResult.data;
 	const id = event.url.searchParams.get('id');
 
 	if (!demo || !id) return new Response(null);
@@ -19,7 +22,7 @@ export const GET: RequestHandler = async (event) => {
 	};
 
 	switch (demo) {
-		case Demo.SrbijaNekretnine: {
+		case 'srbija-nekretnine': {
 			const dataResponse = await dataAssetsFetch('/demo/srbija-nekretnine.json');
 			if (!dataResponse?.ok) error(500, 'Failed to get data');
 
@@ -41,7 +44,7 @@ export const GET: RequestHandler = async (event) => {
 
 			return json(data);
 		}
-		case Demo.CityExpert: {
+		case 'cityexpert': {
 			const dataResponse = await event.fetch(`https://cityexpert.rs/api/propertyView/${id}/r`);
 			if (!dataResponse.ok) error(500, 'Failed to get data');
 

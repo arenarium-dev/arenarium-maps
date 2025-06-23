@@ -2,53 +2,52 @@ import { app } from '$lib/client/state/app.svelte';
 
 import type { MapConfiguration } from '@arenarium/maps';
 
-export enum Demo {
-	Basic = 'basic',
-	Rentals = 'rentals',
-	Bookings = 'bookings',
-	Events = 'events',
-	News = 'news',
-	SrbijaNekretnine = 'srbija-nekretnine',
-	CityExpert = 'cityexpert',
-	Bookaweb = 'bookaweb'
-}
+import z from 'zod';
 
-export type DemoMap = 'maplibre' | 'google';
-export type DemoSize = 'small' | 'large';
-export type DemoStyle = 'website' | 'light' | 'dark' | 'default';
+export const DemoSchema = z.enum(['basic', 'rentals', 'bookings', 'events', 'news', 'srbija-nekretnine', 'cityexpert', 'bookaweb']);
+export type Demo = z.infer<typeof DemoSchema>;
+
+export const DemoMapSchema = z.enum(['maplibre', 'google']);
+export type DemoMap = z.infer<typeof DemoMapSchema>;
+
+export const DemoSizeSchema = z.enum(['small', 'large']);
+export type DemoSize = z.infer<typeof DemoSizeSchema>;
+
+export const DemoStyleSchema = z.enum(['website', 'light', 'dark', 'default']);
+export type DemoStyle = z.infer<typeof DemoStyleSchema>;
 
 export function getDemoName(demo: Demo) {
 	switch (demo) {
 		default:
 			return 'Basic';
-		case Demo.Rentals:
+		case 'rentals':
 			return 'Rentals';
-		case Demo.Bookings:
+		case 'bookings':
 			return 'Bookings';
-		case Demo.Events:
+		case 'events':
 			return 'Events';
-		case Demo.News:
+		case 'news':
 			return 'News';
-		case Demo.SrbijaNekretnine:
+		case 'srbija-nekretnine':
 			return 'srbija-nekretnine.org';
-		case Demo.CityExpert:
+		case 'cityexpert':
 			return 'cityexpert.rs';
-		case Demo.Bookaweb:
+		case 'bookaweb':
 			return 'bookaweb.com';
 	}
 }
 
 export function getDemoColors(demo: Demo, style: DemoStyle): { background: string; primary: string; text: string } {
 	switch (demo) {
-		case Demo.SrbijaNekretnine: {
+		case "srbija-nekretnine": {
 			return {
 				background: 'white',
 				primary: '#ff4400',
 				text: 'black'
 			};
 		}
-		case Demo.CityExpert:
-		case Demo.Bookaweb: {
+		case "cityexpert":
+		case "bookaweb": {
 			return {
 				background: 'white',
 				primary: 'white',
@@ -60,7 +59,7 @@ export function getDemoColors(demo: Demo, style: DemoStyle): { background: strin
 			let colorDark = 'lightgreen';
 
 			switch (demo) {
-				case Demo.Bookings: {
+				case "bookings": {
 					colorLight = 'midnightblue';
 					colorDark = 'lightblue';
 					break;
@@ -89,9 +88,9 @@ export function getDemoColors(demo: Demo, style: DemoStyle): { background: strin
 
 export function getDemoPosition(demo: Demo): { lat: number; lng: number; zoom: number } {
 	switch (demo) {
-		case Demo.SrbijaNekretnine:
-		case Demo.CityExpert:
-		case Demo.Bookaweb: {
+		case "srbija-nekretnine":
+		case "cityexpert":
+		case "bookaweb": {
 			return {
 				lat: 44.811222,
 				lng: 20.450989,
@@ -110,8 +109,8 @@ export function getDemoPosition(demo: Demo): { lat: number; lng: number; zoom: n
 
 export function getDemoConfiguration(demo: Demo): MapConfiguration {
 	switch (demo) {
-		case Demo.Bookings:
-		case Demo.CityExpert: {
+		case "bookings":
+		case "cityexpert": {
 			return {
 				pin: {
 					fade: false
@@ -121,7 +120,7 @@ export function getDemoConfiguration(demo: Demo): MapConfiguration {
 				}
 			};
 		}
-		case Demo.Bookaweb: {
+		case "bookaweb": {
 			return {
 				pin: {
 					fade: false,
@@ -149,32 +148,32 @@ export function getTooltipDimensions(demo: Demo, size: DemoSize): { width: numbe
 	switch (demo) {
 		default:
 			return { width: 48, height: 48, margin: 4, radius: 4 };
-		case Demo.Basic:
+		case "basic":
 			switch (size) {
 				case 'large':
 					return { width: 48, height: 48, margin: 6, radius: 12 };
 				case 'small':
 					return { width: 36, height: 36, margin: 4, radius: 8 };
 			}
-		case Demo.Rentals:
+		case "rentals":
 			switch (size) {
 				case 'large':
 					return { width: 128, height: 104, margin: 8, radius: 12 };
 				case 'small':
 					return { width: 96, height: 80, margin: 6, radius: 8 };
 			}
-		case Demo.Bookings:
+		case "bookings":
 			switch (size) {
 				case 'large':
 					return { width: 140, height: 104, margin: 8, radius: 12 };
 				case 'small':
 					return { width: 120, height: 90, margin: 6, radius: 12 };
 			}
-		case Demo.SrbijaNekretnine:
+		case "srbija-nekretnine":
 			return { width: 156, height: 128, margin: 8, radius: 12 };
-		case Demo.CityExpert:
+		case "cityexpert":
 			return { width: 156, height: 128, margin: 8, radius: 12 };
-		case Demo.Bookaweb:
+		case "bookaweb":
 			return { width: 164, height: 132, margin: 8, radius: 12 };
 	}
 }
@@ -183,28 +182,28 @@ export function getPinDimensions(demo: Demo, size: DemoSize): { width: number; h
 	switch (demo) {
 		default:
 			return { width: 14, height: 14, radius: 7 };
-		case Demo.Basic:
+		case "basic":
 			switch (size) {
 				case 'large':
 					return { width: 16, height: 16, radius: 8 };
 				case 'small':
 					return { width: 14, height: 14, radius: 8 };
 			}
-		case Demo.Rentals:
+		case "rentals":
 			switch (size) {
 				case 'large':
-					return { width: 24, height: 24, radius: 4 };
+					return { width: 24, height: 24, radius: 6 };
 				case 'small':
 					return { width: 20, height: 20, radius: 4 };
 			}
-		case Demo.Bookings:
+		case "bookings":
 			switch (size) {
 				case 'large':
 					return { width: 40, height: 24, radius: 8 };
 				case 'small':
 					return { width: 36, height: 22, radius: 8 };
 			}
-		case Demo.CityExpert:
+		case "cityexpert":
 			return { width: 24, height: 24, radius: 12 };
 	}
 }
@@ -213,7 +212,7 @@ export function getPopupDimensions(demo: Demo, size: DemoSize): { width: number;
 	switch (demo) {
 		default:
 			return { width: 156, height: 128, margin: 8, radius: 12 };
-		case Demo.Basic:
+		case "basic":
 			switch (size) {
 				case 'large':
 					return { width: 164, height: 84, margin: 8, radius: 12 };
@@ -227,13 +226,13 @@ export function getDemoAutoUpdate(demo: Demo) {
 	switch (demo) {
 		default:
 			return false;
-		case Demo.Bookaweb:
+		case "bookaweb":
 			return true;
 	}
 }
 
 export function isDemoCustom(demo: Demo) {
-	return demo == Demo.CityExpert || demo == Demo.SrbijaNekretnine || demo == Demo.Bookaweb;
+	return demo == "cityexpert" || demo == "srbija-nekretnine" || demo == "bookaweb";
 }
 
 export const rentalImages = [

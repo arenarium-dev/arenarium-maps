@@ -24,7 +24,9 @@
 	import { app } from '$lib/client/state/app.svelte';
 	import { Fetch } from '$lib/client/core/fetch';
 	import {
-		Demo,
+		DemoMapSchema,
+		DemoSchema,
+		DemoStyleSchema,
 		getDemoAutoUpdate,
 		getDemoColors,
 		getDemoConfiguration,
@@ -34,6 +36,7 @@
 		getPopupDimensions,
 		getTooltipDimensions,
 		isDemoCustom,
+		type Demo,
 		type DemoMap,
 		type DemoSize,
 		type DemoStyle
@@ -53,9 +56,9 @@
 	let mapLoaded = $state<boolean>(false);
 
 	let demoSize: DemoSize = 'large';
-	let demoMap = $derived<DemoMap>((page.url.searchParams.get('map') as DemoMap) ?? 'maplibre');
-	let demoStyle = $derived<DemoStyle>((page.url.searchParams.get('style') as DemoStyle) ?? 'website');
-	let demo = $derived<Demo>((page.params.demo as Demo) ?? Demo.Basic);
+	let demoMap = $derived<DemoMap>(DemoMapSchema.safeParse(page.url.searchParams.get('map')).data ?? 'maplibre');
+	let demoStyle = $derived<DemoStyle>(DemoStyleSchema.safeParse(page.url.searchParams.get('style')).data ?? 'website');
+	let demo = $derived<Demo>(page.params.demo as Demo);
 
 	let dataMarkers = new Map<string, MapMarker>();
 	let dataDetails = new Map<string, any>();
@@ -106,13 +109,13 @@
 
 	function getMapLibreStyle(demo: Demo, style: DemoStyle): string | maplibregl.StyleSpecification {
 		switch (demo) {
-			case Demo.SrbijaNekretnine: {
+			case 'srbija-nekretnine': {
 				return 'https://tiles.openfreemap.org/styles/bright';
 			}
-			case Demo.CityExpert: {
+			case 'cityexpert': {
 				return 'demo/cityexpert.style.json';
 			}
-			case Demo.Bookaweb: {
+			case 'bookaweb': {
 				return 'https://tiles.openfreemap.org/styles/positron';
 			}
 			default: {
@@ -303,7 +306,7 @@
 	function onDemoStyleClick(style: DemoStyle) {
 		const searchParams = page.url.searchParams;
 		searchParams.set('style', style);
-		goto(`/${demo == Demo.Basic ? '' : demo}?${searchParams.toString()}`);
+		goto(`/${demo == 'basic' ? '' : demo}?${searchParams.toString()}`);
 	}
 
 	//#endregion
@@ -366,7 +369,7 @@
 			dataLoading = true;
 
 			switch (demo) {
-				case Demo.CityExpert: {
+				case 'cityexpert': {
 					dataLoaded = true;
 					break;
 				}
@@ -425,7 +428,7 @@
 
 	function onPopupClick(id: string) {
 		switch (demo) {
-			case Demo.Basic: {
+			case 'basic': {
 				mapManager.showPopup(id);
 				break;
 			}
@@ -441,26 +444,26 @@
 			const dimestions = marker.tooltip.style;
 
 			switch (demo) {
-				case Demo.Basic:
+				case 'basic':
 					element.addEventListener('click', (e) => {
 						e.stopPropagation();
 						onPopupClick(id);
 					});
 					mount(BasicTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
-				case Demo.Rentals:
+				case 'rentals':
 					mount(RentalTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
-				case Demo.Bookings:
+				case 'bookings':
 					mount(BookingsTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
-				case Demo.SrbijaNekretnine:
+				case 'srbija-nekretnine':
 					mount(SrbijaNekretnineTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
-				case Demo.CityExpert:
+				case 'cityexpert':
 					mount(CityExpertTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
-				case Demo.Bookaweb:
+				case 'bookaweb':
 					mount(BookawebTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height, data: (marker as any).details } });
 					break;
 			}
@@ -478,16 +481,16 @@
 			const dimestions = marker.pin?.style;
 
 			switch (demo) {
-				case Demo.Rentals:
+				case 'rentals':
 					mount(RentalPin, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
 					break;
-				case Demo.Bookings:
+				case 'bookings':
 					mount(BookingsPin, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
 					break;
-				case Demo.CityExpert:
+				case 'cityexpert':
 					mount(CityExpertPin, { target: element, props: { id, type: details.type } });
 					break;
-				case Demo.Bookaweb:
+				case 'bookaweb':
 					mount(BookawebPin, { target: element, props: { id, price: details.price } });
 					break;
 			}
@@ -602,10 +605,10 @@
 					{#snippet menu()}
 						<div class="menu demo shadow-large">
 							<a href="/?{page.url.searchParams}" class="item" class:selected={demo == undefined}> Basic </a>
-							<a href="/{Demo.Rentals}?{page.url.searchParams}" class="item" class:selected={demo == Demo.Rentals}>{getDemoName(Demo.Rentals)}</a>
-							<a href="/{Demo.Bookings}?{page.url.searchParams}" class="item" class:selected={demo == Demo.Bookings}>{getDemoName(Demo.Bookings)}</a>
-							<a href="/{Demo.News}?{page.url.searchParams}" class="item" inert>{getDemoName(Demo.News)}</a>
-							<a href="/{Demo.Events}?{page.url.searchParams}" class="item" inert>{getDemoName(Demo.Events)}</a>
+							<a href="/rentals?{page.url.searchParams}" class="item" class:selected={demo == 'rentals'}>{getDemoName('rentals')}</a>
+							<a href="/bookings?{page.url.searchParams}" class="item" class:selected={demo == 'bookings'}>{getDemoName('bookings')}</a>
+							<a href="/news?{page.url.searchParams}" class="item" inert>{getDemoName('news')}</a>
+							<a href="/events?{page.url.searchParams}" class="item" inert>{getDemoName('events')}</a>
 						</div>
 					{/snippet}
 				</Menu>

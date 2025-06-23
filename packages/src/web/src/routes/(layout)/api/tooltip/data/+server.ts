@@ -1,12 +1,14 @@
 import { error, json } from '@sveltejs/kit';
 
-import { Demo } from '$lib/shared/demo';
+import { DemoSchema } from '$lib/shared/demo';
 
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event) => {
-	const demo = event.url.searchParams.get('demo');
-	if (!demo) return new Response(null);
+	const demoResult = DemoSchema.safeParse(event.url.searchParams.get('demo'));
+	if (!demoResult.success) return new Response(null);
+
+	const demo = demoResult.data;
 
 	const total = Number(event.url.searchParams.get('total'));
 	const swlat = Number(event.url.searchParams.get('swlat'));
@@ -54,7 +56,7 @@ export const GET: RequestHandler = async (event) => {
 
 			break;
 		}
-		case Demo.SrbijaNekretnine: {
+		case 'srbija-nekretnine': {
 			const dataResponse = await dataAssetsFetch('/demo/srbija-nekretnine.json');
 			if (!dataResponse?.ok) error(500, 'Failed to get data');
 
@@ -80,7 +82,7 @@ export const GET: RequestHandler = async (event) => {
 
 			break;
 		}
-		case Demo.CityExpert: {
+		case 'cityexpert': {
 			const dataSearchParams = new URLSearchParams();
 			dataSearchParams.set(
 				'req',
@@ -108,7 +110,7 @@ export const GET: RequestHandler = async (event) => {
 
 			break;
 		}
-		case Demo.Bookaweb: {
+		case 'bookaweb': {
 			const dataSearchParams = new URLSearchParams();
 			dataSearchParams.set('city_id', '1');
 			dataSearchParams.set('category_id', '1');

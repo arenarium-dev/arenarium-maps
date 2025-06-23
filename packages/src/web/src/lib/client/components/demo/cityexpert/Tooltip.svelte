@@ -5,7 +5,6 @@
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 
 	import { Fetch } from '$lib/client/core/fetch';
-	import { Demo } from '$lib/shared/demo';
 
 	let { id, width, height }: { id: string; width: number; height: number } = $props();
 
@@ -20,7 +19,7 @@
 	let mounted = $state<boolean>(false);
 
 	onMount(async () => {
-		const data = await Fetch.that<any>(`/api/tooltip/details?demo=${Demo.CityExpert}&id=${id}`);
+		const data = await Fetch.that<any>(`/api/tooltip/details?demo=cityexpert&id=${id}`);
 		images = data.images;
 		images = images.map((i) => 'https://img.cityexpert.rs/sites/default/files/styles/470x/public/image/' + i);
 		imageIndex = 0;
