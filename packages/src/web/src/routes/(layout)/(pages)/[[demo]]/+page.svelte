@@ -70,9 +70,6 @@
 
 	//#region MapLibre
 
-	import maplibregl from 'maplibre-gl';
-	import 'maplibre-gl/dist/maplibre-gl.css';
-
 	import { MapLibreProvider, MapLibreDarkStyle, MapLibreStyleLight } from '@arenarium/maps/maplibre';
 
 	let mapLibre: maplibregl.Map;
