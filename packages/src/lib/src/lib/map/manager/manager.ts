@@ -778,8 +778,13 @@ class MapPopupElement extends MapElement<ReturnType<typeof MapTooltipComponent>>
 	}
 
 	setCollapsed(value: boolean) {
-		if (this.component == undefined) throw new Error('Failed to set tooltip collapsed');
+		if (this.component == undefined) throw new Error('Failed to set popup collapsed');
 		this.component.setCollapsed(value);
+	}
+
+	setAngle(value: number) {
+		if (this.component == undefined) throw new Error('Failed to set popup angle');
+		this.component.setAngle(value);
 	}
 
 	isExpanded() {
@@ -815,7 +820,7 @@ class MapPopupProcessor {
 		this.popupElements.set(data.marker.id, popup);
 
 		popup.create();
-		popup.component.setAngle(data.tooltip.angle);
+		popup.setAngle(data.tooltip.angle);
 		popup.shown = true;
 	}
 
