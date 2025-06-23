@@ -120,6 +120,7 @@
 			}
 
 			.details {
+				height: 18px;
 				display: flex;
 				flex-direction: row;
 				align-items: end;
@@ -138,7 +139,7 @@
 				.beds,
 				.baths {
 					display: flex;
-					align-items: end;
+					align-items: center;
 					gap: 2px;
 
 					.icon {
