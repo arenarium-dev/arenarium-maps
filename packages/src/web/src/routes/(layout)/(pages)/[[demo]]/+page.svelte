@@ -9,6 +9,7 @@
 	import Progress from '$lib/client/components/utils/Progress.svelte';
 	import Toast from '$lib/client/components/Toast.svelte';
 
+	import BasicTooltip from '$lib/client/components/demo/basic/Tooltip.svelte';
 	import BasicPopup from '$lib/client/components/demo/basic/Popup.svelte';
 	import RentalPopup from '$lib/client/components/demo/rentals/Popup.svelte';
 	import RentalPin from '$lib/client/components/demo/rentals/Pin.svelte';
@@ -30,6 +31,7 @@
 		getDemoName,
 		getDemoPosition,
 		getPinDimensions,
+		getPopupDimensions,
 		getTooltipDimensions,
 		isDemoCustom,
 		type DemoMap,
@@ -95,6 +97,9 @@
 		});
 		mapLibre.on('idle', () => {
 			onMapIdle();
+		});
+		mapLibre.on('click', () => {
+			onMapClick();
 		});
 	}
 
@@ -186,6 +191,9 @@
 		});
 		mapGoogle.addListener('idle', () => {
 			onMapIdle();
+		});
+		mapGoogle.addListener('click', () => {
+			onMapClick();
 		});
 
 		const mapTypeLight = new google.maps.StyledMapType(GoogleMapLightStyle, { name: 'Light Map' });
@@ -337,6 +345,10 @@
 		}
 	}
 
+	function onMapClick() {
+		mapManager.hidePopup();
+	}
+
 	function onDataClear() {
 		dataMarkers.clear();
 		dataLoaded = false;
@@ -381,6 +393,7 @@
 
 			const tooltipStyle = getTooltipDimensions(demo, demoSize);
 			const pinStyle = getPinDimensions(demo, demoSize);
+			const popupStyle = getPopupDimensions(demo, demoSize);
 
 			for (const data of tooltipData) {
 				const marker: MapMarker = {
@@ -388,18 +401,11 @@
 					rank: data.rank,
 					lat: data.lat,
 					lng: data.lng,
-					tooltip: {
-						style: tooltipStyle,
-						body: getTooltipBody
-					},
-					pin: {
-						style: pinStyle,
-						body: getPinBody
-					}
+					tooltip: { style: tooltipStyle, body: getTooltipBody },
+					pin: { style: pinStyle, body: getPinBody },
+					popup: popupStyle ? { style: popupStyle, body: getPopupBody } : undefined
 				};
 				markers.push(marker);
-
-				console.log(marker);
 
 				dataMarkers.set(data.id, marker);
 				dataDetails.set(data.id, data.details);
@@ -420,6 +426,15 @@
 		}
 	}
 
+	function onPopupClick(id: string) {
+		switch (demo) {
+			case Demo.Basic: {
+				mapManager.showPopup(id);
+				break;
+			}
+		}
+	}
+
 	async function getTooltipBody(id: string): Promise<HTMLElement> {
 		return await new Promise((resolve) => {
 			const marker = dataMarkers.get(id);
@@ -429,8 +444,12 @@
 			const dimestions = marker.tooltip.style;
 
 			switch (demo) {
-				default:
-					mount(BasicPopup, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
+				case Demo.Basic:
+					element.addEventListener('click', (e) => {
+						e.stopPropagation();
+						onPopupClick(id);
+					});
+					mount(BasicTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
 				case Demo.Rentals:
 					mount(RentalPopup, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
@@ -472,6 +491,24 @@
 					break;
 				case Demo.Bookaweb:
 					mount(BookawebPin, { target: element, props: { id, price: details.price } });
+					break;
+			}
+			resolve(element);
+		});
+	}
+
+	async function getPopupBody(id: string): Promise<HTMLElement> {
+		return await new Promise((resolve) => {
+			const marker = dataMarkers.get(id);
+			if (!marker) throw new Error('Marker not found');
+
+			const element = document.createElement('div');
+			const dimestions = marker.popup?.style;
+			if (!dimestions) throw new Error('Popup not found');
+
+			switch (demo) {
+				default:
+					mount(BasicPopup, { target: element, props: { rank: marker.rank, width: dimestions.width, height: dimestions.height } });
 					break;
 			}
 			resolve(element);
@@ -617,6 +654,19 @@
 
 <style lang="less">
 	.container {
+		:global {
+			--arenarium-maps-pin-background: var(--map-style-primary);
+			--arenarium-maps-pin-border: var(--map-style-background);
+
+			.tooltip {
+				--arenarium-maps-tooltip-background: color-mix(in srgb, var(--map-style-background) 95%, var(--map-style-primary) 5%);
+			}
+
+			.popup {
+				--arenarium-maps-tooltip-background: var(--map-style-background);
+			}
+		}
+
 		position: relative;
 		flex-grow: 1;
 

@@ -150,7 +150,7 @@ export function getTooltipDimensions(demo: Demo, size: DemoSize): { width: numbe
 		default:
 			switch (size) {
 				case 'large':
-					return { width: 64, height: 64, margin: 6, radius: 6 };
+					return { width: 48, height: 48, margin: 6, radius: 12 };
 				case 'small':
 					return { width: 48, height: 48, margin: 4, radius: 4 };
 			}
@@ -178,7 +178,16 @@ export function getTooltipDimensions(demo: Demo, size: DemoSize): { width: numbe
 }
 
 export function getPinDimensions(demo: Demo, size: DemoSize): { width: number; height: number; radius: number } {
-	return { width: 16, height: 16, radius: 8 };
+	return { width: 14, height: 14, radius: 7 };
+}
+
+export function getPopupDimensions(demo: Demo, size: DemoSize): { width: number; height: number; margin: number; radius: number } {
+	switch (demo) {
+		default:
+			return { width: 156, height: 128, margin: 8, radius: 12 };
+		case Demo.Basic:
+			return { width: 164, height: 96, margin: 8, radius: 12 };
+	}
 }
 
 export function getDemoAutoUpdate(demo: Demo) {

@@ -2,6 +2,7 @@ TODO:
 
 Change demo path to search params
 Change library log fetch from get to post
+Add carousel component for demos
 
 OBJECTS:
 
