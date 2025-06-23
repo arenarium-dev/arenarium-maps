@@ -11,14 +11,14 @@
 
 	import BasicTooltip from '$lib/client/components/demo/basic/Tooltip.svelte';
 	import BasicPopup from '$lib/client/components/demo/basic/Popup.svelte';
-	import RentalPopup from '$lib/client/components/demo/rentals/Popup.svelte';
+	import RentalTooltip from '$lib/client/components/demo/rentals/Tooltip.svelte';
 	import RentalPin from '$lib/client/components/demo/rentals/Pin.svelte';
-	import BookingsPopup from '$lib/client/components/demo/bookings/Popup.svelte';
+	import BookingsTooltip from '$lib/client/components/demo/bookings/Tooltip.svelte';
 	import BookingsPin from '$lib/client/components/demo/bookings/Pin.svelte';
-	import SrbijaNekretninePopup from '$lib/client/components/demo/srbija-nekretnine/Popup.svelte';
-	import CityExpertPopup from '$lib/client/components/demo/cityexpert/Popup.svelte';
+	import SrbijaNekretnineTooltip from '$lib/client/components/demo/srbija-nekretnine/Tooltip.svelte';
+	import CityExpertTooltip from '$lib/client/components/demo/cityexpert/Tooltip.svelte';
 	import CityExpertPin from '$lib/client/components/demo/cityexpert/Pin.svelte';
-	import BookawebPopup from '$lib/client/components/demo/bookaweb/Popup.svelte';
+	import BookawebTooltip from '$lib/client/components/demo/bookaweb/Tooltip.svelte';
 	import BookawebPin from '$lib/client/components/demo/bookaweb/Pin.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
@@ -449,19 +449,19 @@
 					mount(BasicTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
 				case Demo.Rentals:
-					mount(RentalPopup, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
+					mount(RentalTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
 				case Demo.Bookings:
-					mount(BookingsPopup, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
+					mount(BookingsTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
 				case Demo.SrbijaNekretnine:
-					mount(SrbijaNekretninePopup, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
+					mount(SrbijaNekretnineTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
 				case Demo.CityExpert:
-					mount(CityExpertPopup, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
+					mount(CityExpertTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
 				case Demo.Bookaweb:
-					mount(BookawebPopup, { target: element, props: { id, width: dimestions.width, height: dimestions.height, data: (marker as any).details } });
+					mount(BookawebTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height, data: (marker as any).details } });
 					break;
 			}
 			resolve(element);
