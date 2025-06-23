@@ -23,6 +23,11 @@ export const mapConfigurationSchema = z.object({
 		.object({
 			api: z.string().optional()
 		})
+		.optional(),
+	log: z
+		.object({
+			api: z.string().optional()
+		})
 		.optional()
 });
 

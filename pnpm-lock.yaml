@@ -98,7 +98,7 @@ importers:
     dependencies:
       '@arenarium/maps':
         specifier: latest
-        version: 1.0.140(svelte@5.34.7)
+        version: 1.0.141(svelte@5.34.7)
       '@better-fetch/fetch':
         specifier: ^1.1.18
         version: 1.1.18
@@ -143,8 +143,8 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0(svelte@5.34.7)(vite@6.3.5(@types/node@22.13.16)(less@4.3.0))
       drizzle-kit:
-        specifier: ^0.31.1
-        version: 0.31.1
+        specifier: ^0.31.2
+        version: 0.31.2
       eslint:
         specifier: ^9.29.0
         version: 9.29.0
@@ -186,7 +186,7 @@ importers:
     dependencies:
       '@arenarium/maps':
         specifier: latest
-        version: 1.0.140(svelte@5.34.7)
+        version: 1.0.141(svelte@5.34.7)
       maplibre-gl:
         specifier: ^5.6.0
         version: 5.6.0
@@ -222,8 +222,8 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@arenarium/maps@1.0.140':
-    resolution: {integrity: sha512-921ccc1ld0XD1Z73s+Ljv8M02M4g/luNtQOksCT6rmX7B8REttjnsSLV/l4dLXilXCO1dxTOLAw25e4+uMI3cQ==}
+  '@arenarium/maps@1.0.141':
+    resolution: {integrity: sha512-s9B36tvZfdBuyx0Ro7ug45qMTcSBQk+5/p9aYtNqWyaV3nn8KgTX/KONPAKKzSrU6w1rZ+9apTdScIwbmYqnGQ==}
     peerDependencies:
       svelte: ^5.0.0
 
@@ -1637,8 +1637,8 @@ packages:
   devalue@5.1.1:
     resolution: {integrity: sha512-maua5KUiapvEwiEAe+XnlZ3Rh0GD+qI1J/nb9vrJc3muPXvcF/8gXYTWF76+5DAqHyDUtOIImEuo0YKE9mshVw==}
 
-  drizzle-kit@0.31.1:
-    resolution: {integrity: sha512-PUjYKWtzOzPtdtQlTHQG3qfv4Y0XT8+Eas6UbxCmxTj7qgMf+39dDujf1BP1I+qqZtw9uzwTh8jYtkMuCq+B0Q==}
+  drizzle-kit@0.31.2:
+    resolution: {integrity: sha512-Z2Uqxvu4HNFzlDkG3NQ2BYpII8SlOMkpjsC5XFh9TsYP2nYhfVamVjQ8spiMFXH3vGOyUt1cQ5FZ1JSgl6+8QQ==}
     hasBin: true
 
   drizzle-orm@0.44.2:
@@ -2871,7 +2871,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
 
-  '@arenarium/maps@1.0.140(svelte@5.34.7)':
+  '@arenarium/maps@1.0.141(svelte@5.34.7)':
     dependencies:
       svelte: 5.34.7
 
@@ -4083,7 +4083,7 @@ snapshots:
 
   devalue@5.1.1: {}
 
-  drizzle-kit@0.31.1:
+  drizzle-kit@0.31.2:
     dependencies:
       '@drizzle-team/brocli': 0.10.2
       '@esbuild-kit/esm-loader': 2.6.5

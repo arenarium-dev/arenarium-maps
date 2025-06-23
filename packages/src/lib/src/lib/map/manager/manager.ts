@@ -4,7 +4,6 @@ import MapPinComponent from '../../components/map/Pin.svelte';
 import MapTooltipComponent from '../../components/map/Tooltip.svelte';
 
 import { MapViewport } from './viewport.js';
-import { log } from '../log.js';
 import { animation, ANIMATION_PIN_LAYER, ANIMATION_PRIORITY_LAYER, ANIMATION_TOOLTIP_LAYER } from '../animation/animation.js';
 import {
 	mapMarkersSchema,
@@ -20,13 +19,17 @@ import {
 } from '../schemas.js';
 
 import { Angles } from '@workspace/shared/src/constants.js';
+import type { Log } from '@workspace/shared/src/types.js';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_STATES_URL = import.meta.env.VITE_API_STATES_URL;
+const API_LOG_URL = import.meta.env.VITE_API_LOG_URL;
 
 class MapManager {
 	private key: string;
 	private provider: MapProvider;
-	private apiUrl = API_URL;
+
+	private apiStatesUrl = API_STATES_URL;
+	private apiLogUrl = API_LOG_URL;
 
 	private markerDataArray = new Array<MapMarkerData>();
 	private markerDataMap = new Map<string, MapMarkerData>();
@@ -50,7 +53,7 @@ class MapManager {
 	}
 
 	public set configuration(configuration: MapConfiguration | undefined) {
-		this.apiUrl = configuration?.states?.api ?? API_URL;
+		this.apiStatesUrl = configuration?.states?.api ?? API_STATES_URL;
 		this.markerPinProcessor.setConfiguration(configuration);
 
 		animation.setLimit(configuration?.animation?.queue?.limit ?? 8 * navigator.hardwareConcurrency);
@@ -75,7 +78,7 @@ class MapManager {
 					margin: m.tooltip.style.margin
 				}))
 			};
-			const tooltipStatesResponse = await fetch(this.apiUrl, {
+			const tooltipStatesResponse = await fetch(this.apiStatesUrl, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(tooltipStatesRequest)
@@ -92,7 +95,7 @@ class MapManager {
 			this.processMarkerDataCallback();
 		} catch (error: any) {
 			console.error(error);
-			log('[Error] Failed to update markers', { message: error.message, stack: error.stack });
+			this.log('[Error] Failed to update markers', { message: error.message, stack: error.stack });
 
 			throw error;
 		}
@@ -103,7 +106,7 @@ class MapManager {
 			this.removeMarkerData();
 		} catch (error: any) {
 			console.error(error);
-			log('[Error] Failed to remove markers', { message: error.message, stack: error.stack });
+			this.log('[Error] Failed to remove markers', { message: error.message, stack: error.stack });
 
 			throw error;
 		}
@@ -120,7 +123,7 @@ class MapManager {
 			}
 		} catch (error: any) {
 			console.error(error);
-			log('[Error] Failed to show popup', { message: error.message, stack: error.stack });
+			this.log('[Error] Failed to show popup', { message: error.message, stack: error.stack });
 
 			for (const marker of this.markerDataArray) {
 				this.markerPopupProcessor.hide(marker);
@@ -144,7 +147,7 @@ class MapManager {
 			}
 		} catch (error: any) {
 			console.error(error);
-			log('[Error] Failed to hide popup', { message: error.message, stack: error.stack });
+			this.log('[Error] Failed to hide popup', { message: error.message, stack: error.stack });
 
 			for (const marker of this.markerDataArray) {
 				this.markerPopupProcessor.hide(marker);
@@ -235,7 +238,7 @@ class MapManager {
 			window.setTimeout(this.processMarkerDataCallback.bind(this), 25);
 		} catch (error: any) {
 			console.error(error);
-			log('[Error] Failed to process markers', { message: error.message, stack: error.stack });
+			this.log('[Error] Failed to process markers', { message: error.message, stack: error.stack });
 		}
 	}
 
@@ -250,6 +253,25 @@ class MapManager {
 		this.markerPopupProcessor.process();
 		this.markerTooltipProcessor.process(mapBounds, mapZoom);
 		this.markerPinProcessor.process(mapBounds, mapZoom);
+	}
+
+	private async log(title: string, content: any) {
+		if (import.meta.env.DEV) return;
+
+		try {
+			const log: Log = {
+				title,
+				content
+			};
+
+			await fetch(this.apiLogUrl, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(log)
+			});
+		} catch (error) {
+			console.error(error);
+		}
 	}
 }
 
