@@ -204,6 +204,8 @@ export function getPinDimensions(demo: Demo, size: DemoSize): { width: number; h
 				case 'small':
 					return { width: 36, height: 22, radius: 8 };
 			}
+		case Demo.CityExpert:
+			return { width: 24, height: 24, radius: 12 };
 	}
 }
 
