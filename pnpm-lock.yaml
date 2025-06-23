@@ -62,11 +62,11 @@ importers:
         specifier: ^5.6.0
         version: 5.6.0
       prettier:
-        specifier: ^3.5.3
-        version: 3.5.3
+        specifier: ^3.6.0
+        version: 3.6.0
       prettier-plugin-svelte:
         specifier: ^3.4.0
-        version: 3.4.0(prettier@3.5.3)(svelte@5.34.7)
+        version: 3.4.0(prettier@3.6.0)(svelte@5.34.7)
       publint:
         specifier: ^0.3.12
         version: 0.3.12
@@ -98,7 +98,7 @@ importers:
     dependencies:
       '@arenarium/maps':
         specifier: latest
-        version: 1.0.138(svelte@5.34.7)
+        version: 1.0.139(svelte@5.34.7)
       '@better-fetch/fetch':
         specifier: ^1.1.18
         version: 1.1.18
@@ -158,11 +158,11 @@ importers:
         specifier: ^16.2.0
         version: 16.2.0
       prettier:
-        specifier: ^3.5.3
-        version: 3.5.3
+        specifier: ^3.6.0
+        version: 3.6.0
       prettier-plugin-svelte:
         specifier: ^3.4.0
-        version: 3.4.0(prettier@3.5.3)(svelte@5.34.7)
+        version: 3.4.0(prettier@3.6.0)(svelte@5.34.7)
       svelte:
         specifier: ^5.34.7
         version: 5.34.7
@@ -186,7 +186,7 @@ importers:
     dependencies:
       '@arenarium/maps':
         specifier: latest
-        version: 1.0.138(svelte@5.34.7)
+        version: 1.0.139(svelte@5.34.7)
       maplibre-gl:
         specifier: ^5.6.0
         version: 5.6.0
@@ -222,8 +222,8 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@arenarium/maps@1.0.138':
-    resolution: {integrity: sha512-H0zHKhyj3zWwbhLcU4kpWh/NwbBCzYagoonpIeb8q1Jp5IiS4+5BPBeVq52B4a9mrBdk0MnCSPxnbV/+D42fzQ==}
+  '@arenarium/maps@1.0.139':
+    resolution: {integrity: sha512-MH5E6merkxsmjRE8w22X/8RLTfH1aufipJkcCkkRvwJpV4zzPCPtMCJH+OBiUv1KBsoIFgV++5L/Uzdg6KqtLg==}
     peerDependencies:
       svelte: ^5.0.0
 
@@ -2406,8 +2406,8 @@ packages:
       prettier: ^3.0.0
       svelte: ^3.2.0 || ^4.0.0-next.0 || ^5.0.0-next.0
 
-  prettier@3.5.3:
-    resolution: {integrity: sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==}
+  prettier@3.6.0:
+    resolution: {integrity: sha512-ujSB9uXHJKzM/2GBuE0hBOUgC77CN3Bnpqa+g80bkv3T3A93wL/xlzDATHhnhkzifz/UE2SNOvmbTz5hSkDlHw==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -2871,7 +2871,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
 
-  '@arenarium/maps@1.0.138(svelte@5.34.7)':
+  '@arenarium/maps@1.0.139(svelte@5.34.7)':
     dependencies:
       svelte: 5.34.7
 
@@ -4851,12 +4851,12 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-svelte@3.4.0(prettier@3.5.3)(svelte@5.34.7):
+  prettier-plugin-svelte@3.4.0(prettier@3.6.0)(svelte@5.34.7):
     dependencies:
-      prettier: 3.5.3
+      prettier: 3.6.0
       svelte: 5.34.7
 
-  prettier@3.5.3: {}
+  prettier@3.6.0: {}
 
   printable-characters@1.0.42: {}
 
