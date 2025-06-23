@@ -4,11 +4,10 @@
 	let { id, width, height }: { id: string; width: number; height: number } = $props();
 
 	let iconSize = Math.min(width, height) - 4;
-
 </script>
 
 <div class="popup" style:width={width + 'px'} style:height={height + 'px'} style:padding-bottom={4 + 'px'}>
-	<Icon name="eco" size={40} filled={true} />
+	<Icon name="eco" size={iconSize} filled={true} />
 </div>
 
 <style lang="less">

@@ -2,15 +2,17 @@
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 
 	let { rank, width, height }: { rank: number; width: number; height: number } = $props();
+
+	let iconSize = Math.min(width, height) / 2 + 4;
 </script>
 
 <div class="popup" style:width={width + 'px'} style:height={height + 'px'} style:padding-bottom={4 + 'px'}>
-	<Icon name="forest" size={40} filled={true} />
+	<Icon name="forest" size={iconSize} filled={true} />
 	<div class="rank">
 		<span class="value">{rank}</span>
 		<span class="label">Rank</span>
 	</div>
-	<Icon name="forest" size={40} filled={true}/>
+	<Icon name="forest" size={iconSize} filled={true} />
 </div>
 
 <style lang="less">
@@ -19,7 +21,7 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: center;
-		gap: 12px;
+		gap: 10px;
 		color: color-mix(in srgb, var(--map-style-primary) 40%, #888 60%);
 		font-weight: 600;
 		font-size: 14px;
@@ -38,7 +40,7 @@
 				font-size: 12px;
 				font-weight: 500;
 				line-height: 12px;
-				color: gray
+				color: gray;
 			}
 		}
 	}
