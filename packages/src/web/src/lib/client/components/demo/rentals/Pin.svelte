@@ -3,7 +3,7 @@
 
 	let { id }: { id: string } = $props();
 
-	let icons = ['house', 'apartment', '', '', '', ''];
+	let icons = ['house', 'apartment'];
 	let iconIndex = Number.parseInt(id) % icons.length;
 	let icon = icons[iconIndex];
 </script>

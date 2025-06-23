@@ -80,7 +80,7 @@ export function getDemoColors(demo: Demo, style: DemoStyle): { background: strin
 					return { background: 'black', primary: colorDark, text: 'white' };
 				}
 				case 'default': {
-					return { background: 'white', primary: 'white', text: 'black' };
+					return { background: 'white', primary: 'purple', text: 'black' };
 				}
 			}
 		}
@@ -178,7 +178,12 @@ export function getTooltipDimensions(demo: Demo, size: DemoSize): { width: numbe
 }
 
 export function getPinDimensions(demo: Demo, size: DemoSize): { width: number; height: number; radius: number } {
-	return { width: 14, height: 14, radius: 7 };
+	switch (demo) {
+		default:
+			return { width: 14, height: 14, radius: 7 };
+		case Demo.Rentals:
+			return { width: 20, height: 20, radius: 4 };
+	}
 }
 
 export function getPopupDimensions(demo: Demo, size: DemoSize): { width: number; height: number; margin: number; radius: number } {
