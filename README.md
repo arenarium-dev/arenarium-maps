@@ -1,6 +1,5 @@
 TODO:
 
-Change demo path to search params
 Add carousel component for demos
 
 OBJECTS:
