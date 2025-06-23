@@ -197,6 +197,13 @@ export function getPinDimensions(demo: Demo, size: DemoSize): { width: number; h
 				case 'small':
 					return { width: 20, height: 20, radius: 4 };
 			}
+		case Demo.Bookings:
+			switch (size) {
+				case 'large':
+					return { width: 40, height: 24, radius: 8 };
+				case 'small':
+					return { width: 36, height: 22, radius: 8 };
+			}
 	}
 }
 

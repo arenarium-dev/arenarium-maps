@@ -485,7 +485,7 @@
 					mount(RentalPin, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
 					break;
 				case Demo.Bookings:
-					mount(BookingsPin, { target: element, props: { id } });
+					mount(BookingsPin, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
 					break;
 				case Demo.CityExpert:
 					mount(CityExpertPin, { target: element, props: { id, type: details.type } });
