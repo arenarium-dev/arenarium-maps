@@ -282,7 +282,7 @@
 						width: 150,
 						height: 100,
 						radius: 12,
-						margin: 8
+						margin: 4
 					},
 					body: getPopupBody
 				}

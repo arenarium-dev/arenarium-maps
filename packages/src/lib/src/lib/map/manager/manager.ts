@@ -541,6 +541,7 @@ class MapTooltipElement extends MapElement<ReturnType<typeof MapTooltipComponent
 	radius: number;
 
 	zoom: number;
+	angle: number;
 	states: [number, number][];
 
 	bodyLoading = false;
@@ -556,6 +557,7 @@ class MapTooltipElement extends MapElement<ReturnType<typeof MapTooltipComponent
 		this.radius = marker.tooltip.style.radius;
 
 		this.zoom = state[0];
+		this.angle = Angles.DEFAULT;
 		this.states = state[1].map((s) => [s[0], Angles.DEGREES[s[1]]]);
 
 		this.bodyCallback = marker.tooltip.body;
@@ -593,7 +595,9 @@ class MapTooltipElement extends MapElement<ReturnType<typeof MapTooltipComponent
 
 	updateState(zoom: number) {
 		if (this.component == undefined) throw new Error('Failed to update tooltip state');
-		this.component.setAngle(this.getAngle(zoom));
+
+		this.angle = this.getAngle(zoom);
+		this.component.setAngle(this.angle);
 	}
 
 	updateBody() {
@@ -744,7 +748,6 @@ class MapPopupElement extends MapElement<ReturnType<typeof MapTooltipComponent>>
 				radius: this.radius
 			}
 		});
-		this.component.setAngle(Angles.DEFAULT);
 	}
 
 	updateMap(contains: boolean) {
@@ -812,6 +815,7 @@ class MapPopupProcessor {
 		this.popupElements.set(data.marker.id, popup);
 
 		popup.create();
+		popup.component.setAngle(data.tooltip.angle);
 		popup.shown = true;
 	}
 
@@ -846,7 +850,7 @@ class MapPopupProcessor {
 				if (popup.isCollapsed()) {
 					popup.updateMap(false);
 					popup.remove();
-					
+
 					// Remove popup
 					this.popupElements.delete(popup.id);
 				}
