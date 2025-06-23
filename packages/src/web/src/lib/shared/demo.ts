@@ -39,15 +39,15 @@ export function getDemoName(demo: Demo) {
 
 export function getDemoColors(demo: Demo, style: DemoStyle): { background: string; primary: string; text: string } {
 	switch (demo) {
-		case "srbija-nekretnine": {
+		case 'srbija-nekretnine': {
 			return {
 				background: 'white',
 				primary: '#ff4400',
 				text: 'black'
 			};
 		}
-		case "cityexpert":
-		case "bookaweb": {
+		case 'cityexpert':
+		case 'bookaweb': {
 			return {
 				background: 'white',
 				primary: 'white',
@@ -59,9 +59,9 @@ export function getDemoColors(demo: Demo, style: DemoStyle): { background: strin
 			let colorDark = 'lightgreen';
 
 			switch (demo) {
-				case "bookings": {
-					colorLight = 'midnightblue';
-					colorDark = 'lightblue';
+				case 'bookings': {
+					colorLight = '#FF385C';
+					colorDark = '#FF385C';
 					break;
 				}
 			}
@@ -88,9 +88,9 @@ export function getDemoColors(demo: Demo, style: DemoStyle): { background: strin
 
 export function getDemoPosition(demo: Demo): { lat: number; lng: number; zoom: number } {
 	switch (demo) {
-		case "srbija-nekretnine":
-		case "cityexpert":
-		case "bookaweb": {
+		case 'srbija-nekretnine':
+		case 'cityexpert':
+		case 'bookaweb': {
 			return {
 				lat: 44.811222,
 				lng: 20.450989,
@@ -109,8 +109,7 @@ export function getDemoPosition(demo: Demo): { lat: number; lng: number; zoom: n
 
 export function getDemoConfiguration(demo: Demo): MapConfiguration {
 	switch (demo) {
-		case "bookings":
-		case "cityexpert": {
+		case 'cityexpert': {
 			return {
 				pin: {
 					fade: false
@@ -120,7 +119,7 @@ export function getDemoConfiguration(demo: Demo): MapConfiguration {
 				}
 			};
 		}
-		case "bookaweb": {
+		case 'bookaweb': {
 			return {
 				pin: {
 					fade: false,
@@ -144,67 +143,60 @@ export function getDemoConfiguration(demo: Demo): MapConfiguration {
 	}
 }
 
-export function getTooltipDimensions(demo: Demo, size: DemoSize): { width: number; height: number; margin: number; radius: number } {
-	switch (demo) {
-		default:
-			return { width: 48, height: 48, margin: 4, radius: 4 };
-		case "basic":
-			switch (size) {
-				case 'large':
-					return { width: 48, height: 48, margin: 6, radius: 12 };
-				case 'small':
-					return { width: 36, height: 36, margin: 4, radius: 8 };
-			}
-		case "rentals":
-			switch (size) {
-				case 'large':
-					return { width: 128, height: 104, margin: 8, radius: 12 };
-				case 'small':
-					return { width: 96, height: 80, margin: 6, radius: 8 };
-			}
-		case "bookings":
-			switch (size) {
-				case 'large':
-					return { width: 140, height: 104, margin: 8, radius: 12 };
-				case 'small':
-					return { width: 120, height: 90, margin: 6, radius: 12 };
-			}
-		case "srbija-nekretnine":
-			return { width: 156, height: 128, margin: 8, radius: 12 };
-		case "cityexpert":
-			return { width: 156, height: 128, margin: 8, radius: 12 };
-		case "bookaweb":
-			return { width: 164, height: 132, margin: 8, radius: 12 };
-	}
-}
-
 export function getPinDimensions(demo: Demo, size: DemoSize): { width: number; height: number; radius: number } {
 	switch (demo) {
 		default:
 			return { width: 14, height: 14, radius: 7 };
-		case "basic":
+		case 'basic':
 			switch (size) {
 				case 'large':
 					return { width: 16, height: 16, radius: 8 };
 				case 'small':
 					return { width: 14, height: 14, radius: 8 };
 			}
-		case "rentals":
+		case 'rentals':
 			switch (size) {
 				case 'large':
 					return { width: 24, height: 24, radius: 6 };
 				case 'small':
 					return { width: 20, height: 20, radius: 4 };
 			}
-		case "bookings":
+		case 'cityexpert':
+			return { width: 24, height: 24, radius: 12 };
+	}
+}
+
+export function getTooltipDimensions(demo: Demo, size: DemoSize): { width: number; height: number; margin: number; radius: number } {
+	switch (demo) {
+		default:
+			return { width: 48, height: 48, margin: 4, radius: 4 };
+		case 'basic':
 			switch (size) {
 				case 'large':
-					return { width: 40, height: 24, radius: 8 };
+					return { width: 48, height: 48, margin: 6, radius: 12 };
 				case 'small':
-					return { width: 36, height: 22, radius: 8 };
+					return { width: 36, height: 36, margin: 4, radius: 8 };
 			}
-		case "cityexpert":
-			return { width: 24, height: 24, radius: 12 };
+		case 'rentals':
+			switch (size) {
+				case 'large':
+					return { width: 128, height: 104, margin: 8, radius: 12 };
+				case 'small':
+					return { width: 96, height: 80, margin: 6, radius: 8 };
+			}
+		case 'bookings':
+			switch (size) {
+				case 'large':
+					return { width: 40, height: 24, margin: 4, radius: 8 };
+				case 'small':
+					return { width: 36, height: 22, margin: 4, radius: 8 };
+			}
+		case 'srbija-nekretnine':
+			return { width: 156, height: 128, margin: 8, radius: 12 };
+		case 'cityexpert':
+			return { width: 156, height: 128, margin: 8, radius: 12 };
+		case 'bookaweb':
+			return { width: 164, height: 132, margin: 8, radius: 12 };
 	}
 }
 
@@ -212,12 +204,19 @@ export function getPopupDimensions(demo: Demo, size: DemoSize): { width: number;
 	switch (demo) {
 		default:
 			return { width: 156, height: 128, margin: 8, radius: 12 };
-		case "basic":
+		case 'basic':
 			switch (size) {
 				case 'large':
 					return { width: 164, height: 84, margin: 8, radius: 12 };
 				case 'small':
 					return { width: 136, height: 56, margin: 4, radius: 12 };
+			}
+		case 'bookings':
+			switch (size) {
+				case 'large':
+					return { width: 140, height: 104, margin: 4, radius: 12 };
+				case 'small':
+					return { width: 120, height: 90, margin: 4, radius: 12 };
 			}
 	}
 }
@@ -226,13 +225,13 @@ export function getDemoAutoUpdate(demo: Demo) {
 	switch (demo) {
 		default:
 			return false;
-		case "bookaweb":
+		case 'bookaweb':
 			return true;
 	}
 }
 
 export function isDemoCustom(demo: Demo) {
-	return demo == "cityexpert" || demo == "srbija-nekretnine" || demo == "bookaweb";
+	return demo == 'cityexpert' || demo == 'srbija-nekretnine' || demo == 'bookaweb';
 }
 
 export const rentalImages = [

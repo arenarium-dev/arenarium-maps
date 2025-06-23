@@ -14,7 +14,7 @@
 	import RentalTooltip from '$lib/client/components/demo/rentals/Tooltip.svelte';
 	import RentalPin from '$lib/client/components/demo/rentals/Pin.svelte';
 	import BookingsTooltip from '$lib/client/components/demo/bookings/Tooltip.svelte';
-	import BookingsPin from '$lib/client/components/demo/bookings/Pin.svelte';
+	import BookingsPopup from '$lib/client/components/demo/bookings/Popup.svelte';
 	import SrbijaNekretnineTooltip from '$lib/client/components/demo/srbija-nekretnine/Tooltip.svelte';
 	import CityExpertTooltip from '$lib/client/components/demo/cityexpert/Tooltip.svelte';
 	import CityExpertPin from '$lib/client/components/demo/cityexpert/Pin.svelte';
@@ -58,7 +58,7 @@
 	let demoSize: DemoSize = 'large';
 	let demoMap = $derived<DemoMap>(DemoMapSchema.safeParse(page.url.searchParams.get('map')).data ?? 'maplibre');
 	let demoStyle = $derived<DemoStyle>(DemoStyleSchema.safeParse(page.url.searchParams.get('style')).data ?? 'website');
-	let demo = $derived<Demo>(page.params.demo as Demo);
+	let demo = $derived<Demo>((page.params.demo as Demo) ?? 'basic');
 
 	let dataMarkers = new Map<string, MapMarker>();
 	let dataDetails = new Map<string, any>();
@@ -299,7 +299,6 @@
 			colorPrimary = demoColors.primary;
 			colorBackground = demoColors.background;
 			colorText = demoColors.text;
-			// mapManager.setColors(demoColors.primary, demoColors.background, demoColors.text);
 		}
 	});
 
@@ -428,11 +427,36 @@
 
 	function onPopupClick(id: string) {
 		switch (demo) {
-			case 'basic': {
+			case 'basic':
+			case 'bookings': {
 				mapManager.showPopup(id);
 				break;
 			}
 		}
+	}
+
+	async function getPinBody(id: string): Promise<HTMLElement> {
+		return await new Promise((resolve) => {
+			const marker = dataMarkers.get(id);
+			const details = dataDetails.get(id);
+			if (!marker) throw new Error('Marker not found');
+
+			const element = document.createElement('div');
+			const dimestions = marker.pin?.style;
+
+			switch (demo) {
+				case 'rentals':
+					mount(RentalPin, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
+					break;
+				case 'cityexpert':
+					mount(CityExpertPin, { target: element, props: { id, type: details.type } });
+					break;
+				case 'bookaweb':
+					mount(BookawebPin, { target: element, props: { id, price: details.price } });
+					break;
+			}
+			resolve(element);
+		});
 	}
 
 	async function getTooltipBody(id: string): Promise<HTMLElement> {
@@ -441,14 +465,15 @@
 			if (!marker) throw new Error('Marker not found');
 
 			const element = document.createElement('div');
+			element.addEventListener('click', (e) => {
+				e.stopPropagation();
+				onPopupClick(id);
+			});
+
 			const dimestions = marker.tooltip.style;
 
 			switch (demo) {
 				case 'basic':
-					element.addEventListener('click', (e) => {
-						e.stopPropagation();
-						onPopupClick(id);
-					});
 					mount(BasicTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
 				case 'rentals':
@@ -467,33 +492,7 @@
 					mount(BookawebTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height, data: (marker as any).details } });
 					break;
 			}
-			resolve(element);
-		});
-	}
 
-	async function getPinBody(id: string): Promise<HTMLElement> {
-		return await new Promise((resolve) => {
-			const marker = dataMarkers.get(id);
-			const details = dataDetails.get(id);
-			if (!marker) throw new Error('Marker not found');
-
-			const element = document.createElement('div');
-			const dimestions = marker.pin?.style;
-
-			switch (demo) {
-				case 'rentals':
-					mount(RentalPin, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
-					break;
-				case 'bookings':
-					mount(BookingsPin, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
-					break;
-				case 'cityexpert':
-					mount(CityExpertPin, { target: element, props: { id, type: details.type } });
-					break;
-				case 'bookaweb':
-					mount(BookawebPin, { target: element, props: { id, price: details.price } });
-					break;
-			}
 			resolve(element);
 		});
 	}
@@ -510,6 +509,9 @@
 			switch (demo) {
 				default:
 					mount(BasicPopup, { target: element, props: { rank: marker.rank, width: dimestions.width, height: dimestions.height } });
+					break;
+				case 'bookings':
+					mount(BookingsPopup, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
 					break;
 			}
 			resolve(element);
@@ -660,7 +662,7 @@
 			--arenarium-maps-pin-border: var(--map-style-background);
 
 			.tooltip {
-				--arenarium-maps-tooltip-background: color-mix(in srgb, var(--map-style-background) 95%, var(--map-style-primary) 5%);
+				--arenarium-maps-tooltip-background: color-mix(in srgb, var(--map-style-background) 100%, var(--map-style-primary) 0%);
 			}
 
 			.popup {
