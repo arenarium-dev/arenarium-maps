@@ -1,8 +1,9 @@
 <script lang="ts">
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 
-	let { id }: { id: string } = $props();
+	let { id, width, height }: { id: string, width: number, height: number } = $props();
 
+	let iconSize = Math.min(width, height) - 4;
 	let icons = ['house', 'apartment'];
 	let iconIndex = Number.parseInt(id) % icons.length;
 	let icon = icons[iconIndex];
@@ -14,7 +15,7 @@
 			<span class="top">${id}0</span>
 		{:else}
 			<div class="icon">
-				<Icon name={icon} size={20} />
+				<Icon name={icon} size={iconSize} />
 			</div>
 		{/if}
 	{:else}

@@ -478,10 +478,11 @@
 			if (!marker) throw new Error('Marker not found');
 
 			const element = document.createElement('div');
+			const dimestions = marker.pin?.style;
 
 			switch (demo) {
 				case Demo.Rentals:
-					mount(RentalPin, { target: element, props: { id } });
+					mount(RentalPin, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
 					break;
 				case Demo.Bookings:
 					mount(BookingsPin, { target: element, props: { id } });
