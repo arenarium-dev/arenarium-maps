@@ -211,13 +211,6 @@ export function getTooltipDimensions(demo: Demo, size: DemoSize): { width: numbe
 				case 'small':
 					return { width: 36, height: 22, margin: 4, radius: 8 };
 			}
-		case 'bnb':
-			switch (size) {
-				case 'large':
-					return { width: 140, height: 104, margin: 4, radius: 12 };
-				case 'small':
-					return { width: 120, height: 90, margin: 4, radius: 12 };
-			}
 		case 'srbija-nekretnine':
 			return { width: 156, height: 128, margin: 8, radius: 12 };
 		case 'cityexpert':
