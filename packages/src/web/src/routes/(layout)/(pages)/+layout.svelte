@@ -23,7 +23,7 @@
 	<title>@arenarium/maps</title>
 	<meta property="og:title" content="@arenarium/maps" />
 	<meta property="og:type" content="website" />
-	<meta property="og:description" content="Minimalist and performant rendering of popups on a map." />
+	<meta property="og:description" content="Minimalist and performant rendering of markers on a map." />
 	<meta property="og:url" content="https://maps.arenarium.dev" />
 	<meta property="og:image" content="https://maps.arenarium.dev/favicon.png" />
 </svelte:head>

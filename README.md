@@ -45,3 +45,10 @@ News:
 WASM:
 
 https://vexcess.github.io/blog/zig-for-webassembly-guide.html
+
+
+Customers:
+
+cityexpert
+rami - reddit
+some dude - reddit
