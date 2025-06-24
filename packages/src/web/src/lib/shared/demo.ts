@@ -170,9 +170,9 @@ export function getPinDimensions(demo: Demo, size: DemoSize): { width: number; h
 		case 'bookings':
 			switch (size) {
 				case 'large':
-					return { width: 40, height: 24, radius: 8 };
+					return { width: 40, height: 24, radius: 12 };
 				case 'small':
-					return { width: 36, height: 22, radius: 8 };
+					return { width: 36, height: 22, radius: 11 };
 			}
 		case 'cityexpert':
 			return { width: 24, height: 24, radius: 12 };
@@ -207,7 +207,7 @@ export function getTooltipDimensions(demo: Demo, size: DemoSize): { width: numbe
 		case 'bnb':
 			switch (size) {
 				case 'large':
-					return { width: 44, height: 26, margin: 4, radius: 8 };
+					return { width: 44, height: 26, margin: 4, radius: 10 };
 				case 'small':
 					return { width: 36, height: 22, margin: 4, radius: 8 };
 			}
