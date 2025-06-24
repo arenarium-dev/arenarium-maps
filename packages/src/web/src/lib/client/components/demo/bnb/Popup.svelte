@@ -14,10 +14,10 @@
 	let images = rentalImages;
 	let imageIndex = idNumber % images.length;
 
-	let price = 20 + Math.floor(idNumber / 10);
+	let price = 20 + Math.round(idNumber / 10);
 	let rating = Math.random() + 4;
-	let votes = Math.floor(Math.max(100 - idNumber / 100, 1));
-	let days = Math.floor(Math.random() * 4) + 1;
+	let votes = Math.round(Math.max(100 - idNumber / 100, 1));
+	let days = Math.round(Math.random() * 4) + 1;
 
 	let mounted = $state<boolean>(false);
 

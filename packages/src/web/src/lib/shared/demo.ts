@@ -4,7 +4,7 @@ import type { MapConfiguration } from '@arenarium/maps';
 
 import z from 'zod';
 
-export const DemoSchema = z.enum(['basic', 'rentals', 'bookings', 'events', 'news', 'srbija-nekretnine', 'cityexpert', 'bookaweb']);
+export const DemoSchema = z.enum(['basic', 'rentals', 'bookings', 'bnb', 'events', 'news', 'srbija-nekretnine', 'cityexpert', 'bookaweb']);
 export type Demo = z.infer<typeof DemoSchema>;
 
 export const DemoMapSchema = z.enum(['maplibre', 'google']);
@@ -18,12 +18,14 @@ export type DemoStyle = z.infer<typeof DemoStyleSchema>;
 
 export function getDemoName(demo: Demo) {
 	switch (demo) {
-		default:
+		case 'basic':
 			return 'Basic';
 		case 'rentals':
 			return 'Rentals';
 		case 'bookings':
 			return 'Bookings';
+		case 'bnb':
+			return 'BnB';
 		case 'events':
 			return 'Events';
 		case 'news':
@@ -60,6 +62,11 @@ export function getDemoColors(demo: Demo, style: DemoStyle): { background: strin
 
 			switch (demo) {
 				case 'bookings': {
+					colorLight = 'midnightblue';
+					colorDark = 'lightblue';
+					break;
+				}
+				case 'bnb': {
 					colorLight = '#FF385C';
 					colorDark = '#FF385C';
 					break;
@@ -109,6 +116,7 @@ export function getDemoPosition(demo: Demo): { lat: number; lng: number; zoom: n
 
 export function getDemoConfiguration(demo: Demo): MapConfiguration {
 	switch (demo) {
+		case 'bookings':
 		case 'cityexpert': {
 			return {
 				pin: {
@@ -145,8 +153,6 @@ export function getDemoConfiguration(demo: Demo): MapConfiguration {
 
 export function getPinDimensions(demo: Demo, size: DemoSize): { width: number; height: number; radius: number } {
 	switch (demo) {
-		default:
-			return { width: 14, height: 14, radius: 7 };
 		case 'basic':
 			switch (size) {
 				case 'large':
@@ -161,15 +167,22 @@ export function getPinDimensions(demo: Demo, size: DemoSize): { width: number; h
 				case 'small':
 					return { width: 20, height: 20, radius: 4 };
 			}
+		case 'bookings':
+			switch (size) {
+				case 'large':
+					return { width: 40, height: 24, radius: 8 };
+				case 'small':
+					return { width: 36, height: 22, radius: 8 };
+			}
 		case 'cityexpert':
 			return { width: 24, height: 24, radius: 12 };
+		default:
+			return { width: 14, height: 14, radius: 7 };
 	}
 }
 
 export function getTooltipDimensions(demo: Demo, size: DemoSize): { width: number; height: number; margin: number; radius: number } {
 	switch (demo) {
-		default:
-			return { width: 48, height: 48, margin: 4, radius: 4 };
 		case 'basic':
 			switch (size) {
 				case 'large':
@@ -187,9 +200,23 @@ export function getTooltipDimensions(demo: Demo, size: DemoSize): { width: numbe
 		case 'bookings':
 			switch (size) {
 				case 'large':
-					return { width: 40, height: 24, margin: 4, radius: 8 };
+					return { width: 140, height: 104, margin: 8, radius: 12 };
+				case 'small':
+					return { width: 120, height: 90, margin: 6, radius: 12 };
+			}
+		case 'bnb':
+			switch (size) {
+				case 'large':
+					return { width: 44, height: 26, margin: 4, radius: 8 };
 				case 'small':
 					return { width: 36, height: 22, margin: 4, radius: 8 };
+			}
+		case 'bnb':
+			switch (size) {
+				case 'large':
+					return { width: 140, height: 104, margin: 4, radius: 12 };
+				case 'small':
+					return { width: 120, height: 90, margin: 4, radius: 12 };
 			}
 		case 'srbija-nekretnine':
 			return { width: 156, height: 128, margin: 8, radius: 12 };
@@ -197,13 +224,13 @@ export function getTooltipDimensions(demo: Demo, size: DemoSize): { width: numbe
 			return { width: 156, height: 128, margin: 8, radius: 12 };
 		case 'bookaweb':
 			return { width: 164, height: 132, margin: 8, radius: 12 };
+		default:
+			return { width: 48, height: 48, margin: 4, radius: 4 };
 	}
 }
 
 export function getPopupDimensions(demo: Demo, size: DemoSize): { width: number; height: number; margin: number; radius: number } {
 	switch (demo) {
-		default:
-			return { width: 156, height: 128, margin: 8, radius: 12 };
 		case 'basic':
 			switch (size) {
 				case 'large':
@@ -211,22 +238,24 @@ export function getPopupDimensions(demo: Demo, size: DemoSize): { width: number;
 				case 'small':
 					return { width: 136, height: 56, margin: 4, radius: 12 };
 			}
-		case 'bookings':
+		case 'bnb':
 			switch (size) {
 				case 'large':
-					return { width: 140, height: 104, margin: 4, radius: 12 };
+					return { width: 164, height: 116, margin: 4, radius: 12 };
 				case 'small':
-					return { width: 120, height: 90, margin: 4, radius: 12 };
+					return { width: 132, height: 90, margin: 4, radius: 12 };
 			}
+		default:
+			return { width: 156, height: 128, margin: 8, radius: 12 };
 	}
 }
 
 export function getDemoAutoUpdate(demo: Demo) {
 	switch (demo) {
-		default:
-			return false;
 		case 'bookaweb':
 			return true;
+		default:
+			return false;
 	}
 }
 

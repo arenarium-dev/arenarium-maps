@@ -13,8 +13,10 @@
 	import BasicPopup from '$lib/client/components/demo/basic/Popup.svelte';
 	import RentalTooltip from '$lib/client/components/demo/rentals/Tooltip.svelte';
 	import RentalPin from '$lib/client/components/demo/rentals/Pin.svelte';
+	import BookingsPin from '$lib/client/components/demo/bookings/Pin.svelte';
 	import BookingsTooltip from '$lib/client/components/demo/bookings/Tooltip.svelte';
-	import BookingsPopup from '$lib/client/components/demo/bookings/Popup.svelte';
+	import BnbTooltip from '$lib/client/components/demo/bnb/Tooltip.svelte';
+	import BnbPopup from '$lib/client/components/demo/bnb/Popup.svelte';
 	import SrbijaNekretnineTooltip from '$lib/client/components/demo/srbija-nekretnine/Tooltip.svelte';
 	import CityExpertTooltip from '$lib/client/components/demo/cityexpert/Tooltip.svelte';
 	import CityExpertPin from '$lib/client/components/demo/cityexpert/Pin.svelte';
@@ -428,7 +430,7 @@
 	function onPopupClick(id: string) {
 		switch (demo) {
 			case 'basic':
-			case 'bookings': {
+			case 'bnb': {
 				mapManager.showPopup(id);
 				break;
 			}
@@ -447,6 +449,9 @@
 			switch (demo) {
 				case 'rentals':
 					mount(RentalPin, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
+					break;
+				case 'bookings':
+					mount(BookingsPin, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
 					break;
 				case 'cityexpert':
 					mount(CityExpertPin, { target: element, props: { id, type: details.type } });
@@ -482,6 +487,9 @@
 				case 'bookings':
 					mount(BookingsTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
+				case 'bnb':
+					mount(BnbTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
+					break;
 				case 'srbija-nekretnine':
 					mount(SrbijaNekretnineTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
@@ -507,11 +515,11 @@
 			if (!dimestions) throw new Error('Popup not found');
 
 			switch (demo) {
-				default:
+				case 'basic':
 					mount(BasicPopup, { target: element, props: { rank: marker.rank, width: dimestions.width, height: dimestions.height } });
 					break;
-				case 'bookings':
-					mount(BookingsPopup, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
+				case 'bnb':
+					mount(BnbPopup, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
 					break;
 			}
 			resolve(element);
@@ -609,6 +617,7 @@
 							<a href="/?{page.url.searchParams}" class="item" class:selected={demo == undefined}> Basic </a>
 							<a href="/rentals?{page.url.searchParams}" class="item" class:selected={demo == 'rentals'}>{getDemoName('rentals')}</a>
 							<a href="/bookings?{page.url.searchParams}" class="item" class:selected={demo == 'bookings'}>{getDemoName('bookings')}</a>
+							<a href="/bnb?{page.url.searchParams}" class="item" class:selected={demo == 'bnb'}>{getDemoName('bnb')}</a>
 							<a href="/news?{page.url.searchParams}" class="item" inert>{getDemoName('news')}</a>
 							<a href="/events?{page.url.searchParams}" class="item" inert>{getDemoName('events')}</a>
 						</div>
