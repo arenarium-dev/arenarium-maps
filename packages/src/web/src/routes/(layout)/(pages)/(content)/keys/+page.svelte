@@ -7,7 +7,7 @@
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 	import Modal from '$lib/client/components/utils/Modal.svelte';
 	import Toast from '$lib/client/components/Toast.svelte';
-	import ApiKeyForm from '$lib/client/components/keys/ApiKeyForm.svelte';
+	import Form from '$lib/client/components/keys/Form.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
 
@@ -193,7 +193,7 @@
 {/if}
 
 <Modal bind:this={formModal}>
-	<ApiKeyForm success={onFromSuccess} key={formKey} name={formName} domains={formDomains} />
+	<Form success={onFromSuccess} key={formKey} name={formName} domains={formDomains} />
 </Modal>
 
 <Toast path={'/keys'} />

@@ -17,17 +17,16 @@
 	import BookingsTooltip from '$lib/client/components/demo/bookings/Tooltip.svelte';
 	import BnbTooltip from '$lib/client/components/demo/bnb/Tooltip.svelte';
 	import BnbPopup from '$lib/client/components/demo/bnb/Popup.svelte';
-	import SrbijaNekretnineTooltip from '$lib/client/components/demo/srbija-nekretnine/Tooltip.svelte';
-	import CityExpertTooltip from '$lib/client/components/demo/cityexpert/Tooltip.svelte';
-	import CityExpertPin from '$lib/client/components/demo/cityexpert/Pin.svelte';
-	import BookawebTooltip from '$lib/client/components/demo/bookaweb/Tooltip.svelte';
-	import BookawebPin from '$lib/client/components/demo/bookaweb/Pin.svelte';
+	import SrbijaNekretnineTooltip from '$lib/client/components/demo/websites/srbija-nekretnine/Tooltip.svelte';
+	import CityExpertTooltip from '$lib/client/components/demo/websites/cityexpert/Tooltip.svelte';
+	import CityExpertPin from '$lib/client/components/demo/websites/cityexpert/Pin.svelte';
+	import BookawebTooltip from '$lib/client/components/demo/websites/bookaweb/Tooltip.svelte';
+	import BookawebPin from '$lib/client/components/demo/websites/bookaweb/Pin.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
 	import { Fetch } from '$lib/client/core/fetch';
 	import {
 		DemoMapSchema,
-		DemoSchema,
 		DemoStyleSchema,
 		getDemoAutoUpdate,
 		getDemoColors,
