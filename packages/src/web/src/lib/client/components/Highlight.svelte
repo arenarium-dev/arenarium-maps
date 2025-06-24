@@ -3,13 +3,15 @@
 	import xml from 'highlight.js/lib/languages/xml';
 	import bash from 'highlight.js/lib/languages/bash';
 	import javascript from 'highlight.js/lib/languages/javascript';
+	import css from 'highlight.js/lib/languages/css';
 
 	// Then register the languages you need
 	highlightjs.registerLanguage('xml', xml);
 	highlightjs.registerLanguage('bash', bash);
 	highlightjs.registerLanguage('javascript', javascript);
+	highlightjs.registerLanguage('css', css);
 
-	let { language, text }: { language: 'xml' | 'bash' | 'javascript'; text: string } = $props();
+	let { language, text }: { language: 'xml' | 'bash' | 'javascript' | 'css'; text: string } = $props();
 
 	let highlight = highlightjs.highlight(text.trim().replaceAll('\t', '    '), { language }).value;
 </script>

@@ -172,71 +172,120 @@ mapGoogle.setMapTypeId("light-id"); // or "dark-id" for dark theme
 `}
 		/>
 
-		<div class="header">Popups</div>
+		<div class="header">Markers</div>
 		<div class="text">
-			To display interactive popups on the map, you first need to define an array of <code>MapPopup</code> objects. Provide content rendering callbacks
-			for the body and optionally for the pin. These callbacks should return a <code>HTMLElement</code>. Use the
-			<code>updatePopups</code> method on the map instance to display or update the popups. This method efficiently adds new popups and updates existing ones
-			based on their IDs. Popups not present in the provided array will remain on the map. This approach is designed for continuous updates of map popups.
+			To display interactive markers on the map, you first need to define an array of <code>MapMarker</code> objects. Provide the base marker data and the
+			configuration for the tooltip (required), pin (optional), and popup (optional). The configurations have body callbacks which should return a
+			<code>HTMLElement</code>.
+		</div>
+		<div class="text">
+			Use the <code>updateMarkers</code> method on the map manager to display or update update the markers. This method efficiently adds new markers and updates
+			existing ones based on their IDs. Markers not present in the provided array will remain on the map. This approach is designed for continuous updates
+			of map markers.
 		</div>
 		<div class="highlight">
 			<Highlight
 				language="javascript"
 				text={`
-import { type MapPopup } from '@arenarium/maps';
+import { type MapMarker } from '@arenarium/maps';
 
-const popups: MapPopup[] = [];
+const markers: MapMarker[] = [];
 
 for (let i = 0; i < count; i++) {
-    popups.push({
-        data: {
-			// A unique identifier for the popup
-			id: ...,
-			// The ranking of the popup, used for visual prioritization
-			rank: ..,
-			// The latitude of the popup's location
-			lat: ...,
-			// The longitude of the popup's location
-			lng: ...,
-			// The desired height of the popup's content area
-			height: ...,
-			// The desired width of the popup's content area
-			width: ...
-			// The desired padding of the popup's content area
-			padding: ...
-    	},
-        callbacks: {
-            // Callback function that returns the HTMLElement object for the popup body (required)
-            body: async (id) => { ... }
-            // Optional: Callback function that returns the HTMLElement object for a custom pin
-            pin: async (id) => { ... }
-        }
+    markers.push({
+		// A unique identifier for the marker
+		id: ...,
+		// The ranking of the marker, used for visual prioritization
+		rank: ..,
+		// The latitude of the marker's location
+		lat: ...,
+		// The longitude of the marker's location
+		lng: ...,
+		// The tooltip configuration of the marker (required)
+		tooltip: {			
+			style: {
+				// The desired height of the marker's tooltip area
+				height: ...,
+				// The desired width of the marker's tooltip area
+				width: ...
+				// The desired margin of the marker's tooltip area
+				margin: ...,
+				// The desired radius of the marker's tooltip area
+				radius: ...,
+			},
+			// Callback function that returns the HTMLElement object for the tooltip body
+			body: async (id) => { ... }				
+        },
+		// The pin configuration of the marker (optional)
+		pin: {
+			style: {
+				// The desired height of the marker's pin area
+				height: ...,
+				// The desired width of the marker's pin area
+				width: ...
+				// The desired radius of the marker's pin area
+				radius: ...,
+			},
+			// Callback function that returns the HTMLElement object for the pin body
+			body: async (id) => { ... }
+		},
+		// The popup configuration of the marker (optional)
+		popup: {
+			style: {
+				// The desired height of the marker's popup area
+				height: ...,
+				// The desired width of the marker's popup area
+				width: ...
+				// The desired margin of the marker's popup area
+				margin: ...,
+				// The desired radius of the marker's popup area
+				radius: ...,
+			},
+			// Callback function that returns the HTMLElement object for the popup body
+			body: async (id) => { ... }
+		}
     });
 }
 
-await mapManager.updatePopups(popups);`}
+await mapManager.updateMarkers(markers);`}
 			/>
 		</div>
-		<div class="text">
-			To set the colors used by the map and popups, use the <code>setColors</code> method. The first argument is the primary color, the second is the background,
-			and the third is the text color.
-		</div>
+		<div class="text">To remove all markers from the map, use the <code>removeMarkers</code> method:</div>
 		<div class="highlight">
-			<Highlight language="javascript" text={`mapManager.setColors('darkgreen', 'white', 'black');`} />
+			<Highlight language="javascript" text={`mapManager.removeMarkers();`} />
 		</div>
-		<div class="text">To remove all popups from the map, use the <code>removePopups</code> method:</div>
+		<div class="text">To toggle the popup of a marker, use the <code>showPopup</code> and <code>hidePopup</code> methods:</div>
 		<div class="highlight">
-			<Highlight language="javascript" text={`mapManager.removePopups();`} />
+			<Highlight
+				language="javascript"
+				text={`
+mapManager.showPopup(id);
+mapManager.hidePopup(id);
+			`}
+			/>
 		</div>
-		<div class="text">To toggle the display of popups, use the <code>togglePopups</code> method:</div>
+		<div class="header">Style</div>
+		<div class="text">You can change the markers style by using the predefined CSS variables:</div>
 		<div class="highlight">
-			<Highlight language="javascript" text={`mapManager.togglePopups([{ id: 'id', toggled: true }]);`} />
+			<Highlight
+				language="css"
+				text={`
+--arenarium-maps-pin-background: ...;
+--arenarium-maps-pin-border: ...;
+--arenarium-maps-pin-shadow: ...;
+
+--arenarium-maps-tooltip-background: ...;			
+--arenarium-maps-tooltip-shadow: ...;
+--arenarium-maps-tooltip-shadow-hover: ...;
+			`}
+			/>
 		</div>
 		<div class="title" id="about">About</div>
 		<div class="text">
 			<strong>@arenarium/maps</strong> is a library designed for the efficient visualization of a large number of ranked points of interest on your maps. It
 			excels in scenarios where you need to present numerous location-based markers with a clear visual hierarchy based on their importance or ranking. By
-			leveraging optimized rendering techniques and a dedicated API for managing dynamic popup states, this library ensures a smooth and informative user experience.
+			leveraging optimized rendering techniques and a dedicated API for managing dynamic marker states, this library ensures a smooth and informative user
+			experience.
 		</div>
 	</div>
 </div>
