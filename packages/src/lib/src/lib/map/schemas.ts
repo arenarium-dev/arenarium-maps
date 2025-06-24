@@ -91,7 +91,7 @@ export const mapMarkerSchema = z.object({
 				margin: z.number(),
 				radius: z.number()
 			})
-			.refine((data) => Math.min(data.width, data.height) / data.margin >= 4, 'Tooltip width and height must be at least 4 times the margin'),
+			.refine((data) => Math.min(data.width, data.height) / data.margin >= 5, 'Tooltip width and height must be at least 5 times the margin'),
 		body: mapBodyCallbackSchema
 	}),
 	pin: z

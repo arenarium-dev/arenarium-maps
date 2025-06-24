@@ -60,10 +60,10 @@ class MapManager {
 	}
 
 	public async updateMarkers(markers: MapMarker[]) {
-		try {
-			// Validate markers
-			await mapMarkersSchema.parseAsync(markers);
+		// Validate markers
+		await mapMarkersSchema.parseAsync(markers);
 
+		try {
 			// Get marker tooltip states
 			const tooltipStatesRequest: MapTooltipStatesRequest = {
 				key: this.key,
