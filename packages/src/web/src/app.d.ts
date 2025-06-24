@@ -5,7 +5,7 @@ declare global {
 		interface Platform {
 			env: Env;
 			cf: CfProperties;
-			ctx: ExecutionContext;
+			context: ExecutionContext;
 		}
 
 		interface User {
