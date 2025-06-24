@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	import { MapManager, type MapPopup } from '@arenarium/maps';
+	import { MapManager, type MapMarker } from '@arenarium/maps';
 	import { MapLibreProvider, MapLibreStyleLight } from '@arenarium/maps/maplibre';
 	import '@arenarium/maps/dist/style.css';
 
@@ -28,19 +28,19 @@
 
 	async function insert() {
 		const bounds = map.getBounds();
-		const popups = getPopups(bounds);
+		const markers = getMarkers(bounds);
 
 		const now = performance.now();
-		await mapManager.updatePopups(popups);
-		console.log(`[SET ${popups.length}] ${performance.now() - now}ms`);
+		await mapManager.updateMarkers(markers);
+		console.log(`[SET ${markers.length}] ${performance.now() - now}ms`);
 	}
 
 	function remove() {
-		mapManager.removePopups();
+		mapManager.removeMarkers();
 	}
 
-	function getPopups(bounds: maplibregl.LngLatBounds): MapPopup[] {
-		const popups = new Array<MapPopup>();
+	function getMarkers(bounds: maplibregl.LngLatBounds): MapMarker[] {
+		const markers = new Array<MapMarker>();
 
 		const centers = [
 			{ lat: 51.505, lng: -0.09 },
@@ -71,26 +71,27 @@
 			if (lat < bounds._sw.lat || bounds._ne.lat < lat || lng < bounds._sw.lng || bounds._ne.lng < lng) continue;
 			if (cnt++ > limit) break;
 
-			popups.push({
-				data: {
-					id: i.toString(),
-					rank: i,
-					lat: lat,
-					lng: lng,
-					height: 100,
-					width: 150,
-					padding: 8
-				},
-				callbacks: {
-					body: getPopupContent
+			markers.push({
+				id: i.toString(),
+				rank: i,
+				lat: lat,
+				lng: lng,
+				tooltip: {
+					style: {
+						height: 100,
+						width: 150,
+						margin: 8,
+						radius: 12
+					},
+					body: getTooltipBody
 				}
 			});
 		}
 
-		return popups;
+		return markers;
 	}
 
-	async function getPopupContent(id: string): Promise<HTMLElement> {
+	async function getTooltipBody(id: string): Promise<HTMLElement> {
 		return await new Promise((resolve) => {
 			const element = document.createElement('div');
 			element.style.width = '150px';
