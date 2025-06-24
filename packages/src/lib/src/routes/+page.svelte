@@ -40,7 +40,7 @@
 
 	//#region MapLibre
 
-	import { MapLibreProvider, MapLibreStyleLight } from '$lib/maplibre.js';
+	import { MapLibreProvider, MapLibreLightStyle } from '$lib/maplibre.js';
 
 	let mapLibre: maplibregl.Map;
 
@@ -50,7 +50,7 @@
 
 		const mapLibreProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
 			container: mapElement,
-			style: MapLibreStyleLight,
+			style: MapLibreLightStyle,
 			center: { lat: 51.505, lng: -0.09 },
 			zoom: 4
 		});

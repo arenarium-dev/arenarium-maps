@@ -119,6 +119,15 @@
 						</a>
 					</div>
 				</div>
+				<div class="divider"></div>
+				<div class="group">
+					<div class="item">
+						<a href="/docs/#about" class="content">
+							<Icon name={'info'} />
+							<div class="text">Bluesky</div>
+						</a>
+					</div>
+				</div>
 			</div>
 		</div>
 	{/snippet}
