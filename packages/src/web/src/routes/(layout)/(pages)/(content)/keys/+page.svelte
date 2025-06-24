@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { onMount, tick } from 'svelte';
-	import { SvelteMap } from 'svelte/reactivity';
 	import { page } from '$app/state';
 	import { invalidate } from '$app/navigation';
 
@@ -122,14 +120,11 @@
 						<span class="name">{apiKey.name}</span>
 						<span class="usage">{apiKey.usage} requests</span>
 						<span class="domains">{apiKey.domains?.join(', ')}</span>
+						{#if data.admin}
+							<span class="user">{apiKey.user}</span>
+						{/if}
 					</div>
-					<input
-						type="text"
-						readonly
-						value={apiKey.key}
-						class:monospace={true}
-						aria-label="API Key Value"
-					/>
+					<input type="text" readonly value={apiKey.key} class:monospace={true} aria-label="API Key Value" />
 					<div class="buttons">
 						<button class="button copy" title="Copy key" aria-label="Copy API key" onclick={() => copyApiKey(apiKey)}>
 							<Icon name={'content_copy'} />
@@ -231,7 +226,15 @@
 
 				.domains {
 					font-size: 14px;
+					color: var(--secondary);
 					opacity: 0.75;
+				}
+
+				.user {
+					padding-top: 4px;
+					font-size: 14px;
+					color: var(--secondary);
+					font-weight: 500;
 				}
 			}
 
