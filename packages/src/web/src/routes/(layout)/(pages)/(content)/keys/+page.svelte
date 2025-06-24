@@ -101,40 +101,6 @@
 	}
 
 	//#endregion
-
-	//#region Visibility
-
-	let visibleKeys = new SvelteMap();
-
-	onMount(() => {
-		data.apiKeys.forEach((key) => {
-			if (!visibleKeys.has(key.key)) {
-				visibleKeys.set(key.key, false); // Start hidden
-			}
-		});
-	});
-
-	function toggleApiKeyVisibility(keyId: string) {
-		visibleKeys.set(keyId, !visibleKeys.get(keyId));
-	}
-
-	function maskApiKey(key: string) {
-		if (!key || key.length < 8) {
-			// Return fixed mask for very short keys
-			return '••••••••';
-		}
-
-		// Show first 4 and last 4 characters e.g., sk_l...CDEF
-		const prefixMatch = key.match(/^(sk_|pk_)(live|test)_/);
-		const prefix = prefixMatch ? prefixMatch[0] : '';
-		const keyPart = prefix ? key.substring(prefix.length) : key;
-
-		if (keyPart.length < 8) return prefix + '••••••••';
-
-		return `${prefix}${keyPart.substring(0, 4)}••••••••${keyPart.substring(keyPart.length - 4)}`;
-	}
-
-	//#endregion
 </script>
 
 <div class="header">
@@ -154,28 +120,17 @@
 				<li class="item">
 					<div class="info">
 						<span class="name">{apiKey.name}</span>
+						<span class="usage">{apiKey.usage} requests</span>
 						<span class="domains">{apiKey.domains?.join(', ')}</span>
 					</div>
 					<input
 						type="text"
 						readonly
-						value={visibleKeys.get(apiKey.key) ? apiKey.key : maskApiKey(apiKey.key)}
-						class:monospace={visibleKeys.get(apiKey.key)}
+						value={apiKey.key}
+						class:monospace={true}
 						aria-label="API Key Value"
 					/>
 					<div class="buttons">
-						<button
-							class="button"
-							onclick={() => toggleApiKeyVisibility(apiKey.key)}
-							title={visibleKeys.get(apiKey.key) ? 'Hide key' : 'Show key'}
-							aria-label={visibleKeys.get(apiKey.key) ? 'Hide API key' : 'Show API key'}
-						>
-							{#if visibleKeys.get(apiKey.key)}
-								<Icon name={'visibility'} />
-							{:else}
-								<Icon name={'visibility_off'} />
-							{/if}
-						</button>
 						<button class="button copy" title="Copy key" aria-label="Copy API key" onclick={() => copyApiKey(apiKey)}>
 							<Icon name={'content_copy'} />
 						</button>
@@ -266,6 +221,12 @@
 				.name {
 					font-weight: 600;
 					margin-bottom: 4px;
+				}
+
+				.usage {
+					font-size: 14px;
+					color: var(--primary);
+					font-weight: 600;
 				}
 
 				.domains {

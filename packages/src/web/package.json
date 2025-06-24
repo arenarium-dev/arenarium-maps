@@ -18,7 +18,7 @@
 		"db:cf-migrate-dev": "wrangler d1 migrations apply arenarium-maps-db --local",
 		"db:cf-migrate-production": "wrangler d1 migrations apply arenarium-maps-db --remote",
 		"cf:preview": "pnpm run build && wrangler dev",
-		"cf:deploy": "pnpm run build && wrangler deploy --env=production",
+		"cf:deploy": "pnpm run build && wrangler deploy",
 		"cf:typegen": "wrangler types ./src/worker-configuration.d.ts"
 	},
 	"devDependencies": {
