@@ -128,7 +128,7 @@ export const apiKeyRelations = relations(apiKeys, ({ one, many }) => ({
 }));
 
 export const apiKeyUsageRelations = relations(apiKeyUsages, ({ one }) => ({
-	apiKeyUsageKey: one(apiKeys, { fields: [apiKeyUsages.keyIndex], references: [apiKeys.key] })
+	apiKeyUsageKey: one(apiKeys, { fields: [apiKeyUsages.keyIndex], references: [apiKeys.index] })
 }));
 
 export type DbUser = typeof users.$inferSelect;
