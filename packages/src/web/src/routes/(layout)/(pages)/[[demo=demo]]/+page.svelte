@@ -59,7 +59,7 @@
 	let demoSize: DemoSize = 'large';
 	let demoMap = $derived<DemoMap>(DemoMapSchema.safeParse(page.url.searchParams.get('map')).data ?? 'maplibre');
 	let demoStyle = $derived<DemoStyle>(DemoStyleSchema.safeParse(page.url.searchParams.get('style')).data ?? 'website');
-	let demo = $derived<Demo>((page.params.demo as Demo) ?? 'basic');
+	let demo = $derived<Demo>((page.params.demo as Demo) ?? 'leaves');
 
 	let dataMarkers = new Map<string, MapMarker>();
 	let dataDetails = new Map<string, any>();
@@ -307,7 +307,7 @@
 	function onDemoStyleClick(style: DemoStyle) {
 		const searchParams = page.url.searchParams;
 		searchParams.set('style', style);
-		goto(`/${demo == 'basic' ? '' : demo}?${searchParams.toString()}`);
+		goto(`/${demo == 'leaves' ? '' : demo}?${searchParams.toString()}`);
 	}
 
 	//#endregion
@@ -429,7 +429,7 @@
 
 	function onPopupClick(id: string) {
 		switch (demo) {
-			case 'basic':
+			case 'leaves':
 			case 'bnb': {
 				mapManager.showPopup(id);
 				break;
@@ -478,7 +478,7 @@
 			const dimestions = marker.tooltip.style;
 
 			switch (demo) {
-				case 'basic':
+				case 'leaves':
 					mount(BasicTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 					break;
 				case 'rentals':
@@ -515,7 +515,7 @@
 			if (!dimestions) throw new Error('Popup not found');
 
 			switch (demo) {
-				case 'basic':
+				case 'leaves':
 					mount(BasicPopup, { target: element, props: { rank: marker.rank, width: dimestions.width, height: dimestions.height } });
 					break;
 				case 'bnb':
@@ -614,7 +614,7 @@
 					{/snippet}
 					{#snippet menu()}
 						<div class="menu demo shadow-large">
-							<a href="/?{page.url.searchParams}" class="item" class:selected={demo == undefined}> Basic </a>
+							<a href="/?{page.url.searchParams}" class="item" class:selected={demo == undefined}>{getDemoName('leaves')}</a>
 							<a href="/rentals?{page.url.searchParams}" class="item" class:selected={demo == 'rentals'}>{getDemoName('rentals')}</a>
 							<a href="/bookings?{page.url.searchParams}" class="item" class:selected={demo == 'bookings'}>{getDemoName('bookings')}</a>
 							<a href="/bnb?{page.url.searchParams}" class="item" class:selected={demo == 'bnb'}>{getDemoName('bnb')}</a>

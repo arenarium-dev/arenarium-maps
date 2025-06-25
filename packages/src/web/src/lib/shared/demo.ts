@@ -4,7 +4,7 @@ import type { MapConfiguration } from '@arenarium/maps';
 
 import z from 'zod';
 
-export const DemoSchema = z.enum(['basic', 'rentals', 'bookings', 'bnb', 'events', 'news', 'srbija-nekretnine', 'cityexpert', 'bookaweb']);
+export const DemoSchema = z.enum(['leaves', 'rentals', 'bookings', 'bnb', 'events', 'news', 'srbija-nekretnine', 'cityexpert', 'bookaweb']);
 export type Demo = z.infer<typeof DemoSchema>;
 
 export const DemoMapSchema = z.enum(['maplibre', 'google']);
@@ -18,8 +18,8 @@ export type DemoStyle = z.infer<typeof DemoStyleSchema>;
 
 export function getDemoName(demo: Demo) {
 	switch (demo) {
-		case 'basic':
-			return 'Basic';
+		case 'leaves':
+			return 'Leaves';
 		case 'rentals':
 			return 'Rentals';
 		case 'bookings':
@@ -153,7 +153,7 @@ export function getDemoConfiguration(demo: Demo): MapConfiguration {
 
 export function getPinDimensions(demo: Demo, size: DemoSize): { width: number; height: number; radius: number } {
 	switch (demo) {
-		case 'basic':
+		case 'leaves':
 			switch (size) {
 				case 'large':
 					return { width: 16, height: 16, radius: 8 };
@@ -183,7 +183,7 @@ export function getPinDimensions(demo: Demo, size: DemoSize): { width: number; h
 
 export function getTooltipDimensions(demo: Demo, size: DemoSize): { width: number; height: number; margin: number; radius: number } {
 	switch (demo) {
-		case 'basic':
+		case 'leaves':
 			switch (size) {
 				case 'large':
 					return { width: 48, height: 48, margin: 6, radius: 12 };
@@ -224,7 +224,7 @@ export function getTooltipDimensions(demo: Demo, size: DemoSize): { width: numbe
 
 export function getPopupDimensions(demo: Demo, size: DemoSize): { width: number; height: number; margin: number; radius: number } {
 	switch (demo) {
-		case 'basic':
+		case 'leaves':
 			switch (size) {
 				case 'large':
 					return { width: 164, height: 84, margin: 8, radius: 12 };
