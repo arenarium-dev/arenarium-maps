@@ -1,6 +1,6 @@
 TODO:
 
-Add carousel component for demos
+Add basic SEO
 
 OBJECTS:
 
@@ -33,13 +33,18 @@ start local, expand to eu etc
         booking.com
         airbnb.com
 
-Apartments booking:
+    Apartments booking:
 
-    aparmani-u-beogradu.com
-    stannadan.com
+        aparmani-u-beogradu.com
+        stannadan.com
 
-    booking.com
-    airbnb.com
+        booking.com
+        airbnb.com
+
+    Contact:
+    cityexpert.rs - boris prpic
+    bookaweb.com, aparmani-u-beogradu.com - darko damjanovic
+
 
 News:
 

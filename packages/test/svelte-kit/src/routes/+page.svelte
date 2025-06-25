@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 
 	import { MapManager, type MapMarker } from '@arenarium/maps';
-	import { MapLibreProvider, MapLibreStyleLight } from '@arenarium/maps/maplibre';
+	import { MapLibreProvider, MapLibreLightStyle } from '@arenarium/maps/maplibre';
 	import '@arenarium/maps/dist/style.css';
 
 	import maplibregl from 'maplibre-gl';
@@ -15,7 +15,7 @@
 	onMount(() => {
 		const mapProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
 			container: mapContainer,
-			style: MapLibreStyleLight,
+			style: MapLibreLightStyle,
 			center: { lat: 51.505, lng: -0.09 },
 			zoom: 13
 		});
