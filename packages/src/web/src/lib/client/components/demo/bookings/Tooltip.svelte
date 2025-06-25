@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
+	import Carousel from '$lib/client/components/utils/Carousel.svelte';
+
 	import { rentalImages } from '$lib/shared/demo';
 
 	let { id, width, height }: { id: string; width: number; height: number } = $props();
@@ -30,7 +32,7 @@
 {#if mounted}
 	<button class="popup" style:width={width + 'px'} style:height={height + 'px'} style:font-size={fontSize + 'px'}>
 		<div class="image">
-			<img loading="lazy" src={images[imageIndex]} alt={id} />
+			<Carousel {images} index={imageIndex} />
 		</div>
 		<div class="text">
 			<div class="line top">
@@ -72,12 +74,6 @@
 			border-radius: 8px;
 			overflow: hidden;
 			cursor: pointer;
-
-			img {
-				width: 100%;
-				height: 100%;
-				object-fit: cover;
-			}
 		}
 
 		.text {

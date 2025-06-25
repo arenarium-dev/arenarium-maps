@@ -74,7 +74,7 @@
 
 	//#region MapLibre
 
-	import { MapLibreProvider, MapLibreDarkStyle, MapLibreStyleLight } from '@arenarium/maps/maplibre';
+	import { MapLibreProvider, MapLibreDarkStyle, MapLibreLightStyle } from '@arenarium/maps/maplibre';
 
 	let mapLibre: maplibregl.Map;
 	let mapLibreProvider: MapLibreProvider;
@@ -85,13 +85,14 @@
 
 		mapLibreProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
 			container: mapElement,
-			style: app.theme.get() == 'dark' ? MapLibreDarkStyle : MapLibreStyleLight,
+			style: app.theme.get() == 'dark' ? MapLibreDarkStyle : MapLibreLightStyle,
 			center: { lat: 51.505, lng: -0.09 },
 			zoom: 4
 		});
 
 		mapProvider = mapLibreProvider;
 		mapLibre = mapLibreProvider.getMap();
+		mapLibre.doubleClickZoom.disable();
 
 		mapLibre.on('load', () => {
 			mapLoaded = true;
@@ -122,10 +123,10 @@
 			default: {
 				switch (style) {
 					case 'website': {
-						return app.theme.get() == 'dark' ? MapLibreDarkStyle : MapLibreStyleLight;
+						return app.theme.get() == 'dark' ? MapLibreDarkStyle : MapLibreLightStyle;
 					}
 					case 'light': {
-						return MapLibreStyleLight;
+						return MapLibreLightStyle;
 					}
 					case 'dark': {
 						return MapLibreDarkStyle;
