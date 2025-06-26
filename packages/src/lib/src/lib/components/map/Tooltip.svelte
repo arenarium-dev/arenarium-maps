@@ -226,7 +226,6 @@
 			.body {
 				position: relative;
 				background-color: @background;
-				overflow: hidden;
 				cursor: pointer;
 			}
 		}

@@ -200,9 +200,9 @@ export function getTooltipDimensions(demo: Demo, size: DemoSize): { width: numbe
 		case 'bookings':
 			switch (size) {
 				case 'large':
-					return { width: 140, height: 104, margin: 8, radius: 12 };
+					return { width: 108, height: 64, margin: 8, radius: 12 };
 				case 'small':
-					return { width: 120, height: 90, margin: 6, radius: 12 };
+					return { width: 96, height: 56, margin: 6, radius: 8 };
 			}
 		case 'bnb':
 			switch (size) {

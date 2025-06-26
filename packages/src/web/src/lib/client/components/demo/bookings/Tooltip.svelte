@@ -1,10 +1,4 @@
 <script lang="ts">
-	import { fade } from 'svelte/transition';
-
-	import Carousel from '$lib/client/components/utils/Carousel.svelte';
-
-	import { rentalImages } from '$lib/shared/demo';
-
 	let { id, width, height }: { id: string; width: number; height: number } = $props();
 
 	let fontSize = Math.min(width, height) / 6;
@@ -16,14 +10,6 @@
 	let rating = Math.random() + 9;
 	let days = Math.round(Math.random() * 4) + 1;
 	let guests = Math.round(Math.random()) + 1;
-
-	let imagesShown = $state<boolean>(false);
-	let images = rentalImages;
-	let imageIndex = idNumber % images.length;
-
-	function onHover() {
-		imagesShown = !imagesShown;
-	}
 </script>
 
 <button
@@ -31,8 +17,6 @@
 	style:width={width + 'px'}
 	style:height={height + 'px'}
 	style:font-size={fontSize + 'px'}
-	onmouseenter={onHover}
-	onmouseleave={onHover}
 >
 	<div class="line top">
 		<div class="type">{type}</div>
@@ -45,13 +29,6 @@
 		<div>{days} night{days == 1 ? '' : 's'}</div>
 		<div>{guests} guest{guests == 1 ? '' : 's'}</div>
 	</div>
-	{#if imagesShown}
-		<div class="images" transition:fade={{ duration: 125 }}>
-			<div class="carousel">
-				<Carousel {images} index={imageIndex} />
-			</div>
-		</div>
-	{/if}
 </button>
 
 <style lang="less">
@@ -106,24 +83,6 @@
 				div {
 					opacity: 0.8;
 				}
-			}
-		}
-
-		.images {
-			position: absolute;
-			top: 0px;
-			left: 50%;
-			transform: translate(-50%, -100%);
-			width: 256px;
-			height: 156px;
-			padding: 8px;
-			z-index: 99999999;
-
-			.carousel {
-				width: 100%;
-				height: 100%;
-				border-radius: 16px;
-				overflow: hidden;
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 TODO:
 
-Add basic SEO
+Add marker focus to set z index so on hover can work properly
 
 OBJECTS:
 
