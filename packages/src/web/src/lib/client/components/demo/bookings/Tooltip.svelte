@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 
 	import Carousel from '$lib/client/components/utils/Carousel.svelte';
 
@@ -7,150 +7,123 @@
 
 	let { id, width, height }: { id: string; width: number; height: number } = $props();
 
-	let fontSize = 1 + Math.min(width, height) / 10;
+	let fontSize = Math.min(width, height) / 6;
 
 	let idNumber = Number.parseInt(id);
-
-	let types = ['Apartment', 'House', 'Condo', 'Hotel'];
+	let types = ['Apartment', 'Hotel', 'Hotel', 'Hotel'];
 	let type = types[idNumber % types.length];
-	let images = rentalImages;
-	let imageIndex = idNumber % images.length;
-
 	let price = 20 + Math.floor(idNumber / 10);
 	let rating = Math.random() + 9;
 	let days = Math.round(Math.random() * 4) + 1;
 	let guests = Math.round(Math.random()) + 1;
 
-	let mounted = $state<boolean>(false);
+	let imagesShown = $state<boolean>(false);
+	let images = rentalImages;
+	let imageIndex = idNumber % images.length;
 
-	onMount(async () => {
-		await new Promise((resolve) => setTimeout(resolve, Math.random() * 500));
-		mounted = true;
-	});
+	function onHover() {
+		imagesShown = !imagesShown;
+	}
 </script>
 
-{#if mounted}
-	<button class="popup" style:width={width + 'px'} style:height={height + 'px'} style:font-size={fontSize + 'px'}>
-		<div class="image">
-			<Carousel {images} index={imageIndex} />
-		</div>
-		<div class="text">
-			<div class="line top">
-				<div class="type">{type}</div>
-				<div class="rating">{rating.toFixed(1)}</div>
-			</div>
-			<div class="line bottom">
-				<div class="price">
-					${price * days}
-				</div>
-				<div>{days} night{days == 1 ? '' : 's'}</div>
-				<div>{guests} guest{guests == 1 ? '' : 's'}</div>
-			</div>
-		</div>
-	</button>
-{:else}
-	<div class="placeholder" style:width={width + 'px'} style:height={height + 'px'} style:font-size={fontSize + 'px'}>
-		<div class="image"></div>
-		<div class="text">
-			<div class="line"></div>
-			<div class="line"></div>
-		</div>
+<button
+	class="popup"
+	style:width={width + 'px'}
+	style:height={height + 'px'}
+	style:font-size={fontSize + 'px'}
+	onmouseenter={onHover}
+	onmouseleave={onHover}
+>
+	<div class="line top">
+		<div class="type">{type}</div>
+		<div class="rating">{rating.toFixed(1)}</div>
 	</div>
-{/if}
+	<div class="price">
+		${price * days}
+	</div>
+	<div class="line bottom">
+		<div>{days} night{days == 1 ? '' : 's'}</div>
+		<div>{guests} guest{guests == 1 ? '' : 's'}</div>
+	</div>
+	{#if imagesShown}
+		<div class="images" transition:fade={{ duration: 125 }}>
+			<div class="carousel">
+				<Carousel {images} index={imageIndex} />
+			</div>
+		</div>
+	{/if}
+</button>
 
 <style lang="less">
 	@gray: color-mix(in srgb, var(--map-style-background) 50%, #888 50%);
 
 	.popup {
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		gap: 0px;
-		padding: 4px;
+		padding: 0.75em;
+		color: var(--map-style-text);
+		text-align: start;
 
-		.image {
-			width: 100%;
-			aspect-ratio: 16 / 9;
-			background-color: @gray;
-			border-radius: 8px;
-			overflow: hidden;
-			cursor: pointer;
+		.price {
+			font-weight: 600;
+			font-size: 1.5em;
+			opacity: 1;
 		}
 
-		.text {
-			width: 100%;
+		.line {
 			display: flex;
-			flex-direction: column;
-			gap: 1px;
-			padding: 2px 2px;
-			color: var(--map-style-text);
+			flex-direction: row;
+			align-items: center;
+			height: 1.3em;
 
-			.line {
-				display: flex;
-				flex-direction: row;
-				align-items: center;
-				height: 1.3em;
+			&.top {
+				font-size: 1em;
 
-				&.top {
-					font-size: 1em;
-
-					.type {
-						font-weight: 600;
-						flex-grow: 1;
-						text-align: start;
-					}
-
-					.rating {
-						font-weight: 500;
-						background-color: var(--map-style-primary);
-						color: var(--map-style-background);
-						border-radius: 4px 4px 4px 0px;
-						padding: 1px 3px;
-						padding-top: 0px;
-					}
+				.type {
+					font-weight: 600;
+					flex-grow: 1;
+					text-align: start;
+					opacity: 0.8;
+					color: var(--map-style-primary);
 				}
 
-				&.bottom {
-					font-size: 0.9m;
-					gap: 0.4em;
+				.rating {
+					font-weight: 500;
+					background-color: var(--map-style-primary);
+					color: var(--map-style-background);
+					border-radius: 4px 4px 4px 0px;
+					padding: 1px 3px;
+					padding-top: 0px;
+				}
+			}
 
-					div {
-						opacity: 0.8;
-					}
+			&.bottom {
+				font-size: 1em;
+				gap: 0.5em;
 
-					.price {
-						font-weight: 600;
-						opacity: 1;
-					}
+				div {
+					opacity: 0.8;
 				}
 			}
 		}
-	}
 
-	.placeholder {
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
-		padding: 4px;
+		.images {
+			position: absolute;
+			top: 0px;
+			left: 50%;
+			transform: translate(-50%, -100%);
+			width: 256px;
+			height: 156px;
+			padding: 8px;
+			z-index: 99999999;
 
-		.image {
-			width: 100%;
-			aspect-ratio: 16 / 9;
-			background-color: @gray;
-			border-radius: 8px;
-			overflow: hidden;
-			cursor: pointer;
-		}
-
-		.text {
-			display: flex;
-			flex-direction: column;
-			gap: 4px;
-
-			.line {
-				height: 1.3em;
+			.carousel {
 				width: 100%;
-				background-color: @gray;
-				border-radius: 8px;
+				height: 100%;
+				border-radius: 16px;
+				overflow: hidden;
 			}
 		}
 	}
