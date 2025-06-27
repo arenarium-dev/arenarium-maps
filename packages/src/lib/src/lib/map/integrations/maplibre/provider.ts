@@ -1,4 +1,4 @@
-import type { MapProvider, MapProviderMarker, MapProviderParameters } from '../../schemas.js';
+import type { MapBounds, MapProvider, MapProviderMarker, MapProviderParameters } from '../../schemas.js';
 
 interface MapLibreClass {
 	new (options: maplibregl.MapOptions): maplibregl.Map;
@@ -54,11 +54,15 @@ export class MapLibreProvider implements MapProvider {
 		return this.map.getZoom();
 	}
 
-	public getBounds(): { sw: { lat: number; lng: number }; ne: { lat: number; lng: number } } {
+	public getBounds(): MapBounds {
 		const bounds = this.map.getBounds();
 		const sw = bounds.getSouthWest();
 		const ne = bounds.getNorthEast();
 		return { sw, ne };
+	}
+
+	public panBy(x: number, y: number) {
+		this.map.panBy([x, y]);
 	}
 
 	public createMarker(element: HTMLElement, lat: number, lng: number): MapProviderMarker {

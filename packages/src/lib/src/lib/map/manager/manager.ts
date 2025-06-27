@@ -718,7 +718,7 @@ class MapTooltipProcessor {
 					tooltip.updateMap(true);
 
 					// If marker is expanded, update body if not loaded
-					if (tooltip.isExpanded() && tooltip.isBodyLoaded() == false) {
+					if (tooltip.isCollapsed() == false && tooltip.isBodyLoaded() == false) {
 						tooltip.updateBody();
 					}
 				} else {
@@ -848,9 +848,11 @@ class MapPopupProcessor {
 	}
 
 	public show(data: MapMarkerData) {
+		// Hide pin and tooltip
 		data.pin.shown = false;
 		data.tooltip.shown = false;
 
+		// Create popup
 		const popup = new MapPopupElement(this.provider, data.marker);
 		this.popupElements.set(data.marker.id, popup);
 
@@ -886,6 +888,23 @@ class MapPopupProcessor {
 				// If popup is expanded, update body if not loaded
 				if (popup.isExpanded() && popup.isBodyLoaded() == false) {
 					popup.updateBody();
+				}
+
+				// Adjust map position to fit popup while its expanding
+				if (popup.isCollapsed() == false && popup.isExpanded() == false) {
+					const popupBody = popup.component.getBody() as HTMLElement;
+					const popupRect = popupBody.getBoundingClientRect();
+					const mapRect = this.provider.getContainer().getBoundingClientRect();
+
+					const distLeft = popupRect.left - mapRect.left;
+					const distRight = mapRect.right - popupRect.right;
+					const distTop = popupRect.top - mapRect.top;
+					const distBottom = mapRect.bottom - popupRect.bottom;
+
+					const panPadding = Math.min(popup.width, popup.height) / 4;
+					const panX = distLeft < 0 ? distLeft - panPadding : distRight < 0 ? -distRight + panPadding : 0;
+					const panY = distTop < 0 ? distTop - panPadding : distBottom < 0 ? -distBottom + panPadding : 0;
+					this.provider.panBy(panX, panY);
 				}
 			} else {
 				// Check if popup exist on map

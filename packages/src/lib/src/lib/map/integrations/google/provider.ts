@@ -1,4 +1,4 @@
-import type { MapProvider, MapProviderMarker, MapProviderParameters } from '../../schemas.js';
+import type { MapBounds, MapProvider, MapProviderMarker, MapProviderParameters } from '../../schemas.js';
 
 interface GoogleMapsClass {
 	new (container: HTMLElement, options: google.maps.MapOptions): google.maps.Map;
@@ -43,13 +43,17 @@ export class GoogleMapsProvider implements MapProvider {
 		return this.map.getZoom() ?? NaN;
 	}
 
-	public getBounds(): { sw: { lat: number; lng: number }; ne: { lat: number; lng: number } } {
+	public getBounds(): MapBounds {
 		const bounds = this.map.getBounds();
 		if (bounds == undefined) return { sw: { lat: NaN, lng: NaN }, ne: { lat: NaN, lng: NaN } };
 
 		const sw = bounds.getSouthWest();
 		const ne = bounds.getNorthEast();
 		return { sw: { lat: sw.lat(), lng: sw.lng() }, ne: { lat: ne.lat(), lng: ne.lng() } };
+	}
+
+	public panBy(x: number, y: number) {
+		this.map.panBy(x, y);
 	}
 
 	public createMarker(element: HTMLElement, lat: number, lng: number, zIndex: number): MapProviderMarker {

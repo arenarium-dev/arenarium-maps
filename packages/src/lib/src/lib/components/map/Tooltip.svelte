@@ -70,7 +70,7 @@
 	}
 
 	export function getExpanded() {
-		return collapsed == false;
+		return scaleTransition.motion.current == 1;
 	}
 
 	//#endregion

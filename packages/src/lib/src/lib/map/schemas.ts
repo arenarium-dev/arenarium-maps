@@ -63,6 +63,7 @@ export const mapProviderSchema = z.object({
 	getContainer: z.function().args().returns(mapHtmlElementSchema),
 	getZoom: z.function().args().returns(z.number()),
 	getBounds: z.function().args().returns(mapBoundsSchema),
+	panBy: z.function().args(z.number(), z.number()).returns(z.void()),
 	createMarker: z.function().args(mapHtmlElementSchema, mapLatitudeSchema, mapLongitudeSchema, z.number()).returns(mapProviderMarkerSchema)
 });
 
