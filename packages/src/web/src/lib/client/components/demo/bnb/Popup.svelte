@@ -7,7 +7,7 @@
 
 	let { id, width, height }: { id: string; width: number; height: number } = $props();
 
-	let fontSize = 1 + Math.min(width, height) / 16;
+	let fontSize = 1 + Math.min(width, height) / 12;
 
 	let idNumber = Number.parseInt(id);
 
@@ -20,7 +20,6 @@
 	let rating = Math.random() + 4;
 	let votes = Math.round(Math.max(100 - idNumber / 100, 1));
 	let days = Math.round(Math.random() * 4) + 1;
-	let guests = Math.round(Math.random()) + 1;
 
 	let mounted = $state<boolean>(false);
 
@@ -33,7 +32,7 @@
 {#if mounted}
 	<button class="popup" style:width={width + 'px'} style:height={height + 'px'} style:font-size={fontSize + 'px'}>
 		<div class="image">
-			<Carousel {images} index={imageIndex} dots={true} />
+			<Carousel {images} index={imageIndex} dots={false} />
 		</div>
 		<div class="text">
 			<div class="line top">
@@ -45,7 +44,7 @@
 				<div class="price">
 					${price * days}
 				</div>
-				<div>for {days} night{days == 1 ? '' : 's'}, {guests} guest{guests == 1 ? '' : 's'}</div>
+				<div>for {days} night{days == 1 ? '' : 's'}</div>
 			</div>
 		</div>
 	</button>
@@ -65,8 +64,8 @@
 	.popup {
 		display: flex;
 		flex-direction: column;
-		gap: 6px;
-		padding: 8px;
+		gap: 0.25em;
+		padding: 0.5em;
 
 		.image {
 			width: 100%;
@@ -81,8 +80,8 @@
 			width: 100%;
 			display: flex;
 			flex-direction: column;
-			gap: 4px;
-			padding: 2px 2px;
+			gap: 0.3em;
+			padding: 0.2em;
 			color: var(--map-style-text);
 
 			.line {

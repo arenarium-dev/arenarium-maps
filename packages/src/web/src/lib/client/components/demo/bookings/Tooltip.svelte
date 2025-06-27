@@ -7,17 +7,12 @@
 	let types = ['Apartment', 'Hotel', 'Hotel', 'Hotel'];
 	let type = types[idNumber % types.length];
 	let price = 20 + Math.floor(idNumber / 10);
-	let rating = Math.random() + 9;
-	let days = Math.round(Math.random() * 4) + 1;
-	let guests = Math.round(Math.random()) + 1;
+	let rating = 9 + (idNumber % 10) * 0.1;
+	let days = 1 + (idNumber % 3);
+	let guests = 1 + (idNumber % 2);
 </script>
 
-<button
-	class="body"
-	style:width={width + 'px'}
-	style:height={height + 'px'}
-	style:font-size={fontSize + 'px'}
->
+<button class="body" style:width={width + 'px'} style:height={height + 'px'} style:font-size={fontSize + 'px'}>
 	<div class="line top">
 		<div class="type">{type}</div>
 		<div class="rating">{rating.toFixed(1)}</div>
@@ -50,6 +45,7 @@
 		}
 
 		.line {
+			width: 100%;
 			display: flex;
 			flex-direction: row;
 			align-items: center;

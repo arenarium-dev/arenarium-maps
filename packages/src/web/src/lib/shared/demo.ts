@@ -241,9 +241,9 @@ export function getPopupDimensions(demo: Demo, size: DemoSize): { width: number;
 		case 'bnb':
 			switch (size) {
 				case 'large':
-					return { width: 256, height: 200, margin: 4, radius: 16 };
+					return { width: 164, height: 143, margin: 4, radius: 16 };
 				case 'small':
-					return { width: 132, height: 90, margin: 4, radius: 12 };
+					return { width: 140, height: 120, margin: 4, radius: 12 };
 			}
 		default:
 			return { width: 156, height: 128, margin: 8, radius: 12 };
