@@ -130,8 +130,8 @@
 	.placeholder {
 		display: flex;
 		flex-direction: column;
-		gap: 6px;
-		padding: 8px;
+		gap: 0.25em;
+		padding: 0.5em;
 
 		.image {
 			width: 100%;
@@ -145,8 +145,8 @@
 		.text {
 			display: flex;
 			flex-direction: column;
-			gap: 4px;
-			padding: 2px 2px;
+			gap: 0.3em;
+			padding: 0.2em;
 
 			.line {
 				height: 1.3em;
