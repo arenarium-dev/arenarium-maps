@@ -231,6 +231,13 @@ export function getPopupDimensions(demo: Demo, size: DemoSize): { width: number;
 				case 'small':
 					return { width: 136, height: 56, margin: 4, radius: 12 };
 			}
+		case 'bookings':
+			switch (size) {
+				case 'large':
+					return { width: 216, height: 186, margin: 4, radius: 16 };
+				case 'small':
+					return { width: 156, height: 144, margin: 4, radius: 12 };
+			}
 		case 'bnb':
 			switch (size) {
 				case 'large':

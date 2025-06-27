@@ -15,6 +15,7 @@
 	import RentalPin from '$lib/client/components/demo/rentals/Pin.svelte';
 	import BookingsPin from '$lib/client/components/demo/bookings/Pin.svelte';
 	import BookingsTooltip from '$lib/client/components/demo/bookings/Tooltip.svelte';
+	import BookingsPopup from '$lib/client/components/demo/bookings/Popup.svelte';
 	import BnbTooltip from '$lib/client/components/demo/bnb/Tooltip.svelte';
 	import BnbPopup from '$lib/client/components/demo/bnb/Popup.svelte';
 	import SrbijaNekretnineTooltip from '$lib/client/components/demo/websites/srbija-nekretnine/Tooltip.svelte';
@@ -430,6 +431,7 @@
 	function onPopupClick(id: string) {
 		switch (demo) {
 			case 'leaves':
+			case 'bookings':
 			case 'bnb': {
 				mapManager.showPopup(id);
 				break;
@@ -438,92 +440,91 @@
 	}
 
 	async function getPinBody(id: string): Promise<HTMLElement> {
-		return await new Promise((resolve) => {
-			const marker = dataMarkers.get(id);
-			const details = dataDetails.get(id);
-			if (!marker) throw new Error('Marker not found');
+		const marker = dataMarkers.get(id);
+		const details = dataDetails.get(id);
+		if (!marker) throw new Error('Marker not found');
 
-			const element = document.createElement('div');
-			const dimestions = marker.pin?.style;
+		const element = document.createElement('div');
+		const dimestions = marker.pin?.style;
 
-			switch (demo) {
-				case 'rentals':
-					mount(RentalPin, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
-					break;
-				case 'bookings':
-					mount(BookingsPin, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
-					break;
-				case 'cityexpert':
-					mount(CityExpertPin, { target: element, props: { id, type: details.type } });
-					break;
-				case 'bookaweb':
-					mount(BookawebPin, { target: element, props: { id, price: details.price } });
-					break;
-			}
-			resolve(element);
-		});
+		switch (demo) {
+			case 'rentals':
+				mount(RentalPin, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
+				break;
+			case 'bookings':
+				mount(BookingsPin, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
+				break;
+			case 'cityexpert':
+				mount(CityExpertPin, { target: element, props: { id, type: details.type } });
+				break;
+			case 'bookaweb':
+				mount(BookawebPin, { target: element, props: { id, price: details.price } });
+				break;
+		}
+
+		return element;
 	}
 
 	async function getTooltipBody(id: string): Promise<HTMLElement> {
-		return await new Promise((resolve) => {
-			const marker = dataMarkers.get(id);
-			if (!marker) throw new Error('Marker not found');
+		const marker = dataMarkers.get(id);
+		if (!marker) throw new Error('Marker not found');
 
-			const element = document.createElement('div');
-			element.addEventListener('click', (e) => {
-				e.stopPropagation();
-				onPopupClick(id);
-			});
-
-			const dimestions = marker.tooltip.style;
-
-			switch (demo) {
-				case 'leaves':
-					mount(BasicTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
-					break;
-				case 'rentals':
-					mount(RentalTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
-					break;
-				case 'bookings':
-					mount(BookingsTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
-					break;
-				case 'bnb':
-					mount(BnbTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
-					break;
-				case 'srbija-nekretnine':
-					mount(SrbijaNekretnineTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
-					break;
-				case 'cityexpert':
-					mount(CityExpertTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
-					break;
-				case 'bookaweb':
-					mount(BookawebTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height, data: (marker as any).details } });
-					break;
-			}
-
-			resolve(element);
+		const element = document.createElement('div');
+		element.addEventListener('click', (e) => {
+			e.stopPropagation();
+			onPopupClick(id);
 		});
+
+		const dimestions = marker.tooltip.style;
+
+		switch (demo) {
+			case 'leaves':
+				mount(BasicTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
+				break;
+			case 'rentals':
+				mount(RentalTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
+				break;
+			case 'bookings':
+				mount(BookingsTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
+				break;
+			case 'bnb':
+				mount(BnbTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
+				break;
+			case 'srbija-nekretnine':
+				mount(SrbijaNekretnineTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
+				break;
+			case 'cityexpert':
+				mount(CityExpertTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
+				break;
+			case 'bookaweb':
+				mount(BookawebTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height, data: (marker as any).details } });
+				break;
+		}
+
+		return element;
 	}
 
 	async function getPopupBody(id: string): Promise<HTMLElement> {
-		return await new Promise((resolve) => {
-			const marker = dataMarkers.get(id);
-			if (!marker) throw new Error('Marker not found');
+		const marker = dataMarkers.get(id);
+		if (!marker) throw new Error('Marker not found');
 
-			const element = document.createElement('div');
-			const dimestions = marker.popup?.style;
-			if (!dimestions) throw new Error('Popup not found');
+		const element = document.createElement('div');
+		const dimestions = marker.popup?.style;
+		if (!dimestions) throw new Error('Popup not found');
 
-			switch (demo) {
-				case 'leaves':
-					mount(BasicPopup, { target: element, props: { rank: marker.rank, width: dimestions.width, height: dimestions.height } });
-					break;
-				case 'bnb':
-					mount(BnbPopup, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
-					break;
-			}
-			resolve(element);
-		});
+		switch (demo) {
+			case 'leaves':
+				mount(BasicPopup, { target: element, props: { rank: marker.rank, width: dimestions.width, height: dimestions.height } });
+				break;
+			case 'bookings':
+				mount(BookingsPopup, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
+				break;
+			case 'bnb':
+				mount(BnbPopup, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
+				break;
+		}
+
+		return element;
 	}
 
 	function getDataBounds(): Bounds {

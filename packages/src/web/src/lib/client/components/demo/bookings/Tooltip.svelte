@@ -13,7 +13,7 @@
 </script>
 
 <button
-	class="popup"
+	class="body"
 	style:width={width + 'px'}
 	style:height={height + 'px'}
 	style:font-size={fontSize + 'px'}
@@ -34,7 +34,7 @@
 <style lang="less">
 	@gray: color-mix(in srgb, var(--map-style-background) 50%, #888 50%);
 
-	.popup {
+	.body {
 		position: relative;
 		display: flex;
 		flex-direction: column;
