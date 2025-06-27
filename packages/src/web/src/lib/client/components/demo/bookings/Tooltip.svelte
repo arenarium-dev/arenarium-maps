@@ -66,8 +66,8 @@
 					font-weight: 500;
 					background-color: var(--map-style-primary);
 					color: var(--map-style-background);
-					border-radius: 4px 4px 4px 0px;
-					padding: 1px 3px;
+					border-radius: 0.25em 0.25em 0.25em 0px;
+					padding: 0.1em 0.3em;
 					padding-top: 0px;
 				}
 			}
