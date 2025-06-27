@@ -892,7 +892,9 @@ class MapPopupProcessor {
 
 				// Adjust map position to fit popup while its expanding
 				if (popup.isCollapsed() == false && popup.isExpanded() == false) {
-					const popupBody = popup.component.getBody() as HTMLElement;
+					const popupBody = popup.component?.getBody() as HTMLElement;
+					if (popupBody == undefined) continue;
+					
 					const popupRect = popupBody.getBoundingClientRect();
 					const mapRect = this.provider.getContainer().getBoundingClientRect();
 
