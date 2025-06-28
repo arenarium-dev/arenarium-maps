@@ -842,6 +842,7 @@ class MapPopupProcessor {
 
 	// Data
 	private popupElements = new Map<string, MapPopupElement>();
+	private popupPositioned = new Map<string, boolean>();
 
 	constructor(provider: MapProvider) {
 		this.provider = provider;
@@ -855,6 +856,7 @@ class MapPopupProcessor {
 		// Create popup
 		const popup = new MapPopupElement(this.provider, data.marker);
 		this.popupElements.set(data.marker.id, popup);
+		this.popupPositioned.set(data.marker.id, false);
 
 		popup.create();
 		popup.setAngle(data.tooltip.angle);
@@ -874,6 +876,7 @@ class MapPopupProcessor {
 	public clear() {
 		this.popupElements.values().forEach((popup) => popup.remove());
 		this.popupElements.clear();
+		this.popupPositioned.clear();
 	}
 
 	public process() {
@@ -891,22 +894,44 @@ class MapPopupProcessor {
 				}
 
 				// Adjust map position to fit popup while its expanding
-				if (popup.isCollapsed() == false && popup.isExpanded() == false) {
+				if (popup.isCollapsed() == false && this.popupPositioned.get(popup.id) == false) {
+					// Wait until popup body is loaded
 					const popupBody = popup.component?.getBody() as HTMLElement;
 					if (popupBody == undefined) continue;
-					
+
+					// Wait until popup offsets are calculated
+					const popupOffsets = popup.component?.getOffsets() as { offsetX: number; offsetY: number };
+					if (popupOffsets == undefined) continue;
+
+					// Wait until popup rect is calculated
 					const popupRect = popupBody.getBoundingClientRect();
+					if (popupRect.x == 0 && popupRect.y == 0 && popupRect.width == 0 && popupRect.height == 0) continue;
+
+					// Aproximate popup center
+					const popupCenterX = popupRect.x + popupRect.width / 2;
+					const popupCenterY = popupRect.y + popupRect.height / 2;
+
+					// Calculate popup rect based on popup center, offsets and size
+					const popupLeft = popupCenterX + popupOffsets.offsetX;
+					const popupTop = popupCenterY + popupOffsets.offsetY;
+					const popupRight = popupLeft + popup.width;
+					const popupBottom = popupTop + popup.height;
+
+					// Calculate distaces to map rect
 					const mapRect = this.provider.getContainer().getBoundingClientRect();
 
-					const distLeft = popupRect.left - mapRect.left;
-					const distRight = mapRect.right - popupRect.right;
-					const distTop = popupRect.top - mapRect.top;
-					const distBottom = mapRect.bottom - popupRect.bottom;
+					const distLeft = popupLeft - mapRect.left;
+					const distRight = mapRect.right - popupRight;
+					const distTop = popupTop - mapRect.top;
+					const distBottom = mapRect.bottom - popupBottom;
 
+					// Calculate pan to fit popup
 					const panPadding = Math.min(popup.width, popup.height) / 4;
 					const panX = distLeft < 0 ? distLeft - panPadding : distRight < 0 ? -distRight + panPadding : 0;
 					const panY = distTop < 0 ? distTop - panPadding : distBottom < 0 ? -distBottom + panPadding : 0;
+
 					this.provider.panBy(panX, panY);
+					this.popupPositioned.set(popup.id, true);
 				}
 			} else {
 				// Check if popup exist on map
@@ -919,6 +944,7 @@ class MapPopupProcessor {
 
 					// Remove popup
 					this.popupElements.delete(popup.id);
+					this.popupPositioned.delete(popup.id);
 				}
 			}
 		}

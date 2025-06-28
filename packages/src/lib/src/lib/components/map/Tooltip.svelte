@@ -195,13 +195,17 @@
 		}
 	}
 
+	export function getOffsets() {
+		return Rectangle.getOffsets(tooltipWidth, tooltipHeight, angle);
+	}
+
 	//#endregion
 </script>
 
 <div class="anchor" class:displayed bind:this={anchor}>
 	<div class="pointer" bind:this={pointer}></div>
-	<div class="bubble" style:padding={margin + 'px'} bind:this={bubble}>
-		<div class="body" style:width={`${width}px`} style:height={`${height}px`} style:border-radius={radius + 'px'} bind:this={body}></div>
+	<div class="bubble" style={`margin: ${margin}px;`} bind:this={bubble}>
+		<div class="body" style={`width: ${width}px; height: ${height}px; border-radius: ${radius}px;`} bind:this={body}></div>
 	</div>
 </div>
 
