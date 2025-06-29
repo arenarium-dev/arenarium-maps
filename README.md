@@ -29,9 +29,11 @@ start local, expand to eu etc
         nekretnine.rs - 400.5K
         4zida.rs - 606.2K
         properstar.com
+        roommateor.com
 
         booking.com
         airbnb.com
+        sutochno.ru
 
     Apartments booking:
 
@@ -40,6 +42,7 @@ start local, expand to eu etc
 
         booking.com
         airbnb.com
+
 
     Contact:
     cityexpert.rs - boris prpic

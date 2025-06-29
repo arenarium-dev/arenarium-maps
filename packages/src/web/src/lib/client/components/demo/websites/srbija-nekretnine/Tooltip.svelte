@@ -81,7 +81,6 @@
 		display: flex;
 		flex-direction: column;
 		padding: 4px;
-		background-color: white;
 		font-family: sans-serif;
 
 		.image {

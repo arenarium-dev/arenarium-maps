@@ -4,7 +4,7 @@ import type { MapConfiguration } from '@arenarium/maps';
 
 import z from 'zod';
 
-export const DemoSchema = z.enum(['leaves', 'rentals', 'bookings', 'bnb', 'events', 'news', 'srbija-nekretnine', 'cityexpert', 'bookaweb']);
+export const DemoSchema = z.enum(['leaves', 'rentals', 'bookings', 'bnb', 'events', 'news', 'srbija-nekretnine', 'cityexpert', 'bookaweb', 'roommateor']);
 export type Demo = z.infer<typeof DemoSchema>;
 
 export const DemoMapSchema = z.enum(['maplibre', 'google']);
@@ -36,6 +36,8 @@ export function getDemoName(demo: Demo) {
 			return 'cityexpert.rs';
 		case 'bookaweb':
 			return 'bookaweb.com';
+		case 'roommateor':
+			return 'roommateor.com';
 	}
 }
 
@@ -53,6 +55,13 @@ export function getDemoColors(demo: Demo, style: DemoStyle): { background: strin
 			return {
 				background: 'white',
 				primary: 'white',
+				text: 'black'
+			};
+		}
+		case 'roommateor': {
+			return {
+				background: 'white',
+				primary: '#AEBD38',
 				text: 'black'
 			};
 		}
@@ -97,7 +106,8 @@ export function getDemoPosition(demo: Demo): { lat: number; lng: number; zoom: n
 	switch (demo) {
 		case 'srbija-nekretnine':
 		case 'cityexpert':
-		case 'bookaweb': {
+		case 'bookaweb':
+		case 'roommateor': {
 			return {
 				lat: 44.811222,
 				lng: 20.450989,
@@ -176,6 +186,8 @@ export function getPinDimensions(demo: Demo, size: DemoSize): { width: number; h
 			}
 		case 'cityexpert':
 			return { width: 24, height: 24, radius: 12 };
+		case 'roommateor':
+			return { width: 20, height: 20, radius: 10 };
 		default:
 			return { width: 14, height: 14, radius: 7 };
 	}
@@ -217,6 +229,8 @@ export function getTooltipDimensions(demo: Demo, size: DemoSize): { width: numbe
 			return { width: 156, height: 128, margin: 8, radius: 12 };
 		case 'bookaweb':
 			return { width: 164, height: 132, margin: 8, radius: 12 };
+		case 'roommateor':
+			return { width: 48, height: 26, margin: 4, radius: 10 };
 		default:
 			return { width: 48, height: 48, margin: 4, radius: 4 };
 	}
@@ -245,6 +259,8 @@ export function getPopupDimensions(demo: Demo, size: DemoSize): { width: number;
 				case 'small':
 					return { width: 140, height: 120, margin: 4, radius: 12 };
 			}
+		case 'roommateor':
+			return { width: 196, height: 246, margin: 4, radius: 16 };
 		default:
 			return { width: 156, height: 128, margin: 8, radius: 12 };
 	}
@@ -260,7 +276,7 @@ export function getDemoAutoUpdate(demo: Demo) {
 }
 
 export function isDemoCustom(demo: Demo) {
-	return demo == 'cityexpert' || demo == 'srbija-nekretnine' || demo == 'bookaweb';
+	return demo == 'cityexpert' || demo == 'srbija-nekretnine' || demo == 'bookaweb' || demo == 'roommateor';
 }
 
 export const rentalImages = [

@@ -100,7 +100,6 @@
 		flex-direction: column;
 		gap: 4px;
 		padding: 4px;
-		background-color: white;
 		font-family: sans-serif;
 
 		.id {

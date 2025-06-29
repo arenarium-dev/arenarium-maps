@@ -23,6 +23,8 @@
 	import CityExpertPin from '$lib/client/components/demo/websites/cityexpert/Pin.svelte';
 	import BookawebTooltip from '$lib/client/components/demo/websites/bookaweb/Tooltip.svelte';
 	import BookawebPin from '$lib/client/components/demo/websites/bookaweb/Pin.svelte';
+	import RoommateorTooltip from '$lib/client/components/demo/websites/roommateor/Tooltip.svelte';
+	import RoommateorPopup from '$lib/client/components/demo/websites/roommateor/Popup.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
 	import { Fetch } from '$lib/client/core/fetch';
@@ -161,6 +163,7 @@
 	import { GoogleMapDarkStyle, GoogleMapLightStyle, GoogleMapsProvider } from '@arenarium/maps/google';
 
 	import { Loader } from '@googlemaps/js-api-loader';
+	import { ca } from 'zod/v4/locales';
 
 	let mapGoogle: google.maps.Map;
 	let mapGoogleProvider: GoogleMapsProvider;
@@ -432,7 +435,8 @@
 		switch (demo) {
 			case 'leaves':
 			case 'bookings':
-			case 'bnb': {
+			case 'bnb':
+			case 'roommateor': {
 				mapManager.showPopup(id);
 				break;
 			}
@@ -467,6 +471,7 @@
 
 	async function getTooltipBody(id: string): Promise<HTMLElement> {
 		const marker = dataMarkers.get(id);
+		const details = dataDetails.get(id);
 		if (!marker) throw new Error('Marker not found');
 
 		const element = document.createElement('div');
@@ -499,6 +504,9 @@
 			case 'bookaweb':
 				mount(BookawebTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height, data: (marker as any).details } });
 				break;
+			case 'roommateor':
+				mount(RoommateorTooltip, { target: element, props: { price: details.price, width: dimestions.width, height: dimestions.height } });
+				break;
 		}
 
 		return element;
@@ -506,6 +514,7 @@
 
 	async function getPopupBody(id: string): Promise<HTMLElement> {
 		const marker = dataMarkers.get(id);
+		const details = dataDetails.get(id);
 		if (!marker) throw new Error('Marker not found');
 
 		const element = document.createElement('div');
@@ -521,6 +530,9 @@
 				break;
 			case 'bnb':
 				mount(BnbPopup, { target: element, props: { id, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
+				break;
+			case 'roommateor':
+				mount(RoommateorPopup, { target: element, props: { details, width: dimestions?.width ?? 0, height: dimestions?.height ?? 0 } });
 				break;
 		}
 

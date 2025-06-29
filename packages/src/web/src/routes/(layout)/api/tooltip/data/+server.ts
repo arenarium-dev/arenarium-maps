@@ -150,6 +150,35 @@ export const GET: RequestHandler = async (event) => {
 
 			break;
 		}
+		case 'roommateor': {
+			const dataResponse = await dataAssetsFetch('/demo/roommateor.json');
+			if (!dataResponse?.ok) error(500, 'Failed to get data');
+
+			const dataJson = await dataResponse.json<any>();
+			const dataList = dataJson.ads;
+
+
+			for (let i = 0; i < dataList.length; i++) {
+				const item = dataList[i];
+
+				data.push({
+					id: item.id.toString(),
+					rank: Number.parseInt(item.rent_price),
+					lat: Number.parseFloat(item.loc_lat),
+					lng: Number.parseFloat(item.loc_lng),
+					details: {
+						url: item.link,
+						image: item.flagshipUrlImg,
+						agencyImage: item.agency_profile_img_url,
+						description: item.adDesc,
+						price: item.price,
+						address: item.address ?? item.cityName
+					}
+				});
+			}
+
+			break;
+		}
 	}
 
 	return json(data);
