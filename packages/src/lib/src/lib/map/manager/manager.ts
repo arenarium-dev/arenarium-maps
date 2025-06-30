@@ -441,15 +441,17 @@ class MapPinElement extends MapElement<ReturnType<typeof MapPinComponent>> {
 		if (this.bodyCallback == undefined) return;
 		if (this.bodyLoaded || this.bodyLoading) return;
 
-		const pin = this.component?.getBody();
-		if (pin == undefined) return;
+		const body = this.component?.getBody();
+		if (body == undefined) return;
 
 		this.bodyLoading = true;
-		this.bodyCallback(this.id).then((content) => {
-			pin.appendChild(content);
-			this.bodyLoaded = true;
-			this.bodyLoading = false;
-		});
+		this.bodyCallback(this.id)
+			.then((content) => body.appendChild(content))
+			.catch((error) => console.error(error))
+			.finally(() => {
+				this.bodyLoaded = true;
+				this.bodyLoading = false;
+			});
 	}
 
 	setCollapsed(value: boolean) {
@@ -640,11 +642,13 @@ class MapTooltipElement extends MapElement<ReturnType<typeof MapTooltipComponent
 
 		// Load body callback
 		this.bodyLoading = true;
-		this.bodyCallback(this.id).then((content: any) => {
-			body.appendChild(content);
-			this.bodyLoading = false;
-			this.bodyLoaded = true;
-		});
+		this.bodyCallback(this.id)
+			.then((content) => body.appendChild(content))
+			.catch((error) => console.error(error))
+			.finally(() => {
+				this.bodyLoaded = true;
+				this.bodyLoading = false;
+			});
 	}
 
 	getAngle(zoom: number) {
@@ -801,11 +805,13 @@ class MapPopupElement extends MapElement<ReturnType<typeof MapTooltipComponent>>
 
 		// Load body callback
 		this.bodyLoading = true;
-		this.bodyCallback(this.id).then((content: any) => {
-			body.appendChild(content);
-			this.bodyLoading = false;
-			this.bodyLoaded = true;
-		});
+		this.bodyCallback(this.id)
+			.then((content) => body.appendChild(content))
+			.catch((error) => console.error(error))
+			.finally(() => {
+				this.bodyLoaded = true;
+				this.bodyLoading = false;
+			});
 	}
 
 	getZindex(): number {

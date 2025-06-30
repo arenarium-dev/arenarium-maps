@@ -12,7 +12,7 @@
 		MapLibre: 'maplibre',
 		Google: 'google'
 	};
-	let mode: string = Mode.Google;
+	let mode: string = Mode.MapLibre;
 
 	let mapElement: HTMLElement;
 	let mapProvider: MapProvider;
