@@ -3,6 +3,7 @@ import { dev } from '$app/environment';
 import type { Handle } from '@sveltejs/kit';
 import type { HandleServerError } from '@sveltejs/kit';
 
+import { discord } from '$lib/shared/discord';
 import { getBetterAuth } from '$lib/server/auth';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
 
@@ -35,5 +36,13 @@ export const handleError: HandleServerError = async (input) => {
 		}
 	};
 
-	console.error(body);
+	console.error(input.message);
+
+	discord.log('Server Hook', {
+		message: input.message,
+		data: {
+			error: input.error,
+			event: input.event
+		}
+	});
 };

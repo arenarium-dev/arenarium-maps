@@ -1,4 +1,5 @@
 import { dev } from '$app/environment';
+import { discord } from '$lib/shared/discord';
 
 import type { ClientInit, HandleClientError } from '@sveltejs/kit';
 
@@ -27,13 +28,11 @@ export const handleError: HandleClientError = async (input) => {
 		return;
 	}
 
-	const body = {
+	discord.log('Client Hook', {
 		message: input.message,
 		data: {
 			error: input.error,
 			event: input.event
 		}
-	};
-
-	console.error(body);
+	});
 };

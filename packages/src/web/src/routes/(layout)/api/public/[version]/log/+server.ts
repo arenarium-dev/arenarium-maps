@@ -1,5 +1,7 @@
 import type { Log } from '@workspace/shared/src/types.js';
 
+import { discord } from '$lib/shared/discord';
+
 import type { RequestHandler } from './$types';
 
 export const OPTIONS: RequestHandler = () => {
@@ -16,6 +18,11 @@ export const POST: RequestHandler = async (event) => {
 	const log: Log = await event.request.json();
 
 	console.error(log);
+
+	discord.log('Library Log', {
+		message: log.title,
+		data: log
+	});
 
 	return new Response('OK', {
 		headers: {
