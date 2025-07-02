@@ -23,7 +23,10 @@
 	<title>@arenarium/maps</title>
 	<meta name="robots" content="index, follow" />
 	<link rel="canonical" href="https://arenarium.dev" />
-	<meta name="description" content="Minimalist and performant rendering of markers on a map." />
+	<meta
+		name="description"
+		content="Minimalist and performant rendering of markers on a map. Install with npm or directly in your browser. Compatible with google maps and maplibre."
+	/>
 	<!-- Open Graph -->
 	<meta property="og:title" content="@arenarium/maps" />
 	<meta property="og:type" content="website" />
