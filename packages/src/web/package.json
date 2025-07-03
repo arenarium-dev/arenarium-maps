@@ -29,6 +29,7 @@
 		"@sveltejs/adapter-cloudflare": "^7.0.4",
 		"@sveltejs/kit": "^2.22.2",
 		"@sveltejs/vite-plugin-svelte": "^5.1.0",
+		"@types/google.maps": "^3.58.1",
 		"drizzle-kit": "^0.31.4",
 		"eslint": "^9.30.0",
 		"eslint-config-prettier": "^10.1.5",
