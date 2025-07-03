@@ -163,7 +163,6 @@
 	import { GoogleMapDarkStyle, GoogleMapLightStyle, GoogleMapsProvider } from '@arenarium/maps/google';
 
 	import { Loader } from '@googlemaps/js-api-loader';
-	import { ca } from 'zod/v4/locales';
 
 	let mapGoogle: google.maps.Map;
 	let mapGoogleProvider: GoogleMapsProvider;
