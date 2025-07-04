@@ -30,7 +30,7 @@ export class MapLibreProvider implements MapProvider {
 			...options,
 			style: options.style ?? 'https://tiles.openfreemap.org/styles/liberty',
 			pitchWithRotate: false,
-			attributionControl: { customAttribution: '@arenarium/maps' }
+			attributionControl: options.attributionControl ?? { compact: false, customAttribution: '@arenarium/maps' }
 		});
 		// Disable map rotation using right click + drag
 		this.map.dragRotate.disable();
