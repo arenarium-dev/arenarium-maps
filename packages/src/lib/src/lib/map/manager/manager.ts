@@ -64,32 +64,39 @@ class MapManager {
 		await mapMarkersSchema.parseAsync(markers);
 
 		try {
-			// Get marker tooltip states
-			const tooltipStatesRequest: MapTooltipStatesRequest = {
-				key: this.key,
-				parameters: this.provider.parameters,
-				input: markers.map((m) => ({
-					id: m.id,
-					rank: m.rank,
-					lat: m.lat,
-					lng: m.lng,
-					width: m.tooltip.style.width,
-					height: m.tooltip.style.height,
-					margin: m.tooltip.style.margin
-				}))
-			};
-			const tooltipStatesResponse = await fetch(this.apiStatesUrl, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(tooltipStatesRequest)
-			});
-			if (!tooltipStatesResponse.ok || !tooltipStatesResponse.body) {
-				throw new Error('Failed to get marker states');
-			}
-			const tooltipStates: MapTooltipState[] = await tooltipStatesResponse.json();
+			if (markers.length > 1) {
+				// Get marker tooltip states
+				const tooltipStatesRequest: MapTooltipStatesRequest = {
+					key: this.key,
+					parameters: this.provider.parameters,
+					input: markers.map((m) => ({
+						id: m.id,
+						rank: m.rank,
+						lat: m.lat,
+						lng: m.lng,
+						width: m.tooltip.style.width,
+						height: m.tooltip.style.height,
+						margin: m.tooltip.style.margin
+					}))
+				};
+				const tooltipStatesResponse = await fetch(this.apiStatesUrl, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(tooltipStatesRequest)
+				});
+				if (!tooltipStatesResponse.ok || !tooltipStatesResponse.body) {
+					throw new Error('Failed to get marker states');
+				}
+				const tooltipStates: MapTooltipState[] = await tooltipStatesResponse.json();
 
-			// Update data
-			this.updateMarkerData(markers, tooltipStates);
+				// Update data
+				this.updateMarkerData(markers, tooltipStates);
+			} else {
+				const tooltipStates: MapTooltipState[] = [[0, [[0, Angles.DEGREES.indexOf(Angles.DEFAULT)]]]];
+
+				// Update data
+				this.updateMarkerData(markers, tooltipStates);
+			}
 
 			// Process marker data
 			this.processMarkerDataCallback();
