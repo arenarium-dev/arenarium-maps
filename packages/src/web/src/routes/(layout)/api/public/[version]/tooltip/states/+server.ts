@@ -1,6 +1,5 @@
 import * as schema from '$lib/server/database/schema';
 import { getDb } from '$lib/server/database/client';
-import { USAGE_MAX_ITEMS, USAGE_MAX_TIMESPAN } from '$lib/shared/constants';
 
 import { API_KEY_FREE_KEY } from '$env/static/private';
 
@@ -59,25 +58,28 @@ export const POST: RequestHandler = async (event) => {
 			if (!domains.includes(new URL(source).host)) return response(403, 'Request not allowed for this domain!');
 		}
 
-		// Chech the api key rate limit
 		if (dbApiKey.unlimited != true) {
+			// Chech the limited api key rate limit
+			const maxInputLength = 256;
+			const maxTimespan = 1000; // 1 second
+
 			// Check is the request itself is larger than the limit
-			if (input.length > USAGE_MAX_ITEMS) {
-				return new Response(null, { headers, status: 429, statusText: 'Request too large!' });
-			}
+			if (input.length > maxInputLength) return response(429, 'Too many large requests!');
 
 			// Get the total usage from the last second
 			const dbUsageSumResult = await db
 				.select({ sum: sum(schema.apiKeyUsages.count) })
 				.from(schema.apiKeyUsages)
-				.where(and(eq(schema.apiKeyUsages.keyIndex, dbApiKey.index), gt(schema.apiKeyUsages.date, new Date(Date.now() - USAGE_MAX_TIMESPAN))));
+				.where(and(eq(schema.apiKeyUsages.keyIndex, dbApiKey.index), gt(schema.apiKeyUsages.date, new Date(Date.now() - maxTimespan))));
 
 			const dbUsageSum = Number.parseInt(dbUsageSumResult.at(0)?.sum ?? '0');
 
 			// Check if the total sum of request is larger than the limit
-			if (dbUsageSum + input.length > USAGE_MAX_ITEMS) {
-				return new Response(null, { headers, status: 429, statusText: 'Too many large requests!' });
-			}
+			if (dbUsageSum + input.length > maxInputLength) return response(429, 'Too many large requests!');
+		} else {
+			// Check the unlimited api key rate limit
+			const maxInputLength = 1024;
+			if (input.length > maxInputLength) return response(429, 'Request too large!');
 		}
 
 		// Update usage after the request
@@ -92,8 +94,28 @@ export const POST: RequestHandler = async (event) => {
 		);
 	}
 
+	// Get the request hash
+	const jsonString = JSON.stringify({ parameters, input });
+	const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(jsonString));
+	const hashArray = Array.from(new Uint8Array(hashBuffer));
+	const hash = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+
+	const kv = event.platform?.env.KV;
+	const kvKey = `tooltip_states:${hash}`;
+
+	// Check if the request result is cached
+	if (kv) {
+		const cached = await kv.get(kvKey, 'json');
+		if (cached) return result(cached);
+	}
+
 	// Get the states
 	const states = getStates(parameters, input);
+
+	// Cache the result
+	if (kv) {
+		await kv.put(kvKey, JSON.stringify(states), { expirationTtl: 60 });
+	}
 
 	// Return the response
 	return result(states);

@@ -30,6 +30,12 @@
 			"migrations_dir": "./drizzle"
 		}
 	],
+	"kv_namespaces": [
+		{
+			"binding": "KV",
+			"id": "7de046fa355f4fd89414a27fa8289e3f"
+		}
+	],
 	"env": {
 		"production": {
 			"vars": {
@@ -45,6 +51,12 @@
 					"database_name": "arenarium-maps-db",
 					"database_id": "7f0c2ae8-13e7-4fcf-bdb9-bcb9bdf3d499",
 					"migrations_dir": "./drizzle"
+				}
+			],
+			"kv_namespaces": [
+				{
+					"binding": "KV",
+					"id": "7de046fa355f4fd89414a27fa8289e3f"
 				}
 			]
 		}
