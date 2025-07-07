@@ -27,6 +27,11 @@
 			.split(', ')
 			.map((domain) => domain.trim())
 			.filter((domain) => domain);
+		if (domains.length == 0) {
+			error = 'Please enter at least one domain.';
+			return;
+		}
+
 		const domainsResult = domainsSchema.safeParse(domains);
 		if (!domainsResult.success) {
 			error = domainsResult.error.message;
@@ -75,15 +80,18 @@
 			aria-describedby={error ? 'error-message-desc' : undefined}
 			bind:value={nameValue}
 		/>
+		<small class="hint"> Enter a name for your API key. This name will be displayed in the API key list. </small>
 
 		<input
 			type="text"
 			id="domains"
-			placeholder="example.com sub.example.com (optional)"
+			placeholder="localhost:3000, example.com"
+			required
 			disabled={submitting}
 			aria-describedby={error ? 'error-message-desc' : undefined}
 			bind:value={domainsValue}
 		/>
+		<small class="hint"> Enter at least one domain. You can enter multiple domains separated by commas. Make sure to include development domains. </small>
 
 		{#if error}
 			<div class="message error-message" role="alert">
@@ -115,6 +123,7 @@
 			margin-bottom: 20px;
 			color: var(--on-surface);
 			font-weight: 600;
+			padding: 0px 4px;
 		}
 
 		.form {
@@ -134,6 +143,10 @@
 
 			input[type='text']:disabled {
 				cursor: not-allowed;
+			}
+
+			.hint {
+				padding: 0px 4px;
 			}
 
 			.buttons {
