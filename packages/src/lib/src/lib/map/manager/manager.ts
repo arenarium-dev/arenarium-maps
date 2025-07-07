@@ -85,7 +85,7 @@ class MapManager {
 					body: JSON.stringify(tooltipStatesRequest)
 				});
 				if (!tooltipStatesResponse.ok || !tooltipStatesResponse.body) {
-					throw new Error('Failed to get marker states');
+					throw new Error('Failed to get marker states: ' + tooltipStatesResponse.statusText);
 				}
 				const tooltipStates: MapTooltipState[] = await tooltipStatesResponse.json();
 
