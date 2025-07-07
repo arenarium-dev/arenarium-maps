@@ -59,10 +59,10 @@
 	let mapElement: HTMLElement;
 	let mapLoaded = $state<boolean>(false);
 
+	let demo = $derived<Demo>((page.params.demo as Demo) ?? 'leaves');
 	let demoSize: DemoSize = 'large';
 	let demoMap = $derived<DemoMap>(DemoMapSchema.safeParse(page.url.searchParams.get('map')).data ?? 'maplibre');
 	let demoStyle = $derived<DemoStyle>(DemoStyleSchema.safeParse(page.url.searchParams.get('style')).data ?? 'website');
-	let demo = $derived<Demo>((page.params.demo as Demo) ?? 'leaves');
 
 	let dataMarkers = new Map<string, MapMarker>();
 	let dataDetails = new Map<string, any>();
@@ -121,6 +121,9 @@
 				return 'demo/cityexpert.style.json';
 			}
 			case 'bookaweb': {
+				return 'https://tiles.openfreemap.org/styles/positron';
+			}
+			case 'roommateor': {
 				return 'https://tiles.openfreemap.org/styles/positron';
 			}
 			default: {
