@@ -1,5 +1,7 @@
 TODO:
 
+Add full code examples
+Add better explanations in docs
 Add marker focus to set z index so on hover can work properly
 
 OBJECTS:
