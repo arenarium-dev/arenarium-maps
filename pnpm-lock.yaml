@@ -8,7 +8,7 @@ importers:
 
   .: {}
 
-  packages/src/lib:
+  packages/lib:
     dependencies:
       zod:
         specifier: ^3.25.72
@@ -93,13 +93,13 @@ importers:
         specifier: ^4.5.4
         version: 4.5.4(@types/node@22.13.16)(rollup@4.44.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.13.16)(less@4.3.0))
 
-  packages/src/shared: {}
+  packages/shared: {}
 
-  packages/src/web:
+  packages/web:
     dependencies:
       '@arenarium/maps':
         specifier: latest
-        version: 1.0.152(svelte@5.35.2)
+        version: 1.0.158(svelte@5.35.2)
       '@better-fetch/fetch':
         specifier: ^1.1.18
         version: 1.1.18
@@ -186,48 +186,14 @@ importers:
         specifier: ^4.23.0
         version: 4.23.0(@cloudflare/workers-types@4.20250704.0)
 
-  packages/test/svelte-kit:
-    dependencies:
-      '@arenarium/maps':
-        specifier: latest
-        version: 1.0.152(svelte@5.35.2)
-      maplibre-gl:
-        specifier: ^5.6.1
-        version: 5.6.1
-    devDependencies:
-      '@sveltejs/adapter-auto':
-        specifier: ^6.0.1
-        version: 6.0.1(@sveltejs/kit@2.22.2(@sveltejs/vite-plugin-svelte@5.1.0(svelte@5.35.2)(vite@6.3.5(@types/node@22.13.16)(less@4.3.0)))(svelte@5.35.2)(vite@6.3.5(@types/node@22.13.16)(less@4.3.0)))
-      '@sveltejs/kit':
-        specifier: ^2.22.2
-        version: 2.22.2(@sveltejs/vite-plugin-svelte@5.1.0(svelte@5.35.2)(vite@6.3.5(@types/node@22.13.16)(less@4.3.0)))(svelte@5.35.2)(vite@6.3.5(@types/node@22.13.16)(less@4.3.0))
-      '@sveltejs/vite-plugin-svelte':
-        specifier: ^5.1.0
-        version: 5.1.0(svelte@5.35.2)(vite@6.3.5(@types/node@22.13.16)(less@4.3.0))
-      less:
-        specifier: ^4.3.0
-        version: 4.3.0
-      svelte:
-        specifier: ^5.35.2
-        version: 5.35.2
-      svelte-check:
-        specifier: ^4.2.2
-        version: 4.2.2(picomatch@4.0.2)(svelte@5.35.2)(typescript@5.8.3)
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-      vite:
-        specifier: ^6.3.5
-        version: 6.3.5(@types/node@22.13.16)(less@4.3.0)
-
 packages:
 
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@arenarium/maps@1.0.152':
-    resolution: {integrity: sha512-n4D4wvH0nd678FuyDUwPyz5ne779qg9u4R06p1T3+cFResVxpCHn1vDyKUW3BYbvCJKBbBrURzAJrD/Wj848OQ==}
+  '@arenarium/maps@1.0.158':
+    resolution: {integrity: sha512-XFncYLWGU4He4qOH0WXrWpV/uNQOLbWGOaqF8JxaFj0Ahq1fIPFKKlPFSiCXI5xX24js7jxq4M7NZf6j2J/UWg==}
     peerDependencies:
       svelte: ^5.0.0
 
@@ -2870,7 +2836,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.12
       '@jridgewell/trace-mapping': 0.3.29
 
-  '@arenarium/maps@1.0.152(svelte@5.35.2)':
+  '@arenarium/maps@1.0.158(svelte@5.35.2)':
     dependencies:
       svelte: 5.35.2
       zod: 3.25.72
