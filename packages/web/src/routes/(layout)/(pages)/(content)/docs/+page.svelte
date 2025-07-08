@@ -176,23 +176,22 @@ mapGoogle.setMapTypeId("light-id"); // or "dark-id" for dark theme
 		<div class="text">
 			A marker consist of a pin, a tooltip and an optional popup. The pin is an element that should convey the marker's location and and basic information
 			like an icon or a color. The tooltip is an element that should provide additional information thats needs to be readable, it could be small or large
-			amount of information depending on the application. The popup is an element that should be displayed when the user clicks on the marker. It should contain
-			additional information thats not necessary or too large for a tooltip.
+			amount of information depending on the application. The popup is an element that should be displayed when the user clicks on the marker. It should
+			contain additional information thats not necessary or too large for a tooltip.
 		</div>
 		<div class="text">
-			The markers toogle between the pin and the tooltip elements as the user zoom in. The pin is displayed when there is no room for the tooltip.
-			When the user zooms in and more space is available, more tooltips are displayed. Which tooltips are displayed first is determined by the
-			ranking of the markers. The higher the rank, the sooner the tooltip is displayed.
+			The markers toogle between the pin and the tooltip elements as the user zoom in. The pin is displayed when there is no room for the tooltip. When
+			the user zooms in and more space is available, more tooltips are displayed. Which tooltips are displayed first is determined by the ranking of the
+			markers. The higher the rank, the sooner the tooltip is displayed.
 		</div>
 		<div class="text">
-			To add markers to the map, you first need to define an array of <code>MapMarker</code> objects. Provide the base marker data and the
-			configuration for the tooltip, pin and popup. The configurations have body callbacks which should return a
+			To add markers to the map, you first need to define an array of <code>MapMarker</code> objects. Provide the base marker data and the configuration
+			for the tooltip, pin and popup. The configurations have body callbacks which should return a
 			<code>HTMLElement</code>.
 		</div>
 		<div class="text">
-			Use the <code>updateMarkers</code> method on the map manager to display or update update the markers. This method adds new markers and updates
-			existing ones based on their IDs. Markers not present in the provided array will remain on the map. This approach is designed for continuous updates
-			of map markers.
+			Use the <code>updateMarkers</code> method on the map manager to display or update update the markers. This method adds new markers and updates existing
+			ones based on their IDs. Markers not present in the provided array will remain on the map. This approach is designed for continuous updates of map markers.
 		</div>
 		<div class="highlight">
 			<Highlight
@@ -290,6 +289,10 @@ mapManager.hidePopup(id);
 --arenarium-maps-tooltip-shadow-hover: ...;
 			`}
 			/>
+		</div>
+		<div class="title">Examples</div>
+		<div class="text">
+			<a href="https://github.com/arenarium-dev/arenarium-maps-svelte-kit-example" target="_blank">arenarium-maps-svelte-kit-example</a>
 		</div>
 		<div class="title" id="about">About</div>
 		<div class="text">
