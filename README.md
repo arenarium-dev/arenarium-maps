@@ -1,6 +1,7 @@
 TODO:
 
 Add full code examples
+Add mapbox provider
 Add better explanations in docs
 Add marker focus to set z index so on hover can work properly
 
@@ -64,4 +65,4 @@ Customers:
 
 cityexpert
 rami - reddit
-some dude - reddit
+sebastian - reddit
