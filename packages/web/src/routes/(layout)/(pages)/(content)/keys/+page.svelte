@@ -4,8 +4,8 @@
 
 	import Icon from '$lib/client/components/utils/Icon.svelte';
 	import Modal from '$lib/client/components/utils/Modal.svelte';
-	import Toast from '$lib/client/components/Toast.svelte';
-	import Form from '$lib/client/components/keys/Form.svelte';
+	import Toast from '$lib/client/components/utils/Toast.svelte';
+	import Form from './components/Form.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
 

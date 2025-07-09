@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Highlight from '$lib/client/components/Highlight.svelte';
+	import Highlight from '$lib/client/components/utils/Highlight.svelte';
 </script>
 
 <div class="page">

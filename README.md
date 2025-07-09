@@ -1,8 +1,11 @@
 TODO:
 
-Add full code examples
+Rerecord gifs
+Recheck linked in notifications
+Reach out to boris
+Go to atproto discord
+
 Add mapbox provider
-Add better explanations in docs
 Add marker focus to set z index so on hover can work properly
 
 OBJECTS:

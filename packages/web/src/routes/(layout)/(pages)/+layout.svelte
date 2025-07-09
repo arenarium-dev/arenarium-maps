@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 
 	import Icon from '$lib/client/components/utils/Icon.svelte';
-	import Navigation from '$lib/client/components/Navigation.svelte';
+	import Navigation from '$lib/client/components/core/Navigation.svelte';
 
 	import { app } from '$lib/client/state/app.svelte';
 
