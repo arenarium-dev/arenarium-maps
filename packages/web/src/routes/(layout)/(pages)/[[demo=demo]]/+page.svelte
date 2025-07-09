@@ -9,8 +9,8 @@
 	import Progress from '$lib/client/components/utils/Progress.svelte';
 	import Toast from '$lib/client/components/utils/Toast.svelte';
 
-	import BasicTooltip from './components/basic/Tooltip.svelte';
-	import BasicPopup from './components/basic/Popup.svelte';
+	import BasicTooltip from './components/leaves/Tooltip.svelte';
+	import BasicPopup from './components/leaves/Popup.svelte';
 	import RentalTooltip from './components/rentals/Tooltip.svelte';
 	import RentalPin from './components/rentals/Pin.svelte';
 	import BookingsPin from './components/bookings/Pin.svelte';
