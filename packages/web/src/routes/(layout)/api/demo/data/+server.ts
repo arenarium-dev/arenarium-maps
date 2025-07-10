@@ -1,6 +1,6 @@
 import { error, json } from '@sveltejs/kit';
 
-import { DemoSchema } from '$lib/shared/demo';
+import { DemoSchema, userPosts } from '$lib/shared/demo';
 
 import type { RequestHandler } from './$types';
 
@@ -51,6 +51,47 @@ export const GET: RequestHandler = async (event) => {
 					rank: i,
 					lat: lat,
 					lng: lng
+				});
+			}
+
+			break;
+		}
+		case 'social': {
+			const usersPromise = event.fetch('https://randomuser.me/api/?inc=name,email,picture&results=1000');
+			const coordinatesPromise = dataAssetsFetch('/demo/coordinates.json');
+
+			const [usersResponse, coordinatesResponse] = await Promise.all([usersPromise, coordinatesPromise]);
+			if (!usersResponse.ok) error(500, 'Failed to get users');
+			if (!coordinatesResponse.ok) error(500, 'Failed to get coordinates');
+
+			const usersJson = await usersResponse.json<any>();
+			const users = usersJson.results as {
+				name: { first: string; last: string };
+				email: string;
+				picture: { medium: string };
+			}[];
+
+			const coordinatesJson = await coordinatesResponse.json<any>();
+			const coordinates = coordinatesJson.coordinates;
+
+			let count = 0;
+			for (let i = 0; i < coordinates.length; i++) {
+				const lat = coordinates[i % coordinates.length].lat;
+				const lng = coordinates[i % coordinates.length].lng;
+				if (lat < swlat || nelat < lat || lng < swlng || nelng < lng) continue;
+
+				count++;
+				if (count > total) break;
+
+				data.push({
+					id: i.toString(),
+					rank: i,
+					lat: lat,
+					lng: lng,
+					details: {
+						user: users[i % users.length],
+						post: userPosts[i % userPosts.length]
+					}
 				});
 			}
 
@@ -156,7 +197,6 @@ export const GET: RequestHandler = async (event) => {
 
 			const dataJson = await dataResponse.json<any>();
 			const dataList = dataJson.ads;
-
 
 			for (let i = 0; i < dataList.length; i++) {
 				const item = dataList[i];

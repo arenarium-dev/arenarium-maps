@@ -9,8 +9,7 @@
 	import Progress from '$lib/client/components/utils/Progress.svelte';
 	import Toast from '$lib/client/components/utils/Toast.svelte';
 
-	import BasicTooltip from './components/leaves/Tooltip.svelte';
-	import BasicPopup from './components/leaves/Popup.svelte';
+	import SocialTooltip from './components/social/Tooltip.svelte';
 	import RentalTooltip from './components/rentals/Tooltip.svelte';
 	import RentalPin from './components/rentals/Pin.svelte';
 	import BookingsPin from './components/bookings/Pin.svelte';
@@ -59,7 +58,7 @@
 	let mapElement: HTMLElement;
 	let mapLoaded = $state<boolean>(false);
 
-	let demo = $derived<Demo>((page.params.demo as Demo) ?? 'leaves');
+	let demo = $derived<Demo>((page.params.demo as Demo) ?? 'social');
 	let demoSize: DemoSize = 'large';
 	let demoMap = $derived<DemoMap>(DemoMapSchema.safeParse(page.url.searchParams.get('map')).data ?? 'maplibre');
 	let demoStyle = $derived<DemoStyle>(DemoStyleSchema.safeParse(page.url.searchParams.get('style')).data ?? 'website');
@@ -313,7 +312,7 @@
 	function onDemoStyleClick(style: DemoStyle) {
 		const searchParams = page.url.searchParams;
 		searchParams.set('style', style);
-		goto(`/${demo == 'leaves' ? '' : demo}?${searchParams.toString()}`);
+		goto(`/${demo == 'social' ? '' : demo}?${searchParams.toString()}`);
 	}
 
 	//#endregion
@@ -392,15 +391,11 @@
 			params.append('nelat', bounds.ne.lat.toString());
 			params.append('nelng', bounds.ne.lng.toString());
 
-			const tooltipData = await Fetch.that<any[]>(`/api/tooltip/data?${params}`);
+			const tooltipData = await Fetch.that<any[]>(`/api/demo/data?${params}`);
 			if (tooltipData.length === 0) return;
 
 			// Create markers
 			const markers = new Array<MapMarker>();
-
-			const tooltipStyle = getTooltipDimensions(demo, demoSize);
-			const pinStyle = getPinDimensions(demo, demoSize);
-			const popupStyle = getPopupDimensions(demo, demoSize);
 
 			for (const data of tooltipData) {
 				const marker: MapMarker = {
@@ -408,9 +403,9 @@
 					rank: data.rank,
 					lat: data.lat,
 					lng: data.lng,
-					tooltip: { style: tooltipStyle, body: getTooltipBody },
-					pin: { style: pinStyle, body: getPinBody },
-					popup: popupStyle ? { style: popupStyle, body: getPopupBody } : undefined
+					tooltip: { style: getTooltipDimensions(demo, demoSize, data.id), body: getTooltipBody },
+					pin: { style: getPinDimensions(demo, demoSize), body: getPinBody },
+					popup: getPopupDimensions(demo, demoSize) ? { style: getPopupDimensions(demo, demoSize)!, body: getPopupBody } : undefined
 				};
 				markers.push(marker);
 
@@ -435,7 +430,6 @@
 
 	function onPopupClick(id: string) {
 		switch (demo) {
-			case 'leaves':
 			case 'bookings':
 			case 'bnb':
 			case 'roommateor': {
@@ -485,8 +479,9 @@
 		const dimestions = marker.tooltip.style;
 
 		switch (demo) {
-			case 'leaves':
-				mount(BasicTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
+			case 'social':
+				const lines = 2 + (Number.parseInt(id) % 3);
+				mount(SocialTooltip, { target: element, props: { id, lines, width: dimestions.width, height: dimestions.height, details } });
 				break;
 			case 'rentals':
 				mount(RentalTooltip, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
@@ -524,9 +519,6 @@
 		if (!dimestions) throw new Error('Popup not found');
 
 		switch (demo) {
-			case 'leaves':
-				mount(BasicPopup, { target: element, props: { rank: marker.rank, width: dimestions.width, height: dimestions.height } });
-				break;
 			case 'bookings':
 				mount(BookingsPopup, { target: element, props: { id, width: dimestions.width, height: dimestions.height } });
 				break;
@@ -629,7 +621,7 @@
 					{/snippet}
 					{#snippet menu()}
 						<div class="menu demo shadow-large">
-							<a href="/?{page.url.searchParams}" class="item" class:selected={demo == undefined}>{getDemoName('leaves')}</a>
+							<a href="/?{page.url.searchParams}" class="item" class:selected={demo == undefined}>{getDemoName('social')}</a>
 							<a href="/rentals?{page.url.searchParams}" class="item" class:selected={demo == 'rentals'}>{getDemoName('rentals')}</a>
 							<a href="/bookings?{page.url.searchParams}" class="item" class:selected={demo == 'bookings'}>{getDemoName('bookings')}</a>
 							<a href="/bnb?{page.url.searchParams}" class="item" class:selected={demo == 'bnb'}>{getDemoName('bnb')}</a>
