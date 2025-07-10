@@ -582,41 +582,12 @@
 	{#if mapLoaded}
 		{#if isDemoCustom(demo) == false}
 			<div class="top">
-				<Menu axis={'x'}>
-					{#snippet button()}
-						<button class="button shadow-small">
-							<Icon name={'map'} size={22} />
-							<span class="text">Map</span>
-						</button>
-					{/snippet}
-					{#snippet menu()}
-						<div class="menu maps shadow-large">
-							<button class="item" class:selected={demoMap == 'maplibre'} onclick={() => onDemoMapClick('maplibre')}>MapLibre</button>
-							<button class="item" class:selected={demoMap == 'google'} onclick={() => onDemoMapClick('google')}>Google</button>
-						</div>
-					{/snippet}
-				</Menu>
-				<Menu axis={'x'}>
-					{#snippet button()}
-						<button class="button shadow-small">
-							<Icon name={'palette'} size={22} />
-							<span class="text">Style</span>
-						</button>
-					{/snippet}
-					{#snippet menu()}
-						<div class="menu pallete shadow-large">
-							<button class="item" class:selected={demoStyle == 'website'} onclick={() => onDemoStyleClick('website')}>Website</button>
-							<button class="item" class:selected={demoStyle == 'light'} onclick={() => onDemoStyleClick('light')}>Light</button>
-							<button class="item" class:selected={demoStyle == 'dark'} onclick={() => onDemoStyleClick('dark')}>Dark</button>
-							<button class="item" class:selected={demoStyle == 'default'} onclick={() => onDemoStyleClick('default')}>Default</button>
-						</div>
-					{/snippet}
-				</Menu>
-				<Menu axis={'x'}>
+				<Menu>
 					{#snippet button()}
 						<button class="button shadow-small">
 							<Icon name={'database'} size={22} />
-							<span class="text">Data</span>
+							<span class="text">Demo:</span>
+							<span class="value">{getDemoName(demo)}</span>
 						</button>
 					{/snippet}
 					{#snippet menu()}
@@ -630,7 +601,39 @@
 						</div>
 					{/snippet}
 				</Menu>
-				<Menu axis={'x'}>
+				<Menu>
+					{#snippet button()}
+						<button class="button shadow-small">
+							<Icon name={'map'} size={22} />
+							<span class="text">Map:</span>
+							<span class="value">{demoMap.charAt(0).toUpperCase() + demoMap.slice(1)}</span>
+						</button>
+					{/snippet}
+					{#snippet menu()}
+						<div class="menu maps shadow-large">
+							<button class="item" class:selected={demoMap == 'maplibre'} onclick={() => onDemoMapClick('maplibre')}>Maplibre</button>
+							<button class="item" class:selected={demoMap == 'google'} onclick={() => onDemoMapClick('google')}>Google</button>
+						</div>
+					{/snippet}
+				</Menu>
+				<Menu>
+					{#snippet button()}
+						<button class="button shadow-small">
+							<Icon name={'palette'} size={22} />
+							<span class="text">Style:</span>
+							<span class="value">{demoStyle.charAt(0).toUpperCase() + demoStyle.slice(1)}</span>
+						</button>
+					{/snippet}
+					{#snippet menu()}
+						<div class="menu pallete shadow-large">
+							<button class="item" class:selected={demoStyle == 'website'} onclick={() => onDemoStyleClick('website')}>Website</button>
+							<button class="item" class:selected={demoStyle == 'light'} onclick={() => onDemoStyleClick('light')}>Light</button>
+							<button class="item" class:selected={demoStyle == 'dark'} onclick={() => onDemoStyleClick('dark')}>Dark</button>
+							<button class="item" class:selected={demoStyle == 'default'} onclick={() => onDemoStyleClick('default')}>Default</button>
+						</div>
+					{/snippet}
+				</Menu>
+				<Menu>
 					{#snippet button()}
 						<div class="button shadow-small">
 							<Icon name={'tune'} size={22} />
@@ -715,7 +718,7 @@
 			top: 16px;
 			left: 16px;
 			display: flex;
-			flex-direction: column;
+			flex-direction: row;
 			align-items: start;
 			gap: 12px;
 			z-index: 10000000;
@@ -730,6 +733,10 @@
 				font-weight: 600;
 				font-size: 14px;
 				cursor: pointer;
+
+				.text {
+					opacity: 0.75;
+				}
 			}
 
 			.menu {
@@ -749,7 +756,7 @@
 					gap: 8px;
 					padding: 8px;
 					font-weight: 600;
-					font-size: 13px;
+					font-size: 14px;
 					border-radius: 12px;
 					color: var(--map-style-text);
 					cursor: pointer;
@@ -774,24 +781,23 @@
 				}
 			}
 
+			.menu.demo {
+				margin-top: 8px;
+				margin-left: 81px;
+			}
+
 			.menu.maps {
-				margin-top: 0px;
-				margin-left: 10px;
+				margin-top: 8px;
+				margin-left: 70px;
 			}
 
 			.menu.pallete {
-				margin-top: 0px;
-				margin-left: 8px;
-			}
-
-			.menu.demo {
-				margin-top: 0px;
-				margin-left: 8px;
+				margin-top: 8px;
+				margin-left: 74px;
 			}
 
 			.menu.options {
-				margin-top: 0px;
-				margin-left: 8px;
+				margin-top: 8px;
 			}
 		}
 
@@ -829,13 +835,14 @@
 					justify-content: center;
 					padding: 0px;
 
-					.text {
+					.text,
+					.value {
 						display: none;
 					}
 				}
 
 				.menu {
-					margin-left: 8px !important;
+					margin-left: 0px !important;
 				}
 			}
 		}
