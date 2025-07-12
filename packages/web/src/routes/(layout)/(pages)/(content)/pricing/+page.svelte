@@ -2,10 +2,10 @@
 	<div class="block">
 		<div class="title">Pricing</div>
 		<div class="text">
-			<strong>@arenarium/maps</strong> is free to use for now. It is rate limited to <strong>256</strong> popup states calculations per second.
+			<strong>@arenarium/maps</strong> is free to use for now. It is rate limited to <strong>256</strong> marker updates per second.
 		</div>
 		<div class="text">
-			If you need unlimited access, please contact me at <a href="mailto:arenarium.dev@gmail.com">arenarium.dev@gmail.com</a>.
+			If you have any questions or need unlimited access, please contact me at <a href="mailto:arenarium.dev@gmail.com">arenarium.dev@gmail.com</a>.
 		</div>
 	</div>
 </div>

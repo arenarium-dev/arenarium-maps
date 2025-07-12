@@ -592,7 +592,7 @@
 					{/snippet}
 					{#snippet menu()}
 						<div class="menu demo shadow-large">
-							<a href="/?{page.url.searchParams}" class="item" class:selected={demo == undefined}>{getDemoName('social')}</a>
+							<a href="/social?{page.url.searchParams}" class="item" class:selected={demo == undefined}>{getDemoName('social')}</a>
 							<a href="/rentals?{page.url.searchParams}" class="item" class:selected={demo == 'rentals'}>{getDemoName('rentals')}</a>
 							<a href="/bookings?{page.url.searchParams}" class="item" class:selected={demo == 'bookings'}>{getDemoName('bookings')}</a>
 							<a href="/bnb?{page.url.searchParams}" class="item" class:selected={demo == 'bnb'}>{getDemoName('bnb')}</a>
