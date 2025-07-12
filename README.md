@@ -1,11 +1,8 @@
 TODO:
 
-Rerecord gifs
-Recheck linked in notifications
-Reach out to boris
-Go to atproto discord
-
 Add mapbox provider
+Recheck linked in notifications
+
 Add marker focus to set z index so on hover can work properly
 
 OBJECTS:

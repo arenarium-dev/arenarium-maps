@@ -10,6 +10,15 @@ importers:
 
   packages/lib:
     dependencies:
+      '@googlemaps/js-api-loader':
+        specifier: ^1.16.10
+        version: 1.16.10
+      '@types/google.maps':
+        specifier: ^3.58.1
+        version: 3.58.1
+      maplibre-gl:
+        specifier: ^5.6.1
+        version: 5.6.1
       zod:
         specifier: ^3.25.72
         version: 3.25.72
@@ -20,9 +29,6 @@ importers:
       '@eslint/js':
         specifier: ^9.30.1
         version: 9.30.1
-      '@googlemaps/js-api-loader':
-        specifier: ^1.16.10
-        version: 1.16.10
       '@rollup/plugin-typescript':
         specifier: ^12.1.4
         version: 12.1.4(rollup@4.44.1)(tslib@2.8.1)(typescript@5.8.3)
@@ -38,9 +44,6 @@ importers:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.1.0
         version: 5.1.0(svelte@5.35.2)(vite@6.3.5(@types/node@22.13.16)(less@4.3.0))
-      '@types/google.maps':
-        specifier: ^3.58.1
-        version: 3.58.1
       '@workspace/shared':
         specifier: workspace:*
         version: link:../shared
@@ -62,9 +65,6 @@ importers:
       less:
         specifier: ^4.3.0
         version: 4.3.0
-      maplibre-gl:
-        specifier: ^5.6.1
-        version: 5.6.1
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
