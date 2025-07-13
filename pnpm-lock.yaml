@@ -102,7 +102,7 @@ importers:
     dependencies:
       '@arenarium/maps':
         specifier: latest
-        version: 1.0.159(@googlemaps/js-api-loader@1.16.10)(@types/google.maps@3.58.1)(maplibre-gl@5.6.1)
+        version: 1.0.161(@googlemaps/js-api-loader@1.16.10)(@types/google.maps@3.58.1)(mapbox-gl@3.13.0)(maplibre-gl@5.6.1)
       '@better-fetch/fetch':
         specifier: ^1.1.18
         version: 1.1.18
@@ -118,6 +118,9 @@ importers:
       highlight.js:
         specifier: ^11.11.1
         version: 11.11.1
+      mapbox-gl:
+        specifier: ^3.13.0
+        version: 3.13.0
       maplibre-gl:
         specifier: ^5.6.1
         version: 5.6.1
@@ -195,16 +198,19 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@arenarium/maps@1.0.159':
-    resolution: {integrity: sha512-Mhb1C/5vxyM0TRfnnsPvlwGvOa2K9+6gQkroO9G7/RLeSYlcsEo334Bd77vDVcVXHZJ30tyOr50TlaY07311/g==}
+  '@arenarium/maps@1.0.161':
+    resolution: {integrity: sha512-+CXrKsTIQKoWHsl0pyr5VHWSgzHAg4Lz8zMwB4Zeoc//s0+bzRlrbuz/gT4zv7ewyBGGZIP3awWC40mIAq4DVA==}
     peerDependencies:
       '@googlemaps/js-api-loader': ^1.16.10
       '@types/google.maps': ^3.58.1
+      mapbox-gl: ^3.13.0
       maplibre-gl: ^5.6.1
     peerDependenciesMeta:
       '@googlemaps/js-api-loader':
         optional: true
       '@types/google.maps':
+        optional: true
+      mapbox-gl:
         optional: true
       maplibre-gl:
         optional: true
@@ -2888,12 +2894,13 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.12
       '@jridgewell/trace-mapping': 0.3.29
 
-  '@arenarium/maps@1.0.159(@googlemaps/js-api-loader@1.16.10)(@types/google.maps@3.58.1)(maplibre-gl@5.6.1)':
+  '@arenarium/maps@1.0.161(@googlemaps/js-api-loader@1.16.10)(@types/google.maps@3.58.1)(mapbox-gl@3.13.0)(maplibre-gl@5.6.1)':
     dependencies:
       zod: 3.25.76
     optionalDependencies:
       '@googlemaps/js-api-loader': 1.16.10
       '@types/google.maps': 3.58.1
+      mapbox-gl: 3.13.0
       maplibre-gl: 5.6.1
 
   '@babel/helper-string-parser@7.27.1': {}

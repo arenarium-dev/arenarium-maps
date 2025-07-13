@@ -30,6 +30,12 @@
 			"import": "./dist/maplibre.es.js",
 			"require": "./dist/maplibre.cjs.js"
 		},
+		"./mapbox": {
+			"types": "./dist/mapbox.d.ts",
+			"svelte": "./dist/mapbox.es.js",
+			"import": "./dist/mapbox.es.js",
+			"require": "./dist/mapbox.cjs.js"
+		},
 		"./google": {
 			"types": "./dist/google.d.ts",
 			"svelte": "./dist/google.es.js",
