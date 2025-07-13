@@ -30,6 +30,7 @@ export class MapboxProvider implements MapProvider {
 
 		this.map = new this.MapClass({
 			...options,
+			projection: 'mercator',
 			pitchWithRotate: false,
 			customAttribution: options.customAttribution ?? '@arenarium/maps'
 		});

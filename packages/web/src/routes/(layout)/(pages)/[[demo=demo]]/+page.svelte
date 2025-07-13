@@ -81,7 +81,7 @@
 	let mapLibre: maplibregl.Map;
 	let mapLibreProvider: MaplibreProvider;
 
-	async function loadMapLibre() {
+	async function loadMaplibre() {
 		const maplibregl = await import('maplibre-gl');
 		await import('maplibre-gl/dist/maplibre-gl.css');
 
@@ -107,7 +107,7 @@
 		});
 	}
 
-	function setMapLibreStyle(demo: Demo, style: DemoStyle) {
+	function setMaplibreStyle(demo: Demo, style: DemoStyle) {
 		mapLibre.setStyle(getMapLibreStyle(demo, style));
 	}
 
@@ -144,13 +144,13 @@
 		}
 	}
 
-	function setMapLibrePosition(demo: Demo) {
+	function setMaplibrePosition(demo: Demo) {
 		const demoRestriction = getDemoPosition(demo);
 		mapLibre.setMinZoom(demoRestriction.zoom);
 		mapLibre.setCenter([demoRestriction.lng, demoRestriction.lat]);
 	}
 
-	function getMapLibreBounds(): Bounds {
+	function getMaplibreBounds(): Bounds {
 		const bounds = mapLibre.getBounds();
 		return {
 			sw: { lat: bounds.getSouthWest().lat, lng: bounds.getSouthWest().lng },
@@ -164,6 +164,11 @@
 
 	import { MapboxProvider } from '@arenarium/maps/mapbox';
 
+	let mapbox: mapboxgl.Map;
+
+	const mapboxLightStyle = 'mapbox://styles/mapbox/light-v11';
+	const mapboxDarkStyle = 'mapbox://styles/mapbox/dark-v11';
+
 	async function loadMapbox() {
 		const mapboxgl = await import('mapbox-gl');
 		await import('mapbox-gl/dist/mapbox-gl.css');
@@ -171,21 +176,66 @@
 		const mapBoxProvider = new MapboxProvider(mapboxgl.Map, mapboxgl.Marker, {
 			accessToken: 'pk.eyJ1IjoibWFya29zbWlsamEiLCJhIjoiY21kMWd0eGQ3MHdmcTJucXc4c3Y4aWpuNiJ9._cgpGqjzVaG99x6LjIYl2w',
 			container: mapElement,
+			projection: 'mercator',
 			center: { lat: 51.505, lng: -0.09 },
-			style: 'mapbox://styles/mapbox/streets-v11',
+			style: app.theme.get() == 'dark' ? mapboxDarkStyle : mapboxLightStyle,
 			zoom: 4
 		});
 
 		mapProvider = mapBoxProvider;
 
 		mapbox = mapBoxProvider.getMap();
-		mapbox.on('move', (e) => {
-			zoom = mapbox.getZoom();
+		mapbox.on('load', () => {
+			mapLoaded = true;
+		});
+		mapbox.on('idle', () => {
+			onMapIdle();
 		});
 		mapbox.on('click', (e) => {
 			onMapClick();
 		});
 	}
+
+	function setMapboxStyle(demo: Demo, style: DemoStyle) {
+		mapbox.setStyle(getMapboxStyle(demo, style));
+	}
+
+	function getMapboxStyle(demo: Demo, style: DemoStyle): string | null {
+		switch (demo) {
+			default: {
+				switch (style) {
+					case 'website': {
+						return app.theme.get() == 'dark' ? mapboxDarkStyle : mapboxLightStyle;
+					}
+					case 'light': {
+						return mapboxLightStyle;
+					}
+					case 'dark': {
+						return mapboxDarkStyle;
+					}
+					case 'default': {
+						return 'mapbox://styles/mapbox/standard';
+					}
+				}
+			}
+		}
+	}
+
+	function setMapboxPosition(demo: Demo) {
+		const demoRestriction = getDemoPosition(demo);
+		mapbox.setMinZoom(demoRestriction.zoom);
+		mapbox.setCenter([demoRestriction.lng, demoRestriction.lat]);
+	}
+
+	function getMapboxBounds(): Bounds {
+		const bounds = mapbox.getBounds();
+		return {
+			sw: { lat: bounds?.getSouthWest().lat ?? 0, lng: bounds?.getSouthWest().lng ?? 0 },
+			ne: { lat: bounds?.getNorthEast().lat ?? 0, lng: bounds?.getNorthEast().lng ?? 0 }
+		};
+	}
+
+	//#endregion
 
 	//#region Google Maps
 
@@ -279,10 +329,14 @@
 		try {
 			switch (demoMap) {
 				case 'maplibre': {
-					await loadMapLibre();
+					await loadMaplibre();
 					break;
 				}
-				case 'google': {
+				case 'mapbox': {
+					await loadMapbox();
+					break;
+				}
+				case 'googlemaps': {
 					await loadGoogleMaps();
 					break;
 				}
@@ -319,10 +373,14 @@
 			// Update style
 			switch (demoMap) {
 				case 'maplibre': {
-					setMapLibreStyle(demo, demoStyle);
+					setMaplibreStyle(demo, demoStyle);
 					break;
 				}
-				case 'google': {
+				case 'mapbox': {
+					setMapboxStyle(demo, demoStyle);
+					break;
+				}
+				case 'googlemaps': {
 					setGoogleMapsStyle(demo, demoStyle);
 					break;
 				}
@@ -351,10 +409,14 @@
 			// Update position
 			switch (demoMap) {
 				case 'maplibre': {
-					setMapLibrePosition(demo);
+					setMaplibrePosition(demo);
 					break;
 				}
-				case 'google': {
+				case 'mapbox': {
+					setMapboxPosition(demo);
+					break;
+				}
+				case 'googlemaps': {
 					setGoogleMapsPosition(demo);
 					break;
 				}
@@ -563,9 +625,12 @@
 	function getDataBounds(): Bounds {
 		switch (demoMap) {
 			case 'maplibre': {
-				return getMapLibreBounds();
+				return getMaplibreBounds();
 			}
-			case 'google': {
+			case 'mapbox': {
+				return getMapboxBounds();
+			}
+			case 'googlemaps': {
 				return getGoogleMapsBounds();
 			}
 		}
@@ -581,7 +646,11 @@
 				mapLibre?.zoomIn();
 				break;
 			}
-			case 'google': {
+			case 'mapbox': {
+				mapbox?.zoomIn();
+				break;
+			}
+			case 'googlemaps': {
 				mapGoogle?.setZoom(mapGoogle.getZoom()! + 1);
 				break;
 			}
@@ -594,7 +663,11 @@
 				mapLibre?.zoomOut();
 				break;
 			}
-			case 'google': {
+			case 'mapbox': {
+				mapbox?.zoomOut();
+				break;
+			}
+			case 'googlemaps': {
 				mapGoogle?.setZoom(mapGoogle.getZoom()! - 1);
 				break;
 			}
@@ -639,7 +712,8 @@
 					{#snippet menu()}
 						<div class="menu maps shadow-large">
 							<button class="item" class:selected={demoMap == 'maplibre'} onclick={() => onDemoMapClick('maplibre')}>Maplibre</button>
-							<button class="item" class:selected={demoMap == 'google'} onclick={() => onDemoMapClick('google')}>Google</button>
+							<button class="item" class:selected={demoMap == 'mapbox'} onclick={() => onDemoMapClick('mapbox')}>Mapbox</button>
+							<button class="item" class:selected={demoMap == 'googlemaps'} onclick={() => onDemoMapClick('googlemaps')}>Google Maps</button>
 						</div>
 					{/snippet}
 				</Menu>

@@ -59,7 +59,7 @@ const mapManager = new arenarium.MapManager(...);
 		<div class="highlight">
 			<Highlight language="xml" text={`<div id="map"></div>`} />
 		</div>
-		<div class="header">MapLibre GL</div>
+		<div class="header">Maplibre GL</div>
 		<div class="text">
 			First, install the <code>maplibre-gl</code> library:
 		</div>
@@ -81,17 +81,17 @@ import { MapManager } from '@arenarium/maps';
 import { MapLibreProvider } from '@arenarium/maps/maplibre';
 import '@arenarium/maps/dist/style.css';
 
-// Create a MapLibre provider instancece
-const mapLibreProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
+// Create a maplibre provider instance
+const maplibreProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
     container: 'map',
 	...
 });
 
 // Initialize the map manager with the provider
-const mapManager = new MapManager('YOUR_API_KEY', mapLibreProvider);
+const mapManager = new MapManager('YOUR_API_KEY', maplibreProvider);
 
-// Access the MapLibre instance for direct map interactions
-const mapLibre = mapLibreProvider.getMap();`}
+// Access the maplibre instance for direct map interactions
+const maplibreMap = mapLibreProvider.getMap();`}
 			/>
 		</div>
 		<div class="text">You can change the map's visual appearance by setting a predefined dark or light theme:</div>
@@ -99,9 +99,9 @@ const mapLibre = mapLibreProvider.getMap();`}
 			<Highlight
 				language="javascript"
 				text={`
-import { MapLibreDarkStyle, MapLibreLightStyle } from '@arenarium/maps/maplibre';
+import { MaplibreDarkStyle, MaplibreLightStyle } from '@arenarium/maps/maplibre';
 
-mapLibre.setStyle(MapLibreDarkStyle); // or MapLibreLightStyle
+maplibreMap.setStyle(MaplibreDarkStyle); // or MaplibreLightStyle
 `}
 			/>
 		</div>
@@ -112,6 +112,41 @@ mapLibre.setStyle(MapLibreDarkStyle); // or MapLibreLightStyle
 		</div>
 		<div class="highlight">
 			<Highlight language="javascript" text={`mapLibre.setStyle('https://tiles.openfreemap.org/styles/liberty.json');`} />
+		</div>
+		<div class="header">Mapbox GL</div>
+		<div class="text">
+			First, install the <code>mapbox-gl</code> library:
+		</div>
+		<div class="highlight">
+			<Highlight language="bash" text={`npm install mapbox-gl`} />
+		</div>
+		<div class="text">
+			Next, use the <code>MapManager</code> class which requires a <code>mapbox.Map</code> class, a <code>mapbox.Marker</code> class and a
+			<code>MapOptions</code> object.
+		</div>
+		<div class="highlight">
+			<Highlight
+				language="javascript"
+				text={`
+import mapbox from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+
+import { MapManager } from '@arenarium/maps';
+import { MapboxProvider } from '@arenarium/maps/mapbox';
+import '@arenarium/maps/dist/style.css';
+
+// Create a mapbox provider instance
+const mapboxProvider = new MapboxProvider(mapbox.Map, mapbox.Marker, {
+    container: 'map',
+	...
+});
+
+// Initialize the map manager with the provider
+const mapManager = new MapManager('YOUR_API_KEY', mapboxProvider);
+
+// Access the mapbox instance for direct map interactions
+const mapboxMap = mapboxProvider.getMap();`}
+			/>
 		</div>
 		<div class="header">Google Maps</div>
 		<div class="text">First, install the <code>@googlemaps/js-api-loader</code> library:</div>
