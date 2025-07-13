@@ -1,6 +1,6 @@
 {
 	"name": "@arenarium/maps",
-	"version": "1.0.159",
+	"version": "1.0.160",
 	"license": "MIT",
 	"author": "arenarium.dev",
 	"description": "The best way to visualize ranked markers on a map.",
@@ -77,6 +77,7 @@
 	"peerDependencies": {
 		"@googlemaps/js-api-loader": "^1.16.10",
 		"@types/google.maps": "^3.58.1",
+		"mapbox-gl": "^3.13.0",
 		"maplibre-gl": "^5.6.1"
 	},
 	"peerDependenciesMeta": {
@@ -84,6 +85,9 @@
 			"optional": true
 		},
 		"@types/google.maps": {
+			"optional": true
+		},
+		"mapbox-gl": {
 			"optional": true
 		},
 		"maplibre-gl": {
