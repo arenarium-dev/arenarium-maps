@@ -1,4 +1,4 @@
-export const MapLibreDarkStyle: maplibregl.StyleSpecification = {
+export const MaplibreDarkStyle: maplibregl.StyleSpecification = {
 	version: 8,
 	sources: {
 		openmaptiles: {
@@ -862,7 +862,7 @@ export const MapLibreDarkStyle: maplibregl.StyleSpecification = {
 	]
 };
 
-export const MapLibreLightStyle: maplibregl.StyleSpecification = {
+export const MaplibreLightStyle: maplibregl.StyleSpecification = {
 	version: 8,
 	sources: {
 		openmaptiles: {

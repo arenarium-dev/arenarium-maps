@@ -10,9 +10,10 @@
 
 	let Mode = {
 		MapLibre: 'maplibre',
+		MapBox: 'mapbox',
 		Google: 'google'
 	};
-	let mode: string = Mode.MapLibre;
+	let mode: string = Mode.MapBox;
 
 	let mapElement: HTMLElement;
 	let mapProvider: MapProvider;
@@ -26,11 +27,15 @@
 	onMount(async () => {
 		switch (mode) {
 			case 'maplibre': {
-				await loadMapLibre();
+				await loadMaplibre();
+				break;
+			}
+			case 'mapbox': {
+				await loadMapbox();
 				break;
 			}
 			case 'google': {
-				await loadGoogleMaps();
+				await loadGoogle();
 				break;
 			}
 		}
@@ -40,28 +45,59 @@
 
 	//#region MapLibre
 
-	import { MapLibreProvider, MapLibreLightStyle } from '$lib/maplibre.js';
+	import { MaplibreProvider, MaplibreLightStyle } from '$lib/maplibre.js';
 
-	let mapLibre: maplibregl.Map;
+	let maplibre: maplibregl.Map;
 
-	async function loadMapLibre() {
+	async function loadMaplibre() {
 		const maplibregl = await import('maplibre-gl');
 		await import('maplibre-gl/dist/maplibre-gl.css');
 
-		const mapLibreProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
+		const mapLibreProvider = new MaplibreProvider(maplibregl.Map, maplibregl.Marker, {
 			container: mapElement,
-			style: MapLibreLightStyle,
+			style: MaplibreLightStyle,
 			center: { lat: 51.505, lng: -0.09 },
 			zoom: 4
 		});
 
 		mapProvider = mapLibreProvider;
 
-		mapLibre = mapLibreProvider.getMap();
-		mapLibre.on('move', (e) => {
-			zoom = mapLibre.getZoom();
+		maplibre = mapLibreProvider.getMap();
+		maplibre.on('move', (e) => {
+			zoom = maplibre.getZoom();
 		});
-		mapLibre.on('click', (e) => {
+		maplibre.on('click', (e) => {
+			onMapClick();
+		});
+	}
+
+	//#endregion
+
+	//#region MapBox
+
+	import { MapboxProvider } from '$lib/mapbox.js';
+
+	let mapbox: mapboxgl.Map;
+
+	async function loadMapbox() {
+		const mapboxgl = await import('mapbox-gl');
+		await import('mapbox-gl/dist/mapbox-gl.css');
+
+		const mapBoxProvider = new MapboxProvider(mapboxgl.Map, mapboxgl.Marker, {
+			accessToken: 'pk.eyJ1IjoibWFya29zbWlsamEiLCJhIjoiY21kMWd0eGQ3MHdmcTJucXc4c3Y4aWpuNiJ9._cgpGqjzVaG99x6LjIYl2w',
+			container: mapElement,
+			center: { lat: 51.505, lng: -0.09 },
+			style: 'mapbox://styles/mapbox/streets-v11',
+			zoom: 4
+		});
+
+		mapProvider = mapBoxProvider;
+
+		mapbox = mapBoxProvider.getMap();
+		mapbox.on('move', (e) => {
+			zoom = mapbox.getZoom();
+		});
+		mapbox.on('click', (e) => {
 			onMapClick();
 		});
 	}
@@ -80,7 +116,7 @@
 	let mapTypeLightId = 'light-id';
 	let mapTypeDarkId = 'dark-id';
 
-	async function loadGoogleMaps() {
+	async function loadGoogle() {
 		const loader = new Loader({
 			apiKey: 'AIzaSyCt6ERDLY4Hx5b6LEBQFPYJbRq9teByXyk',
 			version: 'weekly'
@@ -129,8 +165,15 @@
 	function getBounds(): Bounds {
 		switch (mode) {
 			case 'maplibre': {
-				const bounds = mapLibre.getBounds();
+				const bounds = maplibre.getBounds();
 				return { sw: { lat: bounds._sw.lat, lng: bounds._sw.lng }, ne: { lat: bounds._ne.lat, lng: bounds._ne.lng } };
+			}
+			case 'mapbox': {
+				const bounds = mapbox.getBounds();
+				return {
+					sw: { lat: bounds?.getSouthWest().lat ?? 0, lng: bounds?.getSouthWest().lng ?? 0 },
+					ne: { lat: bounds?.getNorthEast().lat ?? 0, lng: bounds?.getNorthEast().lng ?? 0 }
+				};
 			}
 			case 'google': {
 				const bounds = mapGoogle.getBounds();
@@ -175,7 +218,11 @@
 	function onZoomIn() {
 		switch (mode) {
 			case 'maplibre': {
-				mapLibre.setZoom(mapLibre.getZoom() + zoomDelta);
+				maplibre.setZoom(maplibre.getZoom() + zoomDelta);
+				break;
+			}
+			case 'mapbox': {
+				mapbox.setZoom(mapbox.getZoom() + zoomDelta);
 				break;
 			}
 			case 'google': {
@@ -188,7 +235,11 @@
 	function onZoomOut() {
 		switch (mode) {
 			case 'maplibre': {
-				mapLibre.setZoom(mapLibre.getZoom() - zoomDelta);
+				maplibre.setZoom(maplibre.getZoom() - zoomDelta);
+				break;
+			}
+			case 'mapbox': {
+				mapbox.setZoom(mapbox.getZoom() - zoomDelta);
 				break;
 			}
 			case 'google': {
@@ -199,7 +250,6 @@
 	}
 
 	function onMapClick() {
-		console.log('Map click');
 		mapManager.hidePopup();
 	}
 
@@ -322,19 +372,6 @@
 			if (marker == undefined) throw new Error('Failed to get marker');
 
 			const element = document.createElement('div');
-
-			// if (Number.parseInt(id) % 10 <= 3) {
-			// 	element.style.display = 'flex';
-			// 	element.style.padding = '2px';
-			// 	mount(Icon, { target: element, props: { name: 'location_on', size: 16, color: 'white' } });
-			// } else if (Number.parseInt(id) % 10 <= 6) {
-			// 	element.style.color = 'white';
-			// 	element.style.fontSize = '12px';
-			// 	element.style.fontWeight = '600';
-			// 	element.style.padding = '2px 6px';
-			// 	element.innerHTML = '$' + id + '0';
-			// }
-
 			resolve(element);
 		});
 	}

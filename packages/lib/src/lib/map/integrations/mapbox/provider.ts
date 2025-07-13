@@ -1,14 +1,16 @@
 import type { MapBounds, MapProvider, MapProviderMarker, MapProviderParameters } from '../../schemas.js';
 
-interface MaplibreMapClass {
-	new (options: maplibregl.MapOptions): maplibregl.Map;
+import type { Map, MapOptions, Marker, MarkerOptions } from 'mapbox-gl';
+
+interface MapboxMapClass {
+	new (options: MapOptions): Map;
 }
 
-interface MaplibreMarkerClass {
-	new (options: maplibregl.MarkerOptions): maplibregl.Marker;
+interface MapboxMarkerClass {
+	new (options: MarkerOptions): Marker;
 }
 
-export class MaplibreProvider implements MapProvider {
+export class MapboxProvider implements MapProvider {
 	public static Parameters: MapProviderParameters = {
 		mapSize: 512,
 		zoomMin: 0,
@@ -16,21 +18,20 @@ export class MaplibreProvider implements MapProvider {
 		zoomScale: 10
 	};
 
-	public parameters: MapProviderParameters = MaplibreProvider.Parameters;
+	public parameters: MapProviderParameters = MapboxProvider.Parameters;
 
-	private MapClass: MaplibreMapClass;
-	private MapMarkerClass: MaplibreMarkerClass;
-	private map: maplibregl.Map;
+	private MapClass: MapboxMapClass;
+	private MapMarkerClass: MapboxMarkerClass;
+	private map: Map;
 
-	constructor(mapClass: MaplibreMapClass, mapMarkerClass: MaplibreMarkerClass, options: maplibregl.MapOptions) {
+	constructor(mapClass: MapboxMapClass, mapMarkerClass: MapboxMarkerClass, options: MapOptions) {
 		this.MapClass = mapClass;
 		this.MapMarkerClass = mapMarkerClass;
 
 		this.map = new this.MapClass({
 			...options,
-			style: options.style ?? 'https://tiles.openfreemap.org/styles/liberty',
 			pitchWithRotate: false,
-			attributionControl: options.attributionControl ?? { compact: false, customAttribution: '@arenarium/maps' }
+			customAttribution: options.customAttribution ?? '@arenarium/maps'
 		});
 		// Disable map rotation using right click + drag
 		this.map.dragRotate.disable();
@@ -42,7 +43,7 @@ export class MaplibreProvider implements MapProvider {
 		this.map.touchPitch.disable();
 	}
 
-	public getMap(): maplibregl.Map {
+	public getMap(): Map {
 		return this.map;
 	}
 
@@ -56,6 +57,8 @@ export class MaplibreProvider implements MapProvider {
 
 	public getBounds(): MapBounds {
 		const bounds = this.map.getBounds();
+		if (!bounds) return { sw: { lat: 0, lng: 0 }, ne: { lat: 0, lng: 0 } };
+
 		const sw = bounds.getSouthWest();
 		const ne = bounds.getNorthEast();
 		return { sw, ne };

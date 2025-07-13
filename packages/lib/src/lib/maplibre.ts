@@ -1,4 +1,4 @@
-import { MapLibreProvider } from './map/integrations/maplibre/provider.js';
-import { MapLibreDarkStyle, MapLibreLightStyle } from './map/integrations/maplibre/styles.js';
+import { MaplibreProvider } from './map/integrations/maplibre/provider.js';
+import { MaplibreDarkStyle, MaplibreLightStyle } from './map/integrations/maplibre/styles.js';
 
-export { MapLibreProvider, MapLibreDarkStyle, MapLibreLightStyle };
+export { MaplibreProvider, MaplibreDarkStyle, MaplibreLightStyle };

@@ -5,7 +5,9 @@
 			<strong>@arenarium/maps</strong> is free to use for now. It is rate limited to <strong>256</strong> marker updates per second.
 		</div>
 		<div class="text">
-			If you have any questions or need unlimited access, please contact me at <a href="mailto:arenarium.dev@gmail.com">arenarium.dev@gmail.com</a>.
+			If you want to support the project and get unlimited access, please contact me at <a href="mailto:arenarium.dev@gmail.com"
+				>arenarium.dev@gmail.com</a
+			>.
 		</div>
 	</div>
 </div>
