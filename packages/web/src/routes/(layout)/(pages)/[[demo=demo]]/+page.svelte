@@ -76,18 +76,18 @@
 
 	//#region MapLibre
 
-	import { MapLibreProvider, MapLibreDarkStyle, MapLibreLightStyle } from '@arenarium/maps/maplibre';
+	import { MaplibreProvider, MaplibreDarkStyle, MaplibreLightStyle } from '@arenarium/maps/maplibre';
 
 	let mapLibre: maplibregl.Map;
-	let mapLibreProvider: MapLibreProvider;
+	let mapLibreProvider: MaplibreProvider;
 
 	async function loadMapLibre() {
 		const maplibregl = await import('maplibre-gl');
 		await import('maplibre-gl/dist/maplibre-gl.css');
 
-		mapLibreProvider = new MapLibreProvider(maplibregl.Map, maplibregl.Marker, {
+		mapLibreProvider = new MaplibreProvider(maplibregl.Map, maplibregl.Marker, {
 			container: mapElement,
-			style: app.theme.get() == 'dark' ? MapLibreDarkStyle : MapLibreLightStyle,
+			style: app.theme.get() == 'dark' ? MaplibreDarkStyle : MaplibreLightStyle,
 			center: { lat: 51.505, lng: -0.09 },
 			zoom: 4
 		});
@@ -128,13 +128,13 @@
 			default: {
 				switch (style) {
 					case 'website': {
-						return app.theme.get() == 'dark' ? MapLibreDarkStyle : MapLibreLightStyle;
+						return app.theme.get() == 'dark' ? MaplibreDarkStyle : MaplibreLightStyle;
 					}
 					case 'light': {
-						return MapLibreLightStyle;
+						return MaplibreLightStyle;
 					}
 					case 'dark': {
-						return MapLibreDarkStyle;
+						return MaplibreDarkStyle;
 					}
 					case 'default': {
 						return 'https://tiles.openfreemap.org/styles/liberty';
@@ -159,6 +159,33 @@
 	}
 
 	//#endregion
+
+	//#region Mapbox
+
+	import { MapboxProvider } from '@arenarium/maps/mapbox';
+
+	async function loadMapbox() {
+		const mapboxgl = await import('mapbox-gl');
+		await import('mapbox-gl/dist/mapbox-gl.css');
+
+		const mapBoxProvider = new MapboxProvider(mapboxgl.Map, mapboxgl.Marker, {
+			accessToken: 'pk.eyJ1IjoibWFya29zbWlsamEiLCJhIjoiY21kMWd0eGQ3MHdmcTJucXc4c3Y4aWpuNiJ9._cgpGqjzVaG99x6LjIYl2w',
+			container: mapElement,
+			center: { lat: 51.505, lng: -0.09 },
+			style: 'mapbox://styles/mapbox/streets-v11',
+			zoom: 4
+		});
+
+		mapProvider = mapBoxProvider;
+
+		mapbox = mapBoxProvider.getMap();
+		mapbox.on('move', (e) => {
+			zoom = mapbox.getZoom();
+		});
+		mapbox.on('click', (e) => {
+			onMapClick();
+		});
+	}
 
 	//#region Google Maps
 
