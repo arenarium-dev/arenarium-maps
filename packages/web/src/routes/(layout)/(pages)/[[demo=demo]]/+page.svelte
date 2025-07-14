@@ -336,7 +336,7 @@
 					await loadMapbox();
 					break;
 				}
-				case 'googlemaps': {
+				case 'google': {
 					await loadGoogleMaps();
 					break;
 				}
@@ -380,7 +380,7 @@
 					setMapboxStyle(demo, demoStyle);
 					break;
 				}
-				case 'googlemaps': {
+				case 'google': {
 					setGoogleMapsStyle(demo, demoStyle);
 					break;
 				}
@@ -416,7 +416,7 @@
 					setMapboxPosition(demo);
 					break;
 				}
-				case 'googlemaps': {
+				case 'google': {
 					setGoogleMapsPosition(demo);
 					break;
 				}
@@ -630,7 +630,7 @@
 			case 'mapbox': {
 				return getMapboxBounds();
 			}
-			case 'googlemaps': {
+			case 'google': {
 				return getGoogleMapsBounds();
 			}
 		}
@@ -650,7 +650,7 @@
 				mapbox?.zoomIn();
 				break;
 			}
-			case 'googlemaps': {
+			case 'google': {
 				mapGoogle?.setZoom(mapGoogle.getZoom()! + 1);
 				break;
 			}
@@ -667,7 +667,7 @@
 				mapbox?.zoomOut();
 				break;
 			}
-			case 'googlemaps': {
+			case 'google': {
 				mapGoogle?.setZoom(mapGoogle.getZoom()! - 1);
 				break;
 			}
@@ -713,7 +713,7 @@
 						<div class="menu maps shadow-large">
 							<button class="item" class:selected={demoMap == 'maplibre'} onclick={() => onDemoMapClick('maplibre')}>Maplibre</button>
 							<button class="item" class:selected={demoMap == 'mapbox'} onclick={() => onDemoMapClick('mapbox')}>Mapbox</button>
-							<button class="item" class:selected={demoMap == 'googlemaps'} onclick={() => onDemoMapClick('googlemaps')}>Google Maps</button>
+							<button class="item" class:selected={demoMap == 'google'} onclick={() => onDemoMapClick('google')}>Google Maps</button>
 						</div>
 					{/snippet}
 				</Menu>
@@ -800,6 +800,7 @@
 			width: 100%;
 			height: 100%;
 			font-family: 'Noto Sans';
+			z-index: 0;
 		}
 
 		.button {
@@ -951,8 +952,6 @@
 
 	:global {
 		.maplibregl-map {
-			z-index: 0;
-
 			.maplibregl-ctrl-bottom-right {
 				z-index: 10000000;
 

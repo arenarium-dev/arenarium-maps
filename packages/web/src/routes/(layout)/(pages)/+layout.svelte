@@ -25,17 +25,23 @@
 	<link rel="canonical" href="https://arenarium.dev" />
 	<meta
 		name="description"
-		content="Minimalist and performant rendering of markers on a map. Install with npm or directly in your browser. Compatible with google maps and maplibre."
+		content="Visualize complex map markers clearly. A JavaScript library for effective display of map markers, compatible with MapLibre, Mapbox, and Google Maps."
 	/>
 	<!-- Open Graph -->
 	<meta property="og:title" content="@arenarium/maps" />
 	<meta property="og:type" content="website" />
-	<meta property="og:description" content="Minimalist and performant rendering of markers on a map." />
+	<meta
+		property="og:description"
+		content="Visualize complex map markers clearly. A JavaScript library for effective display of map markers, compatible with MapLibre, Mapbox, and Google Maps."
+	/>
 	<meta property="og:url" content="https://maps.arenarium.dev" />
 	<meta property="og:image" content="https://maps.arenarium.dev/favicon.png" />
 	<!-- Twitter Card -->
 	<meta name="twitter:title" content="@arenarium/maps" />
-	<meta name="twitter:description" content="Minimalist and performant rendering of markers on a map." />
+	<meta
+		name="twitter:description"
+		content="Visualize complex map markers clearly. A JavaScript library for effective display of map markers, compatible with MapLibre, Mapbox, and Google Maps."
+	/>
 	<meta name="twitter:image" content="/favicon.png" />
 </svelte:head>
 
@@ -83,7 +89,7 @@
 			padding: 24px;
 			background-color: var(--surface);
 			box-shadow: 0 3px 4px rgba(0, 0, 0, 0.2);
-			z-index: 1;
+			z-index: 1000;
 
 			.icon {
 				width: 24px;

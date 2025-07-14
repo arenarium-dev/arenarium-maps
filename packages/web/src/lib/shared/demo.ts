@@ -7,7 +7,7 @@ import z from 'zod';
 export const DemoSchema = z.enum(['social', 'rentals', 'bookings', 'bnb', 'events', 'news', 'srbija-nekretnine', 'cityexpert', 'bookaweb', 'roommateor']);
 export type Demo = z.infer<typeof DemoSchema>;
 
-export const DemoMapSchema = z.enum(['maplibre', 'mapbox', 'googlemaps']);
+export const DemoMapSchema = z.enum(['maplibre', 'mapbox', 'google']);
 export type DemoMap = z.infer<typeof DemoMapSchema>;
 
 export const DemoSizeSchema = z.enum(['small', 'large']);
