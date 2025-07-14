@@ -713,7 +713,7 @@
 						<div class="menu maps shadow-large">
 							<button class="item" class:selected={demoMap == 'maplibre'} onclick={() => onDemoMapClick('maplibre')}>Maplibre</button>
 							<button class="item" class:selected={demoMap == 'mapbox'} onclick={() => onDemoMapClick('mapbox')}>Mapbox</button>
-							<button class="item" class:selected={demoMap == 'google'} onclick={() => onDemoMapClick('google')}>Google Maps</button>
+							<button class="item" class:selected={demoMap == 'google'} onclick={() => onDemoMapClick('google')}>Google</button>
 						</div>
 					{/snippet}
 				</Menu>
