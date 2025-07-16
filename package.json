@@ -5,6 +5,10 @@
 	"author": "arenarium.dev",
 	"description": "Visualize complex map markers clearly.",
 	"homepage": "https://arenarium.dev",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/arenarium-dev/arenarium-maps.git"
+	},
 	"keywords": [
 		"arenarium",
 		"maps",
