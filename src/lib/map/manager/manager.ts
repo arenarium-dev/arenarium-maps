@@ -100,9 +100,6 @@ class MapManager {
 			// If there is only one marker, use default tooltip state
 			else {
 				tooltipStates = [[0, [[0, Angles.DEGREES.indexOf(Angles.DEFAULT)]]]];
-
-				// Update data
-				this.updateMarkerData(markers, tooltipStates);
 			}
 
 			// Update marker data
