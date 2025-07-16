@@ -209,7 +209,7 @@ for (let i = 0; i < count; i++) {
                 // The desired height of the marker's tooltip area
                 height: ...,
                 // The desired width of the marker's tooltip area
-                width: ...
+                width: ...,
                 // The desired margin of the marker's tooltip area
                 margin: ...,
                 // The desired radius of the marker's tooltip area
@@ -224,7 +224,7 @@ for (let i = 0; i < count; i++) {
                 // The desired height of the marker's pin area
                 height: ...,
                 // The desired width of the marker's pin area
-                width: ...
+                width: ...,
                 // The desired radius of the marker's pin area
                 radius: ...,
             },
@@ -237,7 +237,7 @@ for (let i = 0; i < count; i++) {
                 // The desired height of the marker's popup area
                 height: ...,
                 // The desired width of the marker's popup area
-                width: ...
+                width: ...,
                 // The desired margin of the marker's popup area
                 margin: ...,
                 // The desired radius of the marker's popup area
