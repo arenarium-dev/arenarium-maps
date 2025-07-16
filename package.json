@@ -118,9 +118,9 @@
 		"build:vite:browser": "vite build -c ./vite/browser/vite.config.ts",
 		"build:types:browser": "dts-bundle-generator --export-referenced-types --umd-module-name=arenarium -o ./dist/index.d.ts ./src/lib/index.ts",
 		"build": "pnpm run build:vite:modular && pnpm run build:vite:browser && pnpm run build:types:browser",
-		"patch:commit:push": "pnpm version patch && git push",
+		"patch:push": "pnpm version patch && git push",
 		"publish:public": "pnpm publish --access public",
-		"build:patch:commit:publish": "pnpm run build && pnpm run patch:commit && pnpm run publish:public",
+		"build:patch:commit:publish": "pnpm run build && pnpm run patch:push && pnpm run publish:public",
 		"preview": "vite preview"
 	}
 }
