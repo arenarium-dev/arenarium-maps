@@ -6,7 +6,6 @@ To install the `@aranarium/maps` library using npm, run the following command in
 
 ```
 npm install @arenarium/maps
-
 ```
 
 Import the necessary module and CSS file into your project to begin using the map:
@@ -17,7 +16,6 @@ import '@arenarium/maps/dist/style.css';
 
 // Initialize and mount the map manager (further configuration details follow)
 const mapManager = new MapManager(...);
-
 ```
 
 ## CDN
@@ -30,7 +28,6 @@ To include `@aranarium/maps` directly in your HTML via a Content Delivery Networ
 
 <script src="https://unpkg.com/@arenarium/maps@^1.0.124/dist/index.js"></script>
 <link href="https://unpkg.com/@arenarium/maps@^1.0.124/dist/style.css" rel="stylesheet" />
-
 ```
 
 Once included, you can access the library's functions through the global `arenarium` object to mount the map:
@@ -38,7 +35,6 @@ Once included, you can access the library's functions through the global `arenar
 ```
 // Initialize and mount the map manager (further configuration details follow)
 const mapManager = new arenarium.MapManager(...);
-
 ```
 
 # Usage
@@ -49,7 +45,6 @@ To initialize the map, first add a container element to your HTML where the map 
 
 ```
 <div id="map"></div>
-
 ```
 
 ## Maplibre GL
@@ -58,7 +53,6 @@ First, install the `maplibre-gl` library:
 
 ```
 npm install maplibre-gl
-
 ```
 
 Next, use the `MapManager` class which requires a `maplibre.Map` class, a `maplibre.Marker` class and a `MapOptions` object.
@@ -82,7 +76,6 @@ const mapManager = new MapManager(maplibreProvider);
 
 // Access the maplibre instance for direct map interactions
 const maplibreMap = mapLibreProvider.getMap();
-
 ```
 
 You can change the map's visual appearance by setting a predefined dark or light theme:
@@ -91,14 +84,12 @@ You can change the map's visual appearance by setting a predefined dark or light
 import { MaplibreDarkStyle, MaplibreLightStyle } from '@arenarium/maps/maplibre';
 
 maplibreMap.setStyle(MaplibreDarkStyle); // or MaplibreLightStyle
-
 ```
 
 Alternatively, you can apply a custom map style by providing a URL to a JSON file that adheres to the [MapLibre Style Specification](https://maplibre.org/maplibre-style-spec/). You can also override specific color properties within a custom style.
 
 ```
 mapLibre.setStyle('https://tiles.openfreemap.org/styles/liberty.json');
-
 ```
 
 ## Mapbox GL
@@ -107,7 +98,6 @@ First, install the `mapbox-gl` library:
 
 ```
 npm install mapbox-gl
-
 ```
 
 Next, use the `MapManager` class which requires a `mapbox.Map` class, a `mapbox.Marker` class and a `MapOptions` object.
@@ -131,7 +121,6 @@ const mapManager = new MapManager(mapboxProvider);
 
 // Access the mapbox instance for direct map interactions
 const mapboxMap = mapboxProvider.getMap();
-
 ```
 
 ## Google Maps
@@ -140,7 +129,6 @@ First, install the `@googlemaps/js-api-loader` library:
 
 ```
 npm install @googlemaps/js-api-loader
-
 ```
 
 To use Google Maps, you'll need to load the Google Maps JavaScript API and create a Google Maps provider instance.
@@ -174,7 +162,6 @@ const mapManager = new MapManager(mapGoogleProvider);
 
 // Access the Google Maps instance for direct map interactions
 const mapGoogle = mapGoogleProvider.getMap();
-
 ```
 
 You can change the map's visual appearance by using the predefined styles in combination with custom `StyledMapType`:
@@ -189,7 +176,6 @@ mapGoogle.mapTypes.set("light-id", mapTypeLight);
 mapGoogle.mapTypes.set("dark-id", mapTypeDark);
 
 mapGoogle.setMapTypeId("light-id"); // or "dark-id" for dark theme
-
 ```
 
 ## Markers
@@ -264,14 +250,12 @@ for (let i = 0; i < count; i++) {
 }
 
 await mapManager.updateMarkers(markers);
-
 ```
 
 To remove all markers from the map, use the `removeMarkers` method:
 
 ```
 mapManager.removeMarkers();
-
 ```
 
 To toggle the popup of a marker, use the `showPopup` and `hidePopup` methods:
@@ -279,7 +263,6 @@ To toggle the popup of a marker, use the `showPopup` and `hidePopup` methods:
 ```
 mapManager.showPopup(id);
 mapManager.hidePopup(id);
-
 ```
 
 ## Style
@@ -294,7 +277,6 @@ You can change the markers style by using the predefined CSS variables:
 --arenarium-maps-tooltip-background: ...;           
 --arenarium-maps-tooltip-shadow: ...;
 --arenarium-maps-tooltip-shadow-hover: ...;
-
 ```
 
 # Examples
