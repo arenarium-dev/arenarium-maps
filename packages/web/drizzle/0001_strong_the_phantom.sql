@@ -1,1 +1,0 @@
-ALTER TABLE `tableApiKeys` ADD `domains` text;

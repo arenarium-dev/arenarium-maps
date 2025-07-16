@@ -1,17 +1,121 @@
 {
-	"name": "@workspace/root",
-	"version": "1.0.0",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"update": "pnpm update --recursive"
+	"name": "@arenarium/maps",
+	"version": "1.0.164",
+	"license": "MIT",
+	"author": "arenarium.dev",
+	"description": "Visualize complex map markers clearly.",
+	"homepage": "https://arenarium.dev",
+	"keywords": [
+		"arenarium",
+		"maps",
+		"svelte"
+	],
+	"type": "module",
+	"main": "./dist/main.cjs.js",
+	"module": "./dist/main.es.js",
+	"svelte": "./dist/main.es.js",
+	"types": "./dist/main.d.ts",
+	"unpkg": "./dist/index.js",
+	"jsdelivr": "./dist/index.js",
+	"exports": {
+		".": {
+			"types": "./dist/main.d.ts",
+			"svelte": "./dist/main.es.js",
+			"import": "./dist/main.es.js",
+			"require": "./dist/main.cjs.js"
+		},
+		"./maplibre": {
+			"types": "./dist/maplibre.d.ts",
+			"svelte": "./dist/maplibre.es.js",
+			"import": "./dist/maplibre.es.js",
+			"require": "./dist/maplibre.cjs.js"
+		},
+		"./mapbox": {
+			"types": "./dist/mapbox.d.ts",
+			"svelte": "./dist/mapbox.es.js",
+			"import": "./dist/mapbox.es.js",
+			"require": "./dist/mapbox.cjs.js"
+		},
+		"./google": {
+			"types": "./dist/google.d.ts",
+			"svelte": "./dist/google.es.js",
+			"import": "./dist/google.es.js",
+			"require": "./dist/google.cjs.js"
+		},
+		"./dist/style.css": {
+			"import": "./dist/style.css",
+			"require": "./dist/style.css"
+		}
 	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad",
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"esbuild"
-		]
+	"files": [
+		"dist",
+		"!dist/**/*.test.*",
+		"!dist/**/*.spec.*"
+	],
+	"sideEffects": [
+		"**/*.css"
+	],
+	"devDependencies": {
+		"@eslint/compat": "^1.3.1",
+		"@eslint/js": "^9.31.0",
+		"@rollup/plugin-typescript": "^12.1.4",
+		"@sveltejs/adapter-auto": "^6.0.1",
+		"@sveltejs/kit": "^2.22.5",
+		"@sveltejs/package": "^2.3.12",
+		"@sveltejs/vite-plugin-svelte": "^5.1.1",
+		"@types/node": "^24.0.14",
+		"dts-bundle-generator": "^9.5.1",
+		"eslint": "^9.31.0",
+		"eslint-config-prettier": "^10.1.5",
+		"eslint-plugin-svelte": "^3.10.1",
+		"globals": "^16.3.0",
+		"less": "^4.3.0",
+		"prettier": "^3.6.2",
+		"prettier-plugin-svelte": "^3.4.0",
+		"publint": "^0.3.12",
+		"svelte": "^5.35.6",
+		"svelte-check": "^4.2.2",
+		"typescript": "^5.8.3",
+		"typescript-eslint": "^8.36.0",
+		"vite": "^6.3.5",
+		"vite-plugin-dts": "^4.5.4"
+	},
+	"peerDependencies": {
+		"@googlemaps/js-api-loader": "^1.16.10",
+		"@types/google.maps": "^3.58.1",
+		"mapbox-gl": "^3.13.0",
+		"maplibre-gl": "^5.6.1"
+	},
+	"peerDependenciesMeta": {
+		"@googlemaps/js-api-loader": {
+			"optional": true
+		},
+		"@types/google.maps": {
+			"optional": true
+		},
+		"mapbox-gl": {
+			"optional": true
+		},
+		"maplibre-gl": {
+			"optional": true
+		}
+	},
+	"dependencies": {
+		"zod": "^3.25.76"
+	},
+	"scripts": {
+		"format": "prettier --write .",
+		"lint": "prettier --check . && eslint .",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"dev": "vite dev --host",
+		"dev-browser": "vite dev --mode browser --host",
+		"build:vite:modular": "vite build -c ./vite/modular/vite.config.ts",
+		"build:vite:browser": "vite build -c ./vite/browser/vite.config.ts",
+		"build:types:browser": "dts-bundle-generator --export-referenced-types --umd-module-name=arenarium -o ./dist/index.d.ts ./src/lib/index.ts",
+		"build": "pnpm run build:vite:modular && pnpm run build:vite:browser && pnpm run build:types:browser",
+		"patch:commit": "pnpm version patch && git add package.json && git commit -m 'Publish'",
+		"build:patch:commit:publish": "pnpm run build && pnpm run patch:commit && pnpm publish --access public",
+		"preview": "vite preview"
 	}
 }
