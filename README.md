@@ -10,7 +10,7 @@ npm install @arenarium/maps
 
 Import the necessary module and CSS file into your project to begin using the map:
 
-```
+```js
 import { MapManager } from '@arenarium/maps';
 import '@arenarium/maps/dist/style.css';
 
@@ -22,7 +22,7 @@ const mapManager = new MapManager(...);
 
 To include `@aranarium/maps` directly in your HTML via a Content Delivery Network (CDN), add these script and stylesheet tags to the `<head>` or `<body>` of your HTML document:
 
-```
+```html
 <script src="https://unpkg.com/maplibre-gl@^5.6.0/dist/maplibre-gl.js"></script>
 <link href="https://unpkg.com/maplibre-gl@^5.6.0/dist/maplibre-gl.css" rel="stylesheet" />
 
@@ -32,7 +32,7 @@ To include `@aranarium/maps` directly in your HTML via a Content Delivery Networ
 
 Once included, you can access the library's functions through the global `arenarium` object to mount the map:
 
-```
+```js
 // Initialize and mount the map manager (further configuration details follow)
 const mapManager = new arenarium.MapManager(...);
 ```
@@ -43,7 +43,7 @@ const mapManager = new arenarium.MapManager(...);
 
 To initialize the map, first add a container element to your HTML where the map will be rendered. Then depending on the map library used there are different instructions:
 
-```
+```html
 <div id="map"></div>
 ```
 
@@ -57,7 +57,7 @@ npm install maplibre-gl
 
 Next, use the `MapManager` class which requires a `maplibre.Map` class, a `maplibre.Marker` class and a `MapOptions` object.
 
-```
+```js
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
@@ -80,7 +80,7 @@ const maplibreMap = mapLibreProvider.getMap();
 
 You can change the map's visual appearance by setting a predefined dark or light theme:
 
-```
+```js
 import { MaplibreDarkStyle, MaplibreLightStyle } from '@arenarium/maps/maplibre';
 
 maplibreMap.setStyle(MaplibreDarkStyle); // or MaplibreLightStyle
@@ -88,7 +88,7 @@ maplibreMap.setStyle(MaplibreDarkStyle); // or MaplibreLightStyle
 
 Alternatively, you can apply a custom map style by providing a URL to a JSON file that adheres to the [MapLibre Style Specification](https://maplibre.org/maplibre-style-spec/). You can also override specific color properties within a custom style.
 
-```
+```js
 mapLibre.setStyle('https://tiles.openfreemap.org/styles/liberty.json');
 ```
 
@@ -102,7 +102,7 @@ npm install mapbox-gl
 
 Next, use the `MapManager` class which requires a `mapbox.Map` class, a `mapbox.Marker` class and a `MapOptions` object.
 
-```
+```js
 import mapbox from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -133,7 +133,7 @@ npm install @googlemaps/js-api-loader
 
 To use Google Maps, you'll need to load the Google Maps JavaScript API and create a Google Maps provider instance.
 
-```
+```js
 import { Loader } from '@googlemaps/js-api-loader';
 
 import { MapManager } from '@arenarium/maps';
@@ -166,7 +166,7 @@ const mapGoogle = mapGoogleProvider.getMap();
 
 You can change the map's visual appearance by using the predefined styles in combination with custom `StyledMapType`:
 
-```
+```js
 import { GoogleMapsDarkStyle, GoogleMapsLightStyle } from '@arenarium/maps/google';
 
 const mapTypeLight = new google.maps.StyledMapType(GoogleMapsLightStyle, { name: 'Light Map' });
@@ -188,7 +188,7 @@ To add markers to the map, you first need to define an array of `MapMarker` obje
 
 Use the `updateMarkers` method on the map manager to display or update update the markers. This method adds new markers and updates existing ones based on their IDs. Markers not present in the provided array will remain on the map. This approach is designed for continuous updates of map markers.
 
-```
+```js
 import { type MapMarker } from '@arenarium/maps';
 
 const markers: MapMarker[] = [];
@@ -254,13 +254,13 @@ await mapManager.updateMarkers(markers);
 
 To remove all markers from the map, use the `removeMarkers` method:
 
-```
+```js
 mapManager.removeMarkers();
 ```
 
 To toggle the popup of a marker, use the `showPopup` and `hidePopup` methods:
 
-```
+```js
 mapManager.showPopup(id);
 mapManager.hidePopup(id);
 ```
@@ -269,7 +269,7 @@ mapManager.hidePopup(id);
 
 You can change the markers style by using the predefined CSS variables:
 
-```
+```scss
 --arenarium-maps-pin-background: ...;
 --arenarium-maps-pin-border: ...;
 --arenarium-maps-pin-shadow: ...;
