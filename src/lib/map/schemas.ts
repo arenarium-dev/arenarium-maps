@@ -19,12 +19,19 @@ export const mapConfigurationSchema = z.object({
 				.optional()
 		})
 		.optional(),
-	states: z
-		.object({
-			url: z.string(),
-			key: z.string()
-		})
-		.optional()
+	api: z.object({
+		states: z
+			.object({
+				url: z.string(),
+				key: z.string()
+			})
+			.optional(),
+		log: z
+			.object({
+				enabled: z.boolean()
+			})
+			.optional()
+	})
 });
 
 export type MapConfiguration = z.infer<typeof mapConfigurationSchema>;
@@ -142,3 +149,12 @@ export const mapTooltipStatesRequestSchema = z.object({
 export type MapTooltipState = z.infer<typeof mapTooltipStateSchema>;
 export type MapTooltipStateInput = z.infer<typeof mapTooltipStateInputSchema>;
 export type MapTooltipStatesRequest = z.infer<typeof mapTooltipStatesRequestSchema>;
+
+// Log
+
+export const logSchema = z.object({
+	title: z.string(),
+	content: z.any()
+});
+
+export type Log = z.infer<typeof logSchema>;

@@ -17,14 +17,16 @@ import {
 	type MapProvider,
 	type MapProviderMarker,
 	type MapBodyCallback,
-	type MapBounds
+	type MapBounds,
+	type Log
 } from '$lib/map/schemas.js';
 
 class MapManager {
 	private provider: MapProvider;
 
-	private statesApiUrl: string | undefined;
-	private statesApiKey: string | undefined;
+	private apiStatesUrl: string | undefined;
+	private apiStatesKey: string | undefined;
+	private apiLogEnabled: boolean = true;
 
 	private markerDataArray = new Array<MapMarkerData>();
 	private markerDataMap = new Map<string, MapMarkerData>();
@@ -44,11 +46,14 @@ class MapManager {
 		this.markerPopupProcessor = new MapPopupProcessor(mapProvider);
 
 		this.configuration = mapConfiguration;
+
+		this.log('[CLIENT] Map manager created');
 	}
 
 	public set configuration(configuration: MapConfiguration | undefined) {
-		this.statesApiUrl = configuration?.states?.url;
-		this.statesApiKey = configuration?.states?.key;
+		this.apiStatesUrl = configuration?.api?.states?.url;
+		this.apiStatesKey = configuration?.api?.states?.key;
+		this.apiLogEnabled = configuration?.api?.log?.enabled ?? true;
 
 		this.markerPinProcessor.setConfiguration(configuration);
 
@@ -75,13 +80,13 @@ class MapManager {
 				}));
 
 				// If states api is configured, get states from api
-				if (this.statesApiUrl != undefined && this.statesApiKey != undefined) {
+				if (this.apiStatesUrl != undefined && this.apiStatesKey != undefined) {
 					const tooltipStatesRequest: MapTooltipStatesRequest = {
-						key: this.statesApiKey,
+						key: this.apiStatesKey,
 						parameters: this.provider.parameters,
 						input: tooltipStatesInput
 					};
-					const tooltipStatesResponse = await fetch(this.statesApiUrl, {
+					const tooltipStatesResponse = await fetch(this.apiStatesUrl, {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify(tooltipStatesRequest)
@@ -112,6 +117,10 @@ class MapManager {
 
 			this.removeMarkerData();
 
+			if (error instanceof Error) {
+				this.log('[CLIENT] Failed to update markers', { message: error.message, stack: error.stack });
+			}
+
 			throw error;
 		}
 	}
@@ -121,6 +130,10 @@ class MapManager {
 			this.removeMarkerData();
 		} catch (error) {
 			console.error(error);
+
+			if (error instanceof Error) {
+				this.log('[CLIENT] Failed to remove markers', { message: error.message, stack: error.stack });
+			}
 
 			throw error;
 		}
@@ -140,6 +153,10 @@ class MapManager {
 
 			for (const marker of this.markerDataArray) {
 				this.markerPopupProcessor.hide(marker);
+			}
+
+			if (error instanceof Error) {
+				this.log('[CLIENT] Failed to show popup', { message: error.message, stack: error.stack });
 			}
 
 			throw error;
@@ -163,6 +180,10 @@ class MapManager {
 
 			for (const marker of this.markerDataArray) {
 				this.markerPopupProcessor.hide(marker);
+			}
+
+			if (error instanceof Error) {
+				this.log('[CLIENT] Failed to hide popup', { message: error.message, stack: error.stack });
 			}
 
 			throw error;
@@ -220,6 +241,10 @@ class MapManager {
 			this.markerDataArray.length = 0;
 			this.markerDataMap.clear();
 
+			if (error instanceof Error) {
+				this.log('[CLIENT] Failed to update marker data', { message: error.message, stack: error.stack });
+			}
+
 			throw error;
 		} finally {
 			this.markerDataUpdating = false;
@@ -238,6 +263,11 @@ class MapManager {
 			this.markerDataMap.clear();
 		} catch (error) {
 			console.error(error);
+
+			if (error instanceof Error) {
+				this.log('[CLIENT] Failed to remove marker data', { message: error.message, stack: error.stack });
+			}
+
 			throw error;
 		} finally {
 			this.markerDataUpdating = false;
@@ -253,6 +283,10 @@ class MapManager {
 			window.setTimeout(this.processMarkerDataCallback.bind(this), 25);
 		} catch (error) {
 			console.error(error);
+
+			if (error instanceof Error) {
+				this.log('[CLIENT] Failed to process marker data', { message: error.message, stack: error.stack });
+			}
 		}
 	}
 
@@ -267,6 +301,25 @@ class MapManager {
 		this.markerPopupProcessor.process();
 		this.markerTooltipProcessor.process(mapBounds, mapZoom);
 		this.markerPinProcessor.process(mapBounds, mapZoom);
+	}
+
+	private async log(title: string, content?: any) {
+		if (this.apiLogEnabled == false || import.meta.env.DEV == true) return;
+
+		try {
+			const log: Log = {
+				title,
+				content
+			};
+
+			await fetch('https://arenarium.dev/api/public/v1/log', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(log)
+			});
+		} catch (error) {
+			console.error(error);
+		}
 	}
 }
 
