@@ -290,7 +290,9 @@ namespace Nodes {
 		for (let i = 0; i < nodeNeighbours.length; i++) {
 			const neighbour = nodeNeighbours[i];
 			const neighbourNodeIndex = neighbour.neighbours.indexOf(node);
+
 			neighbour.neighbours.splice(neighbourNodeIndex, 1);
+			neighbour.influences.splice(neighbourNodeIndex, 1);
 		}
 	}
 
