@@ -26,7 +26,7 @@ export default defineConfig({
 				maplibre: './src/lib/maplibre.ts',
 				mapbox: './src/lib/mapbox.ts',
 				google: './src/lib/google.ts',
-				utils: './src/lib/utils.ts'
+				api: './src/lib/api.ts'
 			},
 			name: 'arenarium',
 			formats: ['es', 'cjs'],

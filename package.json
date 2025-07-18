@@ -46,11 +46,11 @@
 			"import": "./dist/google.es.js",
 			"require": "./dist/google.cjs.js"
 		},
-		"./utils": {
-			"types": "./dist/utils.d.ts",
-			"svelte": "./dist/utils.es.js",
-			"import": "./dist/utils.es.js",
-			"require": "./dist/utils.cjs.js"
+		"./api": {
+			"types": "./dist/api.d.ts",
+			"svelte": "./dist/api.es.js",
+			"import": "./dist/api.es.js",
+			"require": "./dist/api.cjs.js"
 		},
 		"./dist/style.css": {
 			"import": "./dist/style.css",
