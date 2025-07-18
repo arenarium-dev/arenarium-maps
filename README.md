@@ -172,10 +172,10 @@ import { GoogleMapsDarkStyle, GoogleMapsLightStyle } from '@arenarium/maps/googl
 const mapTypeLight = new google.maps.StyledMapType(GoogleMapsLightStyle, { name: 'Light Map' });
 const mapTypeDark = new google.maps.StyledMapType(GoogleMapsDarkStyle, { name: 'Dark Map' });
 
-mapGoogle.mapTypes.set("light-id", mapTypeLight);
-mapGoogle.mapTypes.set("dark-id", mapTypeDark);
+mapGoogle.mapTypes.set('light-id', mapTypeLight);
+mapGoogle.mapTypes.set('dark-id', mapTypeDark);
 
-mapGoogle.setMapTypeId("light-id"); // or "dark-id" for dark theme
+mapGoogle.setMapTypeId('light-id'); // or "dark-id" for dark theme
 ```
 
 ## Markers
@@ -204,7 +204,7 @@ for (let i = 0; i < count; i++) {
         // The longitude of the marker's location
         lng: ...,
         // The tooltip configuration of the marker (required)
-        tooltip: {          
+        tooltip: {
             style: {
                 // The desired height of the marker's tooltip area
                 height: ...,
@@ -216,7 +216,7 @@ for (let i = 0; i < count; i++) {
                 radius: ...,
             },
             // Callback function that returns the HTMLElement object for the tooltip body
-            body: async (id) => { ... }             
+            body: async (id) => { ... }
         },
         // The pin configuration of the marker (optional)
         pin: {
@@ -274,10 +274,14 @@ You can change the markers style by using the predefined CSS variables:
 --arenarium-maps-pin-border: ...;
 --arenarium-maps-pin-shadow: ...;
 
---arenarium-maps-tooltip-background: ...;           
+--arenarium-maps-tooltip-background: ...;
 --arenarium-maps-tooltip-shadow: ...;
 --arenarium-maps-tooltip-shadow-hover: ...;
 ```
+
+## Logs
+
+Some events and errors are logged to via the api. These logs are used for debugging and monitoring purposes in order to improve the library. To enable or disable logging, set the `api.log.enabled` property to `true` or `false` in the map configuration. By default, logging is disabled for development environments.
 
 # Examples
 
