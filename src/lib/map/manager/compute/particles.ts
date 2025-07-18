@@ -65,6 +65,11 @@ export namespace Particles {
 		}
 	}
 
+	export interface ParticleSimulationItem {
+		particle: Particle;
+		influences: Particle[];
+	}
+
 	/**
 	 * Simulate the positions of particles that are influencing each other.
 	 * The particle  coordinates can only be from a given set of points.
@@ -74,12 +79,12 @@ export namespace Particles {
 	 * In case of marker simulation the points represent the posible centers of the marker
 	 * from which the marker angle can be calculated.
 	 */
-	export function updatePointIndexes(data: [Particle, Particle[]][]) {
+	export function updatePointIndexes(items: Array<ParticleSimulationItem>): boolean {
 		// Run simulation step
 		let stable = true;
 
-		for (let i = 0; i < data.length; i++) {
-			const [particle, particleForces] = data[i];
+		for (let i = 0; i < items.length; i++) {
+			const { particle, influences } = items[i];
 
 			const index = particle.index;
 			const center = particle.center;
@@ -100,26 +105,25 @@ export namespace Particles {
 			let currPointForce: number = 0;
 			let nextPointForce: number = 0;
 
-			for (let j = 0; j < particleForces.length; j++) {
-				const fParticle = particleForces[j];
-				const fIndex = fParticle.index;
-				const fCenter = fParticle.center;
-				const fWidth = fParticle.width;
-				const fHeight = fParticle.height;
+			for (let j = 0; j < influences.length; j++) {
+				const particleI = influences[j];
+				const indexI = particleI.index;
+				const centerI = particleI.center;
+				const widthI = particleI.width;
+				const heightI = particleI.height;
+				const pointIx = centerI.x + widthI * Angle.RADIANS_COS[indexI];
+				const pointIy = centerI.y + heightI * Angle.RADIANS_SIN[indexI];
 
-				const fPointX = fCenter.x + fWidth * Angle.RADIANS_COS[fIndex];
-				const fPointY = fCenter.y + fHeight * Angle.RADIANS_SIN[fIndex];
-
-				const prevDx = prevPointX - fPointX;
-				const prevDy = prevPointY - fPointY;
+				const prevDx = prevPointX - pointIx;
+				const prevDy = prevPointY - pointIy;
 				prevPointForce += 1 / (prevDx * prevDx + prevDy * prevDy);
 
-				const currDx = currPointX - fPointX;
-				const currDy = currPointY - fPointY;
+				const currDx = currPointX - pointIx;
+				const currDy = currPointY - pointIy;
 				currPointForce += 1 / (currDx * currDx + currDy * currDy);
 
-				const nextDx = nextPointX - fPointX;
-				const nextDy = nextPointY - fPointY;
+				const nextDx = nextPointX - pointIx;
+				const nextDy = nextPointY - pointIy;
 				nextPointForce += 1 / (nextDx * nextDx + nextDy * nextDy);
 			}
 
@@ -129,30 +133,31 @@ export namespace Particles {
 			// If minimal force is on the right, direction is right
 			if (nextPointForce < currPointForce && nextPointForce < prevPointForce) direction = +1;
 
-			// Move particle point index in the direction of the minimal force
-			particle.index = getIndex(index, direction);
-
-			// If at least one particle moved, the simulation is not stable
-			if (direction !== 0) stable = false;
+			if (direction != 0) {
+				// Move particle point index in the direction of the minimal force
+				particle.index = getIndex(index, direction);
+				// If at least one particle moved, the simulation is not stable
+				stable = false;
+			}
 		}
 
 		return stable;
 	}
 
-	export function initializePointIndexes(data: [Particle, Particle[]][]) {
-		for (let i = 0; i < data.length; i++) {
-			const [particle, particleForces] = data[i];
+	export function initializePointIndexes(items: Array<ParticleSimulationItem>) {
+		for (let i = 0; i < items.length; i++) {
+			const { particle, influences } = items[i];
 			const center = particle.center;
 
 			let forceX: number = 0;
 			let forceY: number = 0;
 
-			for (let j = 0; j < particleForces.length; j++) {
-				const fParticle = particleForces[j];
-				const fCenter = fParticle.center;
+			for (let j = 0; j < influences.length; j++) {
+				const particleI = influences[j];
+				const centerI = particleI.center;
 
-				const dx = center.x - fCenter.x;
-				const dy = center.y - fCenter.y;
+				const dx = center.x - centerI.x;
+				const dy = center.y - centerI.y;
 				if (dx == 0 && dy == 0) continue;
 
 				const distance = Math.sqrt(dx * dx + dy * dy);

@@ -13,7 +13,7 @@
 		MapBox: 'mapbox',
 		Google: 'google'
 	};
-	let mode: string = Mode.MapBox;
+	let mode: string = Mode.MapLibre;
 
 	let mapElement: HTMLElement;
 	let mapProvider: MapProvider;

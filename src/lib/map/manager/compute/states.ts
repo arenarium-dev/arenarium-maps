@@ -18,7 +18,7 @@ namespace Nodes {
 		}
 	}
 
-	export class Node {
+	export class Node implements Particles.ParticleSimulationItem {
 		// PROPERTIES
 		/** The index of the node in the nodes array. */
 		index: number;
@@ -42,10 +42,14 @@ namespace Nodes {
 		angle: number;
 		/** The bounds of the tooltip node. */
 		bounds: Bounds;
-		/** A tooltip node has a particle whose position is used to calculate the angle */
-		particle: Particles.Particle;
 		/** The neighbours of the tooltip node. */
 		neighbours: Array<Node>;
+
+		// SIMULATION
+		/** A node has a particle whose position is used to calculate the angle */
+		particle: Particles.Particle;
+		/** The particles that influence the node particle. */
+		influences: Particles.Particle[];
 
 		constructor(parameters: MapProviderParameters, input: MapTooltipStateInput, index: number) {
 			const projection = Mercator.project(input.lat, input.lng, parameters.mapSize);
@@ -59,16 +63,19 @@ namespace Nodes {
 			this.y = projection.y;
 			this.width = width;
 			this.height = height;
+
 			this.expanded = true;
 			this.angle = Angles.DEFAULT;
 			this.bounds = this.getBounds(1);
+			this.neighbours = new Array<Node>();
+
 			this.particle = new Particles.Particle(
 				{ x: projection.x, y: projection.y },
 				this.getParticleWidth(1),
 				this.getParticleHeight(1),
 				Angles.DEGREES.indexOf(Angles.DEFAULT)
 			);
-			this.neighbours = new Array<Node>();
+			this.influences = [];
 		}
 
 		private getBounds(scale: number): Bounds {
@@ -161,7 +168,7 @@ namespace Nodes {
 	export function createNeighbourDeltas(zoom: Zoom, nodes: Array<Node>): NodeNeighbourDeltas {
 		// Create array of neighbours deltas for each node
 		// at each zoom level
-		const nodesNeighbourDeltas = new Array<Array<Array<Node>>>();
+		const nodesNeighbourDeltas: NodeNeighbourDeltas = new Array<Array<Array<Node>>>();
 
 		for (let i = 0; i < nodes.length; i++) {
 			nodesNeighbourDeltas[i] = new Array<Array<Node>>();
@@ -255,6 +262,7 @@ namespace Nodes {
 			// If the node is not expanded, clear neighbours
 			if (node.expanded == false) {
 				node.neighbours.length = 0;
+				node.influences.length = 0;
 				continue;
 			}
 
@@ -268,6 +276,7 @@ namespace Nodes {
 				if (neighbour.expanded == false) continue;
 
 				node.neighbours.push(neighbour);
+				node.influences.push(neighbour.particle);
 			}
 		}
 	}
@@ -421,7 +430,7 @@ namespace Nodes {
 	export namespace Simulation {
 		export function initializeAngles(nodes: Array<Node>) {
 			const particles = nodes.map((n) => n.particle);
-			Particles.initializePointIndexes(particles.map((n) => [n, particles]));
+			Particles.initializePointIndexes(particles.map((n) => ({ particle: n, influences: particles })));
 
 			for (let i = 0; i < nodes.length; i++) {
 				const node = nodes[i];
@@ -430,7 +439,7 @@ namespace Nodes {
 		}
 
 		export function updateAngles(nodes: Array<Node>) {
-			const stable = Particles.updatePointIndexes(nodes.map((n) => [n.particle, n.neighbours.map((n) => n.particle)]));
+			const stable = Particles.updatePointIndexes(nodes);
 
 			for (let i = 0; i < nodes.length; i++) {
 				const node = nodes[i];
