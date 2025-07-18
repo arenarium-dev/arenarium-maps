@@ -46,6 +46,12 @@
 			"import": "./dist/google.es.js",
 			"require": "./dist/google.cjs.js"
 		},
+		"./utils": {
+			"types": "./dist/utils.d.ts",
+			"svelte": "./dist/utils.es.js",
+			"import": "./dist/utils.es.js",
+			"require": "./dist/utils.cjs.js"
+		},
 		"./dist/style.css": {
 			"import": "./dist/style.css",
 			"require": "./dist/style.css"
