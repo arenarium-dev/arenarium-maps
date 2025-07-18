@@ -1,6 +1,6 @@
 import { Angles } from '$lib/map/constants.js';
 
-export namespace Particles {
+export namespace Simulation {
 	export namespace Angle {
 		export const RADIANS = Angles.DEGREES.map((d) => (d * Math.PI) / 180);
 		export const RADIANS_COS = RADIANS.map((r) => Math.cos(r));
@@ -65,7 +65,7 @@ export namespace Particles {
 		}
 	}
 
-	export interface ParticleSimulationItem {
+	export interface Item {
 		particle: Particle;
 		influences: Particle[];
 	}
@@ -79,7 +79,7 @@ export namespace Particles {
 	 * In case of marker simulation the points represent the posible centers of the marker
 	 * from which the marker angle can be calculated.
 	 */
-	export function updatePointIndexes(items: Array<ParticleSimulationItem>): boolean {
+	export function updatePointIndexes(items: Array<Item>): boolean {
 		// Run simulation step
 		let stable = true;
 
@@ -144,7 +144,7 @@ export namespace Particles {
 		return stable;
 	}
 
-	export function initializePointIndexes(items: Array<ParticleSimulationItem>) {
+	export function initializePointIndexes(items: Array<Item>) {
 		for (let i = 0; i < items.length; i++) {
 			const { particle, influences } = items[i];
 			const center = particle.center;

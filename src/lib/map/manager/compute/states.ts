@@ -1,4 +1,4 @@
-import { Particles } from '$lib/map/manager/compute/particles.js';
+import { Simulation } from '$lib/map/manager/compute/simulation.js';
 import { Bounds } from '$lib/map/manager/compute/bounds.js';
 
 import { Rectangle } from '$lib/map/rectangle.js';
@@ -18,7 +18,7 @@ namespace Nodes {
 		}
 	}
 
-	export class Node implements Particles.ParticleSimulationItem {
+	export class Node implements Simulation.Item {
 		// PROPERTIES
 		/** The index of the node in the nodes array. */
 		index: number;
@@ -47,9 +47,9 @@ namespace Nodes {
 
 		// SIMULATION
 		/** A node has a particle whose position is used to calculate the angle */
-		particle: Particles.Particle;
+		particle: Simulation.Particle;
 		/** The particles that influence the node particle. */
-		influences: Particles.Particle[];
+		influences: Simulation.Particle[];
 
 		constructor(parameters: MapProviderParameters, input: MapTooltipStateInput, index: number) {
 			const projection = Mercator.project(input.lat, input.lng, parameters.mapSize);
@@ -69,7 +69,7 @@ namespace Nodes {
 			this.bounds = this.getBounds(1);
 			this.neighbours = new Array<Node>();
 
-			this.particle = new Particles.Particle(
+			this.particle = new Simulation.Particle(
 				{ x: projection.x, y: projection.y },
 				this.getParticleWidth(1),
 				this.getParticleHeight(1),
@@ -427,10 +427,10 @@ namespace Nodes {
 		return false;
 	}
 
-	export namespace Simulation {
+	export namespace Particles {
 		export function initializeAngles(nodes: Array<Node>) {
 			const particles = nodes.map((n) => n.particle);
-			Particles.initializePointIndexes(particles.map((n) => ({ particle: n, influences: particles })));
+			Simulation.initializePointIndexes(particles.map((n) => ({ particle: n, influences: particles })));
 
 			for (let i = 0; i < nodes.length; i++) {
 				const node = nodes[i];
@@ -439,7 +439,7 @@ namespace Nodes {
 		}
 
 		export function updateAngles(nodes: Array<Node>) {
-			const stable = Particles.updatePointIndexes(nodes);
+			const stable = Simulation.updatePointIndexes(nodes);
 
 			for (let i = 0; i < nodes.length; i++) {
 				const node = nodes[i];
@@ -476,7 +476,7 @@ function getStates(parameters: MapProviderParameters, data: Array<MapTooltipStat
 	const zoomMax = nodesZoom.getMax(nodeNeighbourDeltas);
 
 	// Initialize angles
-	Nodes.Simulation.initializeAngles(nodes);
+	Nodes.Particles.initializeAngles(nodes);
 	// Initially add the last threshold event
 	Nodes.updateTooltips(nodes, tooltips, nodesZoom.addSteps(nodesZoom.max, 1));
 
@@ -495,7 +495,7 @@ function getStates(parameters: MapProviderParameters, data: Array<MapTooltipStat
 			// Update node bounds
 			Nodes.updateBounds(graph, zoomScale);
 			// Update the simulation for a given zoom level
-			Nodes.Simulation.updateParticles(graph, zoomScale);
+			Nodes.Particles.updateParticles(graph, zoomScale);
 
 			// Get graph overlaps with neighbours
 			const overlaps = Nodes.getOverlaps(graph);
@@ -509,7 +509,7 @@ function getStates(parameters: MapProviderParameters, data: Array<MapTooltipStat
 
 				while (true) {
 					// Update node angles in the simulation
-					const simStable = Nodes.Simulation.updateAngles(overlapsArray);
+					const simStable = Nodes.Particles.updateAngles(overlapsArray);
 					// Update node bounds after angle update
 					Nodes.updateBounds(overlapsArray, zoomScale);
 
