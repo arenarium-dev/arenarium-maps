@@ -18,7 +18,8 @@ import {
 	type MapProviderMarker,
 	type MapBodyCallback,
 	type MapBounds,
-	type Log
+	type Log,
+	type LogLevel
 } from '$lib/map/schemas.js';
 
 class MapManager {
@@ -47,7 +48,7 @@ class MapManager {
 
 		this.configuration = mapConfiguration;
 
-		this.log('[CLIENT] Map manager created');
+		this.log('info', '[CLIENT] Map manager created');
 	}
 
 	public set configuration(configuration: MapConfiguration | undefined) {
@@ -118,7 +119,7 @@ class MapManager {
 			this.removeMarkerData();
 
 			if (error instanceof Error) {
-				this.log('[CLIENT] Failed to update markers', { message: error.message, stack: error.stack });
+				this.log('error', '[CLIENT] Failed to update markers', error);
 			}
 
 			throw error;
@@ -132,7 +133,7 @@ class MapManager {
 			console.error(error);
 
 			if (error instanceof Error) {
-				this.log('[CLIENT] Failed to remove markers', { message: error.message, stack: error.stack });
+				this.log('error', '[CLIENT] Failed to remove markers', error);
 			}
 
 			throw error;
@@ -156,7 +157,7 @@ class MapManager {
 			}
 
 			if (error instanceof Error) {
-				this.log('[CLIENT] Failed to show popup', { message: error.message, stack: error.stack });
+				this.log('error', '[CLIENT] Failed to show popup', error);
 			}
 
 			throw error;
@@ -183,7 +184,7 @@ class MapManager {
 			}
 
 			if (error instanceof Error) {
-				this.log('[CLIENT] Failed to hide popup', { message: error.message, stack: error.stack });
+				this.log('error', '[CLIENT] Failed to hide popup', error);
 			}
 
 			throw error;
@@ -242,7 +243,7 @@ class MapManager {
 			this.markerDataMap.clear();
 
 			if (error instanceof Error) {
-				this.log('[CLIENT] Failed to update marker data', { message: error.message, stack: error.stack });
+				this.log('error', '[CLIENT] Failed to update marker data', error);
 			}
 
 			throw error;
@@ -265,7 +266,7 @@ class MapManager {
 			console.error(error);
 
 			if (error instanceof Error) {
-				this.log('[CLIENT] Failed to remove marker data', { message: error.message, stack: error.stack });
+				this.log('error', '[CLIENT] Failed to remove marker data', error);
 			}
 
 			throw error;
@@ -285,7 +286,7 @@ class MapManager {
 			console.error(error);
 
 			if (error instanceof Error) {
-				this.log('[CLIENT] Failed to process marker data', { message: error.message, stack: error.stack });
+				this.log('error', '[CLIENT] Failed to process marker data', error);
 			}
 		}
 	}
@@ -303,13 +304,14 @@ class MapManager {
 		this.markerPinProcessor.process(mapBounds, mapZoom);
 	}
 
-	private async log(title: string, content?: any) {
-		if (this.apiLogEnabled == false) return;
+	private async log(level: LogLevel, title: string, content?: any) {
 		if (this.apiLogEnabled == undefined && window?.location.host.startsWith('localhost')) return;
+		if (this.apiLogEnabled == false) return;
 
 		try {
 			const log: Log = {
 				title,
+				level,
 				content
 			};
 

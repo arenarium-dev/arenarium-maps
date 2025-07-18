@@ -154,9 +154,13 @@ export type MapTooltipStatesRequest = z.infer<typeof mapTooltipStatesRequestSche
 
 // Log
 
+export const logLevelSchema = z.enum(['info', 'warn', 'error']);
+
 export const logSchema = z.object({
 	title: z.string(),
+	level: logLevelSchema,
 	content: z.any()
 });
 
 export type Log = z.infer<typeof logSchema>;
+export type LogLevel = z.infer<typeof logLevelSchema>;
