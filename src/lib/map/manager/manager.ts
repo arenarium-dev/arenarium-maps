@@ -27,7 +27,7 @@ class MapManager {
 
 	private apiStatesUrl: string | undefined;
 	private apiStatesKey: string | undefined;
-	private apiLogEnabled: boolean | undefined;
+	private apiLogEnabled: 'true' | 'false' | 'undefined' = 'undefined';
 
 	private markerDataArray = new Array<MapMarkerData>();
 	private markerDataMap = new Map<string, MapMarkerData>();
@@ -54,7 +54,7 @@ class MapManager {
 	public set configuration(configuration: MapConfiguration | undefined) {
 		this.apiStatesUrl = configuration?.api?.states?.url;
 		this.apiStatesKey = configuration?.api?.states?.key;
-		this.apiLogEnabled = configuration?.api?.log?.enabled;
+		this.apiLogEnabled = configuration?.api?.log ? (configuration.api.log.enabled ? 'true' : 'false') : 'undefined';
 
 		this.markerPinProcessor.setConfiguration(configuration);
 
@@ -305,8 +305,8 @@ class MapManager {
 	}
 
 	private async log(level: LogLevel, title: string, content?: any) {
-		if (this.apiLogEnabled == undefined && window?.location.host.startsWith('localhost')) return;
-		if (this.apiLogEnabled == false) return;
+		if (this.apiLogEnabled === 'undefined' && window?.location.host.startsWith('localhost')) return;
+		if (this.apiLogEnabled === 'false') return;
 
 		try {
 			const log: Log = {
