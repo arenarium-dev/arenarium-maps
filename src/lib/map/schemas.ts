@@ -19,19 +19,21 @@ export const mapConfigurationSchema = z.object({
 				.optional()
 		})
 		.optional(),
-	api: z.object({
-		states: z
-			.object({
-				url: z.string(),
-				key: z.string()
-			})
-			.optional(),
-		log: z
-			.object({
-				enabled: z.boolean()
-			})
-			.optional()
-	})
+	api: z
+		.object({
+			states: z
+				.object({
+					url: z.string(),
+					key: z.string()
+				})
+				.optional(),
+			log: z
+				.object({
+					enabled: z.boolean()
+				})
+				.optional()
+		})
+		.optional()
 });
 
 export type MapConfiguration = z.infer<typeof mapConfigurationSchema>;
