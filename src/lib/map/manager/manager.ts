@@ -1,5 +1,4 @@
 import { mount } from 'svelte';
-import { dev } from '$app/environment';
 
 import MapPinComponent from '$lib/components/Pin.svelte';
 import MapTooltipComponent from '$lib/components/Tooltip.svelte';
@@ -305,7 +304,7 @@ class MapManager {
 	}
 
 	private async log(title: string, content?: any) {
-		if (this.apiLogEnabled == false || dev == true) return;
+		if (this.apiLogEnabled == false || window?.location.host.startsWith('localhost')) return;
 
 		try {
 			const log: Log = {
