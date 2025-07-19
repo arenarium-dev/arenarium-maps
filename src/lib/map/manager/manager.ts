@@ -26,10 +26,13 @@ const API_URL = 'https://arenarium.dev/api/public/v1';
 const API_LOG_URL = `${API_URL}/log`;
 const API_TOOLTIP_STATES_URL = `${API_URL}/tooltip/states`;
 
+const VERSION = import.meta.env.VITE_LIBRARY_VERSION;
+
 class MapManager {
 	private provider: MapProvider;
 
-	private apiKey: string | undefined;
+	private apiStatesUrl: string | undefined;
+	private apiStatesKey: string | undefined;
 	private apiLogEnabled: boolean | undefined;
 
 	private markerDataArray = new Array<MapMarkerData>();
@@ -51,11 +54,12 @@ class MapManager {
 
 		this.configuration = mapConfiguration;
 
-		this.log('info', '[CLIENT] Map manager created');
+		this.log('info', 'Loaded');
 	}
 
 	public set configuration(configuration: MapConfiguration | undefined) {
-		this.apiKey = configuration?.api?.key;
+		this.apiStatesUrl = configuration?.api?.states?.url;
+		this.apiStatesKey = configuration?.api?.states?.key;
 		this.apiLogEnabled = configuration?.api?.log?.enabled;
 
 		this.markerPinProcessor.setConfiguration(configuration);
@@ -83,13 +87,13 @@ class MapManager {
 				}));
 
 				// If states api is configured, get states from api
-				if (this.apiKey != undefined) {
+				if (this.apiStatesKey != undefined) {
 					const tooltipStatesRequest: MapTooltipStatesRequest = {
-						key: this.apiKey,
+						key: this.apiStatesKey,
 						parameters: this.provider.parameters,
 						input: tooltipStatesInput
 					};
-					const tooltipStatesResponse = await fetch(API_TOOLTIP_STATES_URL, {
+					const tooltipStatesResponse = await fetch(this.apiStatesUrl ?? API_TOOLTIP_STATES_URL, {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify(tooltipStatesRequest)
@@ -121,7 +125,7 @@ class MapManager {
 			this.removeMarkerData();
 
 			if (error instanceof Error) {
-				this.log('error', '[CLIENT] Failed to update markers', error);
+				this.log('error', 'Failed to update markers', error);
 			}
 
 			throw error;
@@ -135,7 +139,7 @@ class MapManager {
 			console.error(error);
 
 			if (error instanceof Error) {
-				this.log('error', '[CLIENT] Failed to remove markers', error);
+				this.log('error', 'Failed to remove markers', error);
 			}
 
 			throw error;
@@ -159,7 +163,7 @@ class MapManager {
 			}
 
 			if (error instanceof Error) {
-				this.log('error', '[CLIENT] Failed to show popup', error);
+				this.log('error', 'Failed to show popup', error);
 			}
 
 			throw error;
@@ -186,7 +190,7 @@ class MapManager {
 			}
 
 			if (error instanceof Error) {
-				this.log('error', '[CLIENT] Failed to hide popup', error);
+				this.log('error', 'Failed to hide popup', error);
 			}
 
 			throw error;
@@ -245,7 +249,7 @@ class MapManager {
 			this.markerDataMap.clear();
 
 			if (error instanceof Error) {
-				this.log('error', '[CLIENT] Failed to update marker data', error);
+				this.log('error', 'Failed to update marker data', error);
 			}
 
 			throw error;
@@ -268,7 +272,7 @@ class MapManager {
 			console.error(error);
 
 			if (error instanceof Error) {
-				this.log('error', '[CLIENT] Failed to remove marker data', error);
+				this.log('error', 'Failed to remove marker data', error);
 			}
 
 			throw error;
@@ -288,7 +292,7 @@ class MapManager {
 			console.error(error);
 
 			if (error instanceof Error) {
-				this.log('error', '[CLIENT] Failed to process marker data', error);
+				this.log('error', 'Failed to process marker data', error);
 			}
 		}
 	}
@@ -311,7 +315,14 @@ class MapManager {
 		if (this.apiLogEnabled == false) return;
 
 		try {
-			const log: Log = { title, level, content };
+			const log: Log = {
+				title: `[CLIENT:${VERSION}] ${title}`,
+				level,
+				content: {
+					version: VERSION,
+					...content
+				}
+			};
 
 			await fetch(API_LOG_URL, {
 				method: 'POST',
