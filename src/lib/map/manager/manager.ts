@@ -22,11 +22,14 @@ import {
 	type LogLevel
 } from '$lib/map/schemas.js';
 
+const API_URL = 'https://arenarium.dev/api/public/v1';
+const API_LOG_URL = `${API_URL}/log`;
+const API_TOOLTIP_STATES_URL = `${API_URL}/tooltip/states`;
+
 class MapManager {
 	private provider: MapProvider;
 
-	private apiStatesUrl: string | undefined;
-	private apiStatesKey: string | undefined;
+	private apiKey: string | undefined;
 	private apiLogEnabled: boolean | undefined;
 
 	private markerDataArray = new Array<MapMarkerData>();
@@ -52,8 +55,7 @@ class MapManager {
 	}
 
 	public set configuration(configuration: MapConfiguration | undefined) {
-		this.apiStatesUrl = configuration?.api?.states?.url;
-		this.apiStatesKey = configuration?.api?.states?.key;
+		this.apiKey = configuration?.api?.key;
 		this.apiLogEnabled = configuration?.api?.log?.enabled;
 
 		this.markerPinProcessor.setConfiguration(configuration);
@@ -81,13 +83,13 @@ class MapManager {
 				}));
 
 				// If states api is configured, get states from api
-				if (this.apiStatesUrl != undefined && this.apiStatesKey != undefined) {
+				if (this.apiKey != undefined) {
 					const tooltipStatesRequest: MapTooltipStatesRequest = {
-						key: this.apiStatesKey,
+						key: this.apiKey,
 						parameters: this.provider.parameters,
 						input: tooltipStatesInput
 					};
-					const tooltipStatesResponse = await fetch(this.apiStatesUrl, {
+					const tooltipStatesResponse = await fetch(API_TOOLTIP_STATES_URL, {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify(tooltipStatesRequest)
@@ -309,13 +311,9 @@ class MapManager {
 		if (this.apiLogEnabled == false) return;
 
 		try {
-			const log: Log = {
-				title,
-				level,
-				content
-			};
+			const log: Log = { title, level, content };
 
-			await fetch('https://arenarium.dev/api/public/v1/log', {
+			await fetch(API_LOG_URL, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(log)

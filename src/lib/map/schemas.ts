@@ -21,12 +21,7 @@ export const mapConfigurationSchema = z.object({
 		.optional(),
 	api: z
 		.object({
-			states: z
-				.object({
-					url: z.string(),
-					key: z.string()
-				})
-				.optional(),
+			key: z.string().optional(),
 			log: z
 				.object({
 					enabled: z.boolean()
