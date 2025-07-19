@@ -283,6 +283,34 @@ You can change the markers style by using the predefined CSS variables:
 
 Some events and errors are logged to via the api. These logs are used for debugging and monitoring purposes in order to improve the library. To enable or disable logging, set the `api.log.enabled` property to `true` or `false` in the map configuration. By default, logging is disabled for development environments.
 
+```js
+const mapManager = new MapManager(mapProvider, {
+    api: {
+        log: {
+            enabled: false
+        }
+    }
+});
+```
+
+## API (WIP)
+
+While the library works out of the box, it is recommended to use the API for calculating the marker states. The calculations can be compute intensive and api could offer a more standerdized performance, and benefits from caching.
+
+To use the API, create an API key at https://arenarium.dev/keys, use the domains field to whitelist the domains you want to use the API for. Then when initializing the map manager, provide the api key:
+
+```js
+const mapManager = new MapManager(mapProvider, {
+    api: {
+        states: {
+            key: 'YOUR_API_KEY'
+        }
+    }
+});
+```
+
+For more information about the API, please feel free to reach out.
+
 # Examples
 
 [https://github.com/arenarium-dev/arenarium-maps-svelte-kit-example](https://github.com/arenarium-dev/arenarium-maps-svelte-kit-example)
