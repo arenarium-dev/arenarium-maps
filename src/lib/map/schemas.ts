@@ -1,170 +1,161 @@
-import * as v from 'valibot';
+import { z } from 'zod';
 
 // Configuration
 
-export const mapConfigurationSchema = v.object({
-	pin: v.optional(
-		v.object({
-			fade: v.optional(v.boolean()),
-			maxCount: v.optional(v.number()),
-			maxZoom: v.optional(v.number())
+export const mapConfigurationSchema = z.object({
+	pin: z
+		.object({
+			fade: z.boolean().optional(),
+			maxCount: z.number().optional(),
+			maxZoom: z.number().optional()
 		})
-	),
-	animation: v.optional(
-		v.object({
-			queue: v.optional(
-				v.object({
-					limit: v.optional(v.number())
+		.optional(),
+	animation: z
+		.object({
+			queue: z
+				.object({
+					limit: z.number().optional()
 				})
-			)
+				.optional()
 		})
-	),
-	api: v.optional(
-		v.object({
-			key: v.optional(v.string()),
-			log: v.optional(
-				v.object({
-					enabled: v.optional(v.boolean())
+		.optional(),
+	api: z
+		.object({
+			key: z.string().optional(),
+			log: z
+				.object({
+					enabled: z.boolean()
 				})
-			)
+				.optional()
 		})
-	)
+		.optional()
 });
 
-export type MapConfiguration = v.InferOutput<typeof mapConfigurationSchema>;
+export type MapConfiguration = z.infer<typeof mapConfigurationSchema>;
 
 // Map
 
-export const mapLatitudeSchema = v.pipe(v.number(), v.minValue(-90), v.maxValue(90));
-export const mapLongitudeSchema = v.pipe(v.number(), v.minValue(-180), v.maxValue(180));
-export const mapBoundsSchema = v.object({
-	sw: v.object({ lat: mapLatitudeSchema, lng: mapLongitudeSchema }),
-	ne: v.object({ lat: mapLatitudeSchema, lng: mapLongitudeSchema })
+export const mapLatitudeSchema = z.number().min(-90).max(90);
+export const mapLongitudeSchema = z.number().min(-180).max(180);
+export const mapBoundsSchema = z.object({
+	sw: z.object({ lat: mapLatitudeSchema, lng: mapLongitudeSchema }),
+	ne: z.object({ lat: mapLatitudeSchema, lng: mapLongitudeSchema })
 });
-export const mapHtmlElementSchema = v.custom<HTMLElement>((data) => data instanceof HTMLElement);
+export const mapHtmlElementSchema = z.any().refine((element) => element instanceof HTMLElement, 'Must be an HTMLElement');
 
-export const mapProviderParametersSchema = v.object({
-	mapSize: v.number(),
-	zoomMin: v.number(),
-	zoomMax: v.number(),
-	zoomScale: v.number()
-});
-
-export const mapProviderMarkerSchema = v.object({
-	instance: v.any(),
-	inserted: v.pipe(v.function(), v.returns(v.boolean())),
-	insert: v.pipe(v.function(), v.returns(v.void())),
-	remove: v.pipe(v.function(), v.returns(v.void())),
-	update: v.pipe(v.function(), v.args(v.tuple([v.number()])), v.returns(v.void()))
+export const mapProviderParametersSchema = z.object({
+	mapSize: z.number(),
+	zoomMin: z.number(),
+	zoomMax: z.number(),
+	zoomScale: z.number()
 });
 
-export const mapProviderSchema = v.object({
+export const mapProviderMarkerSchema = z.object({
+	instance: z.any(),
+	inserted: z.function().returns(z.boolean()),
+	insert: z.function().returns(z.void()),
+	remove: z.function().returns(z.void()),
+	update: z.function().args(z.number()).returns(z.void())
+});
+
+export const mapProviderSchema = z.object({
 	parameters: mapProviderParametersSchema,
-	getContainer: v.pipe(v.function(), v.returns(mapHtmlElementSchema)),
-	getZoom: v.pipe(v.function(), v.returns(v.number())),
-	getBounds: v.pipe(v.function(), v.returns(mapBoundsSchema)),
-	panBy: v.pipe(v.function(), v.args(v.tuple([v.number(), v.number()])), v.returns(v.void())),
-	createMarker: v.pipe(
-		v.function(),
-		v.args(v.tuple([mapHtmlElementSchema, mapLatitudeSchema, mapLongitudeSchema, v.number()])),
-		v.returns(mapProviderMarkerSchema)
-	)
+	getContainer: z.function().args().returns(mapHtmlElementSchema),
+	getZoom: z.function().args().returns(z.number()),
+	getBounds: z.function().args().returns(mapBoundsSchema),
+	panBy: z.function().args(z.number(), z.number()).returns(z.void()),
+	createMarker: z.function().args(mapHtmlElementSchema, mapLatitudeSchema, mapLongitudeSchema, z.number()).returns(mapProviderMarkerSchema)
 });
 
-export type MapLatitude = v.InferOutput<typeof mapLatitudeSchema>;
-export type MapLongitude = v.InferOutput<typeof mapLongitudeSchema>;
-export type MapBounds = v.InferOutput<typeof mapBoundsSchema>;
-export type MapHtmlElement = v.InferOutput<typeof mapHtmlElementSchema>;
-export type MapProvider = v.InferOutput<typeof mapProviderSchema>;
-export type MapProviderMarker = v.InferOutput<typeof mapProviderMarkerSchema>;
-export type MapProviderParameters = v.InferOutput<typeof mapProviderParametersSchema>;
+export type MapLatitude = z.infer<typeof mapLatitudeSchema>;
+export type MapLongitude = z.infer<typeof mapLongitudeSchema>;
+export type MapBounds = z.infer<typeof mapBoundsSchema>;
+export type MapHtmlElement = z.infer<typeof mapHtmlElementSchema>;
+export type MapProvider = z.infer<typeof mapProviderSchema>;
+export type MapProviderMarker = z.infer<typeof mapProviderMarkerSchema>;
+export type MapProviderParameters = z.infer<typeof mapProviderParametersSchema>;
 
 // Markers
 
-export const mapBodyCallbackSchema = v.pipe(
-	v.function(),
-	v.args(v.tuple([v.string()])),
-	v.returns(v.custom<Promise<HTMLElement>>((data) => data instanceof Promise))
-);
+export const mapBodyCallbackSchema = z.function().args(z.string()).returns(z.promise(mapHtmlElementSchema));
 
-export const mapMarkerSchema = v.object({
-	id: v.pipe(v.string(), v.minLength(1)),
-	rank: v.number(),
-	lat: mapLatitudeSchema,
-	lng: mapLongitudeSchema,
-	tooltip: v.object({
-		style: v.pipe(
-			v.object({
-				width: v.number(),
-				height: v.number(),
-				margin: v.number(),
-				radius: v.number()
-			}),
-			v.check((data) => Math.min(data.width, data.height) / data.margin >= 5, 'Tooltip width and height must be at least 5 times the margin')
-		),
+export const mapMarkerSchema = z.object({
+	id: z.string().min(1),
+	rank: z.number(),
+	lat: z.number().min(-90).max(90),
+	lng: z.number().min(-180).max(180),
+	tooltip: z.object({
+		style: z
+			.object({
+				width: z.number(),
+				height: z.number(),
+				margin: z.number(),
+				radius: z.number()
+			})
+			.refine((data) => Math.min(data.width, data.height) / data.margin >= 5, 'Tooltip width and height must be at least 5 times the margin'),
 		body: mapBodyCallbackSchema
 	}),
-	pin: v.optional(
-		v.object({
-			style: v.object({
-				width: v.number(),
-				height: v.number(),
-				radius: v.number()
+	pin: z
+		.object({
+			style: z.object({
+				width: z.number(),
+				height: z.number(),
+				radius: z.number()
 			}),
 			body: mapBodyCallbackSchema
 		})
-	),
-	popup: v.optional(
-		v.object({
-			style: v.object({
-				width: v.number(),
-				height: v.number(),
-				radius: v.number(),
-				margin: v.number()
+		.optional(),
+	popup: z
+		.object({
+			style: z.object({
+				width: z.number(),
+				height: z.number(),
+				radius: z.number(),
+				margin: z.number()
 			}),
 			body: mapBodyCallbackSchema
 		})
-	)
+		.optional()
 });
 
-export const mapMarkersSchema = v.array(mapMarkerSchema);
+export const mapMarkersSchema = z.array(mapMarkerSchema);
 
-export type MapBodyCallback = v.InferOutput<typeof mapBodyCallbackSchema>;
-export type MapMarker = v.InferOutput<typeof mapMarkerSchema>;
+export type MapBodyCallback = z.infer<typeof mapBodyCallbackSchema>;
+export type MapMarker = z.infer<typeof mapMarkerSchema>;
 
 // Tooltip states
 
-export const mapTooltipStateSchema = v.tuple([v.number(), v.array(v.tuple([v.number(), v.number()]))]);
+export const mapTooltipStateSchema = z.tuple([z.number(), z.array(z.tuple([z.number(), z.number()]))]);
 
-export const mapTooltipStateInputSchema = v.object({
-	id: v.string(),
-	rank: v.number(),
-	lat: v.number(),
-	lng: v.number(),
-	width: v.number(),
-	height: v.number(),
-	margin: v.number()
+export const mapTooltipStateInputSchema = z.object({
+	id: z.string(),
+	rank: z.number(),
+	lat: z.number(),
+	lng: z.number(),
+	width: z.number(),
+	height: z.number(),
+	margin: z.number()
 });
 
-export const mapTooltipStatesRequestSchema = v.object({
-	key: v.string(),
+export const mapTooltipStatesRequestSchema = z.object({
+	key: z.string(),
 	parameters: mapProviderParametersSchema,
-	input: v.array(mapTooltipStateInputSchema)
+	input: z.array(mapTooltipStateInputSchema)
 });
 
-export type MapTooltipState = v.InferOutput<typeof mapTooltipStateSchema>;
-export type MapTooltipStateInput = v.InferOutput<typeof mapTooltipStateInputSchema>;
-export type MapTooltipStatesRequest = v.InferOutput<typeof mapTooltipStatesRequestSchema>;
+export type MapTooltipState = z.infer<typeof mapTooltipStateSchema>;
+export type MapTooltipStateInput = z.infer<typeof mapTooltipStateInputSchema>;
+export type MapTooltipStatesRequest = z.infer<typeof mapTooltipStatesRequestSchema>;
 
 // Log
 
-export const logLevelSchema = v.picklist(['info', 'warn', 'error']);
+export const logLevelSchema = z.enum(['info', 'warn', 'error']);
 
-export const logSchema = v.object({
-	title: v.string(),
+export const logSchema = z.object({
+	title: z.string(),
 	level: logLevelSchema,
-	content: v.any()
+	content: z.any()
 });
 
-export type Log = v.InferOutput<typeof logSchema>;
-export type LogLevel = v.InferOutput<typeof logLevelSchema>;
+export type Log = z.infer<typeof logSchema>;
+export type LogLevel = z.infer<typeof logLevelSchema>;

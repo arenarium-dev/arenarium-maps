@@ -22,8 +22,6 @@ import {
 	type LogLevel
 } from '$lib/map/schemas.js';
 
-import { parse } from 'valibot';
-
 const API_URL = 'https://arenarium.dev/api/public/v1';
 const API_LOG_URL = `${API_URL}/log`;
 const API_TOOLTIP_STATES_URL = `${API_URL}/tooltip/states`;
@@ -43,7 +41,7 @@ class MapManager {
 	private markerPopupProcessor: MapPopupProcessor;
 
 	constructor(mapProvider: MapProvider, mapConfiguration?: MapConfiguration) {
-		parse(mapProviderSchema, mapProvider);
+		mapProviderSchema.parse(mapProvider);
 
 		this.provider = mapProvider;
 
@@ -67,7 +65,7 @@ class MapManager {
 
 	public async updateMarkers(markers: MapMarker[]) {
 		// Validate markers
-		parse(mapMarkersSchema, markers);
+		mapMarkersSchema.parse(markers);
 
 		try {
 			let tooltipStates: MapTooltipState[];
