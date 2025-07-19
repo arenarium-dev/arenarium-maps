@@ -22,6 +22,8 @@ import {
 	type LogLevel
 } from '$lib/map/schemas.js';
 
+import { parse } from 'valibot';
+
 const API_URL = 'https://arenarium.dev/api/public/v1';
 const API_LOG_URL = `${API_URL}/log`;
 const API_TOOLTIP_STATES_URL = `${API_URL}/tooltip/states`;
@@ -41,7 +43,7 @@ class MapManager {
 	private markerPopupProcessor: MapPopupProcessor;
 
 	constructor(mapProvider: MapProvider, mapConfiguration?: MapConfiguration) {
-		mapProviderSchema.parse(mapProvider);
+		parse(mapProviderSchema, mapProvider);
 
 		this.provider = mapProvider;
 
@@ -65,7 +67,7 @@ class MapManager {
 
 	public async updateMarkers(markers: MapMarker[]) {
 		// Validate markers
-		await mapMarkersSchema.parseAsync(markers);
+		parse(mapMarkersSchema, markers);
 
 		try {
 			let tooltipStates: MapTooltipState[];
@@ -492,7 +494,13 @@ class MapPinElement extends MapElement<ReturnType<typeof MapPinComponent>> {
 
 		this.bodyLoading = true;
 		this.bodyCallback(this.id)
-			.then((content) => body.appendChild(content))
+			.then((content) => {
+				if (content instanceof HTMLElement) {
+					body.appendChild(content);
+				} else {
+					console.error('Failed to load pin body');
+				}
+			})
 			.catch((error) => console.error(error))
 			.finally(() => {
 				this.bodyLoaded = true;
@@ -689,7 +697,13 @@ class MapTooltipElement extends MapElement<ReturnType<typeof MapTooltipComponent
 		// Load body callback
 		this.bodyLoading = true;
 		this.bodyCallback(this.id)
-			.then((content) => body.appendChild(content))
+			.then((content) => {
+				if (content instanceof HTMLElement) {
+					body.appendChild(content);
+				} else {
+					console.error('Failed to load tooltip body');
+				}
+			})
 			.catch((error) => console.error(error))
 			.finally(() => {
 				this.bodyLoaded = true;
@@ -852,7 +866,13 @@ class MapPopupElement extends MapElement<ReturnType<typeof MapTooltipComponent>>
 		// Load body callback
 		this.bodyLoading = true;
 		this.bodyCallback(this.id)
-			.then((content) => body.appendChild(content))
+			.then((content) => {
+				if (content instanceof HTMLElement) {
+					body.appendChild(content);
+				} else {
+					console.error('Failed to load popup body');
+				}
+			})
 			.catch((error) => console.error(error))
 			.finally(() => {
 				this.bodyLoaded = true;

@@ -111,7 +111,7 @@
 		}
 	},
 	"dependencies": {
-		"zod": "^3.25.76"
+		"valibot": "^1.1.0"
 	},
 	"scripts": {
 		"format": "prettier --write .",
