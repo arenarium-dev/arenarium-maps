@@ -293,7 +293,7 @@ const mapManager = new MapManager(mapProvider, {
 });
 ```
 
-## API (WIP)
+## API
 
 While the library works out of the box, it is recommended to use the API for calculating the marker states. The calculations can be compute intensive and api could offer a more standerdized performance, and benefits from caching.
 
