@@ -77,6 +77,8 @@
 
 	import { MapboxProvider } from '$lib/mapbox.js';
 
+	import { PUBLIC_MAP_BOX_API_KEY } from '$env/static/public';
+
 	let mapbox: mapboxgl.Map;
 
 	async function loadMapbox() {
@@ -84,7 +86,7 @@
 		await import('mapbox-gl/dist/mapbox-gl.css');
 
 		const mapBoxProvider = new MapboxProvider(mapboxgl.Map, mapboxgl.Marker, {
-			accessToken: 'pk.eyJ1IjoibWFya29zbWlsamEiLCJhIjoiY21kMWd0eGQ3MHdmcTJucXc4c3Y4aWpuNiJ9._cgpGqjzVaG99x6LjIYl2w',
+			accessToken: PUBLIC_MAP_BOX_API_KEY,
 			container: mapElement,
 			center: { lat: 51.505, lng: -0.09 },
 			style: 'mapbox://styles/mapbox/streets-v11',
@@ -112,6 +114,8 @@
 	import { getStates } from '$lib/map/manager/compute/states.js';
 	import { testStates } from '$lib/map/manager/compute/test.js';
 
+	import { PUBLIC_GOOGLE_MAPS_API_KEY } from '$env/static/public';
+
 	let mapGoogle: google.maps.Map;
 	let mapOverlayView: google.maps.OverlayView;
 
@@ -120,7 +124,7 @@
 
 	async function loadGoogle() {
 		const loader = new Loader({
-			apiKey: 'AIzaSyCt6ERDLY4Hx5b6LEBQFPYJbRq9teByXyk',
+			apiKey: PUBLIC_GOOGLE_MAPS_API_KEY,
 			version: 'weekly'
 		});
 
