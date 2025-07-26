@@ -41,7 +41,7 @@ namespace Tooltips {
 		}
 	}
 
-	export class Tooltip implements Bounds.Overlappable, Simulation.Item {
+	export class Tooltip implements Bounds.Overlappable, Simulation.Runnable {
 		// PROPERTIES
 		/** The id of the tooltip that this tooltip represents. */
 		id: string = '';
@@ -66,14 +66,14 @@ namespace Tooltips {
 		/** The angle of the tooltip. */
 		angle: number = Angles.DEGREES_DEFAULT;
 		/** The neighbours of the tooltip. */
-		neighbours: Array<Tooltip>;
+		neighbours: Array<Tooltip> = new Array<Tooltip>();
 
 		// BOUNDS
 		//* Scaled distances to edges of the tooltip bounds */
 		distances: Bounds.Distances = { left: NaN, right: NaN, top: NaN, bottom: NaN };
 
 		/** A tooltip has a particle whose position is used to calculate the angle */
-		particle: Simulation.Particle;
+		particle: Simulation.Particle = { index: Angles.DEGREES.indexOf(Angles.DEGREES_DEFAULT), distX: NaN, distY: NaN };
 
 		constructor(parameters: MapProviderParameters, input: MapTooltipStateInput, index: number) {
 			const projection = Mercator.project(input.lat, input.lng, parameters.mapSize);
@@ -85,9 +85,6 @@ namespace Tooltips {
 			this.y = projection.y;
 			this.width = input.width + 2 * input.margin;
 			this.height = input.height + 2 * input.margin;
-
-			this.neighbours = new Array<Tooltip>();
-			this.particle = new Simulation.Particle(projection.x, projection.y, NaN, NaN, Angles.DEGREES.indexOf(Angles.DEGREES_DEFAULT));
 		}
 
 		public updateScale(scale: number) {
@@ -249,7 +246,6 @@ namespace Tooltips {
 			// If the tooltip is not expanded, clear neighbours
 			if (tooltip.expanded == false) {
 				tooltip.neighbours.length = 0;
-				tooltip.particle.neighbours.length = 0;
 				continue;
 			}
 
@@ -263,7 +259,6 @@ namespace Tooltips {
 				if (neighbour.expanded == false) continue;
 
 				tooltip.neighbours.push(neighbour);
-				tooltip.particle.neighbours.push(neighbour.particle);
 			}
 		}
 	}
@@ -279,7 +274,6 @@ namespace Tooltips {
 			const neighbourTooltipIndex = neighbour.neighbours.indexOf(tooltip);
 
 			neighbour.neighbours.splice(neighbourTooltipIndex, 1);
-			neighbour.particle.neighbours.splice(neighbourTooltipIndex, 1);
 		}
 	}
 

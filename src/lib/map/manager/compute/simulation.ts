@@ -5,32 +5,24 @@ export namespace Simulation {
 	const RADIANS_COS = RADIANS.map((r) => Math.cos(r));
 	const RADIANS_SIN = RADIANS.map((r) => Math.sin(r));
 
-	export class Particle {
-		/** The center x coordinate of the particle. */
-		x: number;
-		/** The center y coordinate of the particle. */
-		y: number;
+	export interface Particle {
+		/** The index of the particle position in the points array. */
+		index: number;
 		/** The distance x of the rectangle of possible positions of the particle. */
 		distX: number;
 		/** The distance y of the rectangle of possible positions of the particle. */
 		distY: number;
-		/** The index of the particle position in the points array. */
-		index: number;
-		/** The particles that influence the particle. */
-		neighbours: Particle[];
-
-		constructor(x: number, y: number, distX: number, distY: number, index: number) {
-			this.x = x;
-			this.y = y;
-			this.distX = distX;
-			this.distY = distY;
-			this.index = index;
-			this.neighbours = [];
-		}
 	}
 
-	export interface Item {
+	export interface Runnable {
+		/** The center x coordinate of the particle. */
+		x: number;
+		/** The center y coordinate of the particle. */
+		y: number;
+		/** The particle state. */
 		particle: Particle;
+		/** The particles that influence the particle. */
+		neighbours: Runnable[];
 	}
 
 	function getAngleForceQuadrantIndex(forceX: number, forceY: number) {
@@ -87,20 +79,20 @@ export namespace Simulation {
 	 * In case of marker simulation the points represent the posible centers of the marker
 	 * from which the marker angle can be calculated.
 	 */
-	export function updateAngleIndexes(item: Array<Item>): boolean {
+	export function updateAngleIndexes(items: Array<Runnable>): boolean {
 		// Run simulation step
 		let stable = true;
 
-		for (let i = 0; i < item.length; i++) {
-			const particle = item[i].particle;
-			const influences = particle.neighbours;
+		for (let i = 0; i < items.length; i++) {
+			const item = items[i];
+			const particle = item.particle;
 
-			const index = particle.index;
-			const x = particle.x;
-			const y = particle.y;
+			const x = item.x;
+			const y = item.y;
 			const distX = particle.distX;
 			const distY = particle.distY;
-
+			
+			const index = particle.index;
 			const prevIndex = getAngleIndex(index, -1);
 			const nextIndex = getAngleIndex(index, +1);
 
@@ -115,11 +107,13 @@ export namespace Simulation {
 			let currPointForce: number = 0;
 			let nextPointForce: number = 0;
 
-			for (let j = 0; j < influences.length; j++) {
-				const particleI = influences[j];
+			const neighbours = item.neighbours;
+			for (let j = 0; j < neighbours.length; j++) {
+				const itemI = neighbours[j];
+				const particleI = itemI.particle;
 
-				const xI = particleI.x;
-				const yI = particleI.y;
+				const xI = itemI.x;
+				const yI = itemI.y;
 				const distXI = particleI.distX;
 				const distYI = particleI.distY;
 
@@ -157,19 +151,19 @@ export namespace Simulation {
 		return stable;
 	}
 
-	export function initializeAngleIndexes(items: Array<Item>) {
+	export function initializeAngleIndexes(items: Array<Runnable>) {
 		for (let i = 0; i < items.length; i++) {
-			const particle = items[i].particle;
-			const x = particle.x;
-			const y = particle.y;
+			const item = items[i];
+			const x = item.x;
+			const y = item.y;
 
 			let forceX: number = 0;
 			let forceY: number = 0;
 
 			for (let j = 0; j < items.length; j++) {
-				const particleF = items[j].particle;
-				const xF = particleF.x;
-				const yF = particleF.y;
+				const itemF = items[j];
+				const xF = itemF.x;
+				const yF = itemF.y;
 
 				const dx = x - xF;
 				const dy = y - yF;
@@ -184,7 +178,7 @@ export namespace Simulation {
 				forceY += -(force * dy) / distance;
 			}
 
-			particle.index = getAngleForceIndex(forceX, forceY);
+			item.particle.index = getAngleForceIndex(forceX, forceY);
 		}
 	}
 }
