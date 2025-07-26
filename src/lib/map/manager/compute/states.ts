@@ -7,8 +7,8 @@ import { Mercator } from '$lib/map/mercator.js';
 import { Angles } from '$lib/map/constants.js';
 import type { MapProviderParameters, MapTooltipState, MapTooltipStateInput } from '$lib/map/schemas.js';
 
-namespace Nodes {
-	export class Tooltip {
+namespace Tooltips {
+	export class State {
 		zoomAfterExpanded: number;
 		zoomAfterAngleIndexes: [number, number][];
 
@@ -41,37 +41,37 @@ namespace Nodes {
 		}
 	}
 
-	export class Node implements Simulation.Item {
+	export class Tooltip implements Simulation.Item {
 		// PROPERTIES
-		/** The index of the node in the nodes array. */
+		/** The index of the tooltip in the tooltips array. */
 		index: number;
-		/** The id of the tooltip that this node represents. */
+		/** The id of the tooltip that this tooltip represents. */
 		id: string;
-		/** The rank of the tooltip node. */
+		/** The rank of the tooltip tooltip. */
 		rank: number;
-		/** The x coordinate of the tooltip node. */
+		/** The x coordinate of the tooltip tooltip. */
 		x: number;
-		/** The y coordinate of the tooltip node. */
+		/** The y coordinate of the tooltip tooltip. */
 		y: number;
-		/** The width of the tooltip node. */
+		/** The width of the tooltip tooltip. */
 		width: number;
-		/** The height of the tooltip node. */
+		/** The height of the tooltip tooltip. */
 		height: number;
 
 		// STATE
 		/** State of the tooltip expanded or not. */
 		expanded: boolean;
-		/** The angle of the tooltip node. */
+		/** The angle of the tooltip. */
 		angle: number;
-		/** The bounds of the tooltip node. */
+		/** The bounds of the tooltip. */
 		bounds: Bounds;
-		/** The neighbours of the tooltip node. */
-		neighbours: Array<Node>;
+		/** The neighbours of the tooltip. */
+		neighbours: Array<Tooltip>;
 
 		// SIMULATION
-		/** A node has a particle whose position is used to calculate the angle */
+		/** A tooltip has a particle whose position is used to calculate the angle */
 		particle: Simulation.Particle;
-		/** The particles that influence the node particle. */
+		/** The particles that influence the tooltip particle. */
 		influences: Simulation.Particle[];
 
 		constructor(parameters: MapProviderParameters, input: MapTooltipStateInput, index: number) {
@@ -90,7 +90,7 @@ namespace Nodes {
 			this.expanded = true;
 			this.angle = Angles.DEFAULT;
 			this.bounds = this.getBounds(1);
-			this.neighbours = new Array<Node>();
+			this.neighbours = new Array<Tooltip>();
 
 			this.particle = new Simulation.Particle(
 				{ x: projection.x, y: projection.y },
@@ -136,66 +136,66 @@ namespace Nodes {
 		}
 	}
 
-	export type NodeNeighbourDeltas = Array<Array<Array<Node>>>;
+	export type TooltipNeighbourDeltas = Array<Array<Array<Tooltip>>>;
 
-	export interface NodeNeighbours {
+	export interface TooltipNeighbours {
 		maxZwt: number;
-		deltas: NodeNeighbourDeltas;
+		deltas: TooltipNeighbourDeltas;
 	}
 
-	export function createNodes(parameters: MapProviderParameters, input: Array<MapTooltipStateInput>): Array<Node> {
-		let nodes = new Array<Node>(input.length);
+	export function createTooltips(parameters: MapProviderParameters, input: Array<MapTooltipStateInput>): Array<Tooltip> {
+		let tooltips = new Array<Tooltip>(input.length);
 
-		// Create tooltip nodes
+		// Create tooltip tooltips
 		for (let i = 0; i < input.length; i++) {
-			nodes[i] = new Node(parameters, input[i], i);
+			tooltips[i] = new Tooltip(parameters, input[i], i);
 		}
 
-		return nodes;
+		return tooltips;
 	}
 
-	export function createNodesNeighbours(zoom: Zoom, nodes: Array<Node>): NodeNeighbours {
-		// Create array of neighbours deltas for each node
+	export function createTooltipsNeighbours(zoom: Zoom, tooltips: Array<Tooltip>): TooltipNeighbours {
+		// Create array of neighbours deltas for each tooltip
 		// at each zoom level
-		let nodesNeighbourDeltas: NodeNeighbourDeltas = new Array<Array<Array<Node>>>();
-		let nodesNeighbourMaxZwt = 0;
+		let tooltipsNeighbourDeltas: TooltipNeighbourDeltas = new Array<Array<Array<Tooltip>>>();
+		let tooltipsNeighbourMaxZwt = 0;
 
-		for (let i = 0; i < nodes.length; i++) {
-			nodesNeighbourDeltas[i] = new Array<Array<Node>>();
+		for (let i = 0; i < tooltips.length; i++) {
+			tooltipsNeighbourDeltas[i] = new Array<Array<Tooltip>>();
 		}
 
 		// Create tooltip connection bounds of influence,
 		// bounds are the maximum rectangle where the tooltip can be positioned
-		const bounds = new Array<Bounds>(nodes.length);
+		const bounds = new Array<Bounds>(tooltips.length);
 
-		for (let i = 0; i < nodes.length; i++) {
-			const node = nodes[i];
+		for (let i = 0; i < tooltips.length; i++) {
+			const tooltip = tooltips[i];
 
 			bounds[i] = {
-				x: node.x,
-				y: node.y,
-				left: node.width,
-				right: node.width,
-				top: node.height,
-				bottom: node.height
+				x: tooltip.x,
+				y: tooltip.y,
+				left: tooltip.width,
+				right: tooltip.width,
+				top: tooltip.height,
+				bottom: tooltip.height
 			};
 		}
 
 		// Calculate tooltip connections zoom when touching,
 		// the zoom when touching is the maximum zoom level at
 		// which the tooltips influencing each others position (angle, expanded, etc.)
-		for (let i1 = 0; i1 < nodes.length; i1++) {
-			const node1 = nodes[i1];
+		for (let i1 = 0; i1 < tooltips.length; i1++) {
+			const tooltip1 = tooltips[i1];
 			const bounds1 = bounds[i1];
-			const neighboursDeltas1 = nodesNeighbourDeltas[i1];
+			const neighboursDeltas1 = tooltipsNeighbourDeltas[i1];
 
-			for (let i2 = i1 + 1; i2 < nodes.length; i2++) {
-				const node2 = nodes[i2];
+			for (let i2 = i1 + 1; i2 < tooltips.length; i2++) {
+				const tooltip2 = tooltips[i2];
 				const bounds2 = bounds[i2];
-				const neighboursDeltas2 = nodesNeighbourDeltas[i2];
+				const neighboursDeltas2 = tooltipsNeighbourDeltas[i2];
 
 				const zwt = Bounds.getZoomWhenTouching(bounds1, bounds2);
-				if (zwt > nodesNeighbourMaxZwt) nodesNeighbourMaxZwt = zwt;
+				if (zwt > tooltipsNeighbourMaxZwt) tooltipsNeighbourMaxZwt = zwt;
 
 				const zoomIndex = zoom.getIndex(zwt);
 				if (zoomIndex == undefined) continue;
@@ -203,40 +203,40 @@ namespace Nodes {
 				const zoomNeighbourDelta1 = neighboursDeltas1[zoomIndex];
 				const zoomNeighbourDelta2 = neighboursDeltas2[zoomIndex];
 
-				if (zoomNeighbourDelta1) zoomNeighbourDelta1.push(node2);
-				else neighboursDeltas1[zoomIndex] = [node2];
+				if (zoomNeighbourDelta1) zoomNeighbourDelta1.push(tooltip2);
+				else neighboursDeltas1[zoomIndex] = [tooltip2];
 
-				if (zoomNeighbourDelta2) zoomNeighbourDelta2.push(node1);
-				else neighboursDeltas2[zoomIndex] = [node1];
+				if (zoomNeighbourDelta2) zoomNeighbourDelta2.push(tooltip1);
+				else neighboursDeltas2[zoomIndex] = [tooltip1];
 			}
 		}
 
 		return {
-			maxZwt: nodesNeighbourMaxZwt,
-			deltas: nodesNeighbourDeltas
+			maxZwt: tooltipsNeighbourMaxZwt,
+			deltas: tooltipsNeighbourDeltas
 		};
 	}
 
-	export function getNeighbourGraphs(nodes: Array<Node>): Array<Array<Node>> {
-		const visited = new Set<Node>();
-		const graphs: Node[][] = [];
+	export function getNeighbourGraphs(tooltips: Array<Tooltip>): Array<Array<Tooltip>> {
+		const visited = new Set<Tooltip>();
+		const graphs: Tooltip[][] = [];
 
-		for (let i = 0; i < nodes.length; i++) {
-			let node = nodes[i];
-			if (node.expanded == false) continue;
-			if (node.neighbours.length == 0) continue;
+		for (let i = 0; i < tooltips.length; i++) {
+			let tooltip = tooltips[i];
+			if (tooltip.expanded == false) continue;
+			if (tooltip.neighbours.length == 0) continue;
 
-			if (visited.has(node)) continue;
-			visited.add(node);
+			if (visited.has(tooltip)) continue;
+			visited.add(tooltip);
 
-			const graph: Node[] = [];
-			const stack: Node[] = [node];
+			const graph: Tooltip[] = [];
+			const stack: Tooltip[] = [tooltip];
 
 			while (stack.length > 0) {
-				const stackNode = stack.pop()!;
-				graph.push(stackNode);
+				const stackTooltip = stack.pop()!;
+				graph.push(stackTooltip);
 
-				for (const neighbour of stackNode.neighbours) {
+				for (const neighbour of stackTooltip.neighbours) {
 					if (visited.has(neighbour)) continue;
 
 					visited.add(neighbour);
@@ -250,96 +250,96 @@ namespace Nodes {
 		return graphs;
 	}
 
-	export function updateNeighbours(nodes: Array<Node>, nodesNeighbourDeltas: NodeNeighbourDeltas, zoomIndex: number) {
-		for (let i = 0; i < nodes.length; i++) {
-			let node = nodes[i];
+	export function updateNeighbours(tooltips: Array<Tooltip>, tooltipsNeighbourDeltas: TooltipNeighbourDeltas, zoomIndex: number) {
+		for (let i = 0; i < tooltips.length; i++) {
+			let tooltip = tooltips[i];
 
-			// If the node is not expanded, clear neighbours
-			if (node.expanded == false) {
-				node.neighbours.length = 0;
-				node.influences.length = 0;
+			// If the tooltip is not expanded, clear neighbours
+			if (tooltip.expanded == false) {
+				tooltip.neighbours.length = 0;
+				tooltip.influences.length = 0;
 				continue;
 			}
 
 			// Else, add neighbours based on delta at zoom level
-			const nodeNeighbourDeltas = nodesNeighbourDeltas[i];
-			const zoomNeighbourDelta = nodeNeighbourDeltas[zoomIndex];
+			const tooltipNeighbourDeltas = tooltipsNeighbourDeltas[i];
+			const zoomNeighbourDelta = tooltipNeighbourDeltas[zoomIndex];
 			if (zoomNeighbourDelta == undefined) continue;
 
 			for (let j = 0; j < zoomNeighbourDelta.length; j++) {
 				const neighbour = zoomNeighbourDelta[j];
 				if (neighbour.expanded == false) continue;
 
-				node.neighbours.push(neighbour);
-				node.influences.push(neighbour.particle);
+				tooltip.neighbours.push(neighbour);
+				tooltip.influences.push(neighbour.particle);
 			}
 		}
 	}
 
-	export function updateCollapsed(node: Node) {
-		// Set node expanded to false
-		node.expanded = false;
+	export function updateCollapsed(tooltip: Tooltip) {
+		// Set tooltip expanded to false
+		tooltip.expanded = false;
 
-		// Remove node from neighbours
-		const nodeNeighbours = node.neighbours;
-		for (let i = 0; i < nodeNeighbours.length; i++) {
-			const neighbour = nodeNeighbours[i];
-			const neighbourNodeIndex = neighbour.neighbours.indexOf(node);
+		// Remove tooltip from neighbours
+		const tooltipNeighbours = tooltip.neighbours;
+		for (let i = 0; i < tooltipNeighbours.length; i++) {
+			const neighbour = tooltipNeighbours[i];
+			const neighbourTooltipIndex = neighbour.neighbours.indexOf(tooltip);
 
-			neighbour.neighbours.splice(neighbourNodeIndex, 1);
-			neighbour.influences.splice(neighbourNodeIndex, 1);
+			neighbour.neighbours.splice(neighbourTooltipIndex, 1);
+			neighbour.influences.splice(neighbourTooltipIndex, 1);
 		}
 	}
 
-	export function updateTooltips(nodes: Array<Node>, tooltips: Map<string, Tooltip>, zoom: number) {
-		for (let i = 0; i < nodes.length; i++) {
-			const node = nodes[i];
-			if (node.expanded == false) continue;
+	export function updateStates(tooltips: Array<Tooltip>, states: Map<string, State>, zoom: number) {
+		for (let i = 0; i < tooltips.length; i++) {
+			const tooltip = tooltips[i];
+			if (tooltip.expanded == false) continue;
 
-			const tooltip = tooltips.get(node.id);
-			if (!tooltip) throw new Error('Tooltip not found');
+			const state = states.get(tooltip.id);
+			if (!state) throw new Error('Tooltip not found');
 
 			// Update tooltip zoom when expanded
-			tooltip.zoomAfterExpanded = zoom;
+			state.zoomAfterExpanded = zoom;
 
 			// Update tooltip angles
 			// If the last angle value is different from the new angle value, add the new angle
 			// (ang[0] = threshold, ang[1] = angle index)
-			const angleIndex = Angles.DEGREES.indexOf(node.angle);
+			const angleIndex = Angles.DEGREES.indexOf(tooltip.angle);
 
-			if (tooltip.zoomAfterAngleIndexes.length == 0) {
-				tooltip.zoomAfterAngleIndexes.push([zoom, angleIndex]);
+			if (state.zoomAfterAngleIndexes.length == 0) {
+				state.zoomAfterAngleIndexes.push([zoom, angleIndex]);
 			} else {
-				if (tooltip.zoomAfterAngleIndexes[0][1] != angleIndex) {
-					tooltip.zoomAfterAngleIndexes.unshift([zoom, angleIndex]);
+				if (state.zoomAfterAngleIndexes[0][1] != angleIndex) {
+					state.zoomAfterAngleIndexes.unshift([zoom, angleIndex]);
 				} else {
-					tooltip.zoomAfterAngleIndexes[0][0] = zoom;
+					state.zoomAfterAngleIndexes[0][0] = zoom;
 				}
 			}
 		}
 	}
 
-	export function updateBounds(nodes: Array<Node>, scale: number) {
-		for (let i = 0; i < nodes.length; i++) {
-			nodes[i].updateBounds(scale);
+	export function updateBounds(tooltips: Array<Tooltip>, scale: number) {
+		for (let i = 0; i < tooltips.length; i++) {
+			tooltips[i].updateBounds(scale);
 		}
 	}
 
-	export function getOverlaps(nodes: Array<Node>): Set<Node> {
-		const overlaps = new Set<Node>();
+	export function getOverlaps(tooltips: Array<Tooltip>): Set<Tooltip> {
+		const overlaps = new Set<Tooltip>();
 
-		for (let i = 0; i < nodes.length; i++) {
-			const node1 = nodes[i];
-			const bounds1 = node1.bounds;
-			const neighbours1 = nodes[i].neighbours;
+		for (let i = 0; i < tooltips.length; i++) {
+			const tooltip1 = tooltips[i];
+			const bounds1 = tooltip1.bounds;
+			const neighbours1 = tooltips[i].neighbours;
 
 			for (let j = 0; j < neighbours1.length; j++) {
-				const node2 = neighbours1[j];
-				const bounds2 = node2.bounds;
+				const tooltip2 = neighbours1[j];
+				const bounds2 = tooltip2.bounds;
 
 				if (Bounds.areOverlaping(bounds2, bounds1)) {
-					overlaps.add(node1);
-					overlaps.add(node2);
+					overlaps.add(tooltip1);
+					overlaps.add(tooltip2);
 				}
 			}
 		}
@@ -347,25 +347,25 @@ namespace Nodes {
 		return overlaps;
 	}
 
-	export function updateOverlaps(overlaps: Set<Node>, nodes: Array<Node>) {
+	export function updateOverlaps(overlaps: Set<Tooltip>, tooltips: Array<Tooltip>) {
 		let updated = false;
 
-		for (let i = 0; i < nodes.length; i++) {
-			const node1 = nodes[i];
-			const bounds1 = node1.bounds;
-			const neighbours1 = nodes[i].neighbours;
+		for (let i = 0; i < tooltips.length; i++) {
+			const tooltip1 = tooltips[i];
+			const bounds1 = tooltip1.bounds;
+			const neighbours1 = tooltips[i].neighbours;
 
 			for (let j = 0; j < neighbours1.length; j++) {
-				const node2 = neighbours1[j];
-				const bounds2 = node2.bounds;
+				const tooltip2 = neighbours1[j];
+				const bounds2 = tooltip2.bounds;
 
 				if (Bounds.areOverlaping(bounds2, bounds1)) {
-					if (!overlaps.has(node1)) {
-						overlaps.add(node1);
+					if (!overlaps.has(tooltip1)) {
+						overlaps.add(tooltip1);
 						updated = true;
 					}
-					if (!overlaps.has(node2)) {
-						overlaps.add(node2);
+					if (!overlaps.has(tooltip2)) {
+						overlaps.add(tooltip2);
 						updated = true;
 					}
 				}
@@ -375,23 +375,23 @@ namespace Nodes {
 		return updated;
 	}
 
-	export function getOverlapsWorstNode(nodes: Array<Node>): Node | undefined {
-		let worstNode: Node | undefined = undefined;
+	export function getOverlapsWorstTooltip(tooltips: Array<Tooltip>): Tooltip | undefined {
+		let worstTooltip: Tooltip | undefined = undefined;
 		let worstScore = 0;
 
-		for (let i = 0; i < nodes.length; i++) {
-			const node1 = nodes[i];
-			const bounds1 = node1.bounds;
-			const neighbours1 = nodes[i].neighbours;
+		for (let i = 0; i < tooltips.length; i++) {
+			const tooltip1 = tooltips[i];
+			const bounds1 = tooltip1.bounds;
+			const neighbours1 = tooltips[i].neighbours;
 
 			let score = 0;
 
 			for (let j = 0; j < neighbours1.length; j++) {
-				const node2 = neighbours1[j];
-				const bounds2 = node2.bounds;
+				const tooltip2 = neighbours1[j];
+				const bounds2 = tooltip2.bounds;
 
 				if (Bounds.areOverlaping(bounds2, bounds1)) {
-					score += 1 + (node2.rank - node1.rank);
+					score += 1 + (tooltip2.rank - tooltip1.rank);
 				}
 			}
 
@@ -399,21 +399,21 @@ namespace Nodes {
 
 			if (score > worstScore) {
 				worstScore = score;
-				worstNode = node1;
+				worstTooltip = tooltip1;
 			}
 		}
 
-		return worstNode;
+		return worstTooltip;
 	}
 
-	export function areOverlaping(nodes: Array<Node>): boolean {
-		for (let i = 0; i < nodes.length; i++) {
-			const node1 = nodes[i];
-			const bounds1 = node1.bounds;
+	export function areOverlaping(tooltips: Array<Tooltip>): boolean {
+		for (let i = 0; i < tooltips.length; i++) {
+			const tooltip1 = tooltips[i];
+			const bounds1 = tooltip1.bounds;
 
-			for (let j = i + 1; j < nodes.length; j++) {
-				const node2 = nodes[j];
-				const bounds2 = node2.bounds;
+			for (let j = i + 1; j < tooltips.length; j++) {
+				const tooltip2 = tooltips[j];
+				const bounds2 = tooltip2.bounds;
 
 				if (Bounds.areOverlaping(bounds2, bounds1)) {
 					return true;
@@ -425,123 +425,123 @@ namespace Nodes {
 	}
 
 	export namespace Particles {
-		export function initializeAngles(nodes: Array<Node>) {
-			const particles = nodes.map((n) => n.particle);
+		export function initializeAngles(tooltips: Array<Tooltip>) {
+			const particles = tooltips.map((n) => n.particle);
 			Simulation.initializePointIndexes(particles.map((n) => ({ particle: n, influences: particles })));
 
-			for (let i = 0; i < nodes.length; i++) {
-				const node = nodes[i];
-				node.angle = Angles.DEGREES[node.particle.index];
+			for (let i = 0; i < tooltips.length; i++) {
+				const tooltip = tooltips[i];
+				tooltip.angle = Angles.DEGREES[tooltip.particle.index];
 			}
 		}
 
-		export function updateAngles(nodes: Array<Node>) {
-			const stable = Simulation.updatePointIndexes(nodes);
+		export function updateAngles(tooltips: Array<Tooltip>) {
+			const stable = Simulation.updatePointIndexes(tooltips);
 
-			for (let i = 0; i < nodes.length; i++) {
-				const node = nodes[i];
-				node.angle = Angles.DEGREES[node.particle.index];
+			for (let i = 0; i < tooltips.length; i++) {
+				const tooltip = tooltips[i];
+				tooltip.angle = Angles.DEGREES[tooltip.particle.index];
 			}
 
 			return stable;
 		}
 
-		export function updateParticles(nodes: Array<Node>, scale: number) {
-			for (let i = 0; i < nodes.length; i++) {
-				const node = nodes[i];
-				node.updateParticle(scale);
+		export function updateParticles(tooltips: Array<Tooltip>, scale: number) {
+			for (let i = 0; i < tooltips.length; i++) {
+				const tooltip = tooltips[i];
+				tooltip.updateParticle(scale);
 			}
 		}
 	}
 }
 
 function getStates(parameters: MapProviderParameters, data: Array<MapTooltipStateInput>): MapTooltipState[] {
-	const nodesZoom = new Nodes.Zoom(parameters);
+	const tooltipsZoom = new Tooltips.Zoom(parameters);
 
 	if (data.length == 0) return [];
-	if (data.length == 1) return [[nodesZoom.min, [[nodesZoom.min, Angles.DEGREES.indexOf(Angles.DEFAULT)]]]];
+	if (data.length == 1) return [[tooltipsZoom.min, [[tooltipsZoom.min, Angles.DEGREES.indexOf(Angles.DEFAULT)]]]];
 
 	// Initialize tooltips
-	const tooltips = new Map<string, Nodes.Tooltip>(data.map((p) => [p.id, new Nodes.Tooltip()]));
+	const tooltipStates = new Map<string, Tooltips.State>(data.map((p) => [p.id, new Tooltips.State()]));
 
-	// Initialze nodes
-	const nodes = Nodes.createNodes(parameters, data);
-	const nodesNeighbours = Nodes.createNodesNeighbours(nodesZoom, nodes);
+	// Initialze tooltips
+	const tooltips = Tooltips.createTooltips(parameters, data);
+	const tooltipsNeighbours = Tooltips.createTooltipsNeighbours(tooltipsZoom, tooltips);
 
 	// Initialize angles
-	Nodes.Particles.initializeAngles(nodes);
+	Tooltips.Particles.initializeAngles(tooltips);
 	// Initially add the last threshold event
-	Nodes.updateTooltips(nodes, tooltips, nodesZoom.addSteps(nodesZoom.max, 1));
+	Tooltips.updateStates(tooltips, tooltipStates, tooltipsZoom.addSteps(tooltipsZoom.max, 1));
 
 	// If there is no neighbours, return the default state
-	const zoomMaxIndex = nodesZoom.getIndex(nodesNeighbours.maxZwt);
-	if (zoomMaxIndex == undefined) return Array.from(tooltips.values()).map((s) => [s.zoomAfterExpanded, s.zoomAfterAngleIndexes]);
+	const zoomMaxIndex = tooltipsZoom.getIndex(tooltipsNeighbours.maxZwt);
+	if (zoomMaxIndex == undefined) return Array.from(tooltipStates.values()).map((s) => [s.zoomAfterExpanded, s.zoomAfterAngleIndexes]);
 
 	// Initialize zoom
-	const zoomMin = nodesZoom.min;
-	const zoomMax = zoomMaxIndex / nodesZoom.scale;
+	const zoomMin = tooltipsZoom.min;
+	const zoomMax = zoomMaxIndex / tooltipsZoom.scale;
 
 	// Go from last to first zoom
-	for (let zoom = zoomMax; zoom >= zoomMin; zoom = nodesZoom.addSteps(zoom, -1)) {
+	for (let zoom = zoomMax; zoom >= zoomMin; zoom = tooltipsZoom.addSteps(zoom, -1)) {
 		// Calculate scale
 		const zoomScale = Math.pow(2, zoom);
-		const zoomIndex = Math.round(zoom * nodesZoom.scale);
+		const zoomIndex = Math.round(zoom * tooltipsZoom.scale);
 
-		// Update expanded nodes neighbours
-		Nodes.updateNeighbours(nodes, nodesNeighbours.deltas, zoomIndex);
-		// Get expanded node graphs
-		const graphs = Nodes.getNeighbourGraphs(nodes);
+		// Update expanded tooltips neighbours
+		Tooltips.updateNeighbours(tooltips, tooltipsNeighbours.deltas, zoomIndex);
+		// Get expanded tooltip graphs
+		const graphs = Tooltips.getNeighbourGraphs(tooltips);
 
 		for (const graph of graphs) {
-			// Update node bounds
-			Nodes.updateBounds(graph, zoomScale);
+			// Update tooltip bounds
+			Tooltips.updateBounds(graph, zoomScale);
 			// Update the simulation for a given zoom level
-			Nodes.Particles.updateParticles(graph, zoomScale);
+			Tooltips.Particles.updateParticles(graph, zoomScale);
 
 			// Get graph overlaps with neighbours
-			const overlaps = Nodes.getOverlaps(graph);
+			const overlaps = Tooltips.getOverlaps(graph);
 
-			// Remove overlaping nodes from the set
-			// until there is no overlaping nodes
+			// Remove overlaping tooltips from the set
+			// until there is no overlaping tooltips
 			while (overlaps.size > 1) {
 				// Run the simulation loop
-				// to update the angles of the nodes
+				// to update the angles of the tooltips
 				const overlapsArray = Array.from(overlaps);
 
 				while (true) {
-					// Update node angles in the simulation
-					const simStable = Nodes.Particles.updateAngles(overlapsArray);
-					// Update node bounds after angle update
-					Nodes.updateBounds(overlapsArray, zoomScale);
+					// Update tooltip angles in the simulation
+					const simStable = Tooltips.Particles.updateAngles(overlapsArray);
+					// Update tooltip bounds after angle update
+					Tooltips.updateBounds(overlapsArray, zoomScale);
 
 					// If the simulation is stable break
 					if (simStable == true) break;
-					// If there are no overlaping nodes after simulation break
-					if (Nodes.areOverlaping(overlapsArray) == false) break;
+					// If there are no overlaping tooltips after simulation break
+					if (Tooltips.areOverlaping(overlapsArray) == false) break;
 				}
 
 				// Update overlaps with neighbours set after angle update
 				// to check for new overlaps
-				const overlapsChanged = Nodes.updateOverlaps(overlaps, overlapsArray);
+				const overlapsChanged = Tooltips.updateOverlaps(overlaps, overlapsArray);
 				if (overlapsChanged) continue;
 
-				// Get the index of the worst overlaping node
-				// If there is an no overlaping node break
-				const overlapsWorstNode = Nodes.getOverlapsWorstNode(overlapsArray);
-				if (overlapsWorstNode == undefined) break;
+				// Get the index of the worst overlaping tooltip
+				// If there is an no overlaping tooltip break
+				const overlapsWorstTooltip = Tooltips.getOverlapsWorstTooltip(overlapsArray);
+				if (overlapsWorstTooltip == undefined) break;
 
 				// Collapse it
-				Nodes.updateCollapsed(overlapsWorstNode);
+				Tooltips.updateCollapsed(overlapsWorstTooltip);
 				// And remove it from the set
-				overlaps.delete(overlapsWorstNode);
+				overlaps.delete(overlapsWorstTooltip);
 			}
 		}
 
 		// Update tooltips
-		Nodes.updateTooltips(nodes, tooltips, Number(zoom.toFixed(1)));
+		Tooltips.updateStates(tooltips, tooltipStates, Number(zoom.toFixed(1)));
 	}
 
-	return Array.from(tooltips.values()).map((s) => [s.zoomAfterExpanded, s.zoomAfterAngleIndexes]);
+	return Array.from(tooltipStates.values()).map((s) => [s.zoomAfterExpanded, s.zoomAfterAngleIndexes]);
 }
 
 export { getStates };
