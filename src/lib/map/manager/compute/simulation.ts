@@ -1,51 +1,9 @@
 import { Angles } from '$lib/map/constants.js';
 
 export namespace Simulation {
-	export namespace Angle {
-		export const RADIANS = Angles.DEGREES.map((d) => (d * Math.PI) / 180);
-		export const RADIANS_COS = RADIANS.map((r) => Math.cos(r));
-		export const RADIANS_SIN = RADIANS.map((r) => Math.sin(r));
-
-		function getQuadrantIndex(forceX: number, forceY: number) {
-			const ratio = Math.abs(forceY / forceX);
-
-			// Rounding to 30 degrees, so binary search is possible
-			// tan(45) = 1
-			if (ratio < 1) {
-				// tan(15) = 0.26795
-				if (ratio < 0.26795) {
-					return 0; // 0 deg;
-				} else {
-					return 1; // 30 deg;
-				}
-			} else {
-				// tan(75) = 3.73205
-				if (ratio < 3.73205) {
-					return 2; // 60 deg;
-				} else {
-					return 3; // 90 deg;
-				}
-			}
-		}
-
-		export function getAngleIndex(forceX: number, forceY: number) {
-			const index = getQuadrantIndex(forceX, forceY);
-
-			if (forceX > 0) {
-				if (forceY > 0) {
-					return (12 - index) % 12;
-				} else {
-					return 0 + index;
-				}
-			} else {
-				if (forceY > 0) {
-					return 6 + index;
-				} else {
-					return 6 - index;
-				}
-			}
-		}
-	}
+	const RADIANS = Angles.DEGREES.map((d) => (d * Math.PI) / 180);
+	const RADIANS_COS = RADIANS.map((r) => Math.cos(r));
+	const RADIANS_SIN = RADIANS.map((r) => Math.sin(r));
 
 	export class Particle {
 		/** The center of the particle. */
@@ -72,6 +30,51 @@ export namespace Simulation {
 		particle: Particle;
 	}
 
+	function getAngleForceQuadrantIndex(forceX: number, forceY: number) {
+		const ratio = Math.abs(forceY / forceX);
+
+		// Rounding to 30 degrees, so binary search is possible
+		// tan(45) = 1
+		if (ratio < 1) {
+			// tan(15) = 0.26795
+			if (ratio < 0.26795) {
+				return 0; // 0 deg;
+			} else {
+				return 1; // 30 deg;
+			}
+		} else {
+			// tan(75) = 3.73205
+			if (ratio < 3.73205) {
+				return 2; // 60 deg;
+			} else {
+				return 3; // 90 deg;
+			}
+		}
+	}
+
+	function getAngleForceIndex(forceX: number, forceY: number) {
+		const index = getAngleForceQuadrantIndex(forceX, forceY);
+
+		if (forceX > 0) {
+			if (forceY > 0) {
+				return (12 - index) % 12;
+			} else {
+				return 0 + index;
+			}
+		} else {
+			if (forceY > 0) {
+				return 6 + index;
+			} else {
+				return 6 - index;
+			}
+		}
+	}
+
+	function getAngleIndex(index: number, direction: number): number {
+		if (direction == 0) return index;
+		return (((index + direction) % Angles.COUNT) + Angles.COUNT) % Angles.COUNT;
+	}
+
 	/**
 	 * Simulate the positions of particles that are influencing each other.
 	 * The particle  coordinates can only be from a given set of points.
@@ -94,15 +97,15 @@ export namespace Simulation {
 			const width = particle.width;
 			const height = particle.height;
 
-			const prevIndex = getIndex(index, -1);
-			const nextIndex = getIndex(index, +1);
+			const prevIndex = getAngleIndex(index, -1);
+			const nextIndex = getAngleIndex(index, +1);
 
-			const prevPointX = center.x + width * Angle.RADIANS_COS[prevIndex];
-			const prevPointY = center.y + height * Angle.RADIANS_SIN[prevIndex];
-			const currPointX = center.x + width * Angle.RADIANS_COS[index];
-			const currPointY = center.y + height * Angle.RADIANS_SIN[index];
-			const nextPointX = center.x + width * Angle.RADIANS_COS[nextIndex];
-			const nextPointY = center.y + height * Angle.RADIANS_SIN[nextIndex];
+			const prevPointX = center.x + width * RADIANS_COS[prevIndex];
+			const prevPointY = center.y + height * RADIANS_SIN[prevIndex];
+			const currPointX = center.x + width * RADIANS_COS[index];
+			const currPointY = center.y + height * RADIANS_SIN[index];
+			const nextPointX = center.x + width * RADIANS_COS[nextIndex];
+			const nextPointY = center.y + height * RADIANS_SIN[nextIndex];
 
 			let prevPointForce: number = 0;
 			let currPointForce: number = 0;
@@ -114,8 +117,8 @@ export namespace Simulation {
 				const centerI = particleI.center;
 				const widthI = particleI.width;
 				const heightI = particleI.height;
-				const pointIx = centerI.x + widthI * Angle.RADIANS_COS[indexI];
-				const pointIy = centerI.y + heightI * Angle.RADIANS_SIN[indexI];
+				const pointIx = centerI.x + widthI * RADIANS_COS[indexI];
+				const pointIy = centerI.y + heightI * RADIANS_SIN[indexI];
 
 				const prevDx = prevPointX - pointIx;
 				const prevDy = prevPointY - pointIy;
@@ -138,7 +141,7 @@ export namespace Simulation {
 
 			if (direction != 0) {
 				// Move particle point index in the direction of the minimal force
-				particle.index = getIndex(index, direction);
+				particle.index = getAngleIndex(index, direction);
 				// If at least one particle moved, the simulation is not stable
 				stable = false;
 			}
@@ -172,12 +175,7 @@ export namespace Simulation {
 				forceY += -(force * dy) / distance;
 			}
 
-			particle.index = Angle.getAngleIndex(forceX, forceY);
+			particle.index = getAngleForceIndex(forceX, forceY);
 		}
-	}
-
-	function getIndex(index: number, direction: number): number {
-		if (direction == 0) return index;
-		return (((index + direction) % Angles.COUNT) + Angles.COUNT) % Angles.COUNT;
 	}
 }
