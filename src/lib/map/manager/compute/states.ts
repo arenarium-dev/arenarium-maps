@@ -67,12 +67,8 @@ namespace Tooltips {
 		bounds: Bounds;
 		/** The neighbours of the tooltip. */
 		neighbours: Array<Tooltip>;
-
-		// SIMULATION
 		/** A tooltip has a particle whose position is used to calculate the angle */
 		particle: Simulation.Particle;
-		/** The particles that influence the tooltip particle. */
-		influences: Simulation.Particle[];
 
 		constructor(parameters: MapProviderParameters, input: MapTooltipStateInput, index: number) {
 			const projection = Mercator.project(input.lat, input.lng, parameters.mapSize);
@@ -91,14 +87,12 @@ namespace Tooltips {
 			this.angle = Angles.DEFAULT;
 			this.bounds = this.getBounds(1);
 			this.neighbours = new Array<Tooltip>();
-
 			this.particle = new Simulation.Particle(
 				{ x: projection.x, y: projection.y },
 				this.getParticleWidth(1),
 				this.getParticleHeight(1),
 				Angles.DEGREES.indexOf(Angles.DEFAULT)
 			);
-			this.influences = [];
 		}
 
 		private getBounds(scale: number): Bounds {
@@ -257,7 +251,7 @@ namespace Tooltips {
 			// If the tooltip is not expanded, clear neighbours
 			if (tooltip.expanded == false) {
 				tooltip.neighbours.length = 0;
-				tooltip.influences.length = 0;
+				tooltip.particle.influences.length = 0;
 				continue;
 			}
 
@@ -271,7 +265,7 @@ namespace Tooltips {
 				if (neighbour.expanded == false) continue;
 
 				tooltip.neighbours.push(neighbour);
-				tooltip.influences.push(neighbour.particle);
+				tooltip.particle.influences.push(neighbour.particle);
 			}
 		}
 	}
@@ -287,7 +281,7 @@ namespace Tooltips {
 			const neighbourTooltipIndex = neighbour.neighbours.indexOf(tooltip);
 
 			neighbour.neighbours.splice(neighbourTooltipIndex, 1);
-			neighbour.influences.splice(neighbourTooltipIndex, 1);
+			neighbour.particle.influences.splice(neighbourTooltipIndex, 1);
 		}
 	}
 
@@ -426,24 +420,21 @@ namespace Tooltips {
 
 	export namespace Particles {
 		export function initializeAngles(tooltips: Array<Tooltip>) {
-			const particles = tooltips.map((n) => n.particle);
-			Simulation.initializePointIndexes(particles.map((n) => ({ particle: n, influences: particles })));
-
-			for (let i = 0; i < tooltips.length; i++) {
-				const tooltip = tooltips[i];
-				tooltip.angle = Angles.DEGREES[tooltip.particle.index];
-			}
+			Simulation.initializePointIndexes(tooltips);
+			updateTooltips(tooltips);
 		}
 
 		export function updateAngles(tooltips: Array<Tooltip>) {
 			const stable = Simulation.updatePointIndexes(tooltips);
+			updateTooltips(tooltips);
+			return stable;
+		}
 
+		export function updateTooltips(tooltips: Array<Tooltip>) {
 			for (let i = 0; i < tooltips.length; i++) {
 				const tooltip = tooltips[i];
 				tooltip.angle = Angles.DEGREES[tooltip.particle.index];
 			}
-
-			return stable;
 		}
 
 		export function updateParticles(tooltips: Array<Tooltip>, scale: number) {

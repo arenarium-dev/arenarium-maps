@@ -56,18 +56,20 @@ export namespace Simulation {
 		height: number;
 		/** The index of the particle position in the points array. */
 		index: number;
+		/** The particles that influence the particle. */
+		influences: Particle[];
 
 		constructor(center: { x: number; y: number }, width: number, height: number, index: number) {
 			this.center = center;
 			this.width = width;
 			this.height = height;
 			this.index = index;
+			this.influences = [];
 		}
 	}
 
 	export interface Item {
 		particle: Particle;
-		influences: Particle[];
 	}
 
 	/**
@@ -79,12 +81,13 @@ export namespace Simulation {
 	 * In case of marker simulation the points represent the posible centers of the marker
 	 * from which the marker angle can be calculated.
 	 */
-	export function updatePointIndexes(items: Array<Item>): boolean {
+	export function updatePointIndexes(item: Array<Item>): boolean {
 		// Run simulation step
 		let stable = true;
 
-		for (let i = 0; i < items.length; i++) {
-			const { particle, influences } = items[i];
+		for (let i = 0; i < item.length; i++) {
+			const particle = item[i].particle;
+			const influences = particle.influences;
 
 			const index = particle.index;
 			const center = particle.center;
@@ -146,18 +149,18 @@ export namespace Simulation {
 
 	export function initializePointIndexes(items: Array<Item>) {
 		for (let i = 0; i < items.length; i++) {
-			const { particle, influences } = items[i];
+			const particle = items[i].particle;
 			const center = particle.center;
 
 			let forceX: number = 0;
 			let forceY: number = 0;
 
-			for (let j = 0; j < influences.length; j++) {
-				const particleI = influences[j];
-				const centerI = particleI.center;
+			for (let j = 0; j < items.length; j++) {
+				const particleF = items[j].particle;
+				const centerF = particleF.center;
 
-				const dx = center.x - centerI.x;
-				const dy = center.y - centerI.y;
+				const dx = center.x - centerF.x;
+				const dy = center.y - centerF.y;
 				if (dx == 0 && dy == 0) continue;
 
 				const distance = Math.sqrt(dx * dx + dy * dy);
