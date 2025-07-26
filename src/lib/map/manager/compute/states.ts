@@ -87,7 +87,7 @@ namespace Tooltips {
 			this.height = input.height + 2 * input.margin;
 
 			this.neighbours = new Array<Tooltip>();
-			this.particle = new Simulation.Particle({ x: projection.x, y: projection.y }, NaN, NaN, Angles.DEGREES.indexOf(Angles.DEGREES_DEFAULT));
+			this.particle = new Simulation.Particle(projection.x, projection.y, NaN, NaN, Angles.DEGREES.indexOf(Angles.DEGREES_DEFAULT));
 		}
 
 		public updateScale(scale: number) {
@@ -121,8 +121,8 @@ namespace Tooltips {
 		}
 
 		public updateParticle(scale: number) {
-			this.particle.width = this.width / 2 / scale;
-			this.particle.height = this.height / 2 / scale;
+			this.particle.distX = this.width / 2 / scale;
+			this.particle.distY = this.height / 2 / scale;
 		}
 	}
 
@@ -249,7 +249,7 @@ namespace Tooltips {
 			// If the tooltip is not expanded, clear neighbours
 			if (tooltip.expanded == false) {
 				tooltip.neighbours.length = 0;
-				tooltip.particle.influences.length = 0;
+				tooltip.particle.neighbours.length = 0;
 				continue;
 			}
 
@@ -263,7 +263,7 @@ namespace Tooltips {
 				if (neighbour.expanded == false) continue;
 
 				tooltip.neighbours.push(neighbour);
-				tooltip.particle.influences.push(neighbour.particle);
+				tooltip.particle.neighbours.push(neighbour.particle);
 			}
 		}
 	}
@@ -279,7 +279,7 @@ namespace Tooltips {
 			const neighbourTooltipIndex = neighbour.neighbours.indexOf(tooltip);
 
 			neighbour.neighbours.splice(neighbourTooltipIndex, 1);
-			neighbour.particle.influences.splice(neighbourTooltipIndex, 1);
+			neighbour.particle.neighbours.splice(neighbourTooltipIndex, 1);
 		}
 	}
 
@@ -410,12 +410,12 @@ namespace Tooltips {
 
 	export namespace Particles {
 		export function initializeAngles(tooltips: Array<Tooltip>) {
-			Simulation.initializePointIndexes(tooltips);
+			Simulation.initializeAngleIndexes(tooltips);
 			updateTooltips(tooltips);
 		}
 
 		export function updateAngles(tooltips: Array<Tooltip>) {
-			const stable = Simulation.updatePointIndexes(tooltips);
+			const stable = Simulation.updateAngleIndexes(tooltips);
 			updateTooltips(tooltips);
 			return stable;
 		}

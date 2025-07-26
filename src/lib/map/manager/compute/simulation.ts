@@ -6,23 +6,26 @@ export namespace Simulation {
 	const RADIANS_SIN = RADIANS.map((r) => Math.sin(r));
 
 	export class Particle {
-		/** The center of the particle. */
-		center: { x: number; y: number };
-		/** The width of the rectangle of possible positions of the particle. */
-		width: number;
-		/** The width of the rectangle of possible positions of the particle. */
-		height: number;
+		/** The center x coordinate of the particle. */
+		x: number;
+		/** The center y coordinate of the particle. */
+		y: number;
+		/** The distance x of the rectangle of possible positions of the particle. */
+		distX: number;
+		/** The distance y of the rectangle of possible positions of the particle. */
+		distY: number;
 		/** The index of the particle position in the points array. */
 		index: number;
 		/** The particles that influence the particle. */
-		influences: Particle[];
+		neighbours: Particle[];
 
-		constructor(center: { x: number; y: number }, width: number, height: number, index: number) {
-			this.center = center;
-			this.width = width;
-			this.height = height;
+		constructor(x: number, y: number, distX: number, distY: number, index: number) {
+			this.x = x;
+			this.y = y;
+			this.distX = distX;
+			this.distY = distY;
 			this.index = index;
-			this.influences = [];
+			this.neighbours = [];
 		}
 	}
 
@@ -84,28 +87,29 @@ export namespace Simulation {
 	 * In case of marker simulation the points represent the posible centers of the marker
 	 * from which the marker angle can be calculated.
 	 */
-	export function updatePointIndexes(item: Array<Item>): boolean {
+	export function updateAngleIndexes(item: Array<Item>): boolean {
 		// Run simulation step
 		let stable = true;
 
 		for (let i = 0; i < item.length; i++) {
 			const particle = item[i].particle;
-			const influences = particle.influences;
+			const influences = particle.neighbours;
 
 			const index = particle.index;
-			const center = particle.center;
-			const width = particle.width;
-			const height = particle.height;
+			const x = particle.x;
+			const y = particle.y;
+			const distX = particle.distX;
+			const distY = particle.distY;
 
 			const prevIndex = getAngleIndex(index, -1);
 			const nextIndex = getAngleIndex(index, +1);
 
-			const prevPointX = center.x + width * RADIANS_COS[prevIndex];
-			const prevPointY = center.y + height * RADIANS_SIN[prevIndex];
-			const currPointX = center.x + width * RADIANS_COS[index];
-			const currPointY = center.y + height * RADIANS_SIN[index];
-			const nextPointX = center.x + width * RADIANS_COS[nextIndex];
-			const nextPointY = center.y + height * RADIANS_SIN[nextIndex];
+			const prevPointX = x + distX * RADIANS_COS[prevIndex];
+			const prevPointY = y + distY * RADIANS_SIN[prevIndex];
+			const currPointX = x + distX * RADIANS_COS[index];
+			const currPointY = y + distY * RADIANS_SIN[index];
+			const nextPointX = x + distX * RADIANS_COS[nextIndex];
+			const nextPointY = y + distY * RADIANS_SIN[nextIndex];
 
 			let prevPointForce: number = 0;
 			let currPointForce: number = 0;
@@ -113,12 +117,15 @@ export namespace Simulation {
 
 			for (let j = 0; j < influences.length; j++) {
 				const particleI = influences[j];
+
+				const xI = particleI.x;
+				const yI = particleI.y;
+				const distXI = particleI.distX;
+				const distYI = particleI.distY;
+
 				const indexI = particleI.index;
-				const centerI = particleI.center;
-				const widthI = particleI.width;
-				const heightI = particleI.height;
-				const pointIx = centerI.x + widthI * RADIANS_COS[indexI];
-				const pointIy = centerI.y + heightI * RADIANS_SIN[indexI];
+				const pointIx = xI + distXI * RADIANS_COS[indexI];
+				const pointIy = yI + distYI * RADIANS_SIN[indexI];
 
 				const prevDx = prevPointX - pointIx;
 				const prevDy = prevPointY - pointIy;
@@ -150,20 +157,22 @@ export namespace Simulation {
 		return stable;
 	}
 
-	export function initializePointIndexes(items: Array<Item>) {
+	export function initializeAngleIndexes(items: Array<Item>) {
 		for (let i = 0; i < items.length; i++) {
 			const particle = items[i].particle;
-			const center = particle.center;
+			const x = particle.x;
+			const y = particle.y;
 
 			let forceX: number = 0;
 			let forceY: number = 0;
 
 			for (let j = 0; j < items.length; j++) {
 				const particleF = items[j].particle;
-				const centerF = particleF.center;
+				const xF = particleF.x;
+				const yF = particleF.y;
 
-				const dx = center.x - centerF.x;
-				const dy = center.y - centerF.y;
+				const dx = x - xF;
+				const dy = y - yF;
 				if (dx == 0 && dy == 0) continue;
 
 				const distance = Math.sqrt(dx * dx + dy * dy);
