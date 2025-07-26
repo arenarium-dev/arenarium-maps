@@ -175,8 +175,8 @@
 	export function setAngle(value: number) {
 		if (angleDefined == false) {
 			let angleOffsets = Rectangle.getOffsets(tooltipWidth, tooltipHeight, value);
-			bubbleOffsetXTransition.set(Math.round(angleOffsets.offsetX), { duration: 0 });
-			bubbleOffsetYTransition.set(Math.round(angleOffsets.offsetY), { duration: 0 });
+			bubbleOffsetXTransition.set(Math.round(angleOffsets.x), { duration: 0 });
+			bubbleOffsetYTransition.set(Math.round(angleOffsets.y), { duration: 0 });
 			updateAngleStyle(bubbleOffsetXTransition.value, bubbleOffsetYTransition.value);
 
 			angle = value;
@@ -187,8 +187,8 @@
 			let angleDuration = Math.log(angleSteps) * 75;
 
 			let angleOffsets = Rectangle.getOffsets(tooltipWidth, tooltipHeight, value);
-			bubbleOffsetXTransition.set(Math.round(angleOffsets.offsetX), { duration: angleDuration });
-			bubbleOffsetYTransition.set(Math.round(angleOffsets.offsetY), { duration: angleDuration });
+			bubbleOffsetXTransition.set(Math.round(angleOffsets.x), { duration: angleDuration });
+			bubbleOffsetYTransition.set(Math.round(angleOffsets.y), { duration: angleDuration });
 
 			angle = value;
 		}

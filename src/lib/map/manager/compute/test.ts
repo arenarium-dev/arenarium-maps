@@ -32,10 +32,10 @@ class Tooltip {
 	}
 
 	getBounds(scale: number, angle: number): Bounds {
-		let { offsetX, offsetY } = Rectangle.getOffsets(this.width, this.height, angle);
-		let left = -offsetX;
+		let offsets = Rectangle.getOffsets(this.width, this.height, angle);
+		let left = -offsets.x;
 		let right = this.width - left;
-		let top = -offsetY;
+		let top = -offsets.y;
 		let bottom = this.height - top;
 
 		return {
@@ -91,19 +91,25 @@ export function testStates(parameters: MapProviderParameters, inputs: MapTooltip
 				if (tooltip2.bounds == undefined) continue;
 
 				if (Bounds.areOverlaping(tooltip1.bounds, tooltip2.bounds)) {
-					console.log('OVERLAP', zoom, inputs[i], inputs[j], tooltip1.angle, tooltip2.angle);
+					console.log('OVERLAP', zoom, tooltip1, inputs[i], tooltip2, inputs[j]);
 
 					const x11 = tooltip1.bounds.x - tooltip1.bounds.left;
-					const y11 = tooltip1.bounds.y - tooltip1.bounds.top;
 					const x12 = tooltip1.bounds.x + tooltip1.bounds.right;
+					const y11 = tooltip1.bounds.y - tooltip1.bounds.top;
 					const y12 = tooltip1.bounds.y + tooltip1.bounds.bottom;
-					console.log(`B1: (${x11}, ${y11}), (${x11}, ${y12}), (${x12}, ${y11}), (${x12}, ${y12})`);
+					console.log(
+						`B1: (${x11}, ${y11}), (${x11}, ${y12}), (${x12}, ${y11}), (${x12}, ${y12}), (${tooltip1.bounds.x}, ${tooltip1.bounds.y})`,
+						tooltip1.angle
+					);
 
 					const x21 = tooltip2.bounds.x - tooltip2.bounds.left;
-					const y21 = tooltip2.bounds.y - tooltip2.bounds.top;
 					const x22 = tooltip2.bounds.x + tooltip2.bounds.right;
+					const y21 = tooltip2.bounds.y - tooltip2.bounds.top;
 					const y22 = tooltip2.bounds.y + tooltip2.bounds.bottom;
-					console.log(`B2: (${x21}, ${y21}), (${x21}, ${y22}), (${x22}, ${y21}), (${x22}, ${y22})`);
+					console.log(
+						`B2: (${x21}, ${y21}), (${x21}, ${y22}), (${x22}, ${y21}), (${x22}, ${y22}), (${tooltip2.bounds.x}, ${tooltip2.bounds.y})`,
+						tooltip2.angle
+					);
 
 					throw new Error('Bounds overlaping');
 				}

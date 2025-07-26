@@ -41,92 +41,93 @@ namespace Tooltips {
 		}
 	}
 
-	export class Tooltip implements Simulation.Item {
+	export class Tooltip implements Bounds, Simulation.Item {
 		// PROPERTIES
-		/** The index of the tooltip in the tooltips array. */
-		index: number;
 		/** The id of the tooltip that this tooltip represents. */
-		id: string;
+		id: string = '';
+		/** The index of the tooltip in the tooltips array. */
+		index: number = NaN;
 		/** The rank of the tooltip tooltip. */
-		rank: number;
-		/** The x coordinate of the tooltip tooltip. */
-		x: number;
-		/** The y coordinate of the tooltip tooltip. */
-		y: number;
-		/** The width of the tooltip tooltip. */
-		width: number;
-		/** The height of the tooltip tooltip. */
-		height: number;
+		rank: number = NaN;
+		/** The x coordinate of the tooltip anchor. */
+		x: number = NaN;
+		/** The y coordinate of the tooltip anchor. */
+		y: number = NaN;
+		/** The base width of the tooltip tooltip. */
+		width: number = NaN;
+		/** The base height of the tooltip tooltip. */
+		height: number = NaN;
 
 		// STATE
-		/** State of the tooltip expanded or not. */
-		expanded: boolean;
+		/** State of the tooltip expanded or not.  */
+		expanded: boolean = true;
+		/** The scale of the tooltip. */
+		scale: number = 1;
 		/** The angle of the tooltip. */
-		angle: number;
-		/** The bounds of the tooltip. */
-		bounds: Bounds;
+		angle: number = Angles.DEFAULT;
 		/** The neighbours of the tooltip. */
 		neighbours: Array<Tooltip>;
+
+		// BOUNDS
+		//* Scaled distance to left edge of the tooltip bounds */
+		left: number = NaN;
+		//* Scaled distance to right edge of the tooltip bounds */
+		right: number = NaN;
+		//* Scaled distance to top edge of the tooltip bounds */
+		top: number = NaN;
+		//* Scaled distance to bottom edge of the tooltip bounds */
+		bottom: number = NaN;
+
 		/** A tooltip has a particle whose position is used to calculate the angle */
 		particle: Simulation.Particle;
 
 		constructor(parameters: MapProviderParameters, input: MapTooltipStateInput, index: number) {
 			const projection = Mercator.project(input.lat, input.lng, parameters.mapSize);
-			const width = input.width + 2 * input.margin;
-			const height = input.height + 2 * input.margin;
 
 			this.index = index;
 			this.id = input.id;
 			this.rank = input.rank;
 			this.x = projection.x;
 			this.y = projection.y;
-			this.width = width;
-			this.height = height;
+			this.width = input.width + 2 * input.margin;
+			this.height = input.height + 2 * input.margin;
 
-			this.expanded = true;
-			this.angle = Angles.DEFAULT;
-			this.bounds = this.getBounds(1);
 			this.neighbours = new Array<Tooltip>();
-			this.particle = new Simulation.Particle(
-				{ x: projection.x, y: projection.y },
-				this.getParticleWidth(1),
-				this.getParticleHeight(1),
-				Angles.DEGREES.indexOf(Angles.DEFAULT)
-			);
+			this.particle = new Simulation.Particle({ x: projection.x, y: projection.y }, NaN, NaN, Angles.DEGREES.indexOf(Angles.DEFAULT));
 		}
 
-		private getBounds(scale: number): Bounds {
-			let { offsetX, offsetY } = Rectangle.getOffsets(this.width, this.height, this.angle);
-			let left = -offsetX;
-			let right = this.width - left;
-			let top = -offsetY;
-			let bottom = this.height - top;
+		public updateScale(scale: number) {
+			if (scale == this.scale) return;
+			this.scale = scale;
 
-			return {
-				x: this.x,
-				y: this.y,
-				left: left / scale,
-				right: right / scale,
-				top: top / scale,
-				bottom: bottom / scale
-			};
+			this.updateBounds(scale, this.angle);
+			this.updateParticle(scale);
 		}
 
-		private getParticleWidth(scale: number): number {
-			return this.width / 2 / scale;
+		public updateAngle(angle: number) {
+			if (angle == this.angle) return;
+			this.angle = angle;
+
+			this.updateBounds(this.scale, angle);
 		}
 
-		private getParticleHeight(scale: number): number {
-			return this.height / 2 / scale;
-		}
+		private updateBounds(scale: number, angle: number) {
+			const offsets = Rectangle.getOffsets(this.width, this.height, angle);
 
-		public updateBounds(scale: number) {
-			this.bounds = this.getBounds(scale);
+			const baseLeft = -offsets.x;
+			const baseRight = this.width - baseLeft;
+			const baseTop = -offsets.y;
+			const baseBottom = this.height - baseTop;
+
+			this.left = baseLeft / scale;
+			this.right = baseRight / scale;
+			this.top = baseTop / scale;
+			this.bottom = baseBottom / scale;
 		}
 
 		public updateParticle(scale: number) {
-			this.particle.width = this.getParticleWidth(scale);
-			this.particle.height = this.getParticleHeight(scale);
+			this.particle.width = this.width / 2 / scale;
+			this.particle.height = this.height / 2 / scale;
 		}
 	}
 
@@ -148,7 +149,7 @@ namespace Tooltips {
 		return tooltips;
 	}
 
-	export function createTooltipsNeighbours(zoom: Zoom, tooltips: Array<Tooltip>): TooltipNeighbours {
+	export function createTooltipsNeighbours(tooltips: Array<Tooltip>, zoom: Zoom): TooltipNeighbours {
 		// Create array of neighbours deltas for each tooltip
 		// at each zoom level
 		let tooltipsNeighbourDeltas: TooltipNeighbourDeltas = new Array<Array<Array<Tooltip>>>();
@@ -285,7 +286,7 @@ namespace Tooltips {
 		}
 	}
 
-	export function updateStates(tooltips: Array<Tooltip>, states: Map<string, State>, zoom: number) {
+	export function updateStates(states: Map<string, State>, tooltips: Array<Tooltip>, zoom: number) {
 		for (let i = 0; i < tooltips.length; i++) {
 			const tooltip = tooltips[i];
 			if (tooltip.expanded == false) continue;
@@ -313,9 +314,9 @@ namespace Tooltips {
 		}
 	}
 
-	export function updateBounds(tooltips: Array<Tooltip>, scale: number) {
+	export function updateScale(tooltips: Array<Tooltip>, scale: number) {
 		for (let i = 0; i < tooltips.length; i++) {
-			tooltips[i].updateBounds(scale);
+			tooltips[i].updateScale(scale);
 		}
 	}
 
@@ -324,14 +325,12 @@ namespace Tooltips {
 
 		for (let i = 0; i < tooltips.length; i++) {
 			const tooltip1 = tooltips[i];
-			const bounds1 = tooltip1.bounds;
 			const neighbours1 = tooltips[i].neighbours;
 
 			for (let j = 0; j < neighbours1.length; j++) {
 				const tooltip2 = neighbours1[j];
-				const bounds2 = tooltip2.bounds;
 
-				if (Bounds.areOverlaping(bounds2, bounds1)) {
+				if (Bounds.areOverlaping(tooltip1, tooltip2)) {
 					overlaps.add(tooltip1);
 					overlaps.add(tooltip2);
 				}
@@ -346,14 +345,12 @@ namespace Tooltips {
 
 		for (let i = 0; i < tooltips.length; i++) {
 			const tooltip1 = tooltips[i];
-			const bounds1 = tooltip1.bounds;
 			const neighbours1 = tooltips[i].neighbours;
 
 			for (let j = 0; j < neighbours1.length; j++) {
 				const tooltip2 = neighbours1[j];
-				const bounds2 = tooltip2.bounds;
 
-				if (Bounds.areOverlaping(bounds2, bounds1)) {
+				if (Bounds.areOverlaping(tooltip1, tooltip2)) {
 					if (!overlaps.has(tooltip1)) {
 						overlaps.add(tooltip1);
 						updated = true;
@@ -375,16 +372,14 @@ namespace Tooltips {
 
 		for (let i = 0; i < tooltips.length; i++) {
 			const tooltip1 = tooltips[i];
-			const bounds1 = tooltip1.bounds;
 			const neighbours1 = tooltips[i].neighbours;
 
 			let score = 0;
 
 			for (let j = 0; j < neighbours1.length; j++) {
 				const tooltip2 = neighbours1[j];
-				const bounds2 = tooltip2.bounds;
 
-				if (Bounds.areOverlaping(bounds2, bounds1)) {
+				if (Bounds.areOverlaping(tooltip1, tooltip2)) {
 					score += 1 + (tooltip2.rank - tooltip1.rank);
 				}
 			}
@@ -403,13 +398,11 @@ namespace Tooltips {
 	export function areOverlaping(tooltips: Array<Tooltip>): boolean {
 		for (let i = 0; i < tooltips.length; i++) {
 			const tooltip1 = tooltips[i];
-			const bounds1 = tooltip1.bounds;
 
 			for (let j = i + 1; j < tooltips.length; j++) {
 				const tooltip2 = tooltips[j];
-				const bounds2 = tooltip2.bounds;
 
-				if (Bounds.areOverlaping(bounds2, bounds1)) {
+				if (Bounds.areOverlaping(tooltip1, tooltip2)) {
 					return true;
 				}
 			}
@@ -433,14 +426,7 @@ namespace Tooltips {
 		export function updateTooltips(tooltips: Array<Tooltip>) {
 			for (let i = 0; i < tooltips.length; i++) {
 				const tooltip = tooltips[i];
-				tooltip.angle = Angles.DEGREES[tooltip.particle.index];
-			}
-		}
-
-		export function updateParticles(tooltips: Array<Tooltip>, scale: number) {
-			for (let i = 0; i < tooltips.length; i++) {
-				const tooltip = tooltips[i];
-				tooltip.updateParticle(scale);
+				tooltip.updateAngle(Angles.DEGREES[tooltip.particle.index]);
 			}
 		}
 	}
@@ -457,12 +443,12 @@ function getStates(parameters: MapProviderParameters, data: Array<MapTooltipStat
 
 	// Initialze tooltips
 	const tooltips = Tooltips.createTooltips(parameters, data);
-	const tooltipsNeighbours = Tooltips.createTooltipsNeighbours(tooltipsZoom, tooltips);
+	const tooltipsNeighbours = Tooltips.createTooltipsNeighbours(tooltips, tooltipsZoom);
 
 	// Initialize angles
 	Tooltips.Particles.initializeAngles(tooltips);
 	// Initially add the last threshold event
-	Tooltips.updateStates(tooltips, tooltipStates, tooltipsZoom.addSteps(tooltipsZoom.max, 1));
+	Tooltips.updateStates(tooltipStates, tooltips, tooltipsZoom.addSteps(tooltipsZoom.max, 1));
 
 	// If there is no neighbours, return the default state
 	const zoomMaxIndex = tooltipsZoom.getIndex(tooltipsNeighbours.maxZwt);
@@ -485,9 +471,7 @@ function getStates(parameters: MapProviderParameters, data: Array<MapTooltipStat
 
 		for (const graph of graphs) {
 			// Update tooltip bounds
-			Tooltips.updateBounds(graph, zoomScale);
-			// Update the simulation for a given zoom level
-			Tooltips.Particles.updateParticles(graph, zoomScale);
+			Tooltips.updateScale(graph, zoomScale);
 
 			// Get graph overlaps with neighbours
 			const overlaps = Tooltips.getOverlaps(graph);
@@ -502,9 +486,6 @@ function getStates(parameters: MapProviderParameters, data: Array<MapTooltipStat
 				while (true) {
 					// Update tooltip angles in the simulation
 					const simStable = Tooltips.Particles.updateAngles(overlapsArray);
-					// Update tooltip bounds after angle update
-					Tooltips.updateBounds(overlapsArray, zoomScale);
-
 					// If the simulation is stable break
 					if (simStable == true) break;
 					// If there are no overlaping tooltips after simulation break
@@ -529,7 +510,7 @@ function getStates(parameters: MapProviderParameters, data: Array<MapTooltipStat
 		}
 
 		// Update tooltips
-		Tooltips.updateStates(tooltips, tooltipStates, Number(zoom.toFixed(1)));
+		Tooltips.updateStates(tooltipStates, tooltips, Number(zoom.toFixed(1)));
 	}
 
 	return Array.from(tooltipStates.values()).map((s) => [s.zoomAfterExpanded, s.zoomAfterAngleIndexes]);
