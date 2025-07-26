@@ -6,7 +6,7 @@ import MapTooltipComponent from '$lib/components/Tooltip.svelte';
 import { MapViewport } from '$lib/map/manager/viewport.js';
 import { getStates } from '$lib/map/manager/compute/states.js';
 import { animation, ANIMATION_PIN_LAYER, ANIMATION_PRIORITY_LAYER, ANIMATION_TOOLTIP_LAYER } from '$lib/map/animation/animation.js';
-import { Angles } from '$lib/map/constants.js';
+import { Angles, type Point } from '$lib/map/constants.js';
 import {
 	mapMarkersSchema,
 	mapProviderSchema,
@@ -111,7 +111,7 @@ class MapManager {
 			}
 			// If there is only one marker, use default tooltip state
 			else {
-				tooltipStates = [[0, [[0, Angles.DEGREES.indexOf(Angles.DEFAULT)]]]];
+				tooltipStates = [[0, [[0, Angles.DEGREES.indexOf(Angles.DEGREES_DEFAULT)]]]];
 			}
 
 			// Update marker data
@@ -652,7 +652,7 @@ class MapTooltipElement extends MapElement<ReturnType<typeof MapTooltipComponent
 		this.radius = marker.tooltip.style.radius;
 
 		this.zoom = state[0];
-		this.angle = Angles.DEFAULT;
+		this.angle = Angles.DEGREES_DEFAULT;
 		this.states = state[1].map((s) => [s[0], Angles.DEGREES[s[1]]]);
 
 		this.bodyCallback = marker.tooltip.body;
@@ -981,7 +981,7 @@ class MapPopupProcessor {
 					if (popupBody == undefined) continue;
 
 					// Wait until popup offsets are calculated
-					const popupOffsets = popup.component?.getOffsets() as { offsetX: number; offsetY: number };
+					const popupOffsets = popup.component?.getOffsets() as Point;
 					if (popupOffsets == undefined) continue;
 
 					// Wait until popup rect is calculated
@@ -993,8 +993,8 @@ class MapPopupProcessor {
 					const popupCenterY = popupRect.y + popupRect.height / 2;
 
 					// Calculate popup rect based on popup center, offsets and size
-					const popupLeft = popupCenterX + popupOffsets.offsetX;
-					const popupTop = popupCenterY + popupOffsets.offsetY;
+					const popupLeft = popupCenterX + popupOffsets.x;
+					const popupTop = popupCenterY + popupOffsets.y;
 					const popupRight = popupLeft + popup.width;
 					const popupBottom = popupTop + popup.height;
 

@@ -64,7 +64,7 @@ namespace Tooltips {
 		/** The scale of the tooltip. */
 		scale: number = 1;
 		/** The angle of the tooltip. */
-		angle: number = Angles.DEFAULT;
+		angle: number = Angles.DEGREES_DEFAULT;
 		/** The neighbours of the tooltip. */
 		neighbours: Array<Tooltip>;
 
@@ -87,7 +87,7 @@ namespace Tooltips {
 			this.height = input.height + 2 * input.margin;
 
 			this.neighbours = new Array<Tooltip>();
-			this.particle = new Simulation.Particle({ x: projection.x, y: projection.y }, NaN, NaN, Angles.DEGREES.indexOf(Angles.DEFAULT));
+			this.particle = new Simulation.Particle({ x: projection.x, y: projection.y }, NaN, NaN, Angles.DEGREES.indexOf(Angles.DEGREES_DEFAULT));
 		}
 
 		public updateScale(scale: number) {
@@ -433,7 +433,7 @@ function getStates(parameters: MapProviderParameters, data: Array<MapTooltipStat
 	const tooltipsZoom = new Tooltips.Zoom(parameters);
 
 	if (data.length == 0) return [];
-	if (data.length == 1) return [[tooltipsZoom.min, [[tooltipsZoom.min, Angles.DEGREES.indexOf(Angles.DEFAULT)]]]];
+	if (data.length == 1) return [[tooltipsZoom.min, [[tooltipsZoom.min, Angles.DEGREES.indexOf(Angles.DEGREES_DEFAULT)]]]];
 
 	// Initialize tooltips
 	const tooltipStates = new Map<string, Tooltips.State>(data.map((p) => [p.id, new Tooltips.State()]));
