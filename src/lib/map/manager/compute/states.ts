@@ -18,6 +18,29 @@ namespace Nodes {
 		}
 	}
 
+	export class Zoom {
+		public min: number;
+		public max: number;
+		public scale: number;
+		public step: number;
+
+		constructor(parameters: MapProviderParameters) {
+			this.min = parameters.zoomMin;
+			this.max = parameters.zoomMax;
+			this.scale = parameters.zoomScale;
+			this.step = 1 / this.scale;
+		}
+
+		public addSteps(zoom: number, count: number) {
+			return Math.round((zoom + count * this.step) * this.scale) / this.scale;
+		}
+
+		public getIndex(zwt: number) {
+			if (zwt < this.min) return;
+			return Math.min(Math.ceil(zwt * this.scale), this.max * this.scale);
+		}
+	}
+
 	export class Node implements Simulation.Item {
 		// PROPERTIES
 		/** The index of the node in the nodes array. */
@@ -115,43 +138,9 @@ namespace Nodes {
 
 	export type NodeNeighbourDeltas = Array<Array<Array<Node>>>;
 
-	export class Zoom {
-		public min: number;
-		public max: number;
-		public scale: number;
-		public step: number;
-
-		constructor(parameters: MapProviderParameters) {
-			this.min = parameters.zoomMin;
-			this.max = parameters.zoomMax;
-			this.scale = parameters.zoomScale;
-			this.step = 1 / this.scale;
-		}
-
-		public addSteps(zoom: number, count: number) {
-			return Math.round((zoom + count * this.step) * this.scale) / this.scale;
-		}
-
-		public getIndex(zwt: number) {
-			if (zwt < this.min) return;
-			return Math.min(Math.ceil(zwt * this.scale), this.max * this.scale);
-		}
-
-		public getMax(nodesNeighbourDeltas: Nodes.NodeNeighbourDeltas): number {
-			let zoom = this.min;
-
-			for (let i = 0; i < nodesNeighbourDeltas.length; i++) {
-				const nodeNeighbourDeltas = nodesNeighbourDeltas[i];
-				const nodeNeighbourDeltasZoomKeys = nodeNeighbourDeltas.keys();
-
-				for (const zoomKey of nodeNeighbourDeltasZoomKeys) {
-					const zoomValue = Number(zoomKey) / this.scale;
-					if (zoomValue > zoom) zoom = zoomValue;
-				}
-			}
-
-			return zoom;
-		}
+	export interface NodeNeighbours {
+		maxZwt: number;
+		deltas: NodeNeighbourDeltas;
 	}
 
 	export function createNodes(parameters: MapProviderParameters, input: Array<MapTooltipStateInput>): Array<Node> {
@@ -165,10 +154,11 @@ namespace Nodes {
 		return nodes;
 	}
 
-	export function createNeighbourDeltas(zoom: Zoom, nodes: Array<Node>): NodeNeighbourDeltas {
+	export function createNodesNeighbours(zoom: Zoom, nodes: Array<Node>): NodeNeighbours {
 		// Create array of neighbours deltas for each node
 		// at each zoom level
-		const nodesNeighbourDeltas: NodeNeighbourDeltas = new Array<Array<Array<Node>>>();
+		let nodesNeighbourDeltas: NodeNeighbourDeltas = new Array<Array<Array<Node>>>();
+		let nodesNeighbourMaxZwt = 0;
 
 		for (let i = 0; i < nodes.length; i++) {
 			nodesNeighbourDeltas[i] = new Array<Array<Node>>();
@@ -205,6 +195,8 @@ namespace Nodes {
 				const neighboursDeltas2 = nodesNeighbourDeltas[i2];
 
 				const zwt = Bounds.getZoomWhenTouching(bounds1, bounds2);
+				if (zwt > nodesNeighbourMaxZwt) nodesNeighbourMaxZwt = zwt;
+
 				const zoomIndex = zoom.getIndex(zwt);
 				if (zoomIndex == undefined) continue;
 
@@ -219,7 +211,10 @@ namespace Nodes {
 			}
 		}
 
-		return nodesNeighbourDeltas;
+		return {
+			maxZwt: nodesNeighbourMaxZwt,
+			deltas: nodesNeighbourDeltas
+		};
 	}
 
 	export function getNeighbourGraphs(nodes: Array<Node>): Array<Array<Node>> {
@@ -471,16 +466,20 @@ function getStates(parameters: MapProviderParameters, data: Array<MapTooltipStat
 
 	// Initialze nodes
 	const nodes = Nodes.createNodes(parameters, data);
-	const nodeNeighbourDeltas = Nodes.createNeighbourDeltas(nodesZoom, nodes);
-
-	// Initialize zoom
-	const zoomMin = nodesZoom.min;
-	const zoomMax = nodesZoom.getMax(nodeNeighbourDeltas);
+	const nodesNeighbours = Nodes.createNodesNeighbours(nodesZoom, nodes);
 
 	// Initialize angles
 	Nodes.Particles.initializeAngles(nodes);
 	// Initially add the last threshold event
 	Nodes.updateTooltips(nodes, tooltips, nodesZoom.addSteps(nodesZoom.max, 1));
+
+	// If there is no neighbours, return the default state
+	const zoomMaxIndex = nodesZoom.getIndex(nodesNeighbours.maxZwt);
+	if (zoomMaxIndex == undefined) return Array.from(tooltips.values()).map((s) => [s.zoomAfterExpanded, s.zoomAfterAngleIndexes]);
+
+	// Initialize zoom
+	const zoomMin = nodesZoom.min;
+	const zoomMax = zoomMaxIndex / nodesZoom.scale;
 
 	// Go from last to first zoom
 	for (let zoom = zoomMax; zoom >= zoomMin; zoom = nodesZoom.addSteps(zoom, -1)) {
@@ -489,7 +488,7 @@ function getStates(parameters: MapProviderParameters, data: Array<MapTooltipStat
 		const zoomIndex = Math.round(zoom * nodesZoom.scale);
 
 		// Update expanded nodes neighbours
-		Nodes.updateNeighbours(nodes, nodeNeighbourDeltas, zoomIndex);
+		Nodes.updateNeighbours(nodes, nodesNeighbours.deltas, zoomIndex);
 		// Get expanded node graphs
 		const graphs = Nodes.getNeighbourGraphs(nodes);
 
