@@ -15,7 +15,7 @@ class Tooltip {
 
 	expanded: boolean;
 	angle: number;
-	bounds: Bounds | undefined;
+	bounds: Bounds.Overlappable | undefined;
 
 	constructor(parameters: MapProviderParameters, input: MapTooltipStateInput, state: MapTooltipState) {
 		const point = Mercator.project(input.lat, input.lng, parameters.mapSize);
@@ -31,7 +31,7 @@ class Tooltip {
 		this.bounds = undefined;
 	}
 
-	getBounds(scale: number, angle: number): Bounds {
+	getBounds(scale: number, angle: number): Bounds.Overlappable {
 		let offsets = Rectangle.getOffsets(this.width, this.height, angle);
 		let left = -offsets.x;
 		let right = this.width - left;
@@ -41,10 +41,12 @@ class Tooltip {
 		return {
 			x: this.x,
 			y: this.y,
-			left: left / scale,
-			right: right / scale,
-			top: top / scale,
-			bottom: bottom / scale
+			distances: {
+				left: left / scale,
+				right: right / scale,
+				top: top / scale,
+				bottom: bottom / scale
+			}
 		};
 	}
 }
@@ -93,19 +95,19 @@ export function testStates(parameters: MapProviderParameters, inputs: MapTooltip
 				if (Bounds.areOverlaping(tooltip1.bounds, tooltip2.bounds)) {
 					console.log('OVERLAP', zoom, tooltip1, inputs[i], tooltip2, inputs[j]);
 
-					const x11 = tooltip1.bounds.x - tooltip1.bounds.left;
-					const x12 = tooltip1.bounds.x + tooltip1.bounds.right;
-					const y11 = tooltip1.bounds.y - tooltip1.bounds.top;
-					const y12 = tooltip1.bounds.y + tooltip1.bounds.bottom;
+					const x11 = tooltip1.bounds.x - tooltip1.bounds.distances.left;
+					const x12 = tooltip1.bounds.x + tooltip1.bounds.distances.right;
+					const y11 = tooltip1.bounds.y - tooltip1.bounds.distances.top;
+					const y12 = tooltip1.bounds.y + tooltip1.bounds.distances.bottom;
 					console.log(
 						`B1: (${x11}, ${y11}), (${x11}, ${y12}), (${x12}, ${y11}), (${x12}, ${y12}), (${tooltip1.bounds.x}, ${tooltip1.bounds.y})`,
 						tooltip1.angle
 					);
 
-					const x21 = tooltip2.bounds.x - tooltip2.bounds.left;
-					const x22 = tooltip2.bounds.x + tooltip2.bounds.right;
-					const y21 = tooltip2.bounds.y - tooltip2.bounds.top;
-					const y22 = tooltip2.bounds.y + tooltip2.bounds.bottom;
+					const x21 = tooltip2.bounds.x - tooltip2.bounds.distances.left;
+					const x22 = tooltip2.bounds.x + tooltip2.bounds.distances.right;
+					const y21 = tooltip2.bounds.y - tooltip2.bounds.distances.top;
+					const y22 = tooltip2.bounds.y + tooltip2.bounds.distances.bottom;
 					console.log(
 						`B2: (${x21}, ${y21}), (${x21}, ${y22}), (${x22}, ${y21}), (${x22}, ${y22}), (${tooltip2.bounds.x}, ${tooltip2.bounds.y})`,
 						tooltip2.angle

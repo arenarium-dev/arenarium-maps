@@ -41,7 +41,7 @@ namespace Tooltips {
 		}
 	}
 
-	export class Tooltip implements Bounds, Simulation.Item {
+	export class Tooltip implements Bounds.Overlappable, Simulation.Item {
 		// PROPERTIES
 		/** The id of the tooltip that this tooltip represents. */
 		id: string = '';
@@ -69,14 +69,8 @@ namespace Tooltips {
 		neighbours: Array<Tooltip>;
 
 		// BOUNDS
-		//* Scaled distance to left edge of the tooltip bounds */
-		left: number = NaN;
-		//* Scaled distance to right edge of the tooltip bounds */
-		right: number = NaN;
-		//* Scaled distance to top edge of the tooltip bounds */
-		top: number = NaN;
-		//* Scaled distance to bottom edge of the tooltip bounds */
-		bottom: number = NaN;
+		//* Scaled distances to edges of the tooltip bounds */
+		distances: Bounds.Distances = { left: NaN, right: NaN, top: NaN, bottom: NaN };
 
 		/** A tooltip has a particle whose position is used to calculate the angle */
 		particle: Simulation.Particle;
@@ -119,10 +113,11 @@ namespace Tooltips {
 			const baseTop = -offsets.y;
 			const baseBottom = this.height - baseTop;
 
-			this.left = baseLeft / scale;
-			this.right = baseRight / scale;
-			this.top = baseTop / scale;
-			this.bottom = baseBottom / scale;
+			const distances = this.distances;
+			distances.left = baseLeft / scale;
+			distances.right = baseRight / scale;
+			distances.top = baseTop / scale;
+			distances.bottom = baseBottom / scale;
 		}
 
 		public updateParticle(scale: number) {
@@ -161,7 +156,7 @@ namespace Tooltips {
 
 		// Create tooltip connection bounds of influence,
 		// bounds are the maximum rectangle where the tooltip can be positioned
-		const bounds = new Array<Bounds>(tooltips.length);
+		const bounds = new Array<Bounds.Overlappable>(tooltips.length);
 
 		for (let i = 0; i < tooltips.length; i++) {
 			const tooltip = tooltips[i];
@@ -169,10 +164,12 @@ namespace Tooltips {
 			bounds[i] = {
 				x: tooltip.x,
 				y: tooltip.y,
-				left: tooltip.width,
-				right: tooltip.width,
-				top: tooltip.height,
-				bottom: tooltip.height
+				distances: {
+					left: tooltip.width,
+					right: tooltip.width,
+					top: tooltip.height,
+					bottom: tooltip.height
+				}
 			};
 		}
 
