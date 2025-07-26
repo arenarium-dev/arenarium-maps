@@ -72,6 +72,7 @@ namespace Tooltips {
 		//* Scaled distances to edges of the tooltip bounds */
 		distances: Bounds.Distances = { left: NaN, right: NaN, top: NaN, bottom: NaN };
 
+		// SIMULATION
 		/** A tooltip has a particle whose position is used to calculate the angle */
 		particle: Simulation.Particle = { index: Angles.DEGREES.indexOf(Angles.DEGREES_DEFAULT), distX: NaN, distY: NaN };
 

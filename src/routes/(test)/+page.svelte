@@ -272,8 +272,8 @@
 
 	//#region Data
 
-	const total = 1000;
-	const limit = 1000;
+	const total = 2000;
+	const limit = 2000;
 
 	let lats = new Array<number>();
 	let lngs = new Array<number>();
